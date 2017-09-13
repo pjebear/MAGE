@@ -22,8 +22,8 @@ namespace WorldSystem
 
                 // Equipment
                 EquipmentProficiencies.HasDualWieldProficiency = false;
-                EquipmentProficiencies.AddProficiency(EquipmentType.Weapon, (int)WeaponType.MageSource);
-                EquipmentProficiencies.AddProficiency(EquipmentType.Armor, (int)ArmorType.Cloth);
+                EquipmentProficiencies.AddProficiency(EquipmentCategory.Weapon, (int)WeaponType.MageSource);
+                EquipmentProficiencies.AddProficiency(EquipmentCategory.Armor, (int)ArmorType.Cloth);
 
                 // Aura
                 Auras.Add(AuraIndex.ADEPT_MAGIC_DAMAGE_INCREASE);

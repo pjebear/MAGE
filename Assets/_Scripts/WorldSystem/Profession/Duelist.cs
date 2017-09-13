@@ -19,11 +19,11 @@ namespace WorldSystem
                 // Equipment
                 EquipmentProficiencies.HasDualWieldProficiency = true;
 
-                EquipmentProficiencies.AddProficiency(EquipmentType.Weapon, (int)WeaponType.Sword);
-                EquipmentProficiencies.AddProficiency(EquipmentType.Weapon, (int)WeaponType.Dagger);
+                EquipmentProficiencies.AddProficiency(EquipmentCategory.Weapon, (int)WeaponType.Sword);
+                EquipmentProficiencies.AddProficiency(EquipmentCategory.Weapon, (int)WeaponType.Dagger);
 
-                EquipmentProficiencies.AddProficiency(EquipmentType.Armor, (int)ArmorType.Cloth);
-                EquipmentProficiencies.AddProficiency(EquipmentType.Armor, (int)ArmorType.Leather);
+                EquipmentProficiencies.AddProficiency(EquipmentCategory.Armor, (int)ArmorType.Cloth);
+                EquipmentProficiencies.AddProficiency(EquipmentCategory.Armor, (int)ArmorType.Leather);
 
                 // Aura
 

@@ -20,7 +20,7 @@ namespace EncounterSystem.Interface
                 GameObject go = new GameObject();
                 Object.DontDestroyOnLoad(go);
                 GameInstance gi = go.AddComponent<GameInstance>();
-                gi.DebugFlow();
+                gi.DebugEncounterFlow();
             }
             return mInstance;
         }

@@ -105,7 +105,7 @@ namespace EncounterSystem.Action
 
 
             toCheckOut.Initialize(new ActionInfo(weapons[weaponIndex].ActionIndex, "Attack", ActionConstants.InstantChargeTime, actionModifiers, actionCost,
-                new List<Prerequisite>() { new EquipmentPrerequisite(new List<KeyValuePair<EquipmentType, int>>() { new KeyValuePair<EquipmentType, int>(EquipmentType.Weapon, -1) }) },
+                new List<Prerequisite>() { new EquipmentPrerequisite(new List<KeyValuePair<EquipmentCategory, int>>() { new KeyValuePair<EquipmentCategory, int>(EquipmentCategory.Weapon, -1) }) },
                 resourceChangeInfo,
                 new List<StatusEffectIndex>(),
                 ActionRootEffect.Harmful),
@@ -173,7 +173,7 @@ namespace EncounterSystem.Action
                     actionCost = new ResourceChange(Resource.Endurance, -40);
                     resourceChangeInformation =
                         new ActionResourceChangeInformation(Resource.Health, 0, ActionBaseType.Physical, ActionEffectType.Meele, false, 0, baseCritMultiplier);
-                    prerequisites.Add(new EquipmentPrerequisite(new List<KeyValuePair<EquipmentType, int>>() { new KeyValuePair<EquipmentType, int>(EquipmentType.Shield, -1) }));
+                    prerequisites.Add(new EquipmentPrerequisite(new List<KeyValuePair<EquipmentCategory, int>>() { new KeyValuePair<EquipmentCategory, int>(EquipmentCategory.Shield, -1) }));
 
                     actionModifiers.Add(new ActionModifier((AttributeContainer container) => { return container[AttributeType.Stat][(int)PrimaryStat.Might] * 0.5f; }, ModifierType.Additive));
                     actionModifiers.Add(new ActionModifier((AttributeContainer container) => { return 10 * container[AttributeType.Stat][(int)TertiaryStat.FrontalBlock]; }, ModifierType.Multiplicative));
@@ -205,7 +205,7 @@ namespace EncounterSystem.Action
                     actionCost = new ResourceChange(Resource.Endurance, -25);
                     resourceChangeInformation =
                         new ActionResourceChangeInformation(Resource.Health, 0, ActionBaseType.Physical, ActionEffectType.Meele, false, 0, baseCritMultiplier);
-                    prerequisites.Add(new EquipmentPrerequisite(new List<KeyValuePair<EquipmentType, int>>() { new KeyValuePair<EquipmentType, int>(EquipmentType.Shield, -1) }));
+                    prerequisites.Add(new EquipmentPrerequisite(new List<KeyValuePair<EquipmentCategory, int>>() { new KeyValuePair<EquipmentCategory, int>(EquipmentCategory.Shield, -1) }));
 
                     actionModifiers.Add(new ActionModifier((AttributeContainer container) => { return container[AttributeType.Stat][(int)PrimaryStat.Might] * 0.5f; }, ModifierType.Additive));
                     actionModifiers.Add(new ActionModifier((AttributeContainer container) => { return 1 + container[AttributeType.Stat][(int)TertiaryStat.FrontalBlock]; }, ModifierType.Multiplicative));
@@ -222,7 +222,7 @@ namespace EncounterSystem.Action
                     actionCost = new ResourceChange(Resource.INVALID, -1);
                     resourceChangeInformation =
                         new ActionResourceChangeInformation(Resource.Health, 0, ActionBaseType.Magic, ActionEffectType.Meele, false, 0, baseCritMultiplier, AllignmentType.Dark);
-                    prerequisites.Add(new EquipmentPrerequisite(new List<KeyValuePair<EquipmentType, int>>() { new KeyValuePair<EquipmentType, int>(EquipmentType.Shield, -1) }));
+                    prerequisites.Add(new EquipmentPrerequisite(new List<KeyValuePair<EquipmentCategory, int>>() { new KeyValuePair<EquipmentCategory, int>(EquipmentCategory.Shield, -1) }));
 
                     actionModifiers.Add(new ActionModifier((AttributeContainer container) => { return container[AttributeType.Stat][(int)PrimaryStat.Finese] * 1.5f; }, ModifierType.Additive));
                     actionModifiers.Add(new ActionModifier((AttributeContainer container) => { return container[AttributeType.Stat][(int)SecondaryStat.Fortitude] * 0.01f; }, ModifierType.Multiplicative));
@@ -479,7 +479,7 @@ namespace EncounterSystem.Action
                     actionCost = new ResourceChange(Resource.Endurance, -25);
                     resourceChangeInformation =
                         new ActionResourceChangeInformation(Resource.Health, 0, ActionBaseType.Physical, ActionEffectType.Meele, true, 0, 0);
-                    prerequisites.Add(new EquipmentPrerequisite(new List<KeyValuePair<EquipmentType, int>>() { new KeyValuePair<EquipmentType, int>(EquipmentType.Shield, -1) }));
+                    prerequisites.Add(new EquipmentPrerequisite(new List<KeyValuePair<EquipmentCategory, int>>() { new KeyValuePair<EquipmentCategory, int>(EquipmentCategory.Shield, -1) }));
 
                     statusEffects.Add(StatusEffectIndex.FRONTAL_DEFEND);
                     statusEffects.Add(StatusEffectIndex.PERIPHERAL_DEFEND);
@@ -534,7 +534,7 @@ namespace EncounterSystem.Action
                     actionCost = new ResourceChange(Resource.Endurance, -35);
                     resourceChangeInformation =
                         new ActionResourceChangeInformation(Resource.Health, 0, ActionBaseType.Magic, ActionEffectType.Meele, false, 0, baseCritMultiplier);
-                    prerequisites.Add(new EquipmentPrerequisite(new List<KeyValuePair<EquipmentType, int>>() { new KeyValuePair<EquipmentType, int>(EquipmentType.Weapon, (int)WeaponType.MeleeWeapon) }));
+                    prerequisites.Add(new EquipmentPrerequisite(new List<KeyValuePair<EquipmentCategory, int>>() { new KeyValuePair<EquipmentCategory, int>(EquipmentCategory.Weapon, (int)WeaponType.MeleeWeapon) }));
                     // Get Weapon Modifiers and add this modifier to it
                     // Hard coding until there's a better way of determining ordering
                     //actionModifiers.Add(new ActionModifier((AttributeContainer container) => { return 0.7f; }, ModifierType.Multiplicative));

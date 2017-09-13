@@ -106,6 +106,21 @@ namespace WorldSystem.Managers
             }
         }
 
+        class RosterScreenTransition : WorldTransitionBase
+        {
+            public RosterScreenTransition()
+                : base (WorldTransitionType.RosterScreen, false)
+            {
+
+            }
+
+            public override void Transition()
+            {
+                UnityEngine.Debug.Log("Transitioning to RosterScreen");
+                SceneManager.LoadScene("RosterScreen");
+            }
+        }
+
         class AreaTransition : WorldTransitionBase
         {
             // area to transition to

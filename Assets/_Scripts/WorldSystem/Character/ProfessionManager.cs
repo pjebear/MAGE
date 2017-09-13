@@ -55,6 +55,8 @@ namespace WorldSystem.Character
         public EquipmentProficienciesContainer Proficiencies { get { return mCurrentProfession.EquipmentProficiencies; } } 
         public string ProfessionName { get { return mCurrentProfession.Type.ToString(); } }
         public int ProfessionLevel { get { return mCurrentProfession.CurrentLevel; } }
+        public int ProfessionExperience { get { return mCurrentProfession.CurrentExperience; } }
+        public int ProfessionExperienceMax { get { return mCurrentProfession.ExperienceMax; } }
         private Dictionary<ProfessionType, ProfessionBase> mProfessions;
 
         private ProfessionBase mCurrentProfession;
@@ -109,7 +111,7 @@ namespace WorldSystem.Character
             }
         }
 
-        public bool AddExperience(float amount)
+        public bool AddExperience(int amount)
         {
             return mCurrentProfession.AddExperience(amount);
         }

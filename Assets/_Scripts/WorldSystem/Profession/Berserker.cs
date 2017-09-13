@@ -22,11 +22,11 @@ namespace WorldSystem
                 // Equipment
                 EquipmentProficiencies.HasDualWieldProficiency = false;
 
-                EquipmentProficiencies.AddProficiency(EquipmentType.Weapon, (int)WeaponType.BastardSword);
-                EquipmentProficiencies.AddProficiency(EquipmentType.Weapon, (int)WeaponType.BattleAxe);
-                EquipmentProficiencies.AddProficiency(EquipmentType.Weapon, (int)WeaponType.Maul);
+                EquipmentProficiencies.AddProficiency(EquipmentCategory.Weapon, (int)WeaponType.BastardSword);
+                EquipmentProficiencies.AddProficiency(EquipmentCategory.Weapon, (int)WeaponType.BattleAxe);
+                EquipmentProficiencies.AddProficiency(EquipmentCategory.Weapon, (int)WeaponType.Maul);
 
-                EquipmentProficiencies.AddProficiency(EquipmentType.Armor, (int)ArmorType.Leather);
+                EquipmentProficiencies.AddProficiency(EquipmentCategory.Armor, (int)ArmorType.Leather);
 
                 // Aura
                 Auras.Add(AuraIndex.PHYSICAL_CRITICAL_PERCENT);

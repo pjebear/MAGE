@@ -29,6 +29,7 @@ public class WorldScreenManager : MonoBehaviour
     public void OnClick_PartyInspectorScreen()
     {
         Debug.Log("Opening PartyInspector HUD...");
+        rWorldSystemFacade.OpenPartyScreen();
     }
 
     public void OnClick_ItemShopScreen()

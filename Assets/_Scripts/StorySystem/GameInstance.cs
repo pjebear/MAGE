@@ -36,12 +36,20 @@ namespace WorldSystem
             mEncounterSystem = new EncounterSystemFacade();
         }
 
+        public void DebugEncounterFlow()
+        {
+            mWorldSystem.Initialize();
+            mStorySystem.Initialize();
+            mEncounterSystem.Initialize();
+            mWorldSystem.DebugEncounterFlow();
+        }
+
         public void DebugFlow()
         {
             mWorldSystem.Initialize();
             mStorySystem.Initialize();
             mEncounterSystem.Initialize();
-            mWorldSystem.DebugFlow();
+            mWorldSystem.DebugRosterFlow();
         }
 
         public void BeginGame()
@@ -49,8 +57,9 @@ namespace WorldSystem
             mWorldSystem.Initialize();
             mStorySystem.Initialize();
             mEncounterSystem.Initialize();
-
-            mStorySystem.BeginNewStoryArc(StorySystem.Common.StoryArcId.Main);
+            mWorldSystem.SetNextTransition(new MapTransition());
+            mWorldSystem.ProgressStory();
+            //mStorySystem.BeginNewStoryArc(StorySystem.Common.StoryArcId.Main);
         }
 
         public void SaveGameInstance()

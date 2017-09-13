@@ -13,27 +13,59 @@ namespace Screens.Payloads
         public string UnitName;
         public string ProfessionName;
         public int CharacterLevel;
+        public int Experience;
+        public int ExperienceMax;
         public int ProfessionLevel;
+        public int ProfessionExperience;
+        public int ProfessionExperienceMax;
+        public int Might;
+        public int Finese;
+        public int Magic;
+        public int Fortitude;
+        public int Attunement;
         public float CurrentHealth;
         public float MaxHealth;
         public float CurrentMana;
         public float MaxMana;
         public float CurrentEndurance;
         public float MaxEndurance;
+        public string ImageAssetPath;
+        public string AllignmentAssetPath;
+        public string MainAllignment;
+        public string SecondaryAllignment;
+        public string TertiaryAllignment;
         public float CurrentClock;
         public float MaxClock;
-        public string ImageAssetPath;
+     
+
         public List<StatusEffectIconPayload> StatusPayloads;
 
-        public UnitPanelPayload(int unitId, string unitName, string professionName, int characterLevel, int professionLevel,
+        public UnitPanelPayload(int unitId, string unitName, string professionName, 
+            int characterLevel, 
+            int experience, int maxExperience,
+            int professionLevel,
+            int professionExperience, int maxProfessionExperience,
+            int might, int finese, int magic, int fortitude, int attunement,
             float currentHealth, float maxHealth, float currentEndurance, float maxEndurance, float currentMana, float maxMana,
-            float currentClock, float maxClock, string imageAssetPath, List<StatusEffectIconPayload> statusPayloads)
+            float currentClock, float maxClock, 
+            string imageAssetPath, 
+            string allignmentAssetPath, string primaryAllignment, string secondaryAllignment, string tertiaryAllignment,
+            List<StatusEffectIconPayload> statusPayloads)
         {
             UnitId = unitId;
             UnitName = unitName;
             ProfessionName = professionName;
             CharacterLevel = characterLevel;
+            Experience = experience;
+            ExperienceMax = maxExperience;
             ProfessionLevel = professionLevel;
+            ProfessionExperience = professionExperience;
+            ProfessionExperienceMax = maxProfessionExperience;
+            Might = might;
+            Finese = finese;
+            Magic = magic;
+            Attunement = attunement;
+            Fortitude = fortitude;
             CurrentHealth = currentHealth;
             MaxHealth = maxHealth;
             CurrentEndurance = currentEndurance;
@@ -43,8 +75,26 @@ namespace Screens.Payloads
             CurrentClock = currentClock;
             MaxClock = maxClock;
             ImageAssetPath = imageAssetPath;
+            AllignmentAssetPath = allignmentAssetPath;
+            MainAllignment = primaryAllignment;
+            SecondaryAllignment = secondaryAllignment;
+            TertiaryAllignment = tertiaryAllignment;
             StatusPayloads = statusPayloads;
         }
+    }
+
+    public struct WornEquipmentPayload
+    {
+        public string ImageAssetPath;
+        public bool Selectable;
+    }
+
+    public struct InventoryEquipmentPayload
+    {
+        public string IconAssetPath;
+        public string EquipmentName;
+        public int Count;
+        public KeyValuePair<int, int> EquipmentIndex;
     }
 
     public struct TalentTreePayload

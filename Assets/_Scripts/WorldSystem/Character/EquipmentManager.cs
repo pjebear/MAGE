@@ -9,21 +9,22 @@ using Common.StatusTypes;
 using Common.ActionEnums;
 using WorldSystem.Character;
 using Common.EquipmentUtil;
+using Screens.Payloads;
 
 namespace WorldSystem.Character
 {
     class EquipmentManager
     {
+        EquipmentBase[] mWornEquipment;
         protected EquipmentProficienciesContainer rEquipmentProficiencies;
-        protected ArmorBase mArmor;
         protected StatusManager rStatusManager;
-        HeldEquipment[] mHeldEquipment;
 
         public EquipmentManager()
         {
-            mHeldEquipment = new HeldEquipment[2];
-            mHeldEquipment[0] = new WeaponBase(WeaponType.Unarmed);
-            mHeldEquipment[1] = new WeaponBase(WeaponType.Unarmed);
+            mWornEquipment = new EquipmentBase[(int)WornEquipmentSlot.NUM];
+            mWornEquipment[(int)WornEquipmentSlot.LeftHeld] = new WeaponBase(WeaponType.Unarmed);
+            mWornEquipment[(int)WornEquipmentSlot.RightHeld] = new WeaponBase(WeaponType.Unarmed);
+            
             rEquipmentProficiencies = null;
         }
 
@@ -32,109 +33,137 @@ namespace WorldSystem.Character
             rStatusManager = statusManager;
         }
 
-        public void SetProficiencies(EquipmentProficienciesContainer proficiencies)
+        public List<EquipmentBase> SetProficiencies(EquipmentProficienciesContainer proficiencies)
         {
+            List<EquipmentBase> equipmentNeedingRemoval = new List<EquipmentBase>();
             rEquipmentProficiencies = proficiencies;
             // unequip anything that is no longer in proficiencies
-            if (mArmor != null &&
-                !rEquipmentProficiencies.CanEquip(mArmor))
+            if (mWornEquipment[(int)WornEquipmentSlot.Armor] != null &&
+                !rEquipmentProficiencies.CanEquip(mWornEquipment[(int)WornEquipmentSlot.Armor]))
             {
-                UnEquipArmor();
+                equipmentNeedingRemoval.Add(UnequipSlot(WornEquipmentSlot.Armor));
             }
-            if (mHeldEquipment[0] != null &&
-                !rEquipmentProficiencies.CanEquip(mHeldEquipment[0]))
+            if (mWornEquipment[(int)WornEquipmentSlot.LeftHeld] != null &&
+                !rEquipmentProficiencies.CanEquip(mWornEquipment[(int)WornEquipmentSlot.LeftHeld]))
             {
-                UnEquipHeld(0);
+                equipmentNeedingRemoval.Add(UnequipSlot(WornEquipmentSlot.LeftHeld));
             }
-            if (mHeldEquipment[1] != null &&
-                !rEquipmentProficiencies.CanEquip(mHeldEquipment[1]))
+            if (mWornEquipment[(int)WornEquipmentSlot.RightHeld] != null &&
+                !rEquipmentProficiencies.CanEquip(mWornEquipment[(int)WornEquipmentSlot.RightHeld]))
             {
-                UnEquipHeld(1);
+                equipmentNeedingRemoval.Add(UnequipSlot(WornEquipmentSlot.RightHeld));
             }
-
+            return equipmentNeedingRemoval;
         }
 
-        // UNEQUIP MUST HAPPEN BEFORE EQUIP
-        public void EquipHeldEquipment(int hand, HeldEquipment heldEquipment)
+        public List<EquipmentBase> EquipInSlot(EquipmentBase equipment, WornEquipmentSlot slot)
         {
-            int otherHand = (hand + 1) % 2;
-            if (hand >= 0 && hand < 2)
+            List<EquipmentBase> toReturn = new List<EquipmentBase>();
+            if (slot == WornEquipmentSlot.LeftHeld || slot == WornEquipmentSlot.RightHeld)
             {
-                // Unequip current hand if something already equiped
-                if (mHeldEquipment[hand] != null)
-                {
-                    UnEquipHeld(hand);
-                }
-                mHeldEquipment[hand] = heldEquipment;
-
-                // Check off hand for compatability
-                if (heldEquipment.NumHandsRequired == 2) // unequip other hand
-                {
-                    UnityEngine.Debug.Assert(hand == 0, "Attempting to equip two handed weapon in off hand");
-                    if (mHeldEquipment[1] != null)
-                    {
-                        UnEquipHeld(1);
-                    }
-                }
-                else if (heldEquipment.EquipmentType == EquipmentType.Shield) 
-                {
-                    // make sure other hand doesn't have a shield
-                    if (mHeldEquipment[otherHand] != null &&
-                        mHeldEquipment[otherHand].EquipmentType == EquipmentType.Shield)
-                    {
-                        UnEquipHeld(otherHand);
-                    }
-                } 
-                else if (heldEquipment.EquipmentType == EquipmentType.Weapon)
-                {
-                    // if not dual wielding unequip other hand
-                    if (mHeldEquipment[otherHand] != null &&
-                        mHeldEquipment[otherHand].EquipmentType == EquipmentType.Weapon
-                        && !rEquipmentProficiencies.HasDualWieldProficiency)
-                    {
-                        UnEquipHeld(otherHand);
-                    }
-                }
-
-                // Reapply effects
-                foreach (StatusEffect effect in heldEquipment.EquipmentEffects)
-                {
-                    rStatusManager.ApplyStatusEffect(effect);
-                }
-                
+                return EquipHeldEquipment(slot, equipment as HeldEquipment);
             }
-            else
+            else if (slot == WornEquipmentSlot.Armor)
             {
-                UnityEngine.Debug.LogErrorFormat("Attempting to Equip weapon into invalid slot. Got[{0}]", hand);
+                return EquipArmor(equipment as ArmorBase);
             }
+            //else if (slot == WornEquipmentSlot.Accessory)
+            //{
+            //    UnityEngine.Debug.Log("Cannot equip Accessories yet!");
+            //}
+            return new List<EquipmentBase>();
         }
-        // UNEQUIP MUST HAPPEN BEFORE EQUIP
-        public void EquipArmor(ArmorBase armor)
+
+        private List<EquipmentBase> EquipHeldEquipment(WornEquipmentSlot hand, HeldEquipment heldEquipment)
         {
-            if (mArmor != null)
+            List<EquipmentBase> itemsUnequipped = new List<EquipmentBase>();
+            WornEquipmentSlot otherHand = hand == WornEquipmentSlot.LeftHeld ? WornEquipmentSlot.RightHeld : WornEquipmentSlot.LeftHeld;
+            
+            // Unequip current hand if something already equiped
+            if (mWornEquipment[(int)hand] != null)
             {
-                // Add to inventory
-                UnEquipArmor();
+                itemsUnequipped.Add(UnEquipHeld(hand));
             }
-            mArmor = armor;
-            foreach (StatusEffect effect in armor.EquipmentEffects)
+            mWornEquipment[(int)hand] = heldEquipment;
+
+            // Check off hand for compatability
+            if (heldEquipment.NumHandsRequired == 2) // unequip other hand
+            {
+                if (mWornEquipment[(int)otherHand] != null)
+                {
+                    itemsUnequipped.Add(UnEquipHeld(otherHand));
+                }
+            }
+            else if (heldEquipment.Index.Key == EquipmentCategory.Shield) 
+            {
+                // make sure other hand doesn't have a shield
+                if (mWornEquipment[(int)otherHand] != null &&
+                   mWornEquipment[(int)otherHand].Index.Key == EquipmentCategory.Shield)
+                {
+                    itemsUnequipped.Add(UnEquipHeld(otherHand));
+                }
+            } 
+            else if (heldEquipment.Index.Key == EquipmentCategory.Weapon)
+            {
+                // if not dual wielding unequip other hand
+                if (mWornEquipment[(int)otherHand] != null &&
+                    mWornEquipment[(int)otherHand].Index.Key == EquipmentCategory.Weapon
+                    && !rEquipmentProficiencies.HasDualWieldProficiency)
+                {
+                    itemsUnequipped.Add(UnEquipHeld(otherHand));
+                }
+            }
+
+            // Reapply effects
+            foreach (StatusEffect effect in heldEquipment.EquipmentEffects)
             {
                 rStatusManager.ApplyStatusEffect(effect);
             }
 
+            return itemsUnequipped;
         }
 
-        public ArmorBase UnEquipArmor()
+        private List<EquipmentBase> EquipArmor(ArmorBase armor)
         {
-            if (mArmor != null)
+            List<EquipmentBase> unequippedArmor = new List<EquipmentBase>();
+            if (mWornEquipment[(int)WornEquipmentSlot.Armor] != null)
             {
                 // Add to inventory
-                ArmorBase armor = mArmor;
+                unequippedArmor.Add(UnEquipArmor());
+            }
+            mWornEquipment[(int)WornEquipmentSlot.Armor] = armor;
+            foreach (StatusEffect effect in armor.EquipmentEffects)
+            {
+                rStatusManager.ApplyStatusEffect(effect);
+            }
+            return unequippedArmor;
+        }
+
+        public EquipmentBase UnequipSlot(WornEquipmentSlot slot)
+        {
+            if (slot == WornEquipmentSlot.Armor)
+            {
+                return UnEquipArmor();
+            }
+            else if (slot == WornEquipmentSlot.LeftHeld || slot == WornEquipmentSlot.RightHeld)
+            {
+                return UnEquipHeld(slot);
+            }
+
+            return null;
+        }
+
+        private EquipmentBase UnEquipArmor()
+        {
+            if (mWornEquipment[(int)WornEquipmentSlot.Armor] != null)
+            {
+                // Add to inventory
+                ArmorBase armor = mWornEquipment[(int)WornEquipmentSlot.Armor] as ArmorBase;
                 foreach (StatusEffect armorEffect in armor.EquipmentEffects)
                 {
                     rStatusManager.RemoveStatusEffect(armorEffect.Index);
                 }
-                mArmor = null;
+                mWornEquipment[(int)WornEquipmentSlot.Armor] = null;
                 return armor;
             }
             else
@@ -145,19 +174,19 @@ namespace WorldSystem.Character
             
         }
 
-        public HeldEquipment UnEquipHeld(int hand)
+        private EquipmentBase UnEquipHeld(WornEquipmentSlot hand)
         {
-            if (hand >= 0 && hand < 2)
+            if (hand == WornEquipmentSlot.LeftHeld || hand == WornEquipmentSlot.RightHeld)
             {
-                if (mHeldEquipment[hand] != null)
+                if (mWornEquipment[(int)hand] != null)
                 {
                     // Add to inventory
-                    HeldEquipment held = mHeldEquipment[hand];
+                    EquipmentBase held = mWornEquipment[(int)hand];
                     foreach (StatusEffect heldEffect in held.EquipmentEffects)
                     {
                         rStatusManager.RemoveStatusEffect(heldEffect.Index);
                     }
-                    mHeldEquipment[hand] = new WeaponBase(WeaponType.Unarmed);
+                    mWornEquipment[(int)hand] = new WeaponBase(WeaponType.Unarmed);
                     return held;
                 }
                 else
@@ -167,53 +196,42 @@ namespace WorldSystem.Character
             }
             else
             {
-                UnityEngine.Debug.LogErrorFormat("Attempting to Equip weapon into invalid slot. Got[{0}]", hand);
+                UnityEngine.Debug.LogErrorFormat("Attempting to Equip weapon into invalid slot. Got[{0}]", hand.ToString());
             }
             return null;
         }
 
-        public List<string> GetHeldEquipmentModels()
+        public List<string> GetHeldEquipmentModelIds()
         {
             List<string> heldIds = new List<string>();
-            for (int i = 0; i < 2; i++)
-            {
-                if (mHeldEquipment[i] != null)
-                {
-                    heldIds.Add(mHeldEquipment[i].ModelId);
-                }
-            }
+            heldIds.Add(!EquipmentUtil.IsEmptySlot(mWornEquipment[(int)WornEquipmentSlot.LeftHeld]) ? "WeaponModels/" + ((HeldEquipment)mWornEquipment[(int)WornEquipmentSlot.LeftHeld]).ModelId : "");
+            heldIds.Add(!EquipmentUtil.IsEmptySlot(mWornEquipment[(int)WornEquipmentSlot.RightHeld]) ? "WeaponModels/" + ((HeldEquipment)mWornEquipment[(int)WornEquipmentSlot.RightHeld]).ModelId : "");
+
             return heldIds;
         }
 
         public List<WeaponBase> GetHeldWeapons()
         {
             List<WeaponBase> heldIds = new List<WeaponBase>();
-            for (int i = 0; i < 2; i++)
-            {
-                if (mHeldEquipment[i] != null && mHeldEquipment[i].EquipmentType == EquipmentType.Weapon)
-                {
-                    heldIds.Add(mHeldEquipment[i] as WeaponBase);
-                }
-                else
-                {
-                    heldIds.Add(null);
-                }
-            }
+            heldIds.Add(mWornEquipment[(int)WornEquipmentSlot.LeftHeld] != null && mWornEquipment[(int)WornEquipmentSlot.LeftHeld].Index.Key == EquipmentCategory.Weapon ? 
+                mWornEquipment[(int)WornEquipmentSlot.LeftHeld] as WeaponBase : null);
+            heldIds.Add(mWornEquipment[(int)WornEquipmentSlot.RightHeld] != null && mWornEquipment[(int)WornEquipmentSlot.RightHeld].Index.Key == EquipmentCategory.Weapon ?
+               mWornEquipment[(int)WornEquipmentSlot.RightHeld] as WeaponBase : null);
             return heldIds;
         }
 
-        public bool IsEquipped(EquipmentType type, int equipmentIndex)
+        public bool IsEquipped(EquipmentCategory type, int equipmentIndex)
         {
             bool isEquipped = false;
             switch (type)
             {
-                case (EquipmentType.Armor):
-                    isEquipped = (int)mArmor.ArmorType == equipmentIndex;
+                case (EquipmentCategory.Armor):
+                    isEquipped = (int)(mWornEquipment[(int)WornEquipmentSlot.Armor] as ArmorBase).ArmorType == equipmentIndex;
                     break;
-                case (EquipmentType.Weapon):
-                    for (int i = 0; i < 2; i++)
+                case (EquipmentCategory.Weapon):
+                    for (int hand = (int)WornEquipmentSlot.LeftHeld; hand <= (int)WornEquipmentSlot.RightHeld; hand++)
                     {
-                        if (mHeldEquipment[i] != null && mHeldEquipment[i].EquipmentType == type)
+                        if (mWornEquipment[hand] != null && mWornEquipment[hand].Index.Key == type)
                         {
                             if (equipmentIndex == -1)
                             {
@@ -221,29 +239,53 @@ namespace WorldSystem.Character
                             }
                             else if (equipmentIndex == (int)WeaponType.MeleeWeapon)
                             {
-                                isEquipped |= EquipmentUtil.IsMeleeWeapon((mHeldEquipment[i] as WeaponBase).WeaponType);
+                                isEquipped |= EquipmentUtil.IsMeleeWeapon((mWornEquipment[hand] as WeaponBase).WeaponType);
                             }
                             else if (equipmentIndex == (int)WeaponType.RangedWeapon)
                             {
-                                isEquipped |= EquipmentUtil.IsRangedWeapon((mHeldEquipment[i] as WeaponBase).WeaponType);
+                                isEquipped |= EquipmentUtil.IsRangedWeapon((mWornEquipment[hand] as WeaponBase).WeaponType);
                             }
                             else
                             {
-                                isEquipped |= (int)(mHeldEquipment[i] as WeaponBase).WeaponType == equipmentIndex;
+                                isEquipped |= (int)(mWornEquipment[hand] as WeaponBase).WeaponType == equipmentIndex;
                             }
                         } 
                     }
                     break;
-                case (EquipmentType.Shield):
-                    for (int i = 0; i < 2; i++)
+                case (EquipmentCategory.Shield):
+                    for (int hand = (int)WornEquipmentSlot.LeftHeld; hand <= (int)WornEquipmentSlot.RightHeld; hand++)
                     {
-                        isEquipped |= mHeldEquipment[i] != null
-                            && mHeldEquipment[i].EquipmentType == type
-                            && (equipmentIndex == -1 || (int)(mHeldEquipment[i] as ShieldBase).ShieldType == equipmentIndex);
+                        isEquipped |= mWornEquipment[hand] != null
+                            && mWornEquipment[hand].Index.Key == type
+                            && (equipmentIndex == -1 || (int)(mWornEquipment[hand] as ShieldBase).ShieldType == equipmentIndex);
                     }
                     break;
             }
             return isEquipped;
+        }
+
+        public WornEquipmentPayload[] GetWornEquipmentPayloads()
+        {
+            WornEquipmentPayload[] wornPayloads = new WornEquipmentPayload[(int)WornEquipmentSlot.NUM];
+
+            for (int i = 0; i < mWornEquipment.Length; ++i)
+            {
+                string assetPath = "";
+                if (mWornEquipment[i] != null && mWornEquipment[i].WornAssetId != "")
+                {
+                    assetPath = "EquipmentImages/" + mWornEquipment[i].WornAssetId;
+                }
+                else
+                {
+                    assetPath = "empty";
+                }
+                wornPayloads[i] = new WornEquipmentPayload()
+                {
+                    ImageAssetPath = assetPath
+                };
+            }
+
+            return wornPayloads;
         }
     }
 }

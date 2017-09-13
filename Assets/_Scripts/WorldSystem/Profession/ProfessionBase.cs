@@ -22,11 +22,12 @@ namespace WorldSystem
         {
 
             protected const int MAX_PROFESSION_LEVEL = 8;
-            protected static readonly float[] PROFESSION_LEVELUP_EXPERIENCE_REQUIREMENTS = { 200f, 300f, 500f, 800f, 1200f, 1700f, 2300f };
+            protected static readonly int[] PROFESSION_LEVELUP_EXPERIENCE_REQUIREMENTS = { 200, 300, 500, 800, 1200, 1700, 2300 };
             public ProfessionType Type { get; protected set; }
             public ProfessionType Base { get; protected set; }
             public int CurrentLevel { get; private set; }
-            public float CurrentExperience { get; private set; }
+            public int CurrentExperience { get; private set; }
+            public int ExperienceMax { get { return CurrentLevel == MAX_PROFESSION_LEVEL ? PROFESSION_LEVELUP_EXPERIENCE_REQUIREMENTS[CurrentLevel - 2] : PROFESSION_LEVELUP_EXPERIENCE_REQUIREMENTS[CurrentLevel - 1]; } }
 
             public List<AttributeModifier> Passives { get; private set; }
             public List<ActionIndex> Actions { get; private set; }
@@ -42,7 +43,7 @@ namespace WorldSystem
                 Type = type;
                 Base = GetBaseProfession(type);
                 CurrentLevel = 1;
-                CurrentExperience = 0f;
+                CurrentExperience = 0;
                 Passives = new List<AttributeModifier>();
                 Actions = new List<ActionIndex>();
                 ActionModifiers = new Dictionary<ActionIndex, List<ActionModifier>>();
@@ -53,7 +54,7 @@ namespace WorldSystem
                 TalentTree = new Dictionary<TalentIndex, List<TalentIndex>>();
             }
 
-            public bool AddExperience(float amount)
+            public bool AddExperience(int amount)
             {
                 CurrentExperience += amount;
                 if (CurrentLevel < MAX_PROFESSION_LEVEL)

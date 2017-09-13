@@ -45,7 +45,7 @@ namespace EncounterSystem
 
                     float critChance = actionInformation.CriticalChance;
                     critChance += rAttributes[AttributeType.Stat]
-                        [actionInformation.ActionBaseType == ActionBaseType.Physical ? (int)TertiaryStat.PhyscialCritSusceptibility : (int)TertiaryStat.MagicalCritSusceptibility];
+                        [actionInformation.ActionBaseType == ActionBaseType.Physical ? (int)TertiaryStat.PhysicalCritSusceptibility : (int)TertiaryStat.MagicalCritSusceptibility];
                     bool isCrit = Random.Range(0f, 1f) < critChance;
 
                     if (isCrit)

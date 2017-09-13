@@ -26,6 +26,7 @@ namespace WorldSystem.Common
     enum WorldTransitionType
     {
         Encounter,
+        RosterScreen,
         Map,
         Area,
         Cinematic,

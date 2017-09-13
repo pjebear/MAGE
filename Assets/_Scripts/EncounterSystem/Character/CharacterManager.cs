@@ -75,7 +75,7 @@ namespace EncounterSystem.Character
             {
                 if (heldIds[i] != "")
                 {
-                    Instantiate(UnityEngine.Resources.Load("Weapons/" + heldIds[i]), i == 0 ? LeftHand.transform : RightHand.transform);
+                    Instantiate(UnityEngine.Resources.Load(heldIds[i]), i == 0 ? LeftHand.transform : RightHand.transform);
                 }
             }
 
@@ -121,7 +121,7 @@ namespace EncounterSystem.Character
             }
         }
 
-        public bool IsEquipped(EquipmentType type, int equipmentIndex)
+        public bool IsEquipped(EquipmentCategory type, int equipmentIndex)
         {
             return CharacterBase.IsEquipped(type, equipmentIndex);
         }
@@ -312,7 +312,7 @@ namespace EncounterSystem.Character
         //-----------------------------------------------------------------------------
         public void AddExperience()
         {
-            float exp = Random.Range(20, 30);// calculate exp
+            int exp = Random.Range(20, 30);// calculate exp
             mScreenTextManager.DisplayExperienceGainedText(exp);
             bool levelUp = CharacterBase.AddCharacterExperience(exp);
 

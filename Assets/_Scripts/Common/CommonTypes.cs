@@ -356,8 +356,8 @@ namespace Common
 
         public class EquipmentPrerequisite : Prerequisite
         {
-            private List<KeyValuePair<EquipmentType, int>> mEquipmentPrerequisites;
-            public EquipmentPrerequisite(List<KeyValuePair<EquipmentType, int>> prerequisites)
+            private List<KeyValuePair<EquipmentCategory, int>> mEquipmentPrerequisites;
+            public EquipmentPrerequisite(List<KeyValuePair<EquipmentCategory, int>> prerequisites)
             {
                 mEquipmentPrerequisites = prerequisites;
             }

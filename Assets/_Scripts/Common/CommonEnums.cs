@@ -59,7 +59,7 @@ namespace Common
 
             PhysicalResistance,
             MagicalResistance,
-            PhyscialCritSusceptibility, // negative values indicate reduced chance to be crit
+            PhysicalCritSusceptibility, // negative values indicate reduced chance to be crit
             MagicalCritSusceptibility,
 
             //Offensive stats

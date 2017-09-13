@@ -6,12 +6,24 @@ using System.Text;
 namespace Common.EquipmentEnums
 {
 
-    public enum EquipmentType
+    public enum EquipmentCategory
     {
         Armor,
         Weapon,
         Shield,
         Accessory
+    }
+
+    public enum WornEquipmentSlot
+    {
+        Invalid = -1,
+
+        Armor,
+        LeftHeld,
+        RightHeld,
+        //Accessory,
+
+        NUM
     }
 
     public enum WeaponType
@@ -37,8 +49,8 @@ namespace Common.EquipmentEnums
 
     enum ShieldType
     {
-        Base,
-        Tower
+        Shield,
+        TowerShield
     }
 
     public enum ArmorType
@@ -60,6 +72,7 @@ namespace Common.EquipmentUtil
     using EquipmentEnums;
     using EncounterSystem.MapEnums;
     using EncounterSystem.MapTypes;
+    using EquipmentTypes;
 
     static class EquipmentUtil
     {
@@ -99,13 +112,31 @@ namespace Common.EquipmentUtil
             }
         }
 
+        public static string GetArmorAssetId(ArmorType type)
+        {
+            switch (type)
+            {
+                case (ArmorType.Cloth):
+                    return "cloth_1";
+                case (ArmorType.Leather):
+                    return "leather_1";
+                case (ArmorType.Chain):
+                    return "chain_1";
+                case (ArmorType.Plate):
+                    return "plate_1";
+                default:
+                    UnityEngine.Debug.LogError("No armor id added for armor type " + type.ToString());
+                    return "";
+            }
+        }
+
         public static string GetShieldModelId(ShieldType type)
         {
             switch (type)
             {
-                case (ShieldType.Base):
+                case (ShieldType.Shield):
                     return "shield_1";
-                case (ShieldType.Tower):
+                case (ShieldType.TowerShield):
                     return "towershield_1";
                 default:
                     UnityEngine.Debug.LogError("No shield model loaded for shield type " + type.ToString());
@@ -326,9 +357,9 @@ namespace Common.EquipmentUtil
         {
             switch (type)
             {
-                case (ShieldType.Base):
+                case (ShieldType.Shield):
                     return 0.3f;
-                case (ShieldType.Tower):
+                case (ShieldType.TowerShield):
                     return 0.55f;
                 default:
                     UnityEngine.Debug.LogError("Physical Resistance not defined for armor type " + type.ToString());
@@ -409,6 +440,38 @@ namespace Common.EquipmentUtil
                     return ActionIndex.NUM;
             }
         }
+
+        public static bool IsValidForSlot(EquipmentCategory toCheck, WornEquipmentSlot slot)
+        {
+           
+            if (slot == WornEquipmentSlot.Armor)
+            {
+                return toCheck == EquipmentCategory.Armor;
+            }
+            //else if (slot == WornEquipmentSlot.Accessory)
+            //{
+            //    return toCheck == EquipmentCategory.Accessory;
+            //}
+            else if (slot == WornEquipmentSlot.LeftHeld || slot == WornEquipmentSlot.RightHeld)
+            {
+                return toCheck == EquipmentCategory.Shield || toCheck == EquipmentCategory.Weapon;
+            }
+
+            return false; 
+        }
+
+        public static bool IsEmptySlot(EquipmentBase equipment)
+        {
+            if (equipment != null)
+            {
+                if (equipment.Index.Key == EquipmentCategory.Weapon && equipment.Index.Value == (int)WeaponType.Unarmed)
+                {
+                    return true;
+                }
+                return false;
+            }
+            return true;
+        }
     }
 }
 
@@ -423,21 +486,20 @@ namespace Common.EquipmentTypes
     using ActionEnums;
     using StatusTypes;
     using StatusEnums;
-    using EncounterSystem.Action;
     using EncounterSystem.MapTypes;
     using WorldSystem.Items;
 
     public class EquipmentProficienciesContainer
     {
         public bool HasDualWieldProficiency;
-        public bool HasShieldProficiency { get { return mProficiencies[EquipmentType.Shield].Count > 0; } }
-        private Dictionary<EquipmentType, List<int>> mProficiencies;
+        public bool HasShieldProficiency { get { return mProficiencies[EquipmentCategory.Shield].Count > 0; } }
+        private Dictionary<EquipmentCategory, List<int>> mProficiencies;
 
-        public List<int> this[EquipmentType type] { get { return mProficiencies[type]; } }
+        public List<int> this[EquipmentCategory type] { get { return mProficiencies[type]; } }
         public EquipmentProficienciesContainer()
         {
-            mProficiencies = new Dictionary<EquipmentType, List<int>>();
-            foreach (EquipmentType equipmentType in Enum.GetValues(typeof(EquipmentType)))
+            mProficiencies = new Dictionary<EquipmentCategory, List<int>>();
+            foreach (EquipmentCategory equipmentType in Enum.GetValues(typeof(EquipmentCategory)))
             {
                 mProficiencies.Add(equipmentType, new List<int>());
             }
@@ -453,7 +515,7 @@ namespace Common.EquipmentTypes
             }
         }
 
-        public void AddProficiency(EquipmentType type, int area)
+        public void AddProficiency(EquipmentCategory type, int area)
         {
             if (!mProficiencies[type].Contains(area))
             {
@@ -461,7 +523,7 @@ namespace Common.EquipmentTypes
             }
         }
 
-        public void RemoveProficiency(EquipmentType type, int area)
+        public void RemoveProficiency(EquipmentCategory type, int area)
         {
             if (mProficiencies.ContainsKey(type))
             {
@@ -472,42 +534,44 @@ namespace Common.EquipmentTypes
         public bool CanEquip(EquipmentBase equipment)
         {
             int area = -1;
-            switch (equipment.EquipmentType)
+            switch (equipment.Index.Key)
             {
-                case (EquipmentType.Weapon):
+                case (EquipmentCategory.Weapon):
                     area = (int)(equipment as WeaponBase).WeaponType;
                     break;
-                case (EquipmentType.Armor):
+                case (EquipmentCategory.Armor):
                     area = (int)(equipment as ArmorBase).ArmorType;
                     break;
-                case (EquipmentType.Shield):
+                case (EquipmentCategory.Shield):
                     area = (int)(equipment as ShieldBase).ShieldType;
                     break;
-                case (EquipmentType.Accessory):
+                case (EquipmentCategory.Accessory):
                     return true; //TODO: For now?
             }
-            if (area != -1 && mProficiencies.ContainsKey(equipment.EquipmentType))
+            if (area != -1 && mProficiencies.ContainsKey(equipment.Index.Key))
             {
-                return mProficiencies[equipment.EquipmentType].Contains(area);
+                return mProficiencies[equipment.Index.Key].Contains(area);
             }
             else
             {
-                UnityEngine.Debug.LogError("Equipment Type " + equipment.EquipmentType.ToString() + " Not initialized in Can Equip!");
+                UnityEngine.Debug.LogError("Equipment Type " + equipment.Index.Key.ToString() + " Not initialized in Can Equip!");
             }
-            UnityEngine.Debug.Log("Equipment Type " + equipment.EquipmentType.ToString() + " fell through in Can Equip!");
+            UnityEngine.Debug.Log("Equipment Type " + equipment.Index.Key.ToString() + " fell through in Can Equip!");
             return true;
         }
     }
 
     public abstract class EquipmentBase : ItemBase
     {
-        public EquipmentType EquipmentType { protected set; get; }
+        public string WornAssetId { protected set; get; }
+        public KeyValuePair<EquipmentCategory, int> Index { protected set; get; }
         public List<StatusEffect> EquipmentEffects { protected set; get; }     
-        public EquipmentBase(EquipmentType type, string name, string inventoryAssetId)
+        public EquipmentBase(EquipmentCategory type, int index, string name, string inventoryAssetId, string wornAssetId)
             : base (name, ItemType.Equippable, inventoryAssetId)
         {
-            EquipmentType = type;
+            Index = new KeyValuePair<EquipmentCategory, int>(type, index);
             EquipmentEffects = new List<StatusEffect>();
+            WornAssetId = wornAssetId;
         }
     }
 
@@ -515,8 +579,8 @@ namespace Common.EquipmentTypes
     {
         public int NumHandsRequired { protected set; get; }
         public string ModelId { protected set; get; }
-        protected HeldEquipment(int numHandsRequired, EquipmentType type, string id, string name, string inventoryAssetId)
-            : base (type, name, inventoryAssetId)
+        protected HeldEquipment(int numHandsRequired, EquipmentCategory type, int index, string id, string name, string inventoryAssetId)
+            : base (type, index, name, inventoryAssetId, id)
         {
             ModelId = id;
             NumHandsRequired = numHandsRequired;
@@ -532,7 +596,7 @@ namespace Common.EquipmentTypes
         public MapInteractionInfo AttackAreaInfo;
 
         public WeaponBase(WeaponType type)
-            :base (EquipmentUtil.GetNumHandsRequired(type), EquipmentType.Weapon, EquipmentUtil.GetWeaponAssetId(type),
+            : base (EquipmentUtil.GetNumHandsRequired(type), EquipmentCategory.Weapon, (int)type, EquipmentUtil.GetWeaponAssetId(type),
                  type.ToString(), EquipmentUtil.GetWeaponAssetId(type))
         {
             WeaponType = type;
@@ -548,7 +612,7 @@ namespace Common.EquipmentTypes
     {
         public ShieldType ShieldType { get; private set; }
         public ShieldBase(ShieldType type)
-            : base(1, EquipmentType.Shield, EquipmentUtil.GetShieldModelId(type), type.ToString(), EquipmentUtil.GetShieldModelId(type))
+            : base(1, EquipmentCategory.Shield, (int)type, EquipmentUtil.GetShieldModelId(type), type.ToString(), EquipmentUtil.GetShieldModelId(type))
         {
             ShieldType = type;
             // Frontal block chance
@@ -576,7 +640,7 @@ namespace Common.EquipmentTypes
     {
         public ArmorType ArmorType { get; protected set; }
         public ArmorBase(ArmorType type)
-            : base (EquipmentType.Armor, type.ToString(), "default")
+            : base (EquipmentCategory.Armor, (int)type, type.ToString(), "default", EquipmentUtil.GetArmorAssetId(type))
         {
             ArmorType = type;
             EquipmentEffects.Add(

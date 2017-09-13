@@ -22,13 +22,23 @@ namespace Common.CommonUtil
 
             public static float DefaultFortitude = 50f;
             public static float DefaultAttunement = 50f;
+
+            public static float MainAllignment = 1f;
+            public static float SubAllignment = .3f;
+
+            public static float LevelUpHpGain = 25f;
+            public static float LevelUpMpGain = 10f;
+            public static float LevelUpEndGain = 5f;
+
+            public static float MightToHealth = 2f;
+            public static float FineseToEndurance = 2f;
+            public static float MagicToMana = 3f;
+
+            public static float FortitudeHealthModifier = 0.01f;
         }
 
         static class AttributeUtil
         {
-            public const float MIGHT_TO_HEALTH_SCALAR = 4f;
-            public const float FINESE_TO_ENDURANCE_SCALAR = 2f;
-            public const float MAGIC_TO_MANA_SCALAR = 3f;
 
             public static void CalculateResourcesFromStats(float[] stats, float[] resources, bool HasInitialValues = true)
             {
@@ -42,7 +52,7 @@ namespace Common.CommonUtil
                     // if current resource already has value, scale it with max resource change. Else set to max value
                     resources[resourceIndex - 3] =
                         HasInitialValues ?
-                        resources[resourceIndex - 3] * maxResourceValue / resources[resourceIndex] // current resource *= resource Increase
+                        Mathf.Floor(resources[resourceIndex - 3] * maxResourceValue / resources[resourceIndex]) // current resource *= resource Increase
                         : maxResourceValue;
                     resources[resourceIndex] = maxResourceValue;
                 }
@@ -50,18 +60,23 @@ namespace Common.CommonUtil
 
             public static float StatToMaxResource(float[] stats, int resourceIndex)
             {
+                float newValue = 0f;
                 switch (resourceIndex)
                 {
                     case ((int)Resource.MaxHealth):
-                        return stats[(int)PrimaryStat.Might] * MIGHT_TO_HEALTH_SCALAR * (1 + stats[(int)SecondaryStat.Fortitude] / 100f); // 100 fortitude = +100 percent health
+                        newValue = stats[(int)PrimaryStat.Might] * AttributeConstants.MightToHealth * (1 + stats[(int)SecondaryStat.Fortitude] * AttributeConstants.FortitudeHealthModifier); // 100 fortitude = +100 percent health
+                        break;
                     case ((int)Resource.MaxMana):
-                        return stats[(int)PrimaryStat.Magic] * MAGIC_TO_MANA_SCALAR;
+                        newValue = stats[(int)PrimaryStat.Magic] * AttributeConstants.MagicToMana;
+                        break;
                     case ((int)Resource.MaxEndurance):
-                        return stats[(int)PrimaryStat.Finese] * FINESE_TO_ENDURANCE_SCALAR;
+                        newValue = stats[(int)PrimaryStat.Finese] * AttributeConstants.FineseToEndurance;
+                        break;
                     default:
                         Debug.LogError("Invalid Resource supplied to StatToMaxResource. Got " + resourceIndex.ToString());
                         return 0f;
                 }
+                return Mathf.Floor(newValue);
             }
 
             public static AllignmentType[] GetSubAllignments(AllignmentType primaryAllignment)
@@ -70,17 +85,17 @@ namespace Common.CommonUtil
                 switch (primaryAllignment)
                 {
                     case (AllignmentType.Fire):
-                        subAllignments[0] = AllignmentType.Light;
+                        subAllignments[0] = AllignmentType.Sky;
                         subAllignments[1] = AllignmentType.Earth;
                         break;
 
                     case (AllignmentType.Water):
                         subAllignments[0] = AllignmentType.Sky;
-                        subAllignments[1] = AllignmentType.Dark;
+                        subAllignments[1] = AllignmentType.Earth;
                         break;
 
                     case (AllignmentType.Sky):
-                        subAllignments[0] = AllignmentType.Light;
+                        subAllignments[0] = AllignmentType.Fire;
                         subAllignments[1] = AllignmentType.Water;
                         break;
 
@@ -100,6 +115,19 @@ namespace Common.CommonUtil
                         break;
                 }
                 return subAllignments;
+            }
+
+            public static AllignmentType GetMainAllignment(float[] allignments)
+            {
+                for (int allignmentIndex = 0; allignmentIndex < (int)AttributeType.NUM; ++allignmentIndex)
+                {
+                    if (allignments[allignmentIndex] == AttributeConstants.MainAllignment)
+                    {
+                        return (AllignmentType)allignmentIndex;
+                    }
+                }
+                Debug.Log("Character is not alligned to any allignment\n " + allignments);
+                return AllignmentType.NUM;
             }
         }
     }

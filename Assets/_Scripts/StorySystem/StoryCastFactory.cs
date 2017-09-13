@@ -92,7 +92,7 @@ namespace StorySystem.StoryCast
                     allignment = AllignmentType.Fire;
                     baseProfession = ProfessionType.Footman;
                     leftHand = new WeaponBase(WeaponType.Sword);
-                    rightHand = new ShieldBase(ShieldType.Base);
+                    rightHand = new ShieldBase(ShieldType.Shield);
                     armor = new ArmorBase(ArmorType.Chain);
                     break;
 
@@ -106,7 +106,7 @@ namespace StorySystem.StoryCast
 
                     allignment = AllignmentType.Light;
                     baseProfession = ProfessionType.ShieldWall;
-                    leftHand = new ShieldBase(ShieldType.Tower);
+                    leftHand = new ShieldBase(ShieldType.TowerShield);
                     rightHand = new WeaponBase(WeaponType.Mace);
                     armor = new ArmorBase(ArmorType.Plate);
                     break;
@@ -133,13 +133,13 @@ namespace StorySystem.StoryCast
             storyCharacter = new CharacterBase(controlledBy, (int)id, id.ToString(), gender, baseProfession, PopulateCharacterAttributes(might, finese, magic, attunement, fortitude, allignment), atLevel);
             if (leftHand != null)
             {
-                storyCharacter.EquipHeld(0, leftHand);
+                storyCharacter.EquipInSlot(leftHand, WornEquipmentSlot.LeftHeld);
             }
             if (rightHand != null)
             {
-                storyCharacter.EquipHeld(1, rightHand);
+                storyCharacter.EquipInSlot( rightHand, WornEquipmentSlot.RightHeld);
             }
-            storyCharacter.EquipWorn(armor);
+            storyCharacter.EquipInSlot(armor, WornEquipmentSlot.Armor);
 
             
 
@@ -174,9 +174,8 @@ namespace StorySystem.StoryCast
 
             float[] allignments = new float[(int)AllignmentType.NUM];
             AllignmentType[] subAllignments = AttributeUtil.GetSubAllignments(primaryAllignment);
-            allignments[(int)primaryAllignment] = 1f;
-            allignments[(int)subAllignments[0]] = .5f;
-            allignments[(int)subAllignments[0]] = .5f;
+            allignments[(int)primaryAllignment] = AttributeConstants.MainAllignment;
+            allignments[(int)subAllignments[0]] = allignments[(int)subAllignments[1]] = AttributeConstants.SubAllignment;
 
             attributes.Add(AttributeType.Allignment, allignments);
             attributes.Add(AttributeType.Status, new float[(int)StatusType.NUM]);

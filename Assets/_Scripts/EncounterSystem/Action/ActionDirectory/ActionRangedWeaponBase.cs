@@ -37,7 +37,7 @@ namespace EncounterSystem.Action
 
                     if (targets.Count > 0 && targets[0] != null)
                     {
-                        ProjectileCollider arrow = (Instantiate(Resources.Load("Weapons/arrow_1")) as GameObject).GetComponent<ProjectileCollider>();
+                        ProjectileCollider arrow = (Instantiate(Resources.Load("WeaponModels/arrow_1")) as GameObject).GetComponent<ProjectileCollider>();
                         Vector3 trajectory = Vector3.zero;
                         // Arc attack
                         if (weapon.AttackAreaInfo.ActionAreaType == TileAreaType.Ring)

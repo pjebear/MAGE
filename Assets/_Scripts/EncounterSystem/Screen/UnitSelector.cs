@@ -1,25 +1,49 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UnitSelector : MonoBehaviour {
-
-    private Text UnitName;
-    private Image UnitImage;
-
-    private void Awake()
+namespace Screens.Roster
+{
+    public class UnitSelector : MonoBehaviour
     {
-        UnitName = GetComponentInChildren<Text>();
-        Debug.Assert(UnitName != null);
-        UnitImage = GetComponent<Image>();
-        Debug.Assert(UnitImage != null);
-    }
 
-    public void Initialize(string unitName, string imageAssetPath)
-    {
-        gameObject.SetActive(true);
-        UnitName.text = unitName;
-        UnitImage.sprite = Resources.Load<Sprite>(imageAssetPath);
+        public static float SelectorWidth = 90f;
+        public static float SelectorHeight = 110f;
+
+        private Image mUnitImage;
+        private Action _OnHover;
+        private Action _OnHoverLeave;
+        private Action _OnClick;
+
+        private void Awake()
+        {
+            mUnitImage = GetComponent<Image>();
+            Debug.Assert(mUnitImage != null);
+        }
+
+        public void OnMouseEnter()
+        {
+            _OnHover();
+        }
+
+        public void OnMouseExit()
+        {
+            _OnHoverLeave();
+        }
+
+        public void Initialize(Sprite imageAsset, Action onHover, Action onHoverLeave, Action onClick)
+        {
+            gameObject.SetActive(true);
+            mUnitImage.sprite = imageAsset;
+            _OnHover = onHover;
+            _OnHoverLeave = onHoverLeave;
+            _OnClick = onClick;
+            GetComponent<Button>().onClick.AddListener(() => { _OnClick(); });
+        }
+
+
     }
 }
+

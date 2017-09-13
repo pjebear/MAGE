@@ -25,23 +25,23 @@ namespace WorldSystem
     {
         public class CharacterBase
         {
-            private const float LEVELUP_EXPERIENCE_REQUIREMENT = 100f;
+            private const int LEVELUP_EXPERIENCE_REQUIREMENT = 100;
 
             public int CharacterID { get; protected set; } //unique identifier assigned to each unit added to the party roster
             public string CharacterName { get; protected set; }
             public bool IsStoryCharacter { get; protected set; }
             public UnitGroup OwnedBy { get; protected set; }
             public CharacterGender CharacterGender { get; protected set; }
-            public string ImageAssetPath { get; protected set; }
             private ProfessionManager mProfessionManager;
             private StatusManager mStatusManager;
             private EquipmentManager mEquipmentManager;
             private TalentManager mTalentManager;
 
             public int Level { get; private set; }
-            public float CurrentExperience { get; private set; }
+            public int CurrentExperience { get; private set; }
             private AttributeContainer mBaseAttributes;
             public AttributeContainer Attributes { get; private set; }
+            public EquipmentProficienciesContainer Proficiencies { get { return mProfessionManager.Proficiencies; } }
 
             CharacterBase(UnitGroup ownedBy)
             {
@@ -96,7 +96,7 @@ namespace WorldSystem
                 mTalentManager.Initialize(mProfessionManager.GetSkeletonTalentTrees(), this);
             }
 
-            public bool AddCharacterExperience(float amount)
+            public bool AddCharacterExperience(int amount)
             {
                 CurrentExperience += amount;
                 if (CurrentExperience >= LEVELUP_EXPERIENCE_REQUIREMENT)
@@ -115,16 +115,10 @@ namespace WorldSystem
                 mStatusManager.RebuildAttributes(true);
             }
 
-            public bool AddProfessionExperience(float amount)
+            public bool AddProfessionExperience(int amount)
             {
-                CurrentExperience += amount;
-                if (CurrentExperience >= 100f)
-                {
-                    CurrentExperience -= 100f;
-                    Level++;
-                    return true;
-                }
-                return false;
+
+                return mProfessionManager.AddExperience(amount);
             }
 
             public void PostEncounterReset()
@@ -136,13 +130,30 @@ namespace WorldSystem
                 }
             }
 
+            public WornEquipmentPayload[] GetWornEquipmentPayloads()
+            {
+                return mEquipmentManager.GetWornEquipmentPayloads();
+            }
+
             public UnitPanelPayload GetUnitPanelPayload()
             {
+                AllignmentType mainAllignment = AttributeUtil.GetMainAllignment(Attributes[AttributeType.Allignment]);
+                AllignmentType[] secondaryAllignments = AttributeUtil.GetSubAllignments(mainAllignment);
                 return new UnitPanelPayload(
                     CharacterID,
-                    CharacterName, mProfessionManager.ProfessionName,
+                    CharacterName, 
+                    mProfessionManager.ProfessionName,
                     Level,
+                    CurrentExperience,
+                    LEVELUP_EXPERIENCE_REQUIREMENT,
                     mProfessionManager.ProfessionLevel,
+                    mProfessionManager.ProfessionExperience,
+                    mProfessionManager.ProfessionExperienceMax,
+                    (int)Attributes[AttributeType.Stat][(int)PrimaryStat.Might],
+                    (int)Attributes[AttributeType.Stat][(int)PrimaryStat.Finese],
+                    (int)Attributes[AttributeType.Stat][(int)PrimaryStat.Magic],
+                    (int)Attributes[AttributeType.Stat][(int)SecondaryStat.Fortitude],
+                    (int)Attributes[AttributeType.Stat][(int)SecondaryStat.Attunement],
                     Attributes[AttributeType.Resource][(int)Resource.Health],
                     Attributes[AttributeType.Resource][(int)Resource.MaxHealth],
                     Attributes[AttributeType.Resource][(int)Resource.Endurance],
@@ -152,6 +163,10 @@ namespace WorldSystem
                     -1,
                     -1,
                     mProfessionManager.GetProfessionImageAsset(CharacterGender),
+                    "Allignments/" + mainAllignment.ToString(),
+                    mainAllignment.ToString(),
+                    secondaryAllignments[0].ToString(),
+                    secondaryAllignments[1].ToString(),
                     mStatusManager.GetStatusEffectPayloads()
                     );
             }
@@ -161,38 +176,38 @@ namespace WorldSystem
                 mTalentManager.TEMP_UnlockAllTalents(mProfessionManager.CurrentProfessionType);
 
                 // armor
-                List<int> armorOptions = mProfessionManager.Proficiencies[EquipmentType.Armor];
+                List<int> armorOptions = mProfessionManager.Proficiencies[EquipmentCategory.Armor];
                 if (armorOptions.Count > 0)
                 {
                     int armorChoice = UnityEngine.Random.Range(0, armorOptions.Count);
-                    mEquipmentManager.EquipArmor(new ArmorBase((ArmorType)armorOptions[armorChoice]));
+                    mEquipmentManager.EquipInSlot(new ArmorBase((ArmorType)armorOptions[armorChoice]), WornEquipmentSlot.Armor);
                 }
 
                 // Held Equipment
-                List<int> weaponOptions = mProfessionManager.Proficiencies[EquipmentType.Weapon];
+                List<int> weaponOptions = mProfessionManager.Proficiencies[EquipmentCategory.Weapon];
 
                 if (mProfessionManager.Proficiencies.HasShieldProficiency)
                 {
-                    int shieldHand = UnityEngine.Random.Range(0, 2);
-                    List<int> shieldOptions = mProfessionManager.Proficiencies[EquipmentType.Shield];
+                    int shieldHand = UnityEngine.Random.Range((int)WornEquipmentSlot.LeftHeld, (int)WornEquipmentSlot.RightHeld + 1);
+                    List<int> shieldOptions = mProfessionManager.Proficiencies[EquipmentCategory.Shield];
                     int shieldChoice = UnityEngine.Random.Range(0, shieldOptions.Count);
-                    mEquipmentManager.EquipHeldEquipment(shieldHand, new ShieldBase((ShieldType)shieldOptions[shieldChoice]));
+                    mEquipmentManager.EquipInSlot( new ShieldBase((ShieldType)shieldOptions[shieldChoice]), (WornEquipmentSlot)shieldHand);
 
-                    int otherHand = (shieldHand + 1) % 2;
+                    WornEquipmentSlot otherHand = shieldHand == (int)WornEquipmentSlot.LeftHeld ? WornEquipmentSlot.RightHeld : WornEquipmentSlot.LeftHeld;
                     int weaponChoice = UnityEngine.Random.Range(0, weaponOptions.Count);
-                    mEquipmentManager.EquipHeldEquipment(otherHand, new WeaponBase((WeaponType)weaponOptions[weaponChoice]));
+                    mEquipmentManager.EquipInSlot(new WeaponBase((WeaponType)weaponOptions[weaponChoice]), otherHand);
                 }
                 else if (mProfessionManager.Proficiencies.HasDualWieldProficiency)
                 {
                     int weaponChoice = UnityEngine.Random.Range(0, weaponOptions.Count);
-                    mEquipmentManager.EquipHeldEquipment(0, new WeaponBase((WeaponType)weaponOptions[weaponChoice]));
+                    mEquipmentManager.EquipInSlot(new WeaponBase((WeaponType)weaponOptions[weaponChoice]), WornEquipmentSlot.LeftHeld);
                     weaponChoice = UnityEngine.Random.Range(0, weaponOptions.Count);
-                    mEquipmentManager.EquipHeldEquipment(1, new WeaponBase((WeaponType)weaponOptions[weaponChoice]));
+                    mEquipmentManager.EquipInSlot(new WeaponBase((WeaponType)weaponOptions[weaponChoice]), WornEquipmentSlot.RightHeld);
                 }
                 else
                 {
                     int weaponChoice = UnityEngine.Random.Range(0, weaponOptions.Count);
-                    mEquipmentManager.EquipHeldEquipment(0, new WeaponBase((WeaponType)weaponOptions[weaponChoice]));
+                    mEquipmentManager.EquipInSlot(new WeaponBase((WeaponType)weaponOptions[weaponChoice]), WornEquipmentSlot.LeftHeld);
                 }
             }
 
@@ -277,22 +292,20 @@ namespace WorldSystem
             {
                 return mProfessionManager.Proficiencies.CanEquip(equipment);
             }
-            // assumes can equip was called
-            public void EquipHeld(int hand, HeldEquipment equipment)
+
+            public List<EquipmentBase> EquipInSlot(EquipmentBase equipment, WornEquipmentSlot slot)
             {
-                //UnityEngine.Debug.Assert(mEquipmentManager.CanEquip(equipment), "Equiping non equipable item");
-                mEquipmentManager.EquipHeldEquipment(hand, equipment);
+                return mEquipmentManager.EquipInSlot(equipment, slot);
             }
 
-            public void EquipWorn(ArmorBase equipment)
+            public EquipmentBase UnequipSlot(WornEquipmentSlot slot)
             {
-                UnityEngine.Debug.Assert(mProfessionManager.Proficiencies.CanEquip(equipment), "Equiping non equipable item");
-                mEquipmentManager.EquipArmor(equipment);
+                return mEquipmentManager.UnequipSlot(slot);
             }
 
             public List<string> GetHeldEquipmentModles()
             {
-                return mEquipmentManager.GetHeldEquipmentModels();
+                return mEquipmentManager.GetHeldEquipmentModelIds();
             }
 
             public List<WeaponBase> GetHeldWeapons()
@@ -300,7 +313,7 @@ namespace WorldSystem
                 return mEquipmentManager.GetHeldWeapons();
             }
 
-            public bool IsEquipped(EquipmentType type, int equipment)
+            public bool IsEquipped(EquipmentCategory type, int equipment)
             {
                 return mEquipmentManager.IsEquipped(type, equipment);
             }
@@ -335,9 +348,9 @@ namespace WorldSystem
                 attributes.Add(AttributeType.Resource, resources);
 
                 float[] allignments = new float[(int)AllignmentType.NUM];
-                allignments[(int)AllignmentType.Light] = 1f;
-                allignments[(int)AllignmentType.Sky] = .5f;
-                allignments[(int)AllignmentType.Fire] = .5f;
+                allignments[(int)AllignmentType.Light] = AttributeConstants.MainAllignment;
+                allignments[(int)AllignmentType.Sky] = AttributeConstants.SubAllignment;
+                allignments[(int)AllignmentType.Fire] = AttributeConstants.SubAllignment;
 
                 attributes.Add(AttributeType.Allignment, allignments);
                 attributes.Add(AttributeType.Status, new float[(int)StatusType.NUM]);

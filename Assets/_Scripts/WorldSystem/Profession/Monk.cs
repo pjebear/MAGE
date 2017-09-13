@@ -24,8 +24,8 @@ namespace WorldSystem
 
                 // Equipment
                 EquipmentProficiencies.HasDualWieldProficiency = false;
-                EquipmentProficiencies.AddProficiency(EquipmentType.Weapon, (int)WeaponType.Staff);
-                EquipmentProficiencies.AddProficiency(EquipmentType.Armor, (int)ArmorType.Cloth);
+                EquipmentProficiencies.AddProficiency(EquipmentCategory.Weapon, (int)WeaponType.Staff);
+                EquipmentProficiencies.AddProficiency(EquipmentCategory.Armor, (int)ArmorType.Cloth);
 
                 // Aura
                 Auras.Add(AuraIndex.MONK_HEALTH_REGEN);

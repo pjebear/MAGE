@@ -18,12 +18,12 @@ namespace WorldSystem
 
                 // Equipment
                 EquipmentProficiencies.HasDualWieldProficiency = false;
-                EquipmentProficiencies.AddProficiency(EquipmentType.Weapon, (int)WeaponType.Bow);
+                EquipmentProficiencies.AddProficiency(EquipmentCategory.Weapon, (int)WeaponType.Bow);
                 //EquipmentProficiencies.AddProficiency(EquipmentType.Weapon, (int)WeaponType.Crossbow);
-                EquipmentProficiencies.AddProficiency(EquipmentType.Weapon, (int)WeaponType.Longbow);
+                EquipmentProficiencies.AddProficiency(EquipmentCategory.Weapon, (int)WeaponType.Longbow);
 
-                EquipmentProficiencies.AddProficiency(EquipmentType.Armor, (int)ArmorType.Leather);
-                EquipmentProficiencies.AddProficiency(EquipmentType.Armor, (int)ArmorType.Cloth);
+                EquipmentProficiencies.AddProficiency(EquipmentCategory.Armor, (int)ArmorType.Leather);
+                EquipmentProficiencies.AddProficiency(EquipmentCategory.Armor, (int)ArmorType.Cloth);
 
                 // Aura
                 Auras.Add(AuraIndex.ARCHER_SPEED_INCREASE);
