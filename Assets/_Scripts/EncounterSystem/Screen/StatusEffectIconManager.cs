@@ -26,13 +26,16 @@ namespace EncounterSystem.Screen
         
         void Awake()
         {
-            Debug.Assert(StatusEffectIconPrefab != null);
-            mBeneficialStatusEffectIcons = new StatusEffectIcon[NumIconsPerRow];
-            mHarmfulStatusEffectIcons = new StatusEffectIcon[NumIconsPerRow];
+           
         }
 
         public void Initialize(float iconSize)
         {
+
+            Debug.Assert(StatusEffectIconPrefab != null);
+            mBeneficialStatusEffectIcons = new StatusEffectIcon[NumIconsPerRow];
+            mHarmfulStatusEffectIcons = new StatusEffectIcon[NumIconsPerRow];
+
             if (mLoadedSpriteIcons == null)
             {
                 mLoadedSpriteIcons = new Sprite[(int)StatusEffectIndex.NUM];
