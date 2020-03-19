@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace DB
 {
-    abstract class DBBase<KeyType, EntryType, ValueType> 
-        where EntryType : DBEntryBase<ValueType>, new()
-        where ValueType : new()
+    abstract class DBBase<KeyType, ValueType> 
+        where ValueType : DBEntryBase, new()
     {
         protected string TAG = "";
-        protected Dictionary<KeyType, EntryType> mDB = new Dictionary<KeyType, EntryType>();
-
+        protected Dictionary<KeyType, ValueType> mDB = new Dictionary<KeyType, ValueType>();
+        
         protected DBBase(string dbName)
         {
             TAG = dbName;
@@ -29,10 +29,10 @@ namespace DB
             else
             {
                 message = string.Format("Inserting entry. [{0}, {1}]", key.ToString(), value.ToString());
-                mDB.Add(key, new EntryType());
+                mDB.Add(key, new ValueType());
             }
 
-            mDB[key].Fill(value);
+            mDB[key].Set(value);
 
             Logger.Log(LogTag.DB, TAG, message);
         }
@@ -46,14 +46,12 @@ namespace DB
             if (mDB.ContainsKey(key))
             {
                 mDB[key].CopyTo(entry);
-                message = string.Format("Loading entry. [{0}, {1}]", key, entry.ToString());
+                Logger.Log(LogTag.DB, TAG, string.Format("Loading entry. [{0}, {1}]", key, entry.ToString()));
             }
             else
             {
-                message = string.Format("Failed to find entry. [{0}]", key);
+                Logger.Log(LogTag.DB, TAG, string.Format("Failed to find entry. [{0}]", key), LogLevel.Warning);
             }
-
-            Logger.Log(LogTag.DB, TAG, message);
 
             return entry;
         }
@@ -64,7 +62,7 @@ namespace DB
 
             if (mDB.ContainsKey(key))
             {
-                ValueType entry = mDB[key].Entry;
+                ValueType entry = mDB[key];
                 mDB.Remove(key);
                 message = string.Format("Cleared entry. [{0}, {1}]", key, entry.ToString());
             }
@@ -85,5 +83,8 @@ namespace DB
         {
             return new ValueType();
         }
+
+        public abstract void Save();
+        public abstract void Load();
     }
 }

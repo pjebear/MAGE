@@ -18,7 +18,7 @@ class Character
     public List<ActionResponseId> Listeners = new List<ActionResponseId>();
     public Equipment Equipment = new Equipment();
 
-    public Character(int id, DB.CharacterInfo info)
+    public Character(int id, DB.DBCharacterInfo info)
     {
         Id = id;
         Name = info.Name;

@@ -36,8 +36,8 @@ namespace DB
             else
             {
                 CharacterInfoDB.Write(character.Id, character.CharacterInfo);
-                EquipmentDB.Write(character.Id, character.EquipmentInfo);
-                SpecializationDB.Write(character.Id, character.SpecializationsInfo);
+                EquipmentDB.Write(character.Id, character.Equipment);
+                SpecializationDB.Write(character.Id, character.Specializations);
 
                 if (teamSide != TeamSide.INVALID)
                 {
@@ -54,8 +54,8 @@ namespace DB
 
             toLoad.Id = characterId;
             toLoad.CharacterInfo = CharacterInfoDB.Load(characterId);
-            toLoad.EquipmentInfo = EquipmentDB.Load(characterId);
-            toLoad.SpecializationsInfo = SpecializationDB.Load(characterId);
+            toLoad.Equipment = EquipmentDB.Load(characterId);
+            toLoad.Specializations = SpecializationDB.Load(characterId);
 
             return toLoad;
         }
@@ -71,7 +71,7 @@ namespace DB
         {
             if (TeamDB.ContainsEntry(teamSide))
             {
-                Team team = TeamDB.Load(teamSide);
+                DBTeam team = TeamDB.Load(teamSide);
                 Logger.Assert(!team.CharacterIds.Contains(characterId), LogTag.DB, TAG, string.Format("::AddToTeam() - Team {0} already contains character {1}", teamSide.ToString(), characterId), LogLevel.Warning);
                 if (!team.CharacterIds.Contains(characterId))
                 {
@@ -81,7 +81,7 @@ namespace DB
             }
             else
             {
-                Team team = TeamDB.EmptyEntry();
+                DBTeam team = TeamDB.EmptyEntry();
                 team.CharacterIds.Add(characterId);
                 TeamDB.Write(teamSide, team);
             }
@@ -93,7 +93,7 @@ namespace DB
 
             if (TeamDB.ContainsEntry(teamSide))
             {
-                Team team = TeamDB.Load(teamSide);
+                DBTeam team = TeamDB.Load(teamSide);
                 foreach (int characterId in team.CharacterIds)
                 {
                     dBCharacters.Add(LoadCharacter(characterId));
@@ -109,7 +109,7 @@ namespace DB
             {
                 if (removePlayers)
                 {
-                    Team team = TeamDB.Load(teamSide);
+                    DBTeam team = TeamDB.Load(teamSide);
                     foreach (int characterId in team.CharacterIds)
                     {
                         RemoveCharacter(characterId);
@@ -118,6 +118,22 @@ namespace DB
 
                 TeamDB.Clear(teamSide);
             }
+        }
+
+        public static void Save()
+        {
+            CharacterInfoDB.Save();
+            EquipmentDB.Save();
+            SpecializationDB.Save();
+            TeamDB.Save();
+        }
+
+        public static void Load()
+        {
+            CharacterInfoDB.Load();
+            EquipmentDB.Load();
+            SpecializationDB.Load();
+            TeamDB.Load();
         }
     }
 }

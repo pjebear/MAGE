@@ -178,9 +178,17 @@ class MasterFlowControl
     private bool IsEncounterLost()
     {
         bool encounterLost = false;
+
         foreach (EncounterCondition loseCondition in EncounterModule.Model.LoseConditions)
         {
-            encounterLost |= loseCondition.IsConditionMet(EncounterModule.Model);
+            bool isConditionMet = loseCondition.IsConditionMet(EncounterModule.Model);
+
+            if (isConditionMet)
+            {
+                Logger.Log(LogTag.GameModes, TAG, string.Format("Loss condition met: {0} ", loseCondition.ToString()));
+            }
+
+            encounterLost |= isConditionMet;
         }
 
         return encounterLost;
@@ -189,9 +197,17 @@ class MasterFlowControl
     private bool IsEncounterWon()
     {
         bool encounterWon = false;
+
         foreach (EncounterCondition winCondition in EncounterModule.Model.WinConditions)
         {
-            encounterWon |= winCondition.IsConditionMet(EncounterModule.Model);
+            bool isConditionMet = winCondition.IsConditionMet(EncounterModule.Model);
+
+            if (isConditionMet)
+            {
+                Logger.Log(LogTag.GameModes, TAG, string.Format("Loss condition met: {0} ", winCondition.ToString()));
+            }
+
+            encounterWon |= isConditionMet;
         }
 
         return encounterWon;

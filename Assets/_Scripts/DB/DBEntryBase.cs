@@ -5,20 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-abstract class DBEntryBase<T> where T : new()
+abstract class DBEntryBase
 {
-    public T Entry = new T();
+    public abstract void Copy(DBEntryBase _from, DBEntryBase _to);
 
-    public abstract void Copy(T from, T to);
-
-    public void Fill(T entry)
+    public void Set(DBEntryBase entry)
     {
-        Copy(entry, Entry);
+        Copy(entry, this);
     }
 
-    public void CopyTo(T to)
+    public void CopyTo(DBEntryBase to)
     {
-        Copy(Entry, to);
+        Copy(this, to);
     }
 }
 

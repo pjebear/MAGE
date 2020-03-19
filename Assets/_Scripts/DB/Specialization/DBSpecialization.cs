@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace DB
 {
+    [System.Serializable]
     class SpecializationInfo
     {
         public int Experience = 0;
@@ -27,11 +28,12 @@ namespace DB
         }
     }
 
-    class SpecializationsInfo
+    [System.Serializable]
+    class DBSpecializations : DBEntryBase
     {
         public SpecializationInfo[] Specializations = new SpecializationInfo[(int)SpecializationType.NUM];
 
-        public SpecializationsInfo()
+        public DBSpecializations()
         {
             for (int i = 0; i < (int)SpecializationType.NUM; ++i)
             {
@@ -50,12 +52,12 @@ namespace DB
 
             return toString;
         }
-    }
 
-    class DBSpecializations : DBEntryBase<SpecializationsInfo>
-    {
-        public override void Copy(SpecializationsInfo from, SpecializationsInfo to)
+        public override void Copy(DBEntryBase _from, DBEntryBase _to)
         {
+            DBSpecializations from = _from as DBSpecializations;
+            DBSpecializations to = _to as DBSpecializations;
+
             for (int i = 0; i < (int)SpecializationType.NUM; ++i)
             {
                 to.Specializations[i].Level = from.Specializations[i].Level;

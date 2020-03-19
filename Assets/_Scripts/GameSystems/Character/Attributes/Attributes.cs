@@ -70,20 +70,25 @@ class Attributes
         mAttributes = attributes;
     }
 
-    public Attributes(List<List<float>> attributes)
+    public Attributes(List<DB.DBAttributes> attributes)
         : this(Attributes.Empty)
     {
-        for (int attributeType = 0; attributeType < attributes.Count; ++attributeType)
+        for (int attributeCategory = 0; attributeCategory < attributes.Count; ++attributeCategory)
         {
-            Logger.Assert(attributes[attributeType].Count == mAttributes[attributeType].Length, LogTag.Character,
-                "Attributes",
-                string.Format("Invalid attribute length from db for attribute type {0}. Expected {1}, Got {2}", attributeType, mAttributes[attributeType].Length, attributes[attributeType].Count)
-                , LogLevel.Error);
-            if (attributes[attributeType].Count == mAttributes[attributeType].Length)
+            Logger.Assert(attributes[attributeCategory].AttributeCategory == (AttributeCategory)attributeCategory, LogTag.Character, "Attributes",
+                string.Format("Invalid attribute category for db attributes. Expected {0}, Got {1}",
+                ((AttributeCategory)attributeCategory).ToString(), attributes[attributeCategory].AttributeCategory.ToString()), LogLevel.Error);
+
+            Logger.Assert(attributes[attributeCategory].Attributes.Count == mAttributes[attributeCategory].Length, LogTag.Character, "Attributes",
+                string.Format("Invalid attribute length from db for attribute type {0}. Expected {1}, Got {2}", 
+                attributeCategory, mAttributes[attributeCategory].Length, attributes[attributeCategory].Attributes.Count), LogLevel.Error);
+
+            if (attributes[attributeCategory].Attributes.Count == mAttributes[attributeCategory].Length 
+                && attributes[attributeCategory].AttributeCategory == (AttributeCategory)attributeCategory)
             {
-                for (int attributeIdx = 0; attributeIdx < mAttributes[attributeType].Length; ++attributeIdx)
+                for (int attributeIdx = 0; attributeIdx < mAttributes[attributeCategory].Length; ++attributeIdx)
                 {
-                    mAttributes[attributeType][attributeIdx].Set(attributes[attributeType][attributeIdx]);
+                    mAttributes[attributeCategory][attributeIdx].Set(attributes[attributeCategory].Attributes[attributeIdx]);
                 }
             }  
         }

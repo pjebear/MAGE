@@ -20,14 +20,14 @@ static class CharacterLoader
 
         character.Actions.Add(ActionId.SwordAttack);
 
-        ApplySpecialization(character, character.Specialization, dbCharacter.SpecializationsInfo.Specializations[(int)character.Specialization].SpentTalentPoints);
+        ApplySpecialization(character, character.Specialization, dbCharacter.Specializations.Specializations[(int)character.Specialization].SpentTalentPoints);
 
-        Debug.Assert(dbCharacter.EquipmentInfo.EquipmentIds.Count == (int)Equipment.Slot.NUM);
+        Debug.Assert(dbCharacter.Equipment.EquipmentIds.Count == (int)Equipment.Slot.NUM);
         for (int i = 0; i < (int)Equipment.Slot.NUM; ++i)
         {
-            if (dbCharacter.EquipmentInfo.EquipmentIds[i] != (int)EquippableId.INVALID)
+            if (dbCharacter.Equipment.EquipmentIds[i] != (int)EquippableId.INVALID)
             {
-                character.Equipment[(Equipment.Slot)i] = ItemFactory.CreateEquipable((ItemId)dbCharacter.EquipmentInfo.EquipmentIds[i]);
+                character.Equipment[(Equipment.Slot)i] = ItemFactory.CreateEquipable((ItemId)dbCharacter.Equipment.EquipmentIds[i]);
             }
         }
 

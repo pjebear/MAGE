@@ -24,6 +24,8 @@ class PartySystem
                 SpecializationType.Monk,
                 new List<int>() { (int)EquippableId.ClothArmor_0, (int)EquippableId.Staff_0, (int)EquippableId.INVALID, (int)EquippableId.INVALID }),
             TeamSide.AllyHuman);
+
+        DB.DBHelper.Load();
     }
 
     public void UpdatePartyOnEncounterEnd(EncounterResultInfo resultInfo)
@@ -33,7 +35,7 @@ class PartySystem
             DB.DBCharacter character = DB.DBHelper.LoadCharacter(characterId);
 
             // Add Experience
-            DB.CharacterInfo characterInfo = character.CharacterInfo;
+            DB.DBCharacterInfo characterInfo = character.CharacterInfo;
             characterInfo.Experience += CharacterConstants.LEVEL_UP_THRESHOLD;
             if (characterInfo.Experience >= CharacterConstants.LEVEL_UP_THRESHOLD)
             {
@@ -45,12 +47,12 @@ class PartySystem
                     Logger.Assert(modifier.ModifierType == ModifierType.Increment, LogTag.GameSystems, TAG,
                         string.Format("Invalid Levelup modifier for Specialization [{0}] - {1}", characterInfo.CurrentSpecialization.ToString(), modifier.ToString()), LogLevel.Warning);
 
-                    characterInfo.Attributes[(int)modifier.AttributeIndex.Type][modifier.AttributeIndex.Index] += modifier.Delta;
+                    characterInfo.Attributes[(int)modifier.AttributeIndex.Type].Attributes[modifier.AttributeIndex.Index] += modifier.Delta;
                 }
             }
 
             // Update specialization
-            DB.SpecializationInfo specializationInfo = character.SpecializationsInfo.Specializations[(int)characterInfo.CurrentSpecialization];
+            DB.SpecializationInfo specializationInfo = character.Specializations.Specializations[(int)characterInfo.CurrentSpecialization];
             specializationInfo.Experience += SpecializationConstants.LEVEL_UP_THRESHOLD;
             if (specializationInfo.Experience >= SpecializationConstants.LEVEL_UP_THRESHOLD)
             {

@@ -1,0 +1,154 @@
+{
+	"List": [
+		{
+			"Key": 0,
+			"Value": {
+				"Name": "Rheinhardt",
+				"Level": 1,
+				"Experience": 0,
+				"Attributes": [
+					{
+						"AttributeCategory": 0,
+						"Attributes": [
+							10.0,
+							0.0,
+							5.0,
+							0.0,
+							0.0,
+							0.0,
+							5.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0
+						]
+					},
+					{
+						"AttributeCategory": 1,
+						"Attributes": [
+							20.0,
+							0.0,
+							0.0
+						]
+					},
+					{
+						"AttributeCategory": 2,
+						"Attributes": [
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0
+						]
+					},
+					{
+						"AttributeCategory": 3,
+						"Attributes": [
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0
+						]
+					}
+				],
+				"CurrentSpecialization": 0
+			}
+		},
+		{
+			"Key": 1,
+			"Value": {
+				"Name": "Asmund",
+				"Level": 1,
+				"Experience": 0,
+				"Attributes": [
+					{
+						"AttributeCategory": 0,
+						"Attributes": [
+							10.0,
+							0.0,
+							5.0,
+							0.0,
+							0.0,
+							0.0,
+							5.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0
+						]
+					},
+					{
+						"AttributeCategory": 1,
+						"Attributes": [
+							20.0,
+							0.0,
+							0.0
+						]
+					},
+					{
+						"AttributeCategory": 2,
+						"Attributes": [
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0
+						]
+					},
+					{
+						"AttributeCategory": 3,
+						"Attributes": [
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0,
+							0.0
+						]
+					}
+				],
+				"CurrentSpecialization": 1
+			}
+		}
+	]
+}

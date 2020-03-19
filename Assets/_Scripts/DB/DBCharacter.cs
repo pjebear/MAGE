@@ -9,8 +9,8 @@ namespace DB
     class DBCharacter
     {
         public int Id = -1;
-        public CharacterInfo CharacterInfo = new CharacterInfo();
-        public EquipmentInfo EquipmentInfo = new EquipmentInfo();
-        public SpecializationsInfo SpecializationsInfo = new SpecializationsInfo();
+        public DBCharacterInfo CharacterInfo = new DBCharacterInfo();
+        public DBEquipment Equipment = new DBEquipment();
+        public DBSpecializations Specializations = new DBSpecializations();
     }
 }

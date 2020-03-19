@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace DB
 {
-    class EquipmentInfo
+    [System.Serializable]
+    class DBEquipment : DBEntryBase
     {
         public List<int> EquipmentIds = new List<int>();
 
@@ -14,7 +15,7 @@ namespace DB
         {
             string toString = "EquipmentIds: ";
 
-            foreach(int equipmentId in EquipmentIds)
+            foreach (int equipmentId in EquipmentIds)
             {
                 toString += equipmentId + ",";
             }
@@ -23,12 +24,12 @@ namespace DB
 
             return toString;
         }
-    }
 
-    class DBEquipment : DBEntryBase<EquipmentInfo>
-    {
-        public override void Copy(EquipmentInfo from, EquipmentInfo to)
+        public override void Copy(DBEntryBase _from, DBEntryBase _to)
         {
+            DBEquipment from = _from as DBEquipment;
+            DBEquipment to = _to as DBEquipment;
+
             to.EquipmentIds.Clear();
             to.EquipmentIds.AddRange(from.EquipmentIds);
         }

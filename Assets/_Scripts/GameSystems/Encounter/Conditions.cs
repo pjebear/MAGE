@@ -53,6 +53,7 @@ static class Condition
 abstract class EncounterCondition
 {
     public abstract bool IsConditionMet(EncounterModel model);
+    public abstract override string ToString();
 }
 
 class UnitHealthCondition : EncounterCondition
@@ -75,6 +76,11 @@ class UnitHealthCondition : EncounterCondition
         float healthPercent = model.Actors[mUnitId].Resources[ResourceType.Health].Current / (float)model.Actors[mUnitId].Resources[ResourceType.Health].Max;
 
         return Condition.Compare(healthPercent, mHealthPercent, Operator);
+    }
+
+    public override string ToString()
+    {
+        return string.Format("UnitHealthCondition: Unit[{0}] Health {1} {2}", mUnitId, Operator.ToString(), mHealthPercent);
     }
 }
 
@@ -103,5 +109,10 @@ class TeamDefeatedCondition : EncounterCondition
         }
         
         return conditionMet;
+    }
+
+    public override string ToString()
+    {
+        return string.Format("TeamDefeatedCondition: Team[{0}] ", mTeam.ToString());
     }
 }
