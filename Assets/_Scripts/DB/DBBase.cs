@@ -1,0 +1,89 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DB
+{
+    abstract class DBBase<KeyType, EntryType, ValueType> 
+        where EntryType : DBEntryBase<ValueType>, new()
+        where ValueType : new()
+    {
+        protected string TAG = "";
+        protected Dictionary<KeyType, EntryType> mDB = new Dictionary<KeyType, EntryType>();
+
+        protected DBBase(string dbName)
+        {
+            TAG = dbName;
+        }
+
+        public void Write(KeyType key, ValueType value)
+        {
+            string message = "";
+
+            if (mDB.ContainsKey(key))
+            {
+                message = string.Format("Updating entry. [{0}, {1}]", key.ToString(), value.ToString());
+            }
+            else
+            {
+                message = string.Format("Inserting entry. [{0}, {1}]", key.ToString(), value.ToString());
+                mDB.Add(key, new EntryType());
+            }
+
+            mDB[key].Fill(value);
+
+            Logger.Log(LogTag.DB, TAG, message);
+        }
+
+        public ValueType Load(KeyType key)
+        {
+            ValueType entry = new ValueType();
+
+            string message = "";
+
+            if (mDB.ContainsKey(key))
+            {
+                mDB[key].CopyTo(entry);
+                message = string.Format("Loading entry. [{0}, {1}]", key, entry.ToString());
+            }
+            else
+            {
+                message = string.Format("Failed to find entry. [{0}]", key);
+            }
+
+            Logger.Log(LogTag.DB, TAG, message);
+
+            return entry;
+        }
+
+        public void Clear(KeyType key)
+        {
+            string message = "";
+
+            if (mDB.ContainsKey(key))
+            {
+                ValueType entry = mDB[key].Entry;
+                mDB.Remove(key);
+                message = string.Format("Cleared entry. [{0}, {1}]", key, entry.ToString());
+            }
+            else
+            {
+                message = string.Format("Failed to find entry. [{0}]", key);
+            }
+
+            Logger.Log(LogTag.DB, TAG, message);
+        }
+
+        public bool ContainsEntry(KeyType key)
+        {
+            return mDB.ContainsKey(key);
+        }
+
+        public ValueType EmptyEntry()
+        {
+            return new ValueType();
+        }
+    }
+}
