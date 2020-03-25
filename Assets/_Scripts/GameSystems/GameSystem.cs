@@ -16,19 +16,19 @@ class GameSystem
         LocationSystem = new LocationSystem();
         PartySystem = new PartySystem();
         EncounterSystem = new EncounterSystem();
-
-        PartySystem.CreateDefaultParty();
     }
 
+  
     // ! Encounter
     public void PrepareEncounter(EncounterCreateParams encounterParams)
     {
+        PartySystem.PrepareForEncounter(encounterParams);
         EncounterSystem.PrepareEncounter(encounterParams);
     }
 
     public void UpdateOnEncounterEnd(EncounterResultInfo resultInfo)
     {
-        PartySystem.UpdatePartyOnEncounterEnd(resultInfo);
+        PartySystem.UpdateOnEncounterEnd(resultInfo);
         EncounterSystem.CleanupEncounter();
     }
 
@@ -37,5 +37,28 @@ class GameSystem
         return EncounterSystem.GetEncounterContext();
     }
     // ! Encounter - End
+
+    //! Party
+    public List<int> GetCharactersInParty()
+    {
+        return PartySystem.GetCharactersInParty();
+    }
+
+
+    //! Party End
+
+    // ! SaveLoad
+    public void PrepareNewGame()
+    {
+        PartySystem.CreateDefaultParty();
+    }
+
+    public void Load(string saveFileName)
+    {
+        PartySystem.Load(saveFileName);
+    }
+    //! SaveLoad End
+
+
 }
 

@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 
 abstract class IDataProvider
 {
-    public abstract override string ToString();
+    
 }
 
 abstract class UIComponentBase : MonoBehaviour

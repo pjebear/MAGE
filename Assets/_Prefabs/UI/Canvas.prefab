@@ -115,3 +115,5 @@ MonoBehaviour:
     type: 3}
   EncounterStatusPrefab: {fileID: 8896557447796069967, guid: bbfde50fed0efb14db14ee714f925fce,
     type: 3}
+  MainMenuView: {fileID: 897389580315220153, guid: d6f45ab5afd367345b109177a86c900a,
+    type: 3}

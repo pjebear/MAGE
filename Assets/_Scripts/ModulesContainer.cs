@@ -2,9 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ModulesContainer : MonoBehaviour
+class ModulesContainer : MonoBehaviour
 {
     static ModulesContainer Container = null;
+
+    public GameModesModule GameModesModule;
+    public GameSystemModule GameSystemModule;
+    public UIManager UIManager;
+
+    public bool DebugRun = false;
 
     private void Awake()
     {
@@ -16,6 +22,15 @@ public class ModulesContainer : MonoBehaviour
         {
             Container = this;
             DontDestroyOnLoad(gameObject);
+
+            GameSystemModule.InitModule();
+            GameModesModule.InitModule();
+            UIManager.Initialize();
+
+            if (DebugRun)
+            {
+                GameSystemModule.Instance.PrepareNewGame();
+            }
         }
     }
 }

@@ -31,6 +31,7 @@ static class CharacterUtil
         for (int i = 0; i < (int)SpecializationType.NUM; ++i)
         {
             emptyCharacter.Specializations.Specializations[i].Level = 0;
+            emptyCharacter.Specializations.Specializations[i].TalentPoints = 0;
             SpecializationInfo info = SpecializationFactory.CheckoutSpecializationInfo((SpecializationType)i);
             emptyCharacter.Specializations.Specializations[i].SpentTalentPoints = Enumerable.Repeat(0, info.Talents.Count).ToList();
         }
@@ -38,10 +39,11 @@ static class CharacterUtil
         return emptyCharacter;
     }
 
-    public static DB.DBCharacter CreateBaseCharacter(string name, SpecializationType specialization, List<int> equipmentIds)
+    public static DB.DBCharacter CreateBaseCharacter(int id, string name, SpecializationType specialization, List<int> equipmentIds)
     {
         DB.DBCharacter dbCharacter = CreateEmptyCharacter();
 
+        dbCharacter.Id = id;
         dbCharacter.CharacterInfo.Name = name;
         dbCharacter.CharacterInfo.CurrentSpecialization = specialization;
         dbCharacter.CharacterInfo.Experience = 0;
@@ -52,9 +54,47 @@ static class CharacterUtil
         dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Resource].Attributes[(int)ResourceType.Health] = 20;
 
         dbCharacter.Equipment.EquipmentIds = equipmentIds;
+        dbCharacter.Specializations.Specializations[(int)specialization].TalentPoints = 0;
         dbCharacter.Specializations.Specializations[(int)specialization].SpentTalentPoints = new List<int>() { 3, 1 };
 
         return dbCharacter;
+    }
+
+    public static int GetNextAvailableCreateCharacterId()
+    {
+        int nextCreateCharacterId = CharacterConstants.CREATE_CHARACTER_ID_OFFSET;
+
+        IEnumerable<int> createCharacterIds = DB.DBHelper.GetAllCharacterIds().Where(x => GetCharacterTypeFromId(x) == CharacterType.Create);
+
+        for (int i = 0; i < 1000; ++i)
+        {
+            if (!createCharacterIds.Contains(nextCreateCharacterId))
+            {
+                break;
+            }
+            else
+            {
+                nextCreateCharacterId++;
+            }
+        }
+
+        return nextCreateCharacterId;
+    }
+
+    public static CharacterType GetCharacterTypeFromId(int id)
+    {
+        CharacterType characterType = CharacterType.Temporary;
+
+        if (id >= CharacterConstants.STORY_CHARACTER_ID_OFFSET)
+        {
+            characterType = CharacterType.Story;
+        }
+        else if (id >= CharacterConstants.CREATE_CHARACTER_ID_OFFSET)
+        {
+            characterType = CharacterType.Create;
+        }
+
+        return characterType;
     }
 }
 

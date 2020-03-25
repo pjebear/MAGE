@@ -42,7 +42,7 @@ class ActorActions : UIContainer
 
     protected override void InitSelf()
     {
-        mId = (int)UIContainerId.ActorActionsOverlay;
+        mId = (int)UIContainerId.ActorActionsView;
         mContainerName = "ActorActions";
     }
 

@@ -16,6 +16,7 @@ class Character
     public List<ActionId> Actions = new List<ActionId>();
     public List<AuraType> Auras = new List<AuraType>();
     public List<ActionResponseId> Listeners = new List<ActionResponseId>();
+
     public Equipment Equipment = new Equipment();
 
     public Character(int id, DB.DBCharacterInfo info)

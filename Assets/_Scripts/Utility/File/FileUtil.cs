@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+
 static class FileUtil
 {
     public enum FolderName
@@ -21,22 +22,36 @@ static class FileUtil
         TeamDB,
     }
 
-    public static void Write(FolderName folder, FileName fileName, string content)
+    public static List<string> GetFolders(string relativePath)
     {
-        string path = Path.Combine(Application.dataPath, folder.ToString());
+        string path = Path.Combine(Application.dataPath, relativePath.ToString());
+
+        List<string> folders = new List<string>();
+        foreach (string folderPath in Directory.EnumerateDirectories(path))
+        {
+            string[] splitOnDirectory = folderPath.Split(Path.DirectorySeparatorChar);
+            folders.Add(splitOnDirectory[splitOnDirectory.Length - 1]);
+        }
+
+        return folders;
+    }
+
+    public static void WriteFile(string relativePath, string fileName, string content)
+    {
+        string path = Path.Combine(Application.dataPath, relativePath.ToString());
         if (!Directory.Exists(path))
         {
             Directory.CreateDirectory(path);
         }
-       
+
         File.WriteAllText(path + Path.DirectorySeparatorChar + fileName.ToString() + ".txt", content);
     }
 
-    public static string Read(FolderName folder, FileName fileName)
+    public static string ReadFile(string relativePath, string fileName)
     {
         string content = "";
 
-        string path = Path.Combine(Application.dataPath, folder.ToString());
+        string path = Path.Combine(Application.dataPath, relativePath.ToString());
         if (File.Exists(path + Path.DirectorySeparatorChar + fileName.ToString() + ".txt"))
         {
             content = File.ReadAllText(path + Path.DirectorySeparatorChar + fileName.ToString() + ".txt");
@@ -45,4 +60,6 @@ static class FileUtil
         return content;
     }
 }
+
+
 

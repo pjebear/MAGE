@@ -120,20 +120,25 @@ namespace DB
             }
         }
 
-        public static void Save()
+        public static List<int> GetAllCharacterIds()
         {
-            CharacterInfoDB.Save();
-            EquipmentDB.Save();
-            SpecializationDB.Save();
-            TeamDB.Save();
+            return CharacterInfoDB.Keys;
         }
 
-        public static void Load()
+        public static void Save(string path)
         {
-            CharacterInfoDB.Load();
-            EquipmentDB.Load();
-            SpecializationDB.Load();
-            TeamDB.Load();
+            CharacterInfoDB.Save(path);
+            EquipmentDB.Save(path);
+            SpecializationDB.Save(path);
+            //TeamDB.Save(path);
+        }
+
+        public static void Load(string path)
+        {
+            CharacterInfoDB.Load(path);
+            EquipmentDB.Load(path);
+            SpecializationDB.Load(path);
+            //TeamDB.Load(path);
         }
     }
 }

@@ -1,1 +1,0 @@
-{"List":[{"Key":0,"Value":{"Specializations":[{"Experience":0,"Level":0,"SpentTalentPoints":[3,1]},{"Experience":0,"Level":0,"SpentTalentPoints":[0,0]}]}},{"Key":1,"Value":{"Specializations":[{"Experience":0,"Level":0,"SpentTalentPoints":[0,0]},{"Experience":0,"Level":0,"SpentTalentPoints":[3,1]}]}}]}

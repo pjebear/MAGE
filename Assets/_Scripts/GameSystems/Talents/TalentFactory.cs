@@ -32,8 +32,11 @@ static class TalentFactory
 
         Logger.Assert(pointsAssigned <= talent.MaxPoints, LogTag.Character, TAG,
             string.Format("::CheckoutTalent({0}) assignedPoints [{1}] exceeds maxPoints[{2}]", talentId.ToString(), pointsAssigned, talent.MaxPoints));
-
-        talent.PointsAssigned = Math.Max(pointsAssigned, talent.MaxPoints);
+        if (pointsAssigned > talent.MaxPoints)
+        {
+            pointsAssigned = talent.MaxPoints;
+        }
+        talent.PointsAssigned = pointsAssigned;
 
         return talent;
     }

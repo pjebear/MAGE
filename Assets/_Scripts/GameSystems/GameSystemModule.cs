@@ -7,14 +7,16 @@ using UnityEngine;
 
 class GameSystemModule : MonoBehaviour
 {
+    private readonly string TAG = "GameSystemModule";
+
     public static GameSystem Instance;
 
-    private void Awake()
+    public void InitModule()
     {
-        if (Instance == null)
-        {
-            Instance = new GameSystem();
-        }
+        Logger.Log(LogTag.GameSystems, TAG, "::InitModule()");
+        Logger.Assert(Instance == null, LogTag.GameSystems, TAG, "::InitModule() - Already initialized!");
+
+        Instance = new GameSystem();
     }
 }
 

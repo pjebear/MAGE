@@ -38,17 +38,20 @@ class BlockIncreaseTalent : Talent
     {
         List<AttributeModifier> modifiers = base.GetAttributeModifiers();
 
-        modifiers.Add(
+        if (PointsAssigned > 0)
+        {
+            modifiers.Add(
             new AttributeModifier(
                 new AttributeIndex(AttributeCategory.Stat, (int)TertiaryStat.FrontalBlock)
                 , ModifierType.Increment
                 , BlockIncreasePerPoint * PointsAssigned));
 
-        modifiers.Add(
-           new AttributeModifier(
-               new AttributeIndex(AttributeCategory.Stat, (int)TertiaryStat.PeriferalBlock)
-               , ModifierType.Increment
-               , BlockIncreasePerPoint / 2 * PointsAssigned));
+            modifiers.Add(
+               new AttributeModifier(
+                   new AttributeIndex(AttributeCategory.Stat, (int)TertiaryStat.PeriferalBlock)
+                   , ModifierType.Increment
+                   , BlockIncreasePerPoint / 2 * PointsAssigned));
+        }
 
         return modifiers;
     }
@@ -68,7 +71,10 @@ class HealOnHurtTalent : Talent
     {
         List<ActionResponseId> responseIds = base.GetActionResponses();
 
-        responseIds.Add(HealOnHurtId);
+        if (PointsAssigned == MaxPoints)
+        {
+            responseIds.Add(HealOnHurtId);
+        }
 
         return responseIds;
     }
@@ -88,7 +94,10 @@ class HealIncreaseTalent : Talent
     {
         List<IActionModifier> modifiers = base.GetActionModifiers();
 
-        modifiers.Add(new HealModifier(HealIncreasePerPoint));
+        if (PointsAssigned > 0)
+        {
+            modifiers.Add(new HealModifier(HealIncreasePerPoint * PointsAssigned));
+        }
         
         return modifiers;
     }
@@ -106,7 +115,10 @@ class MightyBlowTalent : Talent
     {
         List<ActionId> actions = base.GetActions();
 
-        actions.Add(ActionId.MightyBlow);
+        if (PointsAssigned == MaxPoints)
+        {
+            actions.Add(ActionId.MightyBlow);
+        }
 
         return actions;
     }

@@ -10,6 +10,7 @@ namespace DB
     abstract class DBBase<KeyType, ValueType> 
         where ValueType : DBEntryBase, new()
     {
+        public List<KeyType> Keys { get { return new List<KeyType>(mDB.Keys); } }
         protected string TAG = "";
         protected Dictionary<KeyType, ValueType> mDB = new Dictionary<KeyType, ValueType>();
         
@@ -84,7 +85,7 @@ namespace DB
             return new ValueType();
         }
 
-        public abstract void Save();
-        public abstract void Load();
+        public abstract void Save(string path);
+        public abstract void Load(string path);
     }
 }

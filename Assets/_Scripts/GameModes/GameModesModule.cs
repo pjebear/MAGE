@@ -7,13 +7,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 class GameModesModule 
-    : MonoBehaviour
+    : IAssetManager<GameModeBase>
     , IEventHandler<GameModeEvent>
 {
     private string TAG = "GameModesModule";
-
-    public EncounterModule EncounterPrefab;
-    public ExplorationModule ExplorationPrefab;
 
     public static ActorLoader ActorLoader;
     public static GameModesModule Instance;
@@ -21,18 +18,22 @@ class GameModesModule
     private GameModeType mPendingGameMode = GameModeType.INVALID;
     private GameModeBase mLoadedGameMode = null;
 
-    private void Awake()
+    public void InitModule()
     {
-        if (Instance == null)
-        {
-            Logger.LogFilters[(int)LogTag.Assets] = false;
-            Logger.LogFilters[(int)LogTag.DB] = false;
+        Logger.Log(LogTag.GameModes, TAG, "::InitModule()");
+        Logger.Assert(Instance == null, LogTag.GameModes, TAG, "::InitModule() - Already initialized!");
 
-            Instance = this;
-            ActorLoader = gameObject.AddComponent<ActorLoader>();
+        Logger.LogFilters[(int)LogTag.Assets] = false;
+        Logger.LogFilters[(int)LogTag.DB] = false;
 
-            GameModeEventRouter.Instance.RegisterHandler(this);
-        }
+        Instance = this;
+        ActorLoader = gameObject.AddComponent<ActorLoader>();
+
+        GameModeEventRouter.Instance.RegisterHandler(this);
+
+        // IAssetManager
+        InitializeAssets();
+
     }
 
     private void OnDestroy()
@@ -63,16 +64,7 @@ class GameModesModule
     {
         SceneManager.LoadSceneAsync(gameMode.ToString());
 
-        switch (gameMode)
-        {
-            case GameModeType.Encounter:
-                Instantiate(EncounterPrefab, transform);
-                break;
-
-            case GameModeType.Exploration:
-                Instantiate(ExplorationPrefab, transform);
-                break;
-        }
+        Instantiate(GetAsset(gameMode.ToString()), transform);
 
         // Continue loading on 'NotifyGameModeLoaded'
     }
@@ -142,6 +134,21 @@ class GameModesModule
     public void Encounter()
     {
         TransitionTo(GameModeType.Encounter);
+    }
+
+    public void Outfit()
+    {
+        TransitionTo(GameModeType.PartyOutfiter);
+    }
+
+    protected override string GetAssetPath()
+    {
+        return "GameModes";
+    }
+
+    protected override void OnInitializeAssets()
+    {
+        LoadAssets("");
     }
 }
 

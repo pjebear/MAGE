@@ -26,14 +26,13 @@ class EncounterSystem
             new TeamDefeatedCondition(TeamSide.AllyHuman)
         };
 
+        int encounterCharacterId = CharacterConstants.TEMPORARY_CHARACTER_ID_OFFSET;
         // Create enemy team
         {
-            DB.DBHelper.WriteNewCharacter(
-               CharacterUtil.CreateBaseCharacter(
-                   "Maric",
-                   SpecializationType.Footman,
-                   new List<int>() { (int)EquippableId.ChainArmor_0, (int)EquippableId.Shield_0, (int)EquippableId.Sword_0, (int)EquippableId.INVALID }),
-               TeamSide.EnemyAI);
+            DB.DBCharacter maric = CharacterUtil.CreateBaseCharacter(encounterCharacterId++, "Maric", SpecializationType.Footman,
+                   new List<int>() { (int)EquippableId.ChainArmor_0, (int)EquippableId.Shield_0, (int)EquippableId.Sword_0, (int)EquippableId.INVALID });
+
+            DB.DBHelper.WriteCharacter(maric, TeamSide.EnemyAI);
 
             //DB.DBHelper.WriteNewCharacter(
             //    CreateBaseCharacter(

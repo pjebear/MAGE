@@ -9,27 +9,58 @@ class PartySystem
 {
     private string TAG = "PartySystem";
 
+    private string SaveFileName = "";
+
+    private Party Party = new Party();
+
     public void CreateDefaultParty()
     {
-        DB.DBHelper.WriteNewCharacter(
-            CharacterUtil.CreateBaseCharacter(
-                "Rheinhardt",
-                SpecializationType.Footman,
-                new List<int>() { (int)EquippableId.ChainArmor_0, (int)EquippableId.Shield_0, (int)EquippableId.Sword_0, (int)EquippableId.INVALID }),
-            TeamSide.AllyHuman);
+        DB.DBCharacter Rheinhardt = CharacterUtil.CreateBaseCharacter( (int)StoryCharacterId.Rheinhardt, StoryCharacterId.Rheinhardt.ToString(), SpecializationType.Footman,
+                new List<int>() { (int)EquippableId.ChainArmor_0, (int)EquippableId.Shield_0, (int)EquippableId.Sword_0, (int)EquippableId.INVALID });
 
-        DB.DBHelper.WriteNewCharacter(
-            CharacterUtil.CreateBaseCharacter(
-                "Asmund",
-                SpecializationType.Monk,
-                new List<int>() { (int)EquippableId.ClothArmor_0, (int)EquippableId.Staff_0, (int)EquippableId.INVALID, (int)EquippableId.INVALID }),
-            TeamSide.AllyHuman);
+        DB.DBHelper.WriteCharacter(Rheinhardt);
 
-        DB.DBHelper.Load();
+        Party.CharacterIds.Add(Rheinhardt.Id);
+        foreach (int equippedItem in Rheinhardt.Equipment.EquipmentIds)
+        {
+            if (equippedItem != (int)EquippableId.INVALID)
+            {
+                Party.Inventory.Add(equippedItem);
+            }
+        }
+
+        DB.DBCharacter Asmund = CharacterUtil.CreateBaseCharacter( (int)StoryCharacterId.Asmund, StoryCharacterId.Asmund.ToString(), SpecializationType.Monk,
+                new List<int>() { (int)EquippableId.ClothArmor_0, (int)EquippableId.Staff_0, (int)EquippableId.INVALID, (int)EquippableId.INVALID });
+
+        DB.DBHelper.WriteCharacter(Asmund);
+
+        Party.CharacterIds.Add(Asmund.Id);
+        foreach (int equippedItem in Asmund.Equipment.EquipmentIds)
+        {
+            if (equippedItem != (int)EquippableId.INVALID)
+            {
+                Party.Inventory.Add(equippedItem);
+            }
+        }
     }
 
-    public void UpdatePartyOnEncounterEnd(EncounterResultInfo resultInfo)
+    public List<int> GetCharactersInParty()
     {
+        return new List<int>(Party.CharacterIds);
+    }
+
+    public void PrepareForEncounter(EncounterCreateParams createParams)
+    {
+        foreach (int characterId in Party.CharacterIds)
+        {
+            DB.DBHelper.AddToTeam(characterId, TeamSide.AllyHuman);
+        }
+    }
+
+    public void UpdateOnEncounterEnd(EncounterResultInfo resultInfo)
+    {
+        DB.DBHelper.ClearTeam(TeamSide.AllyHuman, false);
+
         foreach (int characterId in resultInfo.PlayersInEncounter[TeamSide.AllyHuman])
         {
             DB.DBCharacter character = DB.DBHelper.LoadCharacter(characterId);
@@ -61,6 +92,37 @@ class PartySystem
 
             DB.DBHelper.WriteCharacter(character);
         }
+
+        // Add new Items
+        foreach (int itemReward in resultInfo.ItemRewards)
+        {
+            Party.Inventory.Add(itemReward);
+        }
+
+        // Currency Reward
+        Party.Currency += resultInfo.CurrencyReward;
+
+        Save();
+    }
+
+    public void Save()
+    {
+        string saveFileName = SaveFileName != "" ? SaveFileName : SaveLoadUtil.GetNextAvailableSaveFileName();
+
+        SaveLoad.SaveFile saveFile = new SaveLoad.SaveFile();
+        saveFile.Name = SaveFileName != "" ? SaveFileName : SaveLoadUtil.GetNextAvailableSaveFileName();
+
+        SaveLoadUtil.AddParty(saveFile, Party);
+
+        SaveLoadUtil.Save(saveFile);
+    }
+
+    public void Load(string saveFileName)
+    {
+        SaveLoad.SaveFile saveFile = SaveLoadUtil.Load(saveFileName);
+
+        SaveFileName = saveFile.Name;
+        Party = SaveLoadUtil.ExtractParty(saveFile);
     }
 }
 

@@ -25,7 +25,7 @@ namespace DB
             public List<Entry> List;
         }
 
-        public override void Save()
+        public override void Save(string path)
         {
             EntryList list = new EntryList();
             list.List = new List<Entry>();
@@ -37,14 +37,14 @@ namespace DB
 
             string jsonString = UnityEngine.JsonUtility.ToJson(list);
 
-            FileUtil.Write(FileUtil.FolderName.SaveFiles, FileUtil.FileName.CharacterDB, jsonString);
+            FileUtil.WriteFile(path, FileUtil.FileName.CharacterDB.ToString(), jsonString);
         }
 
-        public override void Load()
+        public override void Load(string path)
         {
             mDB.Clear();
 
-            string jsonString = FileUtil.Read(FileUtil.FolderName.SaveFiles, FileUtil.FileName.CharacterDB);
+            string jsonString = FileUtil.ReadFile(path, FileUtil.FileName.CharacterDB.ToString());
 
             EntryList list = UnityEngine.JsonUtility.FromJson<EntryList>(jsonString);
             foreach (Entry entry in list.List)

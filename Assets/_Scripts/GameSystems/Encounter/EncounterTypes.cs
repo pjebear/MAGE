@@ -48,10 +48,12 @@ struct EncounterCreateParams
 
 }
 
-struct EncounterResultInfo
+class EncounterResultInfo
 {
-    public Teams PlayersInEncounter;
-    public bool DidUserWin;
+    public Teams PlayersInEncounter = new Teams();
+    public bool DidUserWin = false;
+    public int CurrencyReward = 0;
+    public List<int> ItemRewards = new List<int>();
 }
 
 

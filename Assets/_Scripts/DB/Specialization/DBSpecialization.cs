@@ -11,11 +11,12 @@ namespace DB
     {
         public int Experience = 0;
         public int Level = 0;
+        public int TalentPoints;
         public List<int> SpentTalentPoints = new List<int>();
 
         public override string ToString()
         {
-            string toString = "Level: " + Level + " Exp:" + Experience + " Spent Points: ";
+            string toString = "Level: " + Level + " Exp:" + Experience + " TalentPoints: " + TalentPoints + " Points: ";
 
             foreach (int spentPoints in SpentTalentPoints)
             {
@@ -62,6 +63,7 @@ namespace DB
             {
                 to.Specializations[i].Level = from.Specializations[i].Level;
                 to.Specializations[i].Experience = from.Specializations[i].Experience;
+                to.Specializations[i].TalentPoints = from.Specializations[i].TalentPoints;
                 to.Specializations[i].SpentTalentPoints.Clear();
                 to.Specializations[i].SpentTalentPoints.AddRange(from.Specializations[i].SpentTalentPoints);
             }

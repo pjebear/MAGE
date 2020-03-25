@@ -99,7 +99,7 @@ class EncounterStatus : UIContainer
 
     protected override void InitSelf()
     {
-        mId = (int)UIContainerId.EncounterStatusOverlay;
+        mId = (int)UIContainerId.EncounterStatusView;
         mContainerName = tag;
     }
 

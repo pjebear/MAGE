@@ -8,9 +8,10 @@ enum GameModeType
 {
     INVALID = -1,
 
-    None,
+    MainMenu,
     Exploration,
     Encounter,
+    PartyOutfiter,
 
     NUM
 }

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public abstract class IAssetManager<T> : MonoBehaviour where T : UnityEngine.Object
+abstract class IAssetManager<T> : MonoBehaviour where T : UnityEngine.Object
 {
     private bool mIsInitialized = false;
     private Dictionary<string, List<string>> mLoadedDirectories;
@@ -16,24 +16,16 @@ public abstract class IAssetManager<T> : MonoBehaviour where T : UnityEngine.Obj
     protected string mManagerName;
 
     protected abstract string GetAssetPath();
-    protected virtual void OnInitialize() { }
+    protected virtual void OnInitializeAssets() { }
 
-    private void Awake()
-    {
-        if (!mIsInitialized)
-        {
-            Initialize();
-        }
-    }
-
-    private void Initialize()
+    protected void InitializeAssets()
     {
         mIsInitialized = true;
         mAssetLookup = new Dictionary<string, T>();
         mLoadedDirectories = new Dictionary<string, List<string>>();
         mManagerName = typeof(T).ToString() + "AssetManager";
         mBaseAssetPath = GetAssetPath();
-        OnInitialize();
+        OnInitializeAssets();
     }
 
     public void LoadAssets(string folderPath)
