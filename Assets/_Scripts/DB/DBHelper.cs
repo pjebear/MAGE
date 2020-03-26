@@ -10,13 +10,13 @@ namespace DB
     {
         static string TAG = "DBHelper";
 
-        static CharacterInfoDB CharacterInfoDB = new CharacterInfoDB();
-        static EquipmentInfoDB EquipmentDB= new EquipmentInfoDB();
+        static CharacterDB CharacterDB = new CharacterDB();
         static SpecializationDB SpecializationDB = new SpecializationDB();
         static TeamDB TeamDB = new TeamDB();
 
         static int sNewCharacterId;
 
+        //! Character DB
         public static DBCharacter WriteNewCharacter(DBCharacter character, TeamSide teamSide = TeamSide.INVALID)
         {
             character.Id = sNewCharacterId++;
@@ -35,9 +35,7 @@ namespace DB
             }
             else
             {
-                CharacterInfoDB.Write(character.Id, character.CharacterInfo);
-                EquipmentDB.Write(character.Id, character.Equipment);
-                SpecializationDB.Write(character.Id, character.Specializations);
+                CharacterDB.Write(character.Id, character);
 
                 if (teamSide != TeamSide.INVALID)
                 {
@@ -50,21 +48,14 @@ namespace DB
 
         public static DBCharacter LoadCharacter(int characterId)
         {
-            DBCharacter toLoad = new DBCharacter();
-
-            toLoad.Id = characterId;
-            toLoad.CharacterInfo = CharacterInfoDB.Load(characterId);
-            toLoad.Equipment = EquipmentDB.Load(characterId);
-            toLoad.Specializations = SpecializationDB.Load(characterId);
+            DBCharacter toLoad = CharacterDB.Load(characterId);
 
             return toLoad;
         }
 
         public static void RemoveCharacter(int characterId)
         {
-            CharacterInfoDB.Clear(characterId);
-            EquipmentDB.Clear(characterId);
-            SpecializationDB.Clear(characterId);
+            CharacterDB.Clear(characterId);
         }
 
         public static void AddToTeam(int characterId, TeamSide teamSide)
@@ -122,23 +113,35 @@ namespace DB
 
         public static List<int> GetAllCharacterIds()
         {
-            return CharacterInfoDB.Keys;
+            return CharacterDB.Keys;
+        }
+
+        //! Character DB End
+
+        //! SpecializationDB
+        public static void WriteSpecialization(DBSpecialization dBSpecialization)
+        {
+            SpecializationDB.Write(dBSpecialization.SpecializationType, dBSpecialization);
+        }
+
+        public static DBSpecialization LoadSpecialization(SpecializationType specializationType)
+        {
+            return SpecializationDB.Load((int)specializationType);
         }
 
         public static void Save(string path)
         {
-            CharacterInfoDB.Save(path);
-            EquipmentDB.Save(path);
-            SpecializationDB.Save(path);
-            //TeamDB.Save(path);
+            CharacterDB.Save(path);
+        }
+
+        public static void UpdateSpecializationDB()
+        {
+            SpecializationDB.Save(FileUtil.FolderName.DB.ToString());
         }
 
         public static void Load(string path)
         {
-            CharacterInfoDB.Load(path);
-            EquipmentDB.Load(path);
-            SpecializationDB.Load(path);
-            //TeamDB.Load(path);
+            CharacterDB.Load(path);
         }
     }
 }

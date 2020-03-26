@@ -7,68 +7,33 @@ using System.Threading.Tasks;
 namespace DB
 {
     [System.Serializable]
-    class SpecializationInfo
+    class DBSpecialization : DBEntryBase
     {
-        public int Experience = 0;
-        public int Level = 0;
-        public int TalentPoints;
-        public List<int> SpentTalentPoints = new List<int>();
-
-        public override string ToString()
-        {
-            string toString = "Level: " + Level + " Exp:" + Experience + " TalentPoints: " + TalentPoints + " Points: ";
-
-            foreach (int spentPoints in SpentTalentPoints)
-            {
-                toString += spentPoints + ",";
-            }
-
-            toString.Remove(toString.Length - 1);
-
-            return toString;
-        }
-    }
-
-    [System.Serializable]
-    class DBSpecializations : DBEntryBase
-    {
-        public SpecializationInfo[] Specializations = new SpecializationInfo[(int)SpecializationType.NUM];
-
-        public DBSpecializations()
-        {
-            for (int i = 0; i < (int)SpecializationType.NUM; ++i)
-            {
-                Specializations[i] = new SpecializationInfo();
-            }
-        }
-
-        public override string ToString()
-        {
-            string toString = "\nSpecializations:";
-
-            foreach (SpecializationInfo info in Specializations)
-            {
-                toString += "\n" + info.ToString();
-            }
-
-            return toString;
-        }
+        public int SpecializationType;
+        public List<int> TalentIds = new List<int>();
+        public List<int> Proficiencies = new List<int>();
+        public List<int> ActionIds = new List<int>();
+        public List<DBAttribute> LevelUpModifiers = new List<DBAttribute>();
 
         public override void Copy(DBEntryBase _from, DBEntryBase _to)
         {
-            DBSpecializations from = _from as DBSpecializations;
-            DBSpecializations to = _to as DBSpecializations;
+            DBSpecialization from = _from as DBSpecialization;
+            DBSpecialization to = _to as DBSpecialization;
 
-            for (int i = 0; i < (int)SpecializationType.NUM; ++i)
+            to.SpecializationType = from.SpecializationType;
+            to.TalentIds = new List<int>(from.TalentIds);
+            to.Proficiencies = new List<int>(from.Proficiencies);
+            to.ActionIds = new List<int>(from.ActionIds);
+
+            to.LevelUpModifiers.Clear();
+            foreach (DBAttribute attribute in from.LevelUpModifiers)
             {
-                to.Specializations[i].Level = from.Specializations[i].Level;
-                to.Specializations[i].Experience = from.Specializations[i].Experience;
-                to.Specializations[i].TalentPoints = from.Specializations[i].TalentPoints;
-                to.Specializations[i].SpentTalentPoints.Clear();
-                to.Specializations[i].SpentTalentPoints.AddRange(from.Specializations[i].SpentTalentPoints);
+                DBAttribute toAttribute = new DBAttribute();
+                toAttribute.Set(attribute);
+                to.LevelUpModifiers.Add(toAttribute);
             }
         }
-    }
+    }   
 }
 
 

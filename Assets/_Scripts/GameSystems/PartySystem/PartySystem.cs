@@ -21,7 +21,7 @@ class PartySystem
         DB.DBHelper.WriteCharacter(Rheinhardt);
 
         Party.CharacterIds.Add(Rheinhardt.Id);
-        foreach (int equippedItem in Rheinhardt.Equipment.EquipmentIds)
+        foreach (int equippedItem in Rheinhardt.Equipment)
         {
             if (equippedItem != (int)EquippableId.INVALID)
             {
@@ -35,7 +35,7 @@ class PartySystem
         DB.DBHelper.WriteCharacter(Asmund);
 
         Party.CharacterIds.Add(Asmund.Id);
-        foreach (int equippedItem in Asmund.Equipment.EquipmentIds)
+        foreach (int equippedItem in Asmund.Equipment)
         {
             if (equippedItem != (int)EquippableId.INVALID)
             {
@@ -66,14 +66,14 @@ class PartySystem
             DB.DBCharacter character = DB.DBHelper.LoadCharacter(characterId);
 
             // Add Experience
-            DB.DBCharacterInfo characterInfo = character.CharacterInfo;
+            DB.Character.DBCharacterInfo characterInfo = character.CharacterInfo;
             characterInfo.Experience += CharacterConstants.LEVEL_UP_THRESHOLD;
             if (characterInfo.Experience >= CharacterConstants.LEVEL_UP_THRESHOLD)
             {
                 characterInfo.Experience -= CharacterConstants.LEVEL_UP_THRESHOLD;
                 characterInfo.Level++;
 
-                foreach (AttributeModifier modifier in SpecializationFactory.CheckoutSpecializationInfo(characterInfo.CurrentSpecialization).LevelUpModifiers)
+                foreach (AttributeModifier modifier in SpecializationFactory.CheckoutSpecialization((SpecializationType)characterInfo.CurrentSpecialization).LevelUpModifiers)
                 {
                     Logger.Assert(modifier.ModifierType == ModifierType.Increment, LogTag.GameSystems, TAG,
                         string.Format("Invalid Levelup modifier for Specialization [{0}] - {1}", characterInfo.CurrentSpecialization.ToString(), modifier.ToString()), LogLevel.Warning);
@@ -83,7 +83,7 @@ class PartySystem
             }
 
             // Update specialization
-            DB.SpecializationInfo specializationInfo = character.Specializations.Specializations[(int)characterInfo.CurrentSpecialization];
+            DB.Character.DBSpecializationInfo specializationInfo = character.Specializations[characterInfo.CurrentSpecialization];
             specializationInfo.Experience += SpecializationConstants.LEVEL_UP_THRESHOLD;
             if (specializationInfo.Experience >= SpecializationConstants.LEVEL_UP_THRESHOLD)
             {
@@ -101,9 +101,11 @@ class PartySystem
 
         // Currency Reward
         Party.Currency += resultInfo.CurrencyReward;
-
-        Save();
     }
+
+    //! Characters
+    
+    // Character End
 
     public void Save()
     {

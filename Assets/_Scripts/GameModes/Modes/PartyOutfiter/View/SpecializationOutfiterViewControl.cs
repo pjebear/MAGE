@@ -13,6 +13,7 @@ class SpecializationOutfiterViewControl
 {
     private DB.DBCharacter mOutfitingCharacter = null;
     private UnityAction mOnUpdatedCB;
+    private List<int> mTalentIds;
     //! ICharacterOutfiter
     public void BeginOutfitting(DBCharacter character, UnityAction characterUpdated)
     {
@@ -50,7 +51,7 @@ class SpecializationOutfiterViewControl
                             case (int)SpecializationOutfiterView.ComponentId.TalentBtns:
                                 {
                                     UIButtonList.ButtonListInteractionInfo buttonListInteractionInfo = interactionInfo as UIButtonList.ButtonListInteractionInfo;
-                                    AssignTalentPoint(buttonListInteractionInfo.ButtonIdx);
+                                    AssignTalentPoint(mTalentIds[buttonListInteractionInfo.ButtonIdx]);
 
                                     UIManager.Instance.Publish(UIContainerId.SpecializationOutfiterView);
                                 }
@@ -71,24 +72,26 @@ class SpecializationOutfiterViewControl
     {
         SpecializationOutfiterView.DataProvider dataProvider = new SpecializationOutfiterView.DataProvider();
 
-        DB.SpecializationInfo specializationInfo = mOutfitingCharacter.Specializations.Specializations[(int)mOutfitingCharacter.CharacterInfo.CurrentSpecialization];
+        DB.Character.DBSpecializationInfo specializationInfo = mOutfitingCharacter.Specializations[mOutfitingCharacter.CharacterInfo.CurrentSpecialization];
 
-        dataProvider.AvailableTalentPts = specializationInfo.TalentPoints;
-        dataProvider.SpecializationName = mOutfitingCharacter.CharacterInfo.CurrentSpecialization.ToString();
+        Specialization specialization = SpecializationFactory.CheckoutSpecialization((SpecializationType)mOutfitingCharacter.CharacterInfo.CurrentSpecialization, specializationInfo);
 
-        SpecializationInfo info = SpecializationFactory.CheckoutSpecializationInfo(mOutfitingCharacter.CharacterInfo.CurrentSpecialization);
-        for (int i = 0; i < info.Talents.Count; ++i)
+        dataProvider.AvailableTalentPts = specialization.NumUnassignedTalentPoints();
+        dataProvider.SpecializationName = specialization.SpecializationType.ToString();
+
+        mTalentIds = new List<int>();
+        foreach (var keyValuePair in specialization.Talents)
         {
             SpecializationOutfiterView.TalentDP talentDP = new SpecializationOutfiterView.TalentDP();
-            TalentId talentId = info.Talents[i];
-            int spentPoints = specializationInfo.SpentTalentPoints[i];
-            Talent talent = TalentFactory.CheckoutTalent(talentId, spentPoints);
+
+            mTalentIds.Add((int)keyValuePair.Key);
+            Talent talent = keyValuePair.Value;
             int maxPoints = talent.MaxPoints;
 
-            talentDP.TalentName = info.Talents[i].ToString();
-            talentDP.AssignedPoints = spentPoints;
-            talentDP.MaxPoints = maxPoints;
-            talentDP.IsSelectable = spentPoints < maxPoints;
+            talentDP.TalentName = talent.TalentId.ToString();
+            talentDP.AssignedPoints = talent.PointsAssigned;
+            talentDP.MaxPoints = talent.MaxPoints;
+            talentDP.IsSelectable = talent.PointsAssigned < talent.MaxPoints && specialization.NumUnassignedTalentPoints() > 0;
 
 
             dataProvider.TalentDPs.Add(talentDP);
@@ -97,11 +100,18 @@ class SpecializationOutfiterViewControl
         return dataProvider;
     }
 
-    private void AssignTalentPoint(int talentIdx)
+    private void AssignTalentPoint(int talentId)
     {
-        DB.SpecializationInfo info = mOutfitingCharacter.Specializations.Specializations[(int)mOutfitingCharacter.CharacterInfo.CurrentSpecialization];
-        info.SpentTalentPoints[talentIdx]++;
-        info.TalentPoints--;
+        DB.Character.DBSpecializationInfo info = mOutfitingCharacter.Specializations[mOutfitingCharacter.CharacterInfo.CurrentSpecialization];
+        DB.Character.Talent dbTalent = info.Talents.Find(x => x.TalentId == talentId);
+        if (dbTalent != null)
+        {
+            dbTalent.AssignedPoints++;
+        }
+        else
+        {
+            info.Talents.Add(new DB.Character.Talent() { TalentId = talentId, AssignedPoints = 1 });
+        }
 
         DBHelper.WriteCharacter(mOutfitingCharacter);
         mOnUpdatedCB();
@@ -109,11 +119,10 @@ class SpecializationOutfiterViewControl
 
     private void ResetTalentPoints()
     {
-        DB.SpecializationInfo toReset = mOutfitingCharacter.Specializations.Specializations[(int)mOutfitingCharacter.CharacterInfo.CurrentSpecialization];
-        for (int i = 0; i < toReset.SpentTalentPoints.Count; ++i)
+        DB.Character.DBSpecializationInfo toReset = mOutfitingCharacter.Specializations[mOutfitingCharacter.CharacterInfo.CurrentSpecialization];
+        for (int i = 0; i < toReset.Talents.Count; ++i)
         {
-            toReset.TalentPoints += toReset.SpentTalentPoints[i];
-            toReset.SpentTalentPoints[i] = 0;
+            toReset.Talents[i].AssignedPoints = 0;
         }
 
         DBHelper.WriteCharacter(mOutfitingCharacter);

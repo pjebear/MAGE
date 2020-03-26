@@ -13,33 +13,33 @@ static class ItemFactory
 
         Debug.Assert(ItemUtil.TypeFromId((int)itemId) == ItemType.Equippable);
         EquippableId equippableId = (EquippableId)itemId;
-        EquipableType type = EquipableType.NUM;
+        EquipableTag tag = null;
 
         switch (equippableId)
         {
             case EquippableId.Sword_0:
                 appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Sword_0;
-                type = EquipableType.OneHandWeapon;
+                tag = new EquipableTag(OneHandWeaponType.Sword);
                 break;
 
             case EquippableId.Shield_0:
                 appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Shield_0;
-                type = EquipableType.Shield;
+                tag = new EquipableTag(ShieldType.Shield);
                 break;
 
             case EquippableId.Staff_0:
                 appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Staff_0;
-                type = EquipableType.TwoHandWeapon;
+                tag = new EquipableTag(TwoHandWeaponType.Staff);
                 break;
 
             case EquippableId.ChainArmor_0:
                 appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Chain_0;
-                type = EquipableType.Armor;
+                tag = new EquipableTag(ArmorType.Chain);
                 break;
 
             case EquippableId.ClothArmor_0:
                 appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Cloth_0;
-                type = EquipableType.Armor;
+                tag = new EquipableTag(ArmorType.Cloth);
                 break;
 
             default:
@@ -47,7 +47,7 @@ static class ItemFactory
                 break;
         }
 
-        return new Equippable(equippableId, type, appearance);
+        return new Equippable(equippableId, tag, appearance);
     }
 }
 

@@ -11,7 +11,8 @@ static class FileUtil
 {
     public enum FolderName
     {
-        SaveFiles
+        SaveFiles,
+        DB
     }
 
     public enum FileName
@@ -22,17 +23,39 @@ static class FileUtil
         TeamDB,
     }
 
+    public static bool FileExists(string relativePath, string fileName)
+    {
+        bool exists = false;
+
+        string directoryPath = Path.Combine(Application.dataPath, relativePath.ToString());
+
+        if (Directory.Exists(directoryPath))
+        {
+            string filePath = directoryPath + Path.DirectorySeparatorChar + fileName.ToString() + ".txt";
+
+            if (File.Exists(filePath))
+            {
+                exists = true;
+            }
+        }
+        return exists;
+    }
+
     public static List<string> GetFolders(string relativePath)
     {
+        List<string> folders = new List<string>();
+
         string path = Path.Combine(Application.dataPath, relativePath.ToString());
 
-        List<string> folders = new List<string>();
-        foreach (string folderPath in Directory.EnumerateDirectories(path))
+        if (Directory.Exists(path))
         {
-            string[] splitOnDirectory = folderPath.Split(Path.DirectorySeparatorChar);
-            folders.Add(splitOnDirectory[splitOnDirectory.Length - 1]);
+            foreach (string folderPath in Directory.EnumerateDirectories(path))
+            {
+                string[] splitOnDirectory = folderPath.Split(Path.DirectorySeparatorChar);
+                folders.Add(splitOnDirectory[splitOnDirectory.Length - 1]);
+            }
         }
-
+        
         return folders;
     }
 

@@ -16,61 +16,46 @@ static class CharacterLoader
 
     public static Character LoadCharacter(DB.DBCharacter dbCharacter)
     {
-        Character character = new Character(dbCharacter.Id, dbCharacter.CharacterInfo);
+        Character character = new Character();
 
+        // Character Info
+        character.Id = dbCharacter.Id;
+        character.Name = dbCharacter.CharacterInfo.Name;
+        character.Level = dbCharacter.CharacterInfo.Level;
+        character.Experience = dbCharacter.CharacterInfo.Experience;
+        character.Attributes = new Attributes(dbCharacter.CharacterInfo.Attributes);
         character.Actions.Add(ActionId.SwordAttack);
 
-        ApplySpecialization(character, character.Specialization, dbCharacter.Specializations.Specializations[(int)character.Specialization].SpentTalentPoints);
+        // Specialization
+        character.Specialization = SpecializationFactory.CheckoutSpecialization((SpecializationType)dbCharacter.CharacterInfo.CurrentSpecialization, dbCharacter.Specializations[dbCharacter.CharacterInfo.CurrentSpecialization]);
+        foreach (Talent talent in character.Specialization.Talents.Values)
+        {
+            foreach (AttributeModifier proficiencyModifier in talent.GetAttributeModifiers())
+            {
+                character.Attributes.Modify(proficiencyModifier);
+            }
 
-        Debug.Assert(dbCharacter.Equipment.EquipmentIds.Count == (int)Equipment.Slot.NUM);
+            character.Actions.AddRange(talent.GetActions());
+            character.Auras.AddRange(talent.GetAuras());
+            character.Listeners.AddRange(talent.GetActionResponses());
+            character.ActionModifiers.AddRange(talent.GetActionModifiers());
+        }
+
+        // Equipment
         for (int i = 0; i < (int)Equipment.Slot.NUM; ++i)
         {
-            if (dbCharacter.Equipment.EquipmentIds[i] != (int)EquippableId.INVALID)
+            if (dbCharacter.Equipment[i] != (int)EquippableId.INVALID)
             {
-                character.Equipment[(Equipment.Slot)i] = ItemFactory.CreateEquipable((ItemId)dbCharacter.Equipment.EquipmentIds[i]);
+                character.Equipment[(Equipment.Slot)i] = ItemFactory.CreateEquipable((ItemId)dbCharacter.Equipment[i]);
             }
         }
 
         return character;
     }
 
-    public static void ApplySpecialization(Character character, SpecializationType specializationType, List<int> assignedTalents)
+    public static void ApplySpecialization(Character character, Specialization specialization)
     {
-        SpecializationInfo info = SpecializationFactory.CheckoutSpecializationInfo(specializationType);
-
-
-        Logger.Assert(assignedTalents.Count == info.Talents.Count, LogTag.Character, TAG,
-            string.Format("::ApplySpecialization() - Found talent size mismatch for Character {0}. Expected {1} Got {2}", character.Id, info.Talents.Count, assignedTalents.Count));
-
-        foreach (AttributeModifier proficiencyModifier in info.BaseProficiencyModifiers)
-        {
-            character.Attributes.Modify(proficiencyModifier);
-        }
-
-        character.Actions.AddRange(info.Actions);
-        character.Auras.AddRange(info.Auras);
-        character.Listeners.AddRange(info.Listeners);
-        character.ActionModifiers.AddRange(info.ActionModifiers);
-
-
-        if (assignedTalents.Count == info.Talents.Count)
-        {
-            for (int i = 0; i < info.Talents.Count; ++i)
-            {
-                
-                Talent talent = TalentFactory.CheckoutTalent(info.Talents[i], assignedTalents[i]);
-
-                foreach (AttributeModifier proficiencyModifier in talent.GetAttributeModifiers())
-                {
-                    character.Attributes.Modify(proficiencyModifier);
-                }
-
-                character.Actions.AddRange(talent.GetActions());
-                character.Auras.AddRange(talent.GetAuras());
-                character.Listeners.AddRange(talent.GetActionResponses());
-                character.ActionModifiers.AddRange(talent.GetActionModifiers());
-            }
-        }
+        
     }
 }
 

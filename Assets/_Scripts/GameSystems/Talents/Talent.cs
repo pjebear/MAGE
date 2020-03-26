@@ -18,6 +18,7 @@ abstract class Talent
     }
 
     public virtual List<IActionModifier> GetActionModifiers() { return new List<IActionModifier>(); }
+    public virtual List<ProficiencyType> GetProficiencies() { return new List<ProficiencyType>(); }
     public virtual List<AttributeModifier> GetAttributeModifiers() { return new List<AttributeModifier>(); }
     public virtual List<ActionId> GetActions() { return new List<ActionId>(); }
     public virtual List<AuraType> GetAuras() { return new List<AuraType>(); }

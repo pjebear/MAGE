@@ -26,52 +26,23 @@ class ActorLoader : IAssetManager<GameObject>
         LoadAssets("Apparel");  
     }
 
-    public ActorController CreateActor(Character fromCharacter, Transform parent)
+    public ActorController CreateActor(ActorSpawnParams actorParams, Transform parent)
     {
-        ActorController actorController = Instantiate(GetAsset(BodyType.DefaultBody.ToString()), parent).GetComponent<ActorController>();
+        ActorController actorController = Instantiate(GetAsset(actorParams.BodyType.GetAssetName(AppearanceType.Prefab)), parent).GetComponent<ActorController>();
 
-        if (fromCharacter.Equipment[Equipment.Slot.Armor] != null)
+        if (actorParams.HeldLeftHand[AppearanceType.Prefab] != Appearance.NO_ASSET)
         {
-            string assetName = fromCharacter.Equipment[Equipment.Slot.Armor].Appearance.GetAssetName(AppearanceType.Prefab);
-            Instantiate(GetAsset(assetName), actorController.Actor.Body);
+            Instantiate(GetAsset(actorParams.HeldLeftHand.GetAssetName(AppearanceType.Prefab)), actorController.Actor.LeftHand);
         }
 
-        if (fromCharacter.Equipment[Equipment.Slot.LeftHand] != null)
+        if (actorParams.HeldRightHand[AppearanceType.Prefab] != Appearance.NO_ASSET)
         {
-            string assetName = fromCharacter.Equipment[Equipment.Slot.LeftHand].Appearance.GetAssetName(AppearanceType.Prefab);
-            Instantiate(GetAsset(assetName), actorController.Actor.LeftHand);
+            Instantiate(GetAsset(actorParams.HeldRightHand.GetAssetName(AppearanceType.Prefab)), actorController.Actor.RightHand);
         }
 
-        if (fromCharacter.Equipment[Equipment.Slot.RightHand] != null)
+        if (actorParams.Worn[AppearanceType.Prefab] != Appearance.NO_ASSET)
         {
-            string assetName = fromCharacter.Equipment[Equipment.Slot.RightHand].Appearance.GetAssetName(AppearanceType.Prefab);
-            Instantiate(GetAsset(assetName), actorController.Actor.RightHand);
-        }
-
-        return actorController;
-    }
-
-    // TODO: Merge Character and EncounterCharacter
-    public ActorController CreateActor(EncounterCharacter fromCharacter, Transform parent)
-    {
-        ActorController actorController = Instantiate(GetAsset(BodyType.DefaultBody.ToString()), parent).GetComponent<ActorController>();
-
-        if (fromCharacter.Equipment[Equipment.Slot.Armor] != null)
-        {
-            string assetName = fromCharacter.Equipment[Equipment.Slot.Armor].Appearance.GetAssetName(AppearanceType.Prefab);
-            Instantiate(GetAsset(assetName), actorController.Actor.Body);
-        }
-
-        if (fromCharacter.Equipment[Equipment.Slot.LeftHand] != null)
-        {
-            string assetName = fromCharacter.Equipment[Equipment.Slot.LeftHand].Appearance.GetAssetName(AppearanceType.Prefab);
-            Instantiate(GetAsset(assetName), actorController.Actor.LeftHand);
-        }
-
-        if (fromCharacter.Equipment[Equipment.Slot.RightHand] != null)
-        {
-            string assetName = fromCharacter.Equipment[Equipment.Slot.RightHand].Appearance.GetAssetName(AppearanceType.Prefab);
-            Instantiate(GetAsset(assetName), actorController.Actor.RightHand);
+            Instantiate(GetAsset(actorParams.Worn.GetAssetName(AppearanceType.Prefab)), actorController.Actor.Body);
         }
 
         return actorController;

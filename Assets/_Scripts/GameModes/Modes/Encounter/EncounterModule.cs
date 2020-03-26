@@ -81,7 +81,8 @@ class EncounterModule : GameModeBase
             EncounterCharacter actor = new EncounterCharacter(team, character);
             Model.Actors.Add(actor.Id, actor);
             Model.Teams[team].Add(actor);
-            ActorDirector.AddActor(actor, atPostition);
+
+            ActorDirector.AddActor(CharacterUtil.ActorParamsForCharacter(dBCharacter), actor, atPostition);
 
             count++;
         }
@@ -99,7 +100,7 @@ class EncounterModule : GameModeBase
             EncounterCharacter actor = new EncounterCharacter(team, character);
             Model.Actors.Add(actor.Id, actor);
             Model.Teams[team].Add(actor);
-            ActorDirector.AddActor(actor, atPostition);
+            ActorDirector.AddActor(CharacterUtil.ActorParamsForCharacter(dBCharacter), actor, atPostition);
 
             count++;
         }

@@ -7,7 +7,6 @@ enum AttributeCategory
     Stat,
     Resource,
     Allignment,
-    Proficiency,
     NUM
 }
 
@@ -94,12 +93,18 @@ enum ProficiencyType
     Axe,
     Hammer,
     Dagger,
+    Crossbow,
 
     // Two hands
     Staff,
+    Bow,
+    BastardSword,
+    BattleAxe,
+    Maul,
 
     // Sheilds
     Sheild,
+    TowerShield,
 
     // Armor
     Cloth,
@@ -109,6 +114,10 @@ enum ProficiencyType
 
     // Multi
     OneHands,
+    TwoHands,
+    Armors,
+    Sheilds,
+    Accessorys,
 
     NUM
 }

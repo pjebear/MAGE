@@ -12,7 +12,6 @@ static class CharacterConstants
     public const int TEMPORARY_CHARACTER_ID_OFFSET = CHARACTER_ID_RANGE * (int)CharacterType.Temporary;
     public const int CREATE_CHARACTER_ID_OFFSET = CHARACTER_ID_RANGE * (int)CharacterType.Create;
     public const int STORY_CHARACTER_ID_OFFSET = CHARACTER_ID_RANGE * (int)CharacterType.Story;
-
 }
 
 enum StoryCharacterId

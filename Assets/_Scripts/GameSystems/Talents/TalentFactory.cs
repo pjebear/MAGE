@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 static class TalentFactory
 {
     private static string TAG = "TalentFactory";
-    public static Talent CheckoutTalent(TalentId talentId, int pointsAssigned)
+    public static Talent CheckoutTalent(TalentId talentId, int pointsAssigned = 0)
     {
         Talent talent = null;
         switch (talentId)

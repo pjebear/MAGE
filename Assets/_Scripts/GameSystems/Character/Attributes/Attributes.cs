@@ -15,7 +15,6 @@ class Attributes
                 new Attribute[(int)CharacterStat.NUM]
                 , new Attribute[(int)ResourceType.NUM]
                 , new Attribute[(int)AllignmentType.NUM]
-                , new Attribute[(int)ProficiencyType.NUM]
             };
             for (int categoryIdx = 0; categoryIdx < (int)AttributeCategory.NUM; ++categoryIdx)
             {
@@ -75,7 +74,7 @@ class Attributes
     {
         for (int attributeCategory = 0; attributeCategory < attributes.Count; ++attributeCategory)
         {
-            Logger.Assert(attributes[attributeCategory].AttributeCategory == (AttributeCategory)attributeCategory, LogTag.Character, "Attributes",
+            Logger.Assert(attributes[attributeCategory].AttributeCategory == attributeCategory, LogTag.Character, "Attributes",
                 string.Format("Invalid attribute category for db attributes. Expected {0}, Got {1}",
                 ((AttributeCategory)attributeCategory).ToString(), attributes[attributeCategory].AttributeCategory.ToString()), LogLevel.Error);
 
@@ -84,7 +83,7 @@ class Attributes
                 attributeCategory, mAttributes[attributeCategory].Length, attributes[attributeCategory].Attributes.Count), LogLevel.Error);
 
             if (attributes[attributeCategory].Attributes.Count == mAttributes[attributeCategory].Length 
-                && attributes[attributeCategory].AttributeCategory == (AttributeCategory)attributeCategory)
+                && attributes[attributeCategory].AttributeCategory == attributeCategory)
             {
                 for (int attributeIdx = 0; attributeIdx < mAttributes[attributeCategory].Length; ++attributeIdx)
                 {

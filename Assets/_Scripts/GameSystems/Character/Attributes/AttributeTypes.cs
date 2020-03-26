@@ -44,12 +44,6 @@ struct AttributeIndex
         return lhs.Type != rhs.Type || lhs.Index != rhs.Index;
     }
 
-    public AttributeIndex(ProficiencyType proficiencyType)
-    {
-        Type = AttributeCategory.Proficiency;
-        Index = (int)proficiencyType;
-    }
-
     public AttributeIndex(PrimaryStat stat)
     {
         Type = AttributeCategory.Stat;
@@ -91,13 +85,6 @@ struct AttributeModifier
         AttributeIndex = index;
         ModifierType = type;
         Delta = delta;
-    }
-
-    public AttributeModifier(ProficiencyType proficiencyType)
-    {
-        AttributeIndex = new AttributeIndex(AttributeCategory.Proficiency, (int)proficiencyType);
-        ModifierType = ModifierType.Increment;
-        Delta = 1;
     }
 
     public AttributeModifier(PrimaryStat stat, ModifierType type, float delta)

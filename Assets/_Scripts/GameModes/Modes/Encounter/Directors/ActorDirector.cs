@@ -29,10 +29,10 @@ class ActorDirector : MonoBehaviour
         
     }
 
-    public ActorController AddActor(EncounterCharacter actor, TileIdx atIdx)
+    public ActorController AddActor(ActorSpawnParams actorParams, EncounterCharacter actor, TileIdx atIdx)
     {
         Transform actorParent = GameObject.Find("Actors").transform;
-        ActorController actorController = GameModesModule.ActorLoader.CreateActor(actor, actorParent);
+        ActorController actorController = GameModesModule.ActorLoader.CreateActor(actorParams, actorParent);
         actorController.Initialize(actor);
         ActorControllerLookup.Add(actor, actorController);
 

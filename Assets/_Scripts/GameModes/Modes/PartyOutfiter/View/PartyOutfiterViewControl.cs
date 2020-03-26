@@ -115,7 +115,7 @@ class PartyOutfiterViewControl : UIContainerControl
             GameObject.Destroy(mCharacterSpawnPoint.GetChild(0).gameObject);
         }
 
-        GameModesModule.ActorLoader.CreateActor(CharacterLoader.LoadCharacter(mOutfitingCharacter), mCharacterSpawnPoint);
+        GameModesModule.ActorLoader.CreateActor(CharacterUtil.ActorParamsForCharacter(mOutfitingCharacter), mCharacterSpawnPoint);
     }
 }
 

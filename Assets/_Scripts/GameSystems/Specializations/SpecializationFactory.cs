@@ -7,81 +7,52 @@ using System.Threading.Tasks;
 
 static class SpecializationFactory
 {
-    public static SpecializationInfo CheckoutSpecializationInfo(SpecializationType type)
+    public static Specialization CheckoutSpecialization(SpecializationType type, DB.Character.DBSpecializationInfo specializationInfo = null)
     {
-        SpecializationInfo info = new SpecializationInfo();
-        info.SpecializationType = type;
+        DB.DBSpecialization dbSpecialization = DB.DBHelper.LoadSpecialization(type);
 
-        switch (type)
+        Specialization specialization = new Specialization();
+        specialization.SpecializationType = type;
+
+        if (specializationInfo != null)
         {
-            case (SpecializationType.Footman):
-                {
-                    // Proficiencies
-                    info.BaseProficiencyModifiers.Add(new AttributeModifier(ProficiencyType.OneHands));
-                    info.BaseProficiencyModifiers.Add(new AttributeModifier(ProficiencyType.Sheild));
-                    info.BaseProficiencyModifiers.Add(new AttributeModifier(ProficiencyType.Chain));
-                    info.BaseProficiencyModifiers.Add(new AttributeModifier(ProficiencyType.Leather));
-
-                    // LevelupModifiers
-                    info.LevelUpModifiers.Add(new AttributeModifier(PrimaryStat.Might, ModifierType.Increment, 4));
-                    info.LevelUpModifiers.Add(new AttributeModifier(PrimaryStat.Finese, ModifierType.Increment, 3));
-                    info.LevelUpModifiers.Add(new AttributeModifier(PrimaryStat.Magic, ModifierType.Increment, 2));
-
-                    info.LevelUpModifiers.Add(new AttributeModifier(SecondaryStat.Fortitude, ModifierType.Increment, 5));
-                    info.LevelUpModifiers.Add(new AttributeModifier(SecondaryStat.Attunement, ModifierType.Increment, 1));
-
-                    // Action modifiers
-                    // empty
-
-                    // Actions
-                    // empty
-
-                    // Auras
-                    // empty
-
-                    // Listeners
-                    // empty
-
-                    // Talents
-                    info.Talents.AddRange(new List<TalentId>() { TalentId.BlockIncrease, TalentId.MightyBlow });
-                }
-                break;
-
-            case (SpecializationType.Monk):
-                {
-                    // Proficiencies
-                    info.BaseProficiencyModifiers.Add(new AttributeModifier(ProficiencyType.Staff));
-                    info.BaseProficiencyModifiers.Add(new AttributeModifier(ProficiencyType.Cloth));
-
-                    // LevelupModifiers
-                    info.LevelUpModifiers.Add(new AttributeModifier(PrimaryStat.Might, ModifierType.Increment, 2));
-                    info.LevelUpModifiers.Add(new AttributeModifier(PrimaryStat.Finese, ModifierType.Increment, 1));
-                    info.LevelUpModifiers.Add(new AttributeModifier(PrimaryStat.Magic, ModifierType.Increment, 4));
-
-                    info.LevelUpModifiers.Add(new AttributeModifier(SecondaryStat.Fortitude, ModifierType.Increment, 1));
-                    info.LevelUpModifiers.Add(new AttributeModifier(SecondaryStat.Attunement, ModifierType.Increment, 5));
-
-                    // Action modifiers
-                    // empty
-
-                    // Actions
-                    info.Actions.Add(ActionId.Heal);
-                    info.Actions.Add(ActionId.Protection);
-
-
-                    // Auras
-                    // empty
-
-                    // Listeners
-                    // empty
-
-                    // Talents
-                    info.Talents.AddRange(new List<TalentId>() { TalentId.HealIncrease, TalentId.HealOnHurt});
-                }
-                break;
+            specialization.Level = specializationInfo.Level;
+            specialization.Experience = specializationInfo.Experience;
         }
 
-        return info;
+        foreach (int talentId in dbSpecialization.TalentIds)
+        {
+            int assignedPoints = 0;
+
+            if (specializationInfo != null)
+            {
+                DB.Character.Talent talent = specializationInfo.Talents.Find(x => x.TalentId == talentId);
+                if (talent != null)
+                {
+                    assignedPoints = talent.AssignedPoints;
+                }
+            }
+
+            specialization.Talents.Add((TalentId)talentId, TalentFactory.CheckoutTalent((TalentId)talentId, assignedPoints));
+        }
+
+        foreach (int actionId in dbSpecialization.ActionIds)
+        {
+            specialization.Actions.Add((ActionId)actionId);
+        }
+
+        foreach (int proficiency in dbSpecialization.Proficiencies)
+        {
+            specialization.Proficiencies.Add((ProficiencyType)proficiency);
+        }
+
+        foreach (DB.DBAttribute levelupModifier in dbSpecialization.LevelUpModifiers)
+        {
+            AttributeIndex attributeIndex = new AttributeIndex((AttributeCategory)levelupModifier.AttributeCategory, levelupModifier.AttributeId);
+            specialization.LevelUpModifiers.Add(new AttributeModifier(attributeIndex, ModifierType.Increment, levelupModifier.Value));
+        }
+
+        return specialization;
     }
 }
 

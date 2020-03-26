@@ -9,24 +9,15 @@ class Character
     public int Id;
     public string Name;
     public int Experience;
-    public SpecializationType Specialization;
+    public int Level;
+    public Specialization Specialization;
     public Attributes Attributes;
-
-    public List<IActionModifier> ActionModifiers = new  List<IActionModifier>();
-    public List<ActionId> Actions = new List<ActionId>();
-    public List<AuraType> Auras = new List<AuraType>();
-    public List<ActionResponseId> Listeners = new List<ActionResponseId>();
 
     public Equipment Equipment = new Equipment();
 
-    public Character(int id, DB.DBCharacterInfo info)
-    {
-        Id = id;
-        Name = info.Name;
-        Experience = info.Experience;
-
-        Attributes = new Attributes(info.Attributes);
-        Specialization = info.CurrentSpecialization;
-    }
+    public List<IActionModifier> ActionModifiers = new List<IActionModifier>();
+    public List<ActionId> Actions = new List<ActionId>();
+    public List<AuraType> Auras = new List<AuraType>();
+    public List<ActionResponseId> Listeners = new List<ActionResponseId>();
 }
 

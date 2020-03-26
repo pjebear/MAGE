@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace DB
 {
-    class SpecializationDB : DBBase<int, DBSpecialization>
+    class CharacterDB : DBBase<int, DBCharacter>
     {
-        public SpecializationDB() : base("SpecializationDB")
+        public CharacterDB() : base("CharacterDB")
         {
         }
 
@@ -16,7 +16,7 @@ namespace DB
         class Entry
         {
             public int Key;
-            public DBSpecialization Value;
+            public DBCharacter Value;
         }
 
         [System.Serializable]
@@ -37,14 +37,14 @@ namespace DB
 
             string jsonString = UnityEngine.JsonUtility.ToJson(list);
 
-            FileUtil.WriteFile(path, FileUtil.FileName.SpecializationDB.ToString(), jsonString);
+            FileUtil.WriteFile(path, FileUtil.FileName.CharacterDB.ToString(), jsonString);
         }
 
         public override void Load(string path)
         {
             mDB.Clear();
 
-            string jsonString = FileUtil.ReadFile(path, FileUtil.FileName.SpecializationDB.ToString());
+            string jsonString = FileUtil.ReadFile(path, FileUtil.FileName.CharacterDB.ToString());
 
             EntryList list = UnityEngine.JsonUtility.FromJson<EntryList>(jsonString);
             foreach (Entry entry in list.List)
