@@ -18,7 +18,6 @@ class GameSystem
         EncounterSystem = new EncounterSystem();
     }
 
-  
     // ! Encounter
     public void PrepareEncounter(EncounterCreateParams encounterParams)
     {
@@ -44,6 +43,15 @@ class GameSystem
         return PartySystem.GetCharactersInParty();
     }
 
+    public Inventory GetInventory()
+    {
+        return PartySystem.GetInventory();
+    }
+
+    public void AddToInventory(int itemId)
+    {
+        PartySystem.AddToInventory(itemId);
+    }
 
     //! Party End
 
@@ -53,6 +61,11 @@ class GameSystem
         CreateSpecializationDB();
 
         PartySystem.CreateDefaultParty();
+    }
+
+    public void Save()
+    {
+        PartySystem.Save();
     }
 
     public void Load(string saveFileName)

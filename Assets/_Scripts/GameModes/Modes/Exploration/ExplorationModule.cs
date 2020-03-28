@@ -7,9 +7,14 @@ using UnityEngine;
 
 class ExplorationModule : GameModeBase, IInputHandler
 {
+    ExplorationMenuViewControl MenuControl;
+
     protected override void SetupMode()
     {
         InputManager.Instance.RegisterHandler(this, false);
+
+        MenuControl = new ExplorationMenuViewControl();
+
         GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.ModeSetup_Complete));
     }
 
@@ -21,12 +26,12 @@ class ExplorationModule : GameModeBase, IInputHandler
 
     protected override void StartMode()
     {
-        
+        MenuControl.Show();
     }
 
     protected override void EndMode()
     {
-        
+        MenuControl.Hide();
     }
 
     public override GameModeType GetGameModeType()

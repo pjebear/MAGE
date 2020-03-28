@@ -141,6 +141,11 @@ class GameModesModule
         TransitionTo(GameModeType.PartyOutfiter);
     }
 
+    public void Quit()
+    {
+        TransitionTo(GameModeType.MainMenu);
+    }
+
     protected override string GetAssetPath()
     {
         return "GameModes";

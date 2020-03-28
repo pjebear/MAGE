@@ -18,6 +18,7 @@ namespace DB
         [System.Serializable]
         class DBSpecializationInfo : DBEntryBase
         {
+            public int SpecializationType = 0;
             public int Experience = 0;
             public int Level = 0;
             public List<Talent> Talents = new List<Talent>();
@@ -27,6 +28,7 @@ namespace DB
                 DBSpecializationInfo from = _from as DBSpecializationInfo;
                 DBSpecializationInfo to = _to as DBSpecializationInfo;
 
+                to.SpecializationType = from.SpecializationType;
                 to.Level = from.Level;
                 to.Experience = from.Experience;
 

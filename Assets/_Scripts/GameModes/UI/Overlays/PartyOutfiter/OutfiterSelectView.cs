@@ -12,6 +12,8 @@ class OutfiterSelectView : UIContainer
         ExitBtn,
         CharacterSelectLeftBtn,
         CharacterSelectRightBtn,
+        EquipBtn,
+        SpecBtn,
 
         NUM
     }
@@ -31,6 +33,8 @@ class OutfiterSelectView : UIContainer
     public UIButton CharacterSelectLeftBtn;
     public UIText SelectedCharacterText;
     public UIButton CharacterSelectRightBtn;
+    public UIButton SpecBtn;
+    public UIButton EquipBtn;
 
     public override void Publish(IDataProvider dataProvider)
     {
@@ -43,6 +47,8 @@ class OutfiterSelectView : UIContainer
     {
         CharacterSelectLeftBtn.Init((int)ComponentId.CharacterSelectLeftBtn, this);
         CharacterSelectRightBtn.Init((int)ComponentId.CharacterSelectRightBtn, this);
+        SpecBtn.Init((int)ComponentId.SpecBtn, this);
+        EquipBtn.Init((int)ComponentId.EquipBtn, this);
         ExitButton.Init((int)ComponentId.ExitBtn, this);
     }
 

@@ -35,6 +35,30 @@ static class EquipmentUtil
         return proficiencyType;
     }
 
+    public static bool FitsInSlot(EquipableCategory category, Equipment.Slot slot)
+    {
+        bool fits = false;
+
+        switch (category)
+        {
+            case EquipableCategory.Accessory:
+                fits = slot == Equipment.Slot.Accessory;
+                break;
+
+            case EquipableCategory.Armor:
+                fits = slot == Equipment.Slot.Armor;
+                break;
+
+            case EquipableCategory.Shield:
+            case EquipableCategory.TwoHandWeapon:
+            case EquipableCategory.OneHandWeapon:
+                fits = slot == Equipment.Slot.LeftHand || slot == Equipment.Slot.RightHand;
+                break;
+        }
+
+        return fits;
+    }
+
     public static ProficiencyType EquipableTagToProficiency(EquipableCategory category, int equipableType)
     {
         ProficiencyType proficiencyType = ProficiencyType.INVALID;

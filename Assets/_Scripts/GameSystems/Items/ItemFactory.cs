@@ -22,6 +22,16 @@ static class ItemFactory
                 tag = new EquipableTag(OneHandWeaponType.Sword);
                 break;
 
+            case EquippableId.Axe_0:
+                appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Axe_0;
+                tag = new EquipableTag(OneHandWeaponType.Axe);
+                break;
+
+            case EquippableId.Mace_0:
+                appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Mace_0;
+                tag = new EquipableTag(OneHandWeaponType.Mace);
+                break;
+
             case EquippableId.Shield_0:
                 appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Shield_0;
                 tag = new EquipableTag(ShieldType.Shield);
@@ -35,6 +45,11 @@ static class ItemFactory
             case EquippableId.ChainArmor_0:
                 appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Chain_0;
                 tag = new EquipableTag(ArmorType.Chain);
+                break;
+
+            case EquippableId.LeatherArmor_0:
+                appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Leather_0;
+                tag = new EquipableTag(ArmorType.Leather);
                 break;
 
             case EquippableId.ClothArmor_0:

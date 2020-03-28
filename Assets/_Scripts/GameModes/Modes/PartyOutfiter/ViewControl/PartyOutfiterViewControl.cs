@@ -9,7 +9,9 @@ class PartyOutfiterViewControl : UIContainerControl
 {
     private Transform mCharacterSpawnPoint;
 
-    public List<ICharacterOutfiter> CharacterOutfiters;
+    private ICharacterOutfiter mSpecOutfiter = new SpecializationOutfiterViewControl();
+    private ICharacterOutfiter mEquipmentOutfiter = new EquipmentOutfiterViewControl();
+
     private ICharacterOutfiter mOutfiter;
     public int mOutfiterIdx = 0;
 
@@ -19,7 +21,6 @@ class PartyOutfiterViewControl : UIContainerControl
 
     public void Init(Transform characterSpawnPoint)
     {
-        CharacterOutfiters = new List<ICharacterOutfiter>() { new SpecializationOutfiterViewControl() };
         mCharacterSpawnPoint = characterSpawnPoint;
     }
 
@@ -30,8 +31,8 @@ class PartyOutfiterViewControl : UIContainerControl
         mOutfitingCharacter = DB.DBHelper.LoadCharacter(mCharacterIds[mCharacterIdx]);
         SpawnCharacter();
 
-        mOutfiter = CharacterOutfiters[mOutfiterIdx];
-        mOutfiter.BeginOutfitting(mOutfitingCharacter, () => { SpawnCharacter(); });
+        SetOutfiter(mEquipmentOutfiter);
+
         UIManager.Instance.PostContainer(UIContainerId.OutfiterSelectView, this);
     }
 
@@ -45,31 +46,48 @@ class PartyOutfiterViewControl : UIContainerControl
         switch (containerId)
         {
             case (int)UIContainerId.OutfiterSelectView:
+            {
+                if (interactionInfo.InteractionType == UIInteractionType.Click)
                 {
-                    if (interactionInfo.InteractionType == UIInteractionType.Click)
+                    switch (interactionInfo.ComponentId)
                     {
-                        switch (interactionInfo.ComponentId)
-                        {
-                            case (int)OutfiterSelectView.ComponentId.CharacterSelectLeftBtn:
-                                {
-                                    CycleCharacter(-1);
-                                }
-                                break;
+                        case (int)OutfiterSelectView.ComponentId.CharacterSelectLeftBtn:
+                            {
+                                CycleCharacter(-1);
+                            }
+                            break;
 
-                            case (int)OutfiterSelectView.ComponentId.CharacterSelectRightBtn:
-                                {
-                                    CycleCharacter(1);
-                                }
-                                break;
-                            case (int)OutfiterSelectView.ComponentId.ExitBtn:
-                                {
-                                    GameModesModule.Instance.Explore();
-                                }
-                                break;
+                        case (int)OutfiterSelectView.ComponentId.CharacterSelectRightBtn:
+                            {
+                                CycleCharacter(1);
+                            }
+                            break;
+                        case (int)OutfiterSelectView.ComponentId.ExitBtn:
+                            {
+                                GameModesModule.Instance.Explore();
+                            }
+                            break;
+                        case (int)OutfiterSelectView.ComponentId.EquipBtn:
+                        {
+                            if (mOutfiter != mEquipmentOutfiter)
+                            {
+                                SetOutfiter(mEquipmentOutfiter);
+                            }
                         }
+                        break;
+
+                        case (int)OutfiterSelectView.ComponentId.SpecBtn:
+                        {
+                            if (mOutfiter != mSpecOutfiter)
+                            {
+                                SetOutfiter(mSpecOutfiter);
+                            }
+                        }
+                        break;
                     }
                 }
-                break;
+            }
+            break;
         }
     }
 
@@ -85,6 +103,18 @@ class PartyOutfiterViewControl : UIContainerControl
         dataProvider.character = mOutfitingCharacter.CharacterInfo.Name;
 
         return dataProvider;
+    }
+
+    private void SetOutfiter(ICharacterOutfiter outfiter)
+    {
+        if (mOutfiter != null)
+        {
+            mOutfiter.Cleanup();
+        }
+
+        mOutfiter = outfiter;
+
+        mOutfiter.BeginOutfitting(mOutfitingCharacter, () => { SpawnCharacter(); });
     }
 
     private void CycleCharacter(int direction)

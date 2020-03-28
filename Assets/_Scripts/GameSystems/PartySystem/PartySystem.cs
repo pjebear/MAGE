@@ -9,7 +9,7 @@ class PartySystem
 {
     private string TAG = "PartySystem";
 
-    private string SaveFileName = "";
+    private string mSaveFileName = "";
 
     private Party Party = new Party();
 
@@ -42,11 +42,34 @@ class PartySystem
                 Party.Inventory.Add(equippedItem);
             }
         }
+
+        List<int> defaultInventory = new List<int>()
+        {
+             (int)EquippableId.Axe_0
+             , (int)EquippableId.Mace_0
+             , (int)EquippableId.Sword_0
+             , (int)EquippableId.LeatherArmor_0
+        };
+
+        foreach (int itemId in defaultInventory)
+        {
+            Party.Inventory.Add(itemId);
+        }
     }
 
     public List<int> GetCharactersInParty()
     {
         return new List<int>(Party.CharacterIds);
+    }
+
+    public Inventory GetInventory()
+    {
+        return Party.Inventory;
+    }
+
+    public void AddToInventory(int itemId)
+    {
+        Party.Inventory.Add(itemId);
     }
 
     public void PrepareForEncounter(EncounterCreateParams createParams)
@@ -109,10 +132,13 @@ class PartySystem
 
     public void Save()
     {
-        string saveFileName = SaveFileName != "" ? SaveFileName : SaveLoadUtil.GetNextAvailableSaveFileName();
+        if (mSaveFileName == "")
+        {
+            mSaveFileName = SaveLoadUtil.GetNextAvailableSaveFileName();
+        }
 
         SaveLoad.SaveFile saveFile = new SaveLoad.SaveFile();
-        saveFile.Name = SaveFileName != "" ? SaveFileName : SaveLoadUtil.GetNextAvailableSaveFileName();
+        saveFile.Name = mSaveFileName;
 
         SaveLoadUtil.AddParty(saveFile, Party);
 
@@ -123,7 +149,7 @@ class PartySystem
     {
         SaveLoad.SaveFile saveFile = SaveLoadUtil.Load(saveFileName);
 
-        SaveFileName = saveFile.Name;
+        mSaveFileName = saveFile.Name;
         Party = SaveLoadUtil.ExtractParty(saveFile);
     }
 }

@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-abstract class IDataProvider
+class IDataProvider
 {
-    
+    public static IDataProvider Empty { get { return new IDataProvider(); } }
+    protected IDataProvider() { }
 }
 
 abstract class UIComponentBase : MonoBehaviour

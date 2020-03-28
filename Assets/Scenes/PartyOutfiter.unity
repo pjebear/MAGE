@@ -188,6 +188,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Modules
       objectReference: {fileID: 0}
+    - target: {fileID: 3041627826278635041, guid: a72b7ec8236cc4f43a2695c4d01e4bf8,
+        type: 3}
+      propertyPath: DebugRun
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3543582949942244969, guid: a72b7ec8236cc4f43a2695c4d01e4bf8,
         type: 3}
       propertyPath: DebugRun

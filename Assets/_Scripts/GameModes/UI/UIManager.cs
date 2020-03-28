@@ -8,6 +8,8 @@ public enum UIContainerId
 {
     ActorActionsView,
     EncounterStatusView,
+    EquipmentOutfiterView,
+    ExplorationMenuView,
     MainMenuView,
     OutfiterSelectView,
     SpecializationOutfiterView,

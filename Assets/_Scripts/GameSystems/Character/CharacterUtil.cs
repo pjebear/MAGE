@@ -13,20 +13,26 @@ static class CharacterUtil
     {
         DB.DBCharacter emptyCharacter = new DB.DBCharacter();
 
+        // Equipment
         emptyCharacter.Equipment = Enumerable.Repeat((int)EquippableId.INVALID, (int)Equipment.Slot.NUM).ToList();
 
+        // Attributes
         emptyCharacter.CharacterInfo.Attributes = Enumerable.Repeat(new DB.DBAttributes(), (int)AttributeCategory.NUM).ToList();
-
         emptyCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat]        = new DB.DBAttributes() { AttributeCategory = (int)AttributeCategory.Stat,           Attributes = Enumerable.Repeat(0f, (int)CharacterStat.NUM).ToList() };
         emptyCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Resource]    = new DB.DBAttributes() { AttributeCategory = (int)AttributeCategory.Resource,       Attributes = Enumerable.Repeat(0f, (int)ResourceType.NUM).ToList() };
         emptyCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Allignment]  = new DB.DBAttributes() { AttributeCategory = (int)AttributeCategory.Allignment,     Attributes = Enumerable.Repeat(0f, (int)AllignmentType.NUM).ToList() };
-
+        
+        // Sanity Check
         foreach (DB.DBAttributes attributes in emptyCharacter.CharacterInfo.Attributes)
         {
             Logger.Assert(attributes.Attributes.Count > 0, LogTag.Character, TAG, "Missing Attributes", LogLevel.Warning);
         }
 
-        emptyCharacter.Specializations = Enumerable.Repeat(new DB.Character.DBSpecializationInfo(), (int)SpecializationType.NUM).ToList();
+        // Specializations
+        for (int i = 0; i < (int)SpecializationType.NUM; ++i)
+        {
+            emptyCharacter.Specializations.Add(new DB.Character.DBSpecializationInfo() { SpecializationType = i });
+        }
 
         return emptyCharacter;
     }
