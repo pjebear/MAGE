@@ -71,9 +71,9 @@ class UnitHealthCondition : EncounterCondition
 
     public override bool IsConditionMet(EncounterModel model)
     {
-        Debug.Assert(model.Actors.ContainsKey(mUnitId));
+        Debug.Assert(model.Characters.ContainsKey(mUnitId));
 
-        float healthPercent = model.Actors[mUnitId].Resources[ResourceType.Health].Current / (float)model.Actors[mUnitId].Resources[ResourceType.Health].Max;
+        float healthPercent = model.Characters[mUnitId].Resources[ResourceType.Health].Current / (float)model.Characters[mUnitId].Resources[ResourceType.Health].Max;
 
         return Condition.Compare(healthPercent, mHealthPercent, Operator);
     }

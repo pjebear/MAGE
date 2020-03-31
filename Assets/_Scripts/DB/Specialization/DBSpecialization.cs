@@ -13,6 +13,8 @@ namespace DB
         public List<int> TalentIds = new List<int>();
         public List<int> Proficiencies = new List<int>();
         public List<int> ActionIds = new List<int>();
+        public List<int> AuraIds = new List<int>();
+        public List<int> ResponseListenerIds = new List<int>();
         public List<DBAttribute> LevelUpModifiers = new List<DBAttribute>();
 
         public override void Copy(DBEntryBase _from, DBEntryBase _to)
@@ -24,6 +26,8 @@ namespace DB
             to.TalentIds = new List<int>(from.TalentIds);
             to.Proficiencies = new List<int>(from.Proficiencies);
             to.ActionIds = new List<int>(from.ActionIds);
+            to.AuraIds = new List<int>(from.AuraIds);
+            to.ResponseListenerIds = new List<int>(from.ResponseListenerIds);
 
             to.LevelUpModifiers.Clear();
             foreach (DBAttribute attribute in from.LevelUpModifiers)

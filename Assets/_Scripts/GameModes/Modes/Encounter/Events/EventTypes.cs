@@ -36,17 +36,24 @@ class AnimationEvent : ActionEvent
     public AnimationPlaceholder Animation;
     public Transform FocusTarget;
 
-    public AnimationEvent(EncounterCharacter actor, AnimationPlaceholder animation, int startPointOffset)
+    public AnimationEvent(EncounterCharacter actor, AnimationPlaceholder animation, int startPointOffset, Transform focusTarget)
         : base(startPointOffset, animation.NumFrames)
     {
         BeingAnimated = actor;
         Animation = animation;
+        FocusTarget = focusTarget;
     }
 
     public override void Trigger()
     {
-        ActorController controller = EncounterModule.ActorDirector.GetController(BeingAnimated);
+        EncounterActorController controller = EncounterModule.CharacterDirector.GetController(BeingAnimated);
         EncounterModule.AnimationDirector.AnimateActor(controller, Animation);
+
+        if (FocusTarget != null)
+        {
+            float rotationDuration = AnimationConstants.SECONDS_PER_FRAME * Animation.SyncedFrame;
+            EncounterModule.AnimationDirector.RotateActorTowards(controller, FocusTarget, rotationDuration);
+        }
     }
 }
 
@@ -64,7 +71,7 @@ class StateChangeEvent : ActionEvent
 
     public override void Trigger()
     {
-        EncounterModule.ActorDirector.ActorControllerLookup[HavingStateChanged].DisplayStateChange(StateChange);
+        EncounterModule.CharacterDirector.CharacterActorLookup[HavingStateChanged].DisplayStateChange(StateChange);
     }
 }
 

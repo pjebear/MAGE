@@ -7,54 +7,112 @@ using UnityEngine;
 
 static class ItemFactory
 {
-    public static Equippable CreateEquipable(ItemId itemId)
+    public static Equippable LoadEquipable(EquippableId id)
+    {
+        //Equippable equippable = new Equippable();
+        DB.DBEquipment dbEquipment = DB.DBHelper.LoadEquipment((int)id);
+
+        EquippableTag tag = new EquippableTag((EquippableCategory)dbEquipment.Category, dbEquipment.Type);
+
+        // Appearance
+        Appearance appearance = new Appearance(dbEquipment.AppearanceIds);
+        
+        // Equip Bonuses
+        List<AttributeModifier> equipBonuses = new List<AttributeModifier>();
+        foreach (DB.DBAttributeModifier dbModifier in dbEquipment.EquipBonuses)
+        {
+            equipBonuses.Add(new AttributeModifier(
+                new AttributeIndex((AttributeCategory)dbModifier.AttributeCategory, dbModifier.AttributeId)
+                , (ModifierType)dbModifier.ModifierType
+                , dbModifier.Modifier));
+        }
+
+        // Proficiency Modifiers
+        List<AttributeScalar> proficiencyBonuses = new List<AttributeScalar>();
+        foreach (DB.DBAttributeScalar attributeScalar in dbEquipment.EffectivenessScalars)
+        {
+            proficiencyBonuses.Add(new AttributeScalar(
+                new AttributeIndex((AttributeCategory)attributeScalar.AttributeCategory, attributeScalar.AttributeId)
+                , attributeScalar.Scalar));
+        }
+
+        EquippableCategory category = (EquippableCategory)dbEquipment.Category;
+
+        Equippable equippable = null;
+
+        switch (category)
+        {
+            case EquippableCategory.Accessory:
+            case EquippableCategory.Armor:
+                equippable = new Equippable(id, tag, appearance, equipBonuses);
+                break;
+
+            case EquippableCategory.OneHandWeapon:
+            case EquippableCategory.TwoHandWeapon:
+            case EquippableCategory.Shield:
+            {
+                int numHandsRequired = category == EquippableCategory.TwoHandWeapon ? 2 : 1;
+                equippable = new HeldEquippable(numHandsRequired, dbEquipment.BlockChance, dbEquipment.ParryChance, proficiencyBonuses, id, tag, appearance, equipBonuses);
+            }
+            break;
+
+            default:
+                Debug.Assert(false);
+                break;
+
+        }
+
+        return equippable;
+    }
+
+    static Equippable CreateEquipable(ItemId itemId)
     {
         Appearance appearance = new Appearance();
 
         Debug.Assert(ItemUtil.TypeFromId((int)itemId) == ItemType.Equippable);
         EquippableId equippableId = (EquippableId)itemId;
-        EquipableTag tag = null;
+        EquippableTag tag = null;
 
         switch (equippableId)
         {
             case EquippableId.Sword_0:
                 appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Sword_0;
-                tag = new EquipableTag(OneHandWeaponType.Sword);
+                tag = new EquippableTag(OneHandWeaponType.Sword);
                 break;
 
             case EquippableId.Axe_0:
                 appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Axe_0;
-                tag = new EquipableTag(OneHandWeaponType.Axe);
+                tag = new EquippableTag(OneHandWeaponType.Axe);
                 break;
 
             case EquippableId.Mace_0:
                 appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Mace_0;
-                tag = new EquipableTag(OneHandWeaponType.Mace);
+                tag = new EquippableTag(OneHandWeaponType.Mace);
                 break;
 
             case EquippableId.Shield_0:
                 appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Shield_0;
-                tag = new EquipableTag(ShieldType.Shield);
+                tag = new EquippableTag(ShieldType.Shield);
                 break;
 
             case EquippableId.Staff_0:
                 appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Staff_0;
-                tag = new EquipableTag(TwoHandWeaponType.Staff);
+                tag = new EquippableTag(TwoHandWeaponType.Staff);
                 break;
 
             case EquippableId.ChainArmor_0:
                 appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Chain_0;
-                tag = new EquipableTag(ArmorType.Chain);
+                tag = new EquippableTag(ArmorType.Chain);
                 break;
 
             case EquippableId.LeatherArmor_0:
                 appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Leather_0;
-                tag = new EquipableTag(ArmorType.Leather);
+                tag = new EquippableTag(ArmorType.Leather);
                 break;
 
             case EquippableId.ClothArmor_0:
                 appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Cloth_0;
-                tag = new EquipableTag(ArmorType.Cloth);
+                tag = new EquippableTag(ArmorType.Cloth);
                 break;
 
             default:
@@ -62,7 +120,7 @@ static class ItemFactory
                 break;
         }
 
-        return new Equippable(equippableId, tag, appearance);
+        return new Equippable(equippableId, tag, appearance, new List<AttributeModifier>());
     }
 }
 

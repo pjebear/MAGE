@@ -19,7 +19,9 @@ class HealActionComposer
 
         List<ActionEvent> timelineEvents = new List<ActionEvent>();
         AnimationPlaceholder cast = AnimationFactory.CheckoutAnimation(AnimationId.Cast);
-        timelineEvents.Add(new AnimationEvent(owner, cast, 0));
+        Transform targetTransform = proposal.ActionTarget.FocalTarget.GetTargetTransform();
+        
+        timelineEvents.Add(new AnimationEvent(owner, cast, 0, targetTransform));
 
         List<EncounterCharacter> targets = EncounterModule.Map.GetActors(proposal.ActionTarget);
         List<InteractionResult> interactionResults = InteractionResolver.ResolveInteraction(owner, actionInfo, targets);
@@ -42,14 +44,14 @@ class HealActionComposer
                 }
             }
 
-            EffectPlaceholder healEffect = EffectFactory.GetEffectPlaceholder(EffectType.Heal, EncounterModule.Map.GetActorsTile(target).transform);
+            EffectPlaceholder healEffect = EffectFactory.GetEffectPlaceholder(EffectType.Heal, targetTransform);
             SyncPoint.Syncronize(cast, AllignmentPosition.Interaction, healEffect, AllignmentPosition.Start, 0);
 
             timelineEvents.Add(new EffectSpawnEvent(healEffect, healEffect.Parent.GetAbsoluteOffset(AllignmentPosition.Start)));
 
             AnimationPlaceholder targetReaction = AnimationFactory.CheckoutAnimation(AnimationUtil.InteractionResultTypeToAnimationId(interactionResult.InteractionResultType));
             SyncPoint.Syncronize(healEffect, AllignmentPosition.Interaction, targetReaction, AllignmentPosition.Interaction, 0);
-            timelineEvents.Add(new AnimationEvent(target, targetReaction, targetReaction.Parent.GetAbsoluteOffset(AllignmentPosition.Start)));
+            timelineEvents.Add(new AnimationEvent(target, targetReaction, targetReaction.Parent.GetAbsoluteOffset(AllignmentPosition.Start), null));
             timelineEvents.Add(new StateChangeEvent(target, interactionResult.StateChange, targetReaction.Parent.GetAbsoluteOffset(AllignmentPosition.Interaction)));
         }
 

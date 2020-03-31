@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 class ActionFactory
 {
-    public static ActionInfo CreateActionInfoFromId(ActionId actionId)
+    public static ActionInfo CreateActionInfoFromId(ActionId actionId, EncounterCharacter character)
     {
         ActionInfo info = null;
 
@@ -14,28 +14,37 @@ class ActionFactory
         {
             case (ActionId.Riptose):
             case (ActionId.SwordAttack):
-                {
-                    int minCastRange = 1, maxCastRange = 1, maxCastElevationChange = 1;
-                    RangeInfo castRange = new RangeInfo(minCastRange, maxCastRange, maxCastElevationChange, AreaType.Cross);
+            {
+                int minCastRange = 1, maxCastRange = 1, maxCastElevationChange = 1;
+                RangeInfo castRange = new RangeInfo(minCastRange, maxCastRange, maxCastElevationChange, AreaType.Cross);
 
-                    int minSelectionRange = 0, maxSelectionRange = 0, maxSelectionElevationChange = 0;
-                    RangeInfo effectRange = new RangeInfo(minSelectionRange, maxSelectionRange, maxSelectionElevationChange, AreaType.Circle);
+                int minSelectionRange = 0, maxSelectionRange = 0, maxSelectionElevationChange = 0;
+                RangeInfo effectRange = new RangeInfo(minSelectionRange, maxSelectionRange, maxSelectionElevationChange, AreaType.Circle);
 
-                    info = new MeleeAttackInfo(castRange, effectRange);
-                }
+                HeldEquippable weapon = (HeldEquippable)character.Equipment[Equipment.Slot.RightHand];
+                StateChange cost = new StateChange(StateChangeType.ActionCost, 0, 0);
+
+                info = new WeaponActionInfoBase(weapon, cost, ActionRange.Meele, castRange, effectRange);
+            }
                 break;
 
             case (ActionId.MightyBlow):
-                {
-                    int minCastRange = 1, maxCastRange = 1, maxCastElevationChange = 1;
-                    RangeInfo castRange = new RangeInfo(minCastRange, maxCastRange, maxCastElevationChange, AreaType.Cross);
+            {
+                int minCastRange = 1, maxCastRange = 1, maxCastElevationChange = 1;
+                RangeInfo castRange = new RangeInfo(minCastRange, maxCastRange, maxCastElevationChange, AreaType.Cross);
 
-                    int minSelectionRange = 0, maxSelectionRange = 0, maxSelectionElevationChange = 0;
-                    RangeInfo effectRange = new RangeInfo(minSelectionRange, maxSelectionRange, maxSelectionElevationChange, AreaType.Circle);
+                int minSelectionRange = 0, maxSelectionRange = 0, maxSelectionElevationChange = 0;
+                RangeInfo effectRange = new RangeInfo(minSelectionRange, maxSelectionRange, maxSelectionElevationChange, AreaType.Circle);
 
-                    info = new MightyBlowInfo(castRange, effectRange);
-                }
-                break;
+                HeldEquippable weapon = (HeldEquippable)character.Equipment[Equipment.Slot.RightHand];
+
+                int bloodScentCount = character.GetStackCountForStatus(StatusEffectType.BloodScent, character);
+                StatusEffect bloodScentCost = StatusEffectFactory.CheckoutStatusEffect(StatusEffectType.BloodScent, character, bloodScentCount);
+                StateChange cost = new StateChange(StateChangeType.ActionCost, 0, 0, new List<StatusEffect>() { bloodScentCost } );
+
+                info = new MightyBlowInfo((HeldEquippable)character.Equipment[Equipment.Slot.RightHand], cost, ActionRange.Meele, castRange, effectRange);
+            }
+            break;
 
             case (ActionId.Heal):
                 {

@@ -15,8 +15,6 @@ enum ControlType
 
 class ExplorationActorController : MonoBehaviour, IInputHandler
 {
-    
-
     [SerializeField] private float m_moveSpeed = 2;
     [SerializeField] private float m_turnSpeed = 200;
     [SerializeField] private float m_jumpForce = 4;
@@ -88,6 +86,11 @@ class ExplorationActorController : MonoBehaviour, IInputHandler
     public void OnMouseHoverChange(GameObject mouseHover)
     {
        // empty
+    }
+
+    public void OnMouseScrolled(float delta)
+    {
+        // empty
     }
 
     public void OnKeyPressed(InputSource source, int key, InputState state)

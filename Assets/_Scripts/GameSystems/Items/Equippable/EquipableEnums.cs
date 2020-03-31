@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-enum EquipableCategory
+enum EquippableCategory
 {
     Armor,
     OneHandWeapon,
@@ -20,16 +20,19 @@ enum ArmorType
     Cloth,
     Leather,
     Chain,
-    Plate
+    Plate,
+    All
 }
 
 enum OneHandWeaponType
 {
+    Fist,
     Dagger,
     Sword,
     Axe,
     Mace,
-    Crossbow
+    Crossbow,
+    All
 }
 
 enum TwoHandWeaponType
@@ -38,13 +41,15 @@ enum TwoHandWeaponType
     BattleAxe,
     Maul,
     Staff,
-    Bow
+    Bow,
+    All
 }
 
 enum ShieldType
 {
     Shield,
-    TowerShield
+    TowerShield,
+    All
 }
 
 enum AccessoryType
@@ -63,6 +68,7 @@ enum EquippableId
     PlateArmor_0,
 
     // 1 handers
+    Fists_0,
     Dagger_0,
     Sword_0,
     Axe_0,

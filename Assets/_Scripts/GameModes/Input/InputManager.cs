@@ -35,6 +35,7 @@ class InputManager
     {
         KeyboardInputController.RegisterForKeyboardInput(KeyboardInputCB);
         MouseInputController.RegisterForMouseInput(MouseInputCB);
+        MouseInputController.RegisterForMouseScroll(MouseScrollCB);
         CameraRayCaster.RegisterForHoverChange(MouseHoverCB);
     }
 
@@ -43,6 +44,17 @@ class InputManager
         for (int i = mInputHandlers.Count - 1; i >= 0; --i)
         {
             mInputHandlers[i].Key.OnKeyPressed(InputSource.Mouse, (int)key, state);
+
+            if (mInputHandlers[i].Value)
+                break;
+        }
+    }
+
+    void MouseScrollCB(float delta)
+    {
+        for (int i = mInputHandlers.Count - 1; i >= 0; --i)
+        {
+            mInputHandlers[i].Key.OnMouseScrolled(delta);
 
             if (mInputHandlers[i].Value)
                 break;

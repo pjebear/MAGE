@@ -10,16 +10,18 @@ using UnityEngine.Events;
 
 class MouseInputController : MonoBehaviour
 {
-    private UnityAction<MouseKey, InputState> mMouseCallback;
+    private UnityAction<MouseKey, InputState> mButtonCallback;
+    private UnityAction<float> mScrollCallback;
 
     private void Awake()
     {
-        mMouseCallback = null;
+        mButtonCallback = null;
+        mScrollCallback = null;
     }
 
     void Update()
     {
-        if (mMouseCallback != null)
+        if (mButtonCallback != null)
             GetMouseInput();
     }
 
@@ -29,25 +31,33 @@ class MouseInputController : MonoBehaviour
         {
             if (UnityEngine.Input.GetMouseButtonDown(i))
             {
-                mMouseCallback((MouseKey)i, InputState.Down);
+                mButtonCallback((MouseKey)i, InputState.Down);
             }
             else if (UnityEngine.Input.GetMouseButtonUp(i))
             {
-                mMouseCallback((MouseKey)i, InputState.Up);
+                mButtonCallback((MouseKey)i, InputState.Up);
             }
             else if (UnityEngine.Input.GetMouseButton(i))
             {
-                mMouseCallback((MouseKey)i, InputState.Held);
+                mButtonCallback((MouseKey)i, InputState.Held);
             }
         }
+
+        if (Input.mouseScrollDelta.y != 0)
+        {
+            mScrollCallback(Input.mouseScrollDelta.y);
+        }
     }
-
-
 
     // public
     public void RegisterForMouseInput(UnityAction<MouseKey, InputState> mouseInputCB)
     {
-        mMouseCallback = mouseInputCB;
+        mButtonCallback = mouseInputCB;
+    }
+
+    public void RegisterForMouseScroll(UnityAction<float> mouseInputCB)
+    {
+        mScrollCallback = mouseInputCB;
     }
 }
 

@@ -35,7 +35,7 @@ class MasterFlowControl
         EncounterEventRouter.Instance.NotifyEvent(new EncounterEvent(EncounterEvent.EventType.ClockProgressed));
     }
 
-    private void Awake()
+    public void Init()
     {
         EncounterEventRouter.Instance.RegisterHandler(this);
         mState = FlowState.TurnIncrement;
@@ -55,7 +55,7 @@ class MasterFlowControl
 
     private void Update()
     {
-        while (!mIsFlowPaused)
+        if (!mIsFlowPaused)
         {
             RunFlowTick();
         }
@@ -77,13 +77,13 @@ class MasterFlowControl
             switch (mState)
             {
                 case (FlowState.StatusIncrement):
-                    EncounterModule.ActorDirector.IncrementStatusEffects();
+                    EncounterModule.CharacterDirector.IncrementStatusEffects();
 
                     ProgressState();
                     break;
 
                 case (FlowState.StatusCheck):
-                    EncounterModule.ActorDirector.ApplyStatusEffects();
+                    EncounterModule.CharacterDirector.ApplyStatusEffects();
                     ProgressState();
 
                     break;
@@ -101,7 +101,7 @@ class MasterFlowControl
                 case (FlowState.TurnIncrement):
                     EncounterModule.Model.TurnOrder.Clear();
 
-                    foreach (EncounterCharacter actor in EncounterModule.ActorDirector.ActorControllerLookup.Keys)
+                    foreach (EncounterCharacter actor in EncounterModule.Model.Characters.Values)
                     {
                         if (actor.IsAlive)
                         {

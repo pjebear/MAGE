@@ -19,7 +19,7 @@ class ProtectionActionComposer
 
         List<ActionEvent> timelineEvents = new List<ActionEvent>();
         AnimationPlaceholder cast = AnimationFactory.CheckoutAnimation(AnimationId.Cast);
-        timelineEvents.Add(new AnimationEvent(owner, cast, 0));
+        timelineEvents.Add(new AnimationEvent(owner, cast, 0, proposal.ActionTarget.FocalTarget.GetTargetTransform()));
 
         List<EncounterCharacter> targets = EncounterModule.Map.GetActors(proposal.ActionTarget);
         List<InteractionResult> interactionResults = InteractionResolver.ResolveInteraction(owner, actionInfo, targets);
@@ -49,7 +49,7 @@ class ProtectionActionComposer
 
             AnimationPlaceholder targetReaction = AnimationFactory.CheckoutAnimation(AnimationUtil.InteractionResultTypeToAnimationId(interactionResult.InteractionResultType));
             SyncPoint.Syncronize(healEffect, AllignmentPosition.Interaction, targetReaction, AllignmentPosition.Interaction, 0);
-            timelineEvents.Add(new AnimationEvent(target, targetReaction, targetReaction.Parent.GetAbsoluteOffset(AllignmentPosition.Start)));
+            timelineEvents.Add(new AnimationEvent(target, targetReaction, targetReaction.Parent.GetAbsoluteOffset(AllignmentPosition.Start), null));
             timelineEvents.Add(new StateChangeEvent(target, interactionResult.StateChange, targetReaction.Parent.GetAbsoluteOffset(AllignmentPosition.Interaction)));
         }
 

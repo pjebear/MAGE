@@ -51,7 +51,7 @@ class Tile : MonoBehaviour
     public Material[] Materials;
     public MeshRenderer Highlight;
 
-    public ActorController OnTile;
+    public EncounterActorController OnTile;
     public TileIdx Idx;
 
     private void Awake()
@@ -70,7 +70,7 @@ class Tile : MonoBehaviour
         return Vector3.Distance(transform.localPosition, otherTile.transform.localPosition);
     }
 
-    public void PlaceAtCenter(ActorController actor)
+    public void PlaceAtCenter(EncounterActorController actor)
     {
         OnTile = actor;
         actor.transform.position = transform.position;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using UnityEngine;
 
 enum AreaType
 {
@@ -87,5 +87,17 @@ class Target
     {
         TargetType = TargetSelectionType.Actor;
         ActorTarget = actorTarget;
+    }
+
+    public Transform GetTargetTransform()
+    {
+        if (TargetType == TargetSelectionType.Actor)
+        {
+            return EncounterModule.CharacterDirector.CharacterActorLookup[ActorTarget].transform;
+        }
+        else
+        {
+            return EncounterModule.Map[TileTarget].transform;
+        }
     }
 }

@@ -1,33 +1,72 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-class CameraDirector : MonoBehaviour
+class CameraDirector : MonoBehaviour, IInputHandler
 {
-
     private Transform m_currentTarget;
 
     [SerializeField]
-    private Vector3 mPositionOffset;
+    private Vector3 mTargetOffset = new Vector3(0,0,10);
 
-    [SerializeField]
-    private Vector3 mTargetOffset;
+    public float MaxFOV = 100;
+    public float MinFOV = 50;
+    public float FOV = 35;
+    public float ZoomSensitivity = 1;
+
+    public float Rotation = 0;
+    public float RotationSensitivity = 1;
+
+    public float CameraHeight = 10;
+    public float CameraHeightSensitivity = 1;
+    public float MaxCameraHeight = 13;
+    public float MinCameraHeight = 7;
 
     private int m_currentIndex;
+
+    private bool mIsScrollWheelHeld;
+    private Vector2 mCursorPosition;
+
+    private void Awake()
+    {
+        InputManager.Instance.RegisterHandler(this, false);
+    }
+
+    private void OnDestroy()
+    {
+        InputManager.Instance.ReleaseHandler(this);
+    }
+
+    private void Update()
+    {
+        if (mIsScrollWheelHeld)
+        {
+            Vector2 mousePosition = Input.mousePosition;
+
+            float deltaX = mousePosition.x - mCursorPosition.x;
+            Rotation += deltaX * RotationSensitivity;
+
+            float deltaY = mousePosition.y - mCursorPosition.y;
+
+            CameraHeight += deltaY * CameraHeightSensitivity;
+            if (CameraHeight > MaxCameraHeight) CameraHeight = MaxCameraHeight;
+            if (CameraHeight < MinCameraHeight) CameraHeight = MinCameraHeight;
+
+            mCursorPosition = mousePosition;
+        }
+    }
 
     private void LateUpdate()
     {
         if(m_currentTarget == null) { return; }
 
-        float targetHeight = m_currentTarget.position.y + mTargetOffset.y;
-        float currentRotationAngle = m_currentTarget.rotation.eulerAngles.y;
+        Camera.main.fieldOfView = FOV;
 
-        Quaternion currentRotation = Quaternion.Euler(0, currentRotationAngle, 0);
+        Vector3 offset = mTargetOffset;
+        offset.y += CameraHeight;
 
-        Vector3 position = m_currentTarget.position;
-        position += currentRotation * Vector3.forward * mTargetOffset.z;
-        position.y = targetHeight;
+        Quaternion currentRot = Quaternion.Euler(0, Rotation, 0);
 
-        transform.position = position + mPositionOffset;
+        transform.position = m_currentTarget.position + currentRot * offset;
         transform.LookAt(m_currentTarget.position + new Vector3(0, mTargetOffset.y, 0));
     }
 
@@ -39,5 +78,42 @@ class CameraDirector : MonoBehaviour
     public void ClearFocus()
     {
         m_currentTarget = null;
+    }
+
+    public void Zoom(float direction)
+    {
+        FOV += -direction * ZoomSensitivity;
+        if (FOV > MaxFOV) FOV = MaxFOV;
+        if (FOV < MinFOV) FOV = MinFOV;
+    }
+
+    // Input
+    public void OnMouseHoverChange(GameObject mouseHover)
+    {
+        // empty
+    }
+
+    public void OnKeyPressed(InputSource source, int key, InputState state)
+    {
+        if(source == InputSource.Mouse && key == (int)MouseKey.Middle )
+        {
+            if (state == InputState.Down)
+            {
+                mCursorPosition = Input.mousePosition;
+            }
+            else if (state == InputState.Held)
+            {
+                mIsScrollWheelHeld = true;
+            }
+            else if (state == InputState.Up)
+            {
+                mIsScrollWheelHeld = false;
+            }
+        }
+    }
+
+    public void OnMouseScrolled(float scrollDelta)
+    {
+        Zoom(scrollDelta);
     }
 }

@@ -675,8 +675,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3812b29fc407d784ca5a3c880e47187b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mPositionOffset: {x: 0, y: 5, z: 0}
   mTargetOffset: {x: 0, y: 0, z: 5}
+  MaxFOV: 65
+  MinFOV: 30
+  FOV: 55
+  ZoomSensitivity: 5
+  Rotation: 34
+  RotationSensitivity: 1
+  CameraHeight: 3.4999995
+  CameraHeightSensitivity: -0.05
+  MaxCameraHeight: 5
+  MinCameraHeight: 1.5
 --- !u!114 &1920230527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -756,6 +765,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Modules
+      objectReference: {fileID: 0}
+    - target: {fileID: 3041627826278635041, guid: a72b7ec8236cc4f43a2695c4d01e4bf8,
+        type: 3}
+      propertyPath: DebugRun
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a72b7ec8236cc4f43a2695c4d01e4bf8, type: 3}

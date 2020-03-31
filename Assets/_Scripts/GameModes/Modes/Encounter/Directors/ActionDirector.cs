@@ -61,7 +61,7 @@ class ActionDirector : MonoBehaviour
         {
             ApplyActionResults();
 
-            foreach (EncounterCharacter actor in EncounterModule.Model.Actors.Values)
+            foreach (EncounterCharacter actor in EncounterModule.Model.Characters.Values)
             {
                 actor.NotifyActionResults(mActionResult);
             }
@@ -86,7 +86,7 @@ class ActionDirector : MonoBehaviour
 
         foreach (var actorResultPair in mActionResult.TargetResults)
         {
-            EncounterModule.ActorDirector.ApplyStateChange(actorResultPair.Key, actorResultPair.Value.StateChange);
+            EncounterModule.CharacterDirector.ApplyStateChange(actorResultPair.Key, actorResultPair.Value.StateChange);
         }
     }
 }

@@ -9,11 +9,11 @@ class Aura : MonoBehaviour
 {
     public Collider TriggerVolume;
 
-    private Dictionary<ActorController, StatusEffect> mInAura = new Dictionary<ActorController, StatusEffect>();
+    private Dictionary<EncounterActorController, StatusEffect> mInAura = new Dictionary<EncounterActorController, StatusEffect>();
     private Vector3 UnitRangeAuraScale;
 
     private AuraInfo mAuraInfo;
-    private ActorController mOwner;
+    private EncounterActorController mOwner;
 
     private void Awake()
     {
@@ -22,7 +22,7 @@ class Aura : MonoBehaviour
         SetActive(false);
     }
 
-    public void Initialize(AuraInfo info, ActorController owner)
+    public void Initialize(AuraInfo info, EncounterActorController owner)
     {
         mAuraInfo = info;
         mOwner = owner;
@@ -40,7 +40,7 @@ class Aura : MonoBehaviour
         {
             foreach (var actorStatusPair in mInAura)
             {
-                actorStatusPair.Key.mActor.OnAuraExited(actorStatusPair.Value);
+                actorStatusPair.Key.EncounterCharacter.OnAuraExited(actorStatusPair.Value);
             }
 
             mInAura.Clear();
@@ -55,46 +55,46 @@ class Aura : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        ActorController entered = other.gameObject.GetComponentInParent<ActorController>();
+        EncounterActorController entered = other.gameObject.GetComponentInParent<EncounterActorController>();
         if (entered != null && entered != mOwner)
         {
             OnAuraEntered(entered);
         }
     }
 
-    private void OnAuraEntered(ActorController controller)
+    private void OnAuraEntered(EncounterActorController controller)
     {
         if (!mInAura.ContainsKey(controller))
         {
-            if ((controller.mActor.Team != mOwner.mActor.Team) ^ mAuraInfo.IsBeneficial)
+            if ((controller.EncounterCharacter.Team != mOwner.EncounterCharacter.Team) ^ mAuraInfo.IsBeneficial)
             {
-                StatusEffect auraEffect = StatusEffectFactory.CheckoutStatusEffect(mAuraInfo.AuraEffectType, mOwner.mActor);
+                StatusEffect auraEffect = StatusEffectFactory.CheckoutStatusEffect(mAuraInfo.AuraEffectType, mOwner.EncounterCharacter);
                 mInAura.Add(controller, auraEffect);
                 controller.DisplayStatusApplication(auraEffect);
-                controller.mActor.OnAuraEntered(auraEffect);
+                controller.EncounterCharacter.OnAuraEntered(auraEffect);
             }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        ActorController exited = other.gameObject.GetComponentInParent<ActorController>();
+        EncounterActorController exited = other.gameObject.GetComponentInParent<EncounterActorController>();
         if (exited != null && exited != mOwner)
         {
             OnAuraExited(exited);
         }
     }
 
-    private void OnAuraExited(ActorController controller)
+    private void OnAuraExited(EncounterActorController controller)
     {
         if (mInAura.ContainsKey(controller))
         {
-            if ((controller.mActor.Team != mOwner.mActor.Team) ^ mAuraInfo.IsBeneficial)
+            if ((controller.EncounterCharacter.Team != mOwner.EncounterCharacter.Team) ^ mAuraInfo.IsBeneficial)
             {
                 StatusEffect auraEffect = mInAura[controller];
                 mInAura.Remove(controller);
                 controller.DisplayStatusRemoval(auraEffect);
-                controller.mActor.OnAuraExited(auraEffect);
+                controller.EncounterCharacter.OnAuraExited(auraEffect);
             }
         }
     }

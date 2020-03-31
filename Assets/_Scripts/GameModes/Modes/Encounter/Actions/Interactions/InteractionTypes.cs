@@ -4,6 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+enum RelativeOrientation
+{
+    Front, 
+    Left,
+    Right,
+    Behind
+}
+
+enum Orientation
+{
+    Forward,
+    Right,
+    Left,
+    Back
+}
+
 class InteractionResult
 {
     public InteractionResultType InteractionResultType;

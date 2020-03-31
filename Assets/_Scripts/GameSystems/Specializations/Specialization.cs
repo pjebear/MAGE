@@ -11,6 +11,8 @@ class Specialization
     public int Level;
     public int Experience;
     public List<ActionId> Actions = new List<ActionId>();
+    public List<AuraType> Auras = new List<AuraType>();
+    public List<ActionResponseId> ActionResponses = new List<ActionResponseId>();
     public List<ProficiencyType> Proficiencies = new List<ProficiencyType>();
     public List<AttributeModifier> LevelUpModifiers = new List<AttributeModifier>();
     public Dictionary<TalentId, Talent> Talents = new Dictionary<TalentId, Talent>();

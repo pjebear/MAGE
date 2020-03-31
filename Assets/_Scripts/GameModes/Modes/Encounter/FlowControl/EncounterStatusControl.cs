@@ -14,7 +14,7 @@ class EncounterStatusControl
 
     public EncounterCharacter mCurrentTurn = null;
 
-    void Awake()
+    public void Init()
     {
         EncounterEventRouter.Instance.RegisterHandler(this);
     }

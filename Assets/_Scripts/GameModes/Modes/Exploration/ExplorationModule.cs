@@ -5,14 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class ExplorationModule : GameModeBase, IInputHandler
+class ExplorationModule : GameModeBase
 {
     ExplorationMenuViewControl MenuControl;
 
     protected override void SetupMode()
     {
-        InputManager.Instance.RegisterHandler(this, false);
-
         MenuControl = new ExplorationMenuViewControl();
 
         GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.ModeSetup_Complete));
@@ -20,7 +18,6 @@ class ExplorationModule : GameModeBase, IInputHandler
 
     protected override void CleanUpMode()
     {
-        InputManager.Instance.ReleaseHandler(this);
         GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.ModeTakedown_Complete));
     }
 
@@ -37,19 +34,6 @@ class ExplorationModule : GameModeBase, IInputHandler
     public override GameModeType GetGameModeType()
     {
         return GameModeType.Exploration;
-    }
-
-    public void OnMouseHoverChange(GameObject mouseHover)
-    {
-        // empty
-    }
-
-    public void OnKeyPressed(InputSource source, int key, InputState state)
-    {
-        if (source == InputSource.Keyboard && key == (int)KeyCode.O && state == InputState.Down)
-        {
-            GameModesModule.Instance.Outfit();
-        }
     }
 }
 

@@ -80,6 +80,13 @@ struct AttributeModifier
     public AttributeIndex AttributeIndex;
     public ModifierType ModifierType;
     public float Delta;
+    
+    public AttributeModifier(PrimaryStat stat, ModifierType type, float delta) : this( new AttributeIndex(stat), type, delta) { }
+    public AttributeModifier(SecondaryStat stat, ModifierType type, float delta) : this( new AttributeIndex(stat), type, delta) { }
+    public AttributeModifier(TertiaryStat stat, ModifierType type, float delta) : this( new AttributeIndex(stat), type, delta) { }
+    public AttributeModifier(ResourceType resourceType, ModifierType type, float delta) : this( new AttributeIndex(resourceType), type, delta) { }
+    public AttributeModifier(AllignmentType allignmentType, ModifierType type, float delta) : this( new AttributeIndex(allignmentType), type, delta) { }
+
     public AttributeModifier(AttributeIndex index, ModifierType type, float delta)
     {
         AttributeIndex = index;
@@ -87,44 +94,37 @@ struct AttributeModifier
         Delta = delta;
     }
 
-    public AttributeModifier(PrimaryStat stat, ModifierType type, float delta)
+    public override string ToString()
     {
-        AttributeIndex = new AttributeIndex(stat);
-        ModifierType = type;
-        Delta = delta;
+        return string.Format("AttribModifier: [{0}][{1}][{2}][{3}]", AttributeIndex.Type.ToString(), AttributeIndex.Index, ModifierType.ToString(), Delta);
+    }
+}
+
+struct AttributeScalar
+{
+    public AttributeIndex AttributeIndex;
+    public float Scalar;
+
+    public AttributeScalar(PrimaryStat stat, float scalar) : this(new AttributeIndex(stat), scalar) { }
+    public AttributeScalar(SecondaryStat stat, float scalar) : this(new AttributeIndex(stat), scalar) { }
+    public AttributeScalar(TertiaryStat stat, float scalar) : this(new AttributeIndex(stat), scalar) { }
+    public AttributeScalar(ResourceType resourceType, float scalar) : this(new AttributeIndex(resourceType), scalar) { }
+    public AttributeScalar(AllignmentType allignmentType, float scalar) : this(new AttributeIndex(allignmentType), scalar) { }
+
+    public AttributeScalar(AttributeIndex index, float scalar)
+    {
+        AttributeIndex = index;
+        Scalar = scalar;
     }
 
-    public AttributeModifier(SecondaryStat stat, ModifierType type, float delta)
+    public float GetScalar(Attributes attributes)
     {
-        AttributeIndex = new AttributeIndex(stat);
-        ModifierType = type;
-        Delta = delta;
-    }
-
-    public AttributeModifier(TertiaryStat stat, ModifierType type, float delta)
-    {
-        AttributeIndex = new AttributeIndex(stat);
-        ModifierType = type;
-        Delta = delta;
-    }
-
-    public AttributeModifier(ResourceType resourceType, ModifierType type, float delta)
-    {
-        AttributeIndex = new AttributeIndex(resourceType);
-        ModifierType = type;
-        Delta = delta;
-    }
-
-    public AttributeModifier(AllignmentType allignmentType, ModifierType type, float delta)
-    {
-        AttributeIndex = new AttributeIndex(allignmentType);
-        ModifierType = type;
-        Delta = delta;
+        return attributes[AttributeIndex] * Scalar;
     }
 
     public override string ToString()
     {
-        return string.Format("AttribModifier: [{0}][{1}][{2}][{3}]", AttributeIndex.Type.ToString(), AttributeIndex.Index, ModifierType.ToString(), Delta);
+        return string.Format("AttributeScalar: [{0}][{1}][{2}]", AttributeIndex.Type.ToString(), AttributeIndex.Index, Scalar);
     }
 }
 

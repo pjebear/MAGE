@@ -19,7 +19,7 @@ class EncounterModule : GameModeBase
     private GameObject View;
 
     public static EncounterModel Model;
-    public static ActorDirector ActorDirector;
+    public static CharacterDirector CharacterDirector;
     public static AuraDirector AuraDirector;
     public static AnimationDirector AnimationDirector;
     public static ActionDirector ActionDirector;
@@ -33,11 +33,9 @@ class EncounterModule : GameModeBase
 
     private void Awake()
     {
-       
-
         Model = new EncounterModel();
 
-        ActorDirector = GetComponent<ActorDirector>();
+        CharacterDirector = GetComponent<CharacterDirector>();
         AnimationDirector = GetComponent<AnimationDirector>();
         ActionDirector = GetComponent<ActionDirector>();
         AnimationDirector = GetComponent<AnimationDirector>();
@@ -52,6 +50,11 @@ class EncounterModule : GameModeBase
     protected override void SetupMode()
     {
         Logger.Log(LogTag.GameModes, TAG, "::SetupMode()");
+
+        AuraDirector.Init();
+        MasterFlowControl.Init();
+        TurnFlowControl.Init();
+        StatusViewControl.Init();
 
         Map = GameObject.Find("Map").GetComponent<Map>();
         if (Map == null)
@@ -76,13 +79,11 @@ class EncounterModule : GameModeBase
         {
             TileIdx atPostition = new TileIdx((int)spawnPoints[count].x, (int)spawnPoints[count].y);
 
-            Character character = CharacterLoader.LoadCharacter(dBCharacter);
+            EncounterCharacter character = new EncounterCharacter(team, CharacterLoader.LoadCharacter(dBCharacter));
+            Model.Characters.Add(character.Id, character);
+            Model.Teams[team].Add(character);
 
-            EncounterCharacter actor = new EncounterCharacter(team, character);
-            Model.Actors.Add(actor.Id, actor);
-            Model.Teams[team].Add(actor);
-
-            ActorDirector.AddActor(CharacterUtil.ActorParamsForCharacter(dBCharacter), actor, atPostition);
+            CharacterDirector.AddCharacter(character, CharacterUtil.ActorParamsForCharacter(dBCharacter), atPostition);
 
             count++;
         }
@@ -95,12 +96,10 @@ class EncounterModule : GameModeBase
         {
             TileIdx atPostition = new TileIdx((int)spawnPoints[count].x, (int)spawnPoints[count].y);
 
-            Character character = CharacterLoader.LoadCharacter(dBCharacter);
-
-            EncounterCharacter actor = new EncounterCharacter(team, character);
-            Model.Actors.Add(actor.Id, actor);
-            Model.Teams[team].Add(actor);
-            ActorDirector.AddActor(CharacterUtil.ActorParamsForCharacter(dBCharacter), actor, atPostition);
+            EncounterCharacter character = new EncounterCharacter(team, CharacterLoader.LoadCharacter(dBCharacter));
+            Model.Characters.Add(character.Id, character);
+            Model.Teams[team].Add(character);
+            CharacterDirector.AddCharacter(character, CharacterUtil.ActorParamsForCharacter(dBCharacter), atPostition);
 
             count++;
         }

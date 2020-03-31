@@ -19,8 +19,7 @@ class RiptoseListener : ActionResponderBase
         {
             InteractionResult result = actionResult.TargetResults[Listener];
             ActionInfo info = actionResult.ActionInfo;
-            if (info.ActionMedium == ActionMedium.Physical
-                && info.ActionRange == ActionRange.Meele
+            if ( info.ActionRange == ActionRange.Meele
                 && info.ActionSource == ActionSource.Weapon
                 && result.InteractionResultType == InteractionResultType.Parry)
             {

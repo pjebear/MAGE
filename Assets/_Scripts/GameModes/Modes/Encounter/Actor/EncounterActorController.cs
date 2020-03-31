@@ -6,23 +6,17 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 
-class ActorController : MonoBehaviour
+class EncounterActorController : MonoBehaviour
 {
     private float mBillboardDuration = 1f;
     private float mBillboardHeight = 1.2f;
     public BillboardEmitter BillboardEmitter;
     public Actor Actor;
-
-    public EncounterCharacter mActor;
+    public EncounterCharacter EncounterCharacter;
 
     private void Awake()
     {
 
-    }
-
-    public void Initialize(EncounterCharacter actor)
-    {
-        mActor = actor;
     }
 
     public void DisplayStateChange(StateChange stateChange)

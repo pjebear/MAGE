@@ -39,7 +39,7 @@ class BloodScentListener : ActionResponderBase
 
         if (bloodScent != null)
         {
-            EncounterModule.ActorDirector.ActorControllerLookup[Listener].DisplayStatusApplication(bloodScent);
+            EncounterModule.CharacterDirector.CharacterActorLookup[Listener].DisplayStatusApplication(bloodScent);
             Listener.ApplyStateChange(new StateChange(StateChangeType.StatusEffect, new List<StatusEffect>() { bloodScent }));
         }
     }

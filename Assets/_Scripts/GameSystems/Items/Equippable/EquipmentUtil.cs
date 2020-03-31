@@ -16,17 +16,17 @@ static class EquipmentUtil
         return hasProficiency;
     }
 
-    public static ProficiencyType EquipmentCategoryToProficiency(EquipableCategory category)
+    public static ProficiencyType EquipmentCategoryToProficiency(EquippableCategory category)
     {
         ProficiencyType proficiencyType = ProficiencyType.INVALID;
 
         switch (category)
         {
-            case EquipableCategory.Armor:           proficiencyType = ProficiencyType.Armors;       break;
-            case EquipableCategory.OneHandWeapon:   proficiencyType = ProficiencyType.OneHands;     break;
-            case EquipableCategory.TwoHandWeapon:   proficiencyType = ProficiencyType.TwoHands;     break;
-            case EquipableCategory.Shield:          proficiencyType = ProficiencyType.Sheilds;      break;
-            case EquipableCategory.Accessory:       proficiencyType = ProficiencyType.Accessorys;   break;
+            case EquippableCategory.Armor:           proficiencyType = ProficiencyType.Armors;       break;
+            case EquippableCategory.OneHandWeapon:   proficiencyType = ProficiencyType.OneHands;     break;
+            case EquippableCategory.TwoHandWeapon:   proficiencyType = ProficiencyType.TwoHands;     break;
+            case EquippableCategory.Shield:          proficiencyType = ProficiencyType.Sheilds;      break;
+            case EquippableCategory.Accessory:       proficiencyType = ProficiencyType.Accessorys;   break;
         }
 
         Logger.Assert(proficiencyType != ProficiencyType.INVALID, LogTag.Character, "EquipmentUtil",
@@ -35,23 +35,23 @@ static class EquipmentUtil
         return proficiencyType;
     }
 
-    public static bool FitsInSlot(EquipableCategory category, Equipment.Slot slot)
+    public static bool FitsInSlot(EquippableCategory category, Equipment.Slot slot)
     {
         bool fits = false;
 
         switch (category)
         {
-            case EquipableCategory.Accessory:
+            case EquippableCategory.Accessory:
                 fits = slot == Equipment.Slot.Accessory;
                 break;
 
-            case EquipableCategory.Armor:
+            case EquippableCategory.Armor:
                 fits = slot == Equipment.Slot.Armor;
                 break;
 
-            case EquipableCategory.Shield:
-            case EquipableCategory.TwoHandWeapon:
-            case EquipableCategory.OneHandWeapon:
+            case EquippableCategory.Shield:
+            case EquippableCategory.TwoHandWeapon:
+            case EquippableCategory.OneHandWeapon:
                 fits = slot == Equipment.Slot.LeftHand || slot == Equipment.Slot.RightHand;
                 break;
         }
@@ -59,13 +59,13 @@ static class EquipmentUtil
         return fits;
     }
 
-    public static ProficiencyType EquipableTagToProficiency(EquipableCategory category, int equipableType)
+    public static ProficiencyType EquipableTagToProficiency(EquippableCategory category, int equipableType)
     {
         ProficiencyType proficiencyType = ProficiencyType.INVALID;
 
         switch (category)
         {
-            case EquipableCategory.Armor:
+            case EquippableCategory.Armor:
             {
                 switch ((ArmorType)equipableType)
                 {
@@ -77,7 +77,7 @@ static class EquipmentUtil
             }
             break;
 
-            case EquipableCategory.OneHandWeapon:
+            case EquippableCategory.OneHandWeapon:
             {
                 switch ((OneHandWeaponType)equipableType)
                 {
@@ -90,7 +90,7 @@ static class EquipmentUtil
             }
             break;
 
-            case EquipableCategory.TwoHandWeapon:
+            case EquippableCategory.TwoHandWeapon:
             {
                 switch ((TwoHandWeaponType)equipableType)
                 {
@@ -103,7 +103,7 @@ static class EquipmentUtil
             }
             break;
 
-            case EquipableCategory.Shield:
+            case EquippableCategory.Shield:
             {
                 switch ((ShieldType)equipableType)
                 {
@@ -113,7 +113,7 @@ static class EquipmentUtil
             }
             break;
 
-            case EquipableCategory.Accessory:
+            case EquippableCategory.Accessory:
             {
                 switch ((AccessoryType)equipableType)
                 {

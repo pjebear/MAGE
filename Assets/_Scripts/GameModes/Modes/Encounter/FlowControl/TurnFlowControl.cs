@@ -35,7 +35,7 @@ class TurnFlowControl
     }
     TurnState mState;
 
-    void Awake()
+    public void Init()
     {
         mSelectionStack = new List<TileSelection>();
         EncounterEventRouter.Instance.RegisterHandler(this);
@@ -49,11 +49,11 @@ class TurnFlowControl
     public void ProgressTurn(EncounterCharacter actor)
     {
         mActor = actor;
-        Transform actorTransform = EncounterModule.ActorDirector.GetController(actor).transform;
+        Transform actorTransform = EncounterModule.CharacterDirector.GetController(actor).transform;
         EncounterModule.CameraDirector.FocusTarget(actorTransform);
         mState = TurnState.SelectAction;
 
-        InputManager.Instance.RegisterHandler(this, true);
+        InputManager.Instance.RegisterHandler(this, false);
         UIManager.Instance.PostContainer(UIContainerId.ActorActionsView, this);
     }
 
@@ -130,7 +130,7 @@ class TurnFlowControl
                                 mActionIdxSelected = buttonListInfo.ButtonIdx;
 
                                 ActionInfo actionInfo = mActor.GetActionInfo(mActor.Actions[mActionIdxSelected]);
-                                TileSelection selection = Map.Instance.GetTilesInRange(EncounterModule.ActorDirector.GetActorPosition(mActor), actionInfo.CastRange.MaxRange);
+                                TileSelection selection = Map.Instance.GetTilesInRange(EncounterModule.CharacterDirector.GetActorPosition(mActor), actionInfo.CastRange.MaxRange);
                                 selection.SelectionType = Tile.HighlightState.TargetSelect;
                                 AddTileSelection(selection);
 
@@ -212,7 +212,7 @@ class TurnFlowControl
                                 case (0): // yes
                                     {
                                         mActor.DEBUG_HasMoved = true;
-                                        EncounterModule.ActorDirector.MoveActor(mActor, mSelectedTile.Idx);
+                                        EncounterModule.CharacterDirector.MoveActor(mActor, mSelectedTile.Idx);
                                         OnActionSelected();
                                     }
                                     break;
@@ -309,6 +309,11 @@ class TurnFlowControl
             mSelectedTile = mHoveredTile;
             UIManager.Instance.Publish(UIContainerId.ActorActionsView);
         }
+    }
+
+    public void OnMouseScrolled(float scrollDelta)
+    {
+        // empty
     }
 
     // Helpers

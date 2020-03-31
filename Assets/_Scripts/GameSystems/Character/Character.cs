@@ -16,6 +16,7 @@ class Character
     public Equipment Equipment = new Equipment();
 
     public List<IActionModifier> ActionModifiers = new List<IActionModifier>();
+    public List<EquippableModifier> EquippableModifiers = new List<EquippableModifier>();
     public List<ActionId> Actions = new List<ActionId>();
     public List<AuraType> Auras = new List<AuraType>();
     public List<ActionResponseId> Listeners = new List<ActionResponseId>();

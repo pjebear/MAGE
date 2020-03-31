@@ -26,9 +26,9 @@ class ActorLoader : IAssetManager<GameObject>
         LoadAssets("Apparel");  
     }
 
-    public ActorController CreateActor(ActorSpawnParams actorParams, Transform parent)
+    public EncounterActorController CreateActor(ActorSpawnParams actorParams, Transform parent)
     {
-        ActorController actorController = Instantiate(GetAsset(actorParams.BodyType.GetAssetName(AppearanceType.Prefab)), parent).GetComponent<ActorController>();
+        EncounterActorController actorController = Instantiate(GetAsset(actorParams.BodyType.GetAssetName(AppearanceType.Prefab)), parent).GetComponent<EncounterActorController>();
 
         if (actorParams.HeldLeftHand[AppearanceType.Prefab] != Appearance.NO_ASSET)
         {

@@ -34,10 +34,8 @@ enum TertiaryStat
     Jump,
 
     //Defensive stats
-    FrontalBlock,
-    PeriferalBlock,
-    FrontalParry,
-    PeriferalParry,
+    Block,
+    Parry,
     Dodge,
 
     PhysicalResistance,

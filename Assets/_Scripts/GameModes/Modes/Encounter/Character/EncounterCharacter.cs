@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 
-class EncounterCharacter 
+class EncounterCharacter
 {
     // Private
     private Character mCharacter;
@@ -59,7 +59,7 @@ class EncounterCharacter
 
     public ActionInfo GetActionInfo(ActionId actionId)
     {
-        ActionInfo actionInfo = ActionFactory.CreateActionInfoFromId(actionId);
+        ActionInfo actionInfo = ActionFactory.CreateActionInfoFromId(actionId, this);
 
         foreach (IActionModifier modifier in mCharacter.ActionModifiers.Where(x => x.ActionId == actionId))
         {
@@ -92,7 +92,7 @@ class EncounterCharacter
         return info;
     }
 
-        public void OnAuraEntered(StatusEffect auraEffect)
+    public void OnAuraEntered(StatusEffect auraEffect)
     {
         AddStatusEffect(auraEffect);
 
@@ -113,7 +113,14 @@ class EncounterCharacter
         {
             foreach (StatusEffect effect in stateChange.statusEffects)
             {
-                AddStatusEffect(effect);
+                if (stateChange.Type == StateChangeType.ActionCost)
+                {
+                    RemoveStatusEffect(effect);
+                }
+                else
+                {
+                    AddStatusEffect(effect);
+                }
             }
 
             UpdateAttribtues();

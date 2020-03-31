@@ -12,6 +12,7 @@ namespace DB
 
         static CharacterDB CharacterDB = new CharacterDB();
         static SpecializationDB SpecializationDB = new SpecializationDB();
+        static EquipmentDB EquipmentDB = new EquipmentDB();
         static TeamDB TeamDB = new TeamDB();
 
         static int sNewCharacterId;
@@ -118,6 +119,18 @@ namespace DB
 
         //! Character DB End
 
+        //! Equipment DB
+        public static void WriteEquipment(int equipmentId, DB.DBEquipment equipment)
+        {
+            EquipmentDB.Write(equipmentId, equipment);
+        }
+
+        public static DB.DBEquipment LoadEquipment(int equipmentId)
+        {
+            return EquipmentDB.Load(equipmentId);
+        }
+        //! EquipmentDB End
+
         //! SpecializationDB
         public static void WriteSpecialization(DBSpecialization dBSpecialization)
         {
@@ -137,6 +150,11 @@ namespace DB
         public static void UpdateSpecializationDB()
         {
             SpecializationDB.Save(FileUtil.FolderName.DB.ToString());
+        }
+
+        public static void UpdateEquipmentDB()
+        {
+            EquipmentDB.Save(FileUtil.FolderName.DB.ToString());
         }
 
         public static void Load(string path)

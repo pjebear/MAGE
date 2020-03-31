@@ -41,6 +41,16 @@ static class SpecializationFactory
             specialization.Actions.Add((ActionId)actionId);
         }
 
+        foreach (int auraId in dbSpecialization.AuraIds)
+        {
+            specialization.Auras.Add((AuraType)auraId);
+        }
+
+        foreach (int listenerId in dbSpecialization.ResponseListenerIds)
+        {
+            specialization.ActionResponses.Add((ActionResponseId)listenerId);
+        }
+
         foreach (int proficiency in dbSpecialization.Proficiencies)
         {
             specialization.Proficiencies.Add((ProficiencyType)proficiency);

@@ -30,6 +30,8 @@ class ModulesContainer : MonoBehaviour
             if (DebugRun)
             {
                 GameSystemModule.Instance.PrepareNewGame();
+                EncounterCreateParams encounterCreateParams = new EncounterCreateParams();
+                GameSystemModule.Instance.PrepareEncounter(encounterCreateParams);
             }
         }
     }

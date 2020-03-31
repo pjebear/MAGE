@@ -74,6 +74,11 @@ class InteractionFlowControl : MonoBehaviour,
         }
     }
 
+    public void OnMouseScrolled(float scrollDelta)
+    {
+        // empty
+    }
+
     private void Interact(IInteractable interactable)
     {
         GameSystemModule.Instance.PrepareEncounter(new EncounterCreateParams());

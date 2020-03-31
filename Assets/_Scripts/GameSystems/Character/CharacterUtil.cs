@@ -102,19 +102,19 @@ static class CharacterUtil
         int slotId = (int)Equipment.Slot.Armor;
         if (dBCharacter.Equipment[slotId] != (int)EquippableId.INVALID)
         {
-            spawnParams.Worn = ItemFactory.CreateEquipable((ItemId)dBCharacter.Equipment[slotId]).Appearance;
+            spawnParams.Worn = ItemFactory.LoadEquipable((EquippableId)dBCharacter.Equipment[slotId]).Appearance;
         }
 
         slotId = (int)Equipment.Slot.LeftHand;
         if (dBCharacter.Equipment[slotId] != (int)EquippableId.INVALID)
         {
-            spawnParams.HeldLeftHand = ItemFactory.CreateEquipable((ItemId)dBCharacter.Equipment[slotId]).Appearance;
+            spawnParams.HeldLeftHand = ItemFactory.LoadEquipable((EquippableId)dBCharacter.Equipment[slotId]).Appearance;
         }
 
         slotId = (int)Equipment.Slot.RightHand;
         if (dBCharacter.Equipment[slotId] != (int)EquippableId.INVALID)
         {
-            spawnParams.HeldRightHand = ItemFactory.CreateEquipable((ItemId)dBCharacter.Equipment[slotId]).Appearance;
+            spawnParams.HeldRightHand = ItemFactory.LoadEquipable((EquippableId)dBCharacter.Equipment[slotId]).Appearance;
         }
 
         return spawnParams;
@@ -135,7 +135,7 @@ static class CharacterUtil
         {
             if (dBCharacter.Equipment[i] != (int)EquippableId.INVALID)
             {
-                Equippable equipable = ItemFactory.CreateEquipable((ItemId)dBCharacter.Equipment[i]);
+                Equippable equipable = ItemFactory.LoadEquipable((EquippableId)dBCharacter.Equipment[i]);
                 if (!EquipmentUtil.HasProficiencyFor(specialization, equipable))
                 {
                     Logger.Log(LogTag.Character, TAG, string.Format("::RefreshCharactersEquipment() - Removed Equipable [{0}] from character [{1}]", equipable.EquipmentId.ToString(), characterId), LogLevel.Notify);

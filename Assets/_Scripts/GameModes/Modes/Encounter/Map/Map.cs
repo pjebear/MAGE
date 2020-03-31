@@ -10,13 +10,13 @@ class Map : MonoBehaviour
 
     public Transform TileContainer;
 
-    public Dictionary<ActorController, Tile> ActorPositionLookup;
-    public HashSet<ActorController> ActorsInMap;
+    public Dictionary<EncounterActorController, Tile> ActorPositionLookup;
+    public HashSet<EncounterActorController> ActorsInMap;
     public Tile[,] Tiles;
 
     public static Map Instance;
 
-    Tile this[TileIdx idx]
+    public Tile this[TileIdx idx]
     {
         get
         {
@@ -30,8 +30,8 @@ class Map : MonoBehaviour
 
     private void Awake()
     {
-        ActorPositionLookup = new Dictionary<ActorController, Tile>();
-        ActorsInMap = new HashSet<ActorController>();
+        ActorPositionLookup = new Dictionary<EncounterActorController, Tile>();
+        ActorsInMap = new HashSet<EncounterActorController>();
 
         Tile[] tiles = GetComponentsInChildren<Tile>();
         int size = (int)Mathf.Sqrt(tiles.Length);
@@ -78,7 +78,7 @@ class Map : MonoBehaviour
         }
     }
 
-    public void PlaceAtTile(TileIdx tileIdx, ActorController actor)
+    public void PlaceAtTile(TileIdx tileIdx, EncounterActorController actor)
     {
         // Clear previous tile
         if (ActorPositionLookup.ContainsKey(actor))
@@ -94,7 +94,7 @@ class Map : MonoBehaviour
 
     public Tile GetActorsTile(EncounterCharacter actor)
     {
-        ActorController controller = EncounterModule.ActorDirector.ActorControllerLookup[actor];
+        EncounterActorController controller = EncounterModule.CharacterDirector.CharacterActorLookup[actor];
 
         return ActorPositionLookup[controller];
     }
@@ -109,10 +109,10 @@ class Map : MonoBehaviour
         }
         else if (targetSelection.FocalTarget.TargetType == TargetSelectionType.Tile)
         {
-            EncounterCharacter onTile = this[targetSelection.FocalTarget.TileTarget].OnTile.mActor;
-            if (onTile != null)
+            EncounterActorController actorOnTile = this[targetSelection.FocalTarget.TileTarget].OnTile;
+            if (actorOnTile != null)
             {
-                onTiles.Add(onTile);
+                onTiles.Add(actorOnTile.EncounterCharacter);
             }
         }
 
@@ -124,10 +124,10 @@ class Map : MonoBehaviour
             }
             else if (target.TargetType == TargetSelectionType.Tile)
             {
-                EncounterCharacter onTile = this[target.TileTarget].OnTile.mActor;
-                if (onTile != null)
+                EncounterActorController actorOnTile = this[targetSelection.FocalTarget.TileTarget].OnTile;
+                if (actorOnTile != null)
                 {
-                    onTiles.Add(onTile);
+                    onTiles.Add(actorOnTile.EncounterCharacter);
                 }
             }
         }

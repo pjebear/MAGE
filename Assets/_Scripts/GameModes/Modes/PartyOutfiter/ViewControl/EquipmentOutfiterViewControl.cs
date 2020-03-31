@@ -131,7 +131,7 @@ class EquipmentOutfiterViewControl
         { // Left Held
             if (mOutfitingCharacter.Equipment[(int)Equipment.Slot.LeftHand] != (int)EquippableId.INVALID)
             {
-                Equippable equippable = ItemFactory.CreateEquipable((ItemId)mOutfitingCharacter.Equipment[(int)Equipment.Slot.LeftHand]);
+                Equippable equippable = ItemFactory.LoadEquipable((EquippableId)mOutfitingCharacter.Equipment[(int)Equipment.Slot.LeftHand]);
                 dataProvider.LeftHeld = new EquipmentOutfiterView.EquipableDP() { Name = equippable.EquipmentId.ToString() };
             }
             dataProvider.LeftSelected = mSelectedSlot == Equipment.Slot.LeftHand;
@@ -140,7 +140,7 @@ class EquipmentOutfiterViewControl
         { // Right Held
             if (mOutfitingCharacter.Equipment[(int)Equipment.Slot.RightHand] != (int)EquippableId.INVALID)
             {
-                Equippable equippable = ItemFactory.CreateEquipable((ItemId)mOutfitingCharacter.Equipment[(int)Equipment.Slot.RightHand]);
+                Equippable equippable = ItemFactory.LoadEquipable((EquippableId)mOutfitingCharacter.Equipment[(int)Equipment.Slot.RightHand]);
                 dataProvider.RightHeld = new EquipmentOutfiterView.EquipableDP() { Name = equippable.EquipmentId.ToString() };
             }
             dataProvider.RightSelected = mSelectedSlot == Equipment.Slot.RightHand;
@@ -149,7 +149,7 @@ class EquipmentOutfiterViewControl
         { // Worn
             if (mOutfitingCharacter.Equipment[(int)Equipment.Slot.Armor] != (int)EquippableId.INVALID)
             {
-                Equippable equippable = ItemFactory.CreateEquipable((ItemId)mOutfitingCharacter.Equipment[(int)Equipment.Slot.Armor]);
+                Equippable equippable = ItemFactory.LoadEquipable((EquippableId)mOutfitingCharacter.Equipment[(int)Equipment.Slot.Armor]);
                 dataProvider.Worn = new EquipmentOutfiterView.EquipableDP() { Name = equippable.EquipmentId.ToString() };
             }
             dataProvider.WornSelected = mSelectedSlot == Equipment.Slot.Armor;
@@ -171,7 +171,7 @@ class EquipmentOutfiterViewControl
                 foreach (var keyValuePair in inventory.Items
                     .Where(x => ItemUtil.TypeFromId(x.Key) == ItemType.Equippable))
                 {
-                    Equippable equippable = ItemFactory.CreateEquipable((ItemId)keyValuePair.Key);
+                    Equippable equippable = ItemFactory.LoadEquipable((EquippableId)keyValuePair.Key);
                     if (EquipmentUtil.FitsInSlot(equippable.EquipmentTag.Category, mSelectedSlot))
                     {
                         EquipmentOutfiterView.EquipableDP equipableDP = new EquipmentOutfiterView.EquipableDP() { Name = equippable.EquipmentId.ToString(), Count = keyValuePair.Value };

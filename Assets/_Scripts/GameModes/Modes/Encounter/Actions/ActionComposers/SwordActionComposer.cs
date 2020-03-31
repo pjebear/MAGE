@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 class SwordAttackComposer
 {
@@ -18,7 +19,7 @@ class SwordAttackComposer
 
         List <ActionEvent> timelineEvents = new List<ActionEvent>();
         AnimationPlaceholder swordSwing = AnimationFactory.CheckoutAnimation(AnimationId.SwordSwing);
-        timelineEvents.Add(new AnimationEvent(owner, swordSwing, 0));
+        timelineEvents.Add(new AnimationEvent(owner, swordSwing, 0, proposal.ActionTarget.FocalTarget.GetTargetTransform()));
 
         List<EncounterCharacter> targets = EncounterModule.Map.GetActors(proposal.ActionTarget);
         List<InteractionResult> interactionResults = InteractionResolver.ResolveInteraction(owner, actionInfo, targets);
@@ -43,7 +44,13 @@ class SwordAttackComposer
            
             AnimationPlaceholder animation = AnimationFactory.CheckoutAnimation(AnimationUtil.InteractionResultTypeToAnimationId(interactionResult.InteractionResultType));
             SyncPoint.Syncronize(swordSwing, AllignmentPosition.Interaction, animation, AllignmentPosition.Interaction, 0);
-            timelineEvents.Add(new AnimationEvent(target, animation, animation.Parent.GetAbsoluteOffset(AllignmentPosition.Start)));
+
+            Transform targetFocus = null;
+            if (interactionResult.InteractionResultType != InteractionResultType.Hit)
+            {
+                targetFocus = EncounterModule.CharacterDirector.CharacterActorLookup[owner].transform;
+            }
+            timelineEvents.Add(new AnimationEvent(target, animation, animation.Parent.GetAbsoluteOffset(AllignmentPosition.Start), targetFocus));
             timelineEvents.Add(new StateChangeEvent(target, interactionResult.StateChange, animation.Parent.GetAbsoluteOffset(AllignmentPosition.Interaction)));
         }
 

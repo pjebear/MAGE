@@ -18,6 +18,7 @@ abstract class Talent
     }
 
     public virtual List<IActionModifier> GetActionModifiers() { return new List<IActionModifier>(); }
+    public virtual List<EquippableModifier> GetEquippableModifiers() { return new List<EquippableModifier>(); }
     public virtual List<ProficiencyType> GetProficiencies() { return new List<ProficiencyType>(); }
     public virtual List<AttributeModifier> GetAttributeModifiers() { return new List<AttributeModifier>(); }
     public virtual List<ActionId> GetActions() { return new List<ActionId>(); }
@@ -43,15 +44,9 @@ class BlockIncreaseTalent : Talent
         {
             modifiers.Add(
             new AttributeModifier(
-                new AttributeIndex(AttributeCategory.Stat, (int)TertiaryStat.FrontalBlock)
+                new AttributeIndex(AttributeCategory.Stat, (int)TertiaryStat.Block)
                 , ModifierType.Increment
                 , BlockIncreasePerPoint * PointsAssigned));
-
-            modifiers.Add(
-               new AttributeModifier(
-                   new AttributeIndex(AttributeCategory.Stat, (int)TertiaryStat.PeriferalBlock)
-                   , ModifierType.Increment
-                   , BlockIncreasePerPoint / 2 * PointsAssigned));
         }
 
         return modifiers;

@@ -25,6 +25,21 @@ class Appearance
         mAssetIds = assetIds;
     }
 
+    public Appearance(List<int> assetIds)
+        : this()
+    {
+        Logger.Assert(assetIds.Count == (int)AppearanceType.NUM, LogTag.Assets, "Appearance",
+            string.Format("::Appearance() - Recieved invalid number of AppearanceIds. Expected[{0}] Got[{1}]", (int)AppearanceType.NUM, assetIds.Count));
+            
+        if (assetIds.Count == (int)AppearanceType.NUM)
+        {
+            for(int i = 0; i < (int)AppearanceType.NUM; ++i)
+            {
+                mAssetIds[i] = assetIds[i];
+            }
+        }
+    }
+
     public int this[AppearanceType type]
     {
         get { return mAssetIds[(int)type]; }

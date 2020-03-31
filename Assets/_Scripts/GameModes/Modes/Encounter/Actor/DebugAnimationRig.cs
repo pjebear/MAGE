@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 class DebugAnimationRig : MonoBehaviour
 {
-    public ActorController ActorController;
+    public EncounterActorController ActorController;
     public Text AnimationName;
     public RectTransform ProgressBarRect;
     public Image ProgressBarImage;

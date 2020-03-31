@@ -4,7 +4,7 @@ using UnityEngine;
 
 class PlayAnimation : MonoBehaviour
 {
-    public ActorDirector ActorDirector;
+    public CharacterDirector ActorDirector;
     public AnimationDirector AnimationDirector;
     public AnimationId AnimationId; 
 
@@ -12,7 +12,7 @@ class PlayAnimation : MonoBehaviour
     void Start()
     {
         GameObject main = GameObject.Find("Main");
-        ActorDirector = main.GetComponent<ActorDirector>();
+        ActorDirector = main.GetComponent<CharacterDirector>();
         AnimationDirector = main.GetComponent<AnimationDirector>();
     }
 

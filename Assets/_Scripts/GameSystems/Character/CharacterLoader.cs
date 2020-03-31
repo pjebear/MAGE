@@ -28,6 +28,10 @@ static class CharacterLoader
 
         // Specialization
         character.Specialization = SpecializationFactory.CheckoutSpecialization((SpecializationType)dbCharacter.CharacterInfo.CurrentSpecialization, dbCharacter.Specializations[dbCharacter.CharacterInfo.CurrentSpecialization]);
+        character.Actions.AddRange(character.Specialization.Actions);
+        character.Auras.AddRange(character.Specialization.Auras);
+        character.Listeners.AddRange(character.Specialization.ActionResponses);
+
         foreach (Talent talent in character.Specialization.Talents.Values)
         {
             foreach (AttributeModifier proficiencyModifier in talent.GetAttributeModifiers())
@@ -36,6 +40,7 @@ static class CharacterLoader
             }
 
             character.Actions.AddRange(talent.GetActions());
+            character.EquippableModifiers.AddRange(talent.GetEquippableModifiers());
             character.Auras.AddRange(talent.GetAuras());
             character.Listeners.AddRange(talent.GetActionResponses());
             character.ActionModifiers.AddRange(talent.GetActionModifiers());
@@ -44,18 +49,31 @@ static class CharacterLoader
         // Equipment
         for (int i = 0; i < (int)Equipment.Slot.NUM; ++i)
         {
+            if (dbCharacter.Equipment[i] == (int)EquippableId.INVALID 
+                && (i == (int)Equipment.Slot.LeftHand || i == (int)Equipment.Slot.RightHand))
+            {
+                dbCharacter.Equipment[i] = (int)EquippableId.Fists_0;
+            }
+
             if (dbCharacter.Equipment[i] != (int)EquippableId.INVALID)
             {
-                character.Equipment[(Equipment.Slot)i] = ItemFactory.CreateEquipable((ItemId)dbCharacter.Equipment[i]);
+                Equippable equippable = ItemFactory.LoadEquipable((EquippableId)dbCharacter.Equipment[i]);
+
+                foreach (EquippableModifier equippableModifier in character.EquippableModifiers)
+                {
+                    equippableModifier.Modify(equippable);
+                }
+
+                character.Equipment[(Equipment.Slot)i] = equippable;
+
+                foreach (AttributeModifier attributeModifier in equippable.EquipBonuses)
+                {
+                    character.Attributes.Modify(attributeModifier);
+                }
             }
         }
 
         return character;
-    }
-
-    public static void ApplySpecialization(Character character, Specialization specialization)
-    {
-        
     }
 }
 

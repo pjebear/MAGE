@@ -10,9 +10,9 @@ class AuraDirector : MonoBehaviour
 {
     public Aura AuraPrefab;
 
-    private Dictionary<ActorController, List<Aura>> mAuras = new Dictionary<ActorController, List<Aura>>();
+    private Dictionary<EncounterActorController, List<Aura>> mAuras = new Dictionary<EncounterActorController, List<Aura>>();
 
-    private void Awake()
+    public void Init()
     {
         EncounterEventRouter.Instance.RegisterHandler(this);
     }
@@ -22,7 +22,7 @@ class AuraDirector : MonoBehaviour
         EncounterEventRouter.Instance.UnRegisterListener(this);
     }
 
-    public void RegisterAura(AuraInfo auraInfo, ActorController actorController, bool activateImmediately)
+    public void RegisterAura(AuraInfo auraInfo, EncounterActorController actorController, bool activateImmediately)
     {
         Aura aura = Instantiate(AuraPrefab, actorController.transform);
         aura.Initialize(auraInfo, actorController);
@@ -52,7 +52,7 @@ class AuraDirector : MonoBehaviour
 
             case EncounterEvent.EventType.CharacterKO:
                 {
-                    ActorController controller = EncounterModule.ActorDirector.ActorControllerLookup[eventInfo.Arg<EncounterCharacter>()];
+                    EncounterActorController controller = EncounterModule.CharacterDirector.CharacterActorLookup[eventInfo.Arg<EncounterCharacter>()];
                     if (mAuras.ContainsKey(controller))
                     {
                         foreach (Aura aura in mAuras[controller])

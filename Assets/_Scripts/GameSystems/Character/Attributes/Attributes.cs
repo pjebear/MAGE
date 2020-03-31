@@ -37,33 +37,6 @@ class Attributes
 
     public Attribute[] this[AttributeCategory type] { get { return mAttributes[(int)type]; } }
 
-    //public Attributes(AttributesSeed seed)
-    //{
-    //    mAttributes = Empty;
-    //    int statIdx = 0;
-    //    for (int i = 0; i < (int)PrimaryStat.NUM; ++i)
-    //    {
-    //        mAttributes[(int)AttributeCategory.Stat][statIdx++] = new Attribute(seed.PrimaryStats[i]);
-    //    }
-    //    for (int i = 0; i < (int)SecondaryStat.NUM; ++i)
-    //    {
-    //        mAttributes[(int)AttributeCategory.Stat][statIdx++] = new Attribute(seed.SecondaryStats[i]);
-    //    }
-    //    for (int i = 0; i < (int)TertiaryStat.NUM; ++i)
-    //    {
-    //        mAttributes[(int)AttributeCategory.Stat][statIdx++] = new Attribute(seed.TertiaryStats[i]);
-    //    }
-
-    //    AttributeUtil.CalculateResourcesFromStats(mAttributes[(int)AttributeCategory.Stat], mAttributes[(int)AttributeCategory.Resource], false);
-
-    //    mAttributes[(int)AttributeCategory.Allignment][(int)seed.Allignment] = new Attribute(AttributeConstants.MainAllignmentValue);
-    //    AllignmentType[] subAllignments = AttributeUtil.GetSubAllignments(seed.Allignment);
-    //    for (int i = 0; i < subAllignments.Length; ++i)
-    //    {
-    //        mAttributes[(int)AttributeCategory.Allignment][i] = new Attribute(AttributeConstants.SubAllignmentValue);
-    //    }
-    //}
-
     public Attributes(Attribute[][] attributes)
     {
         mAttributes = attributes;
