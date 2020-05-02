@@ -37,6 +37,13 @@ class GameSystem
     }
     // ! Encounter - End
 
+    //! Location
+    public LevelId GetCurrentLevel()
+    {
+        return LocationSystem.PartyLocation;
+    }
+
+    // Location - End
     //! Party
     public List<int> GetCharactersInParty()
     {
@@ -51,6 +58,11 @@ class GameSystem
     public void AddToInventory(int itemId)
     {
         PartySystem.AddToInventory(itemId);
+    }
+
+    public int GetPartyAvatarId()
+    {
+        return PartySystem.GetPartyAvatarId();
     }
 
     //! Party End

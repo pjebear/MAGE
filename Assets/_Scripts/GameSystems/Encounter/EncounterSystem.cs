@@ -14,14 +14,24 @@ class EncounterSystem
     {
         Logger.Assert(mPreparedContext == null, LogTag.GameSystems, TAG, "EncounterContext already prepared", LogLevel.Warning);
 
-        mPreparedContext = new EncounterContext();
+        if (encounterParams.ScenarioId == EncounterScenarioId.Random)
+        {
+            mPreparedContext = CreateRandomEncounter(encounterParams);
+        }
+    }
 
-        mPreparedContext.WinConditions = new List<EncounterCondition>()
+    private EncounterContext CreateRandomEncounter(EncounterCreateParams createParams)
+    {
+        EncounterContext randomContext = new EncounterContext();
+
+        randomContext.EncounterType = EncounterType.Random;
+
+        randomContext.WinConditions = new List<EncounterCondition>()
         {
             new TeamDefeatedCondition(TeamSide.EnemyAI)
         };
 
-        mPreparedContext.LoseConditions = new List<EncounterCondition>()
+        randomContext.LoseConditions = new List<EncounterCondition>()
         {
             new TeamDefeatedCondition(TeamSide.AllyHuman)
         };
@@ -33,14 +43,17 @@ class EncounterSystem
                    new List<int>() { (int)EquippableId.ChainArmor_0, (int)EquippableId.Shield_0, (int)EquippableId.Sword_0, (int)EquippableId.INVALID });
 
             DB.DBHelper.WriteCharacter(maric, TeamSide.EnemyAI);
-
-            //DB.DBHelper.WriteNewCharacter(
-            //    CreateBaseCharacter(
-            //        "Asmund",
-            //        SpecializationType.Monk,
-            //        new List<int>() { (int)EquippableId.ClothArmor_0, (int)EquippableId.Staff_0, (int)EquippableId.INVALID, (int)EquippableId.INVALID }),
-            //    TeamSide.EnemyAI);
         }
+
+        // Rewards
+        randomContext.CurrencyReward = UnityEngine.Random.Range(0, 500);
+        randomContext.ItemRewards.Add((ItemId)UnityEngine.Random.Range(0, (int)ItemId.NUM));
+
+        randomContext.LevelId = createParams.LevelId;
+        randomContext.BottomLeft = createParams.BottomLeft;
+        randomContext.TopRight = createParams.TopRight;
+
+        return randomContext;
     }
 
     public EncounterContext GetEncounterContext()

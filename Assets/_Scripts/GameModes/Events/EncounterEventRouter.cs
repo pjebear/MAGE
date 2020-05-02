@@ -9,6 +9,8 @@ class EncounterEvent
     public enum EventType
     {
         EncounterBegun,
+        IntroComplete,
+        UnitPlacementComplete,
         ClockProgressed,
         TurnBegun,
         ActionResolved,

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -27,6 +28,12 @@ class MouseInputController : MonoBehaviour
 
     void GetMouseInput()
     {
+#if UNITY_EDITOR
+        if (Input.mousePosition.x == 0 || Input.mousePosition.y == 0 || Input.mousePosition.x >= Handles.GetMainGameViewSize().x - 1 || Input.mousePosition.y >= Handles.GetMainGameViewSize().y - 1) return;
+#else
+    if (Input.mousePosition.x == 0 || Input.mousePosition.y == 0 || Input.mousePosition.x >= Screen.width - 1 || Input.mousePosition.y >= Screen.height - 1) return;
+#endif
+
         for (int i = 0; i < (int)MouseKey.NUM; ++i)
         {
             if (UnityEngine.Input.GetMouseButtonDown(i))

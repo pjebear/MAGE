@@ -7,6 +7,6 @@ using System.Threading.Tasks;
 
 class LocationSystem
 {
-
+    public LevelId PartyLocation = LevelId.Forest;
 }
 

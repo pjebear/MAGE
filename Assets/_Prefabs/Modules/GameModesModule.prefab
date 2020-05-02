@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4804231985301377663}
   - component: {fileID: 2147000360117521254}
+  - component: {fileID: 964681002943818390}
   - component: {fileID: 4804231985301377660}
   m_Layer: 0
   m_Name: GameModesModule
@@ -45,6 +46,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65662e38d712fb40bec798b6478e3b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &964681002943818390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4804231985301377661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d71b958cf08bb74abe0ba9bcffcbcb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &4804231985301377660
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -57,10 +70,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3612ea163ffcc8e479816a2ed2d819e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EncounterPrefab: {fileID: 1219296962061803552, guid: 66ca15bace19ec640bbe3740cac14f18,
-    type: 3}
-  ExplorationPrefab: {fileID: 3383998192742837921, guid: 1fab389c55db8eb4596697a647ff9fc2,
-    type: 3}
 --- !u!1001 &5721637577403097546
 PrefabInstance:
   m_ObjectHideFlags: 0

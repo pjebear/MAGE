@@ -24,7 +24,7 @@ class ActionFactory
                 HeldEquippable weapon = (HeldEquippable)character.Equipment[Equipment.Slot.RightHand];
                 StateChange cost = new StateChange(StateChangeType.ActionCost, 0, 0);
 
-                info = new WeaponActionInfoBase(weapon, cost, ActionRange.Meele, castRange, effectRange);
+                info = new WeaponActionInfoBase(weapon, cost, ActionRange.Meele, ActionConstants.INSTANT_CAST_SPEED, castRange, effectRange);
             }
                 break;
 
@@ -42,31 +42,32 @@ class ActionFactory
                 StatusEffect bloodScentCost = StatusEffectFactory.CheckoutStatusEffect(StatusEffectType.BloodScent, character, bloodScentCount);
                 StateChange cost = new StateChange(StateChangeType.ActionCost, 0, 0, new List<StatusEffect>() { bloodScentCost } );
 
-                info = new MightyBlowInfo((HeldEquippable)character.Equipment[Equipment.Slot.RightHand], cost, ActionRange.Meele, castRange, effectRange);
+                info = new MightyBlowInfo((HeldEquippable)character.Equipment[Equipment.Slot.RightHand], 
+                    cost, ActionRange.Meele, ActionConstants.INSTANT_CAST_SPEED, castRange, effectRange);
             }
             break;
 
             case (ActionId.Heal):
                 {
-                    int minCastRange = 1, maxCastRange = 3, maxCastElevationChange = 1;
-                    RangeInfo castRange = new RangeInfo(minCastRange, maxCastRange, maxCastElevationChange, AreaType.Cross);
+                    int minCastRange = 0, maxCastRange = 2, maxCastElevationChange = 1;
+                    RangeInfo castRange = new RangeInfo(minCastRange, maxCastRange, maxCastElevationChange, AreaType.Circle);
 
-                    int minSelectionRange = 0, maxSelectionRange = 2, maxSelectionElevationChange = 0;
-                    RangeInfo effectRange = new RangeInfo(minSelectionRange, maxSelectionRange, maxSelectionElevationChange, AreaType.Cross);
+                    int minSelectionRange = 0, maxSelectionRange = 1, maxSelectionElevationChange = 0;
+                    RangeInfo effectRange = new RangeInfo(minSelectionRange, maxSelectionRange, maxSelectionElevationChange, AreaType.Circle);
 
-                    info = new HealInfo(castRange, effectRange);
+                    info = new HealInfo(ActionConstants.NORMAL_CAST_SPEED, castRange, effectRange);
                 }
                 break;
 
             case (ActionId.Protection):
                 {
-                    int minCastRange = 1, maxCastRange = 3, maxCastElevationChange = 1;
-                    RangeInfo castRange = new RangeInfo(minCastRange, maxCastRange, maxCastElevationChange, AreaType.Cross);
+                    int minCastRange = 0, maxCastRange = 2, maxCastElevationChange = 1;
+                    RangeInfo castRange = new RangeInfo(minCastRange, maxCastRange, maxCastElevationChange, AreaType.Circle);
 
                     int minSelectionRange = 0, maxSelectionRange = 1, maxSelectionElevationChange = 0;
-                    RangeInfo effectRange = new RangeInfo(minSelectionRange, maxSelectionRange, maxSelectionElevationChange, AreaType.Cross);
+                    RangeInfo effectRange = new RangeInfo(minSelectionRange, maxSelectionRange, maxSelectionElevationChange, AreaType.Circle);
 
-                    info = new ProtectionInfo(castRange, effectRange);
+                    info = new ProtectionInfo(ActionConstants.FAST_CAST_SPEED, castRange, effectRange);
                 }
                 break;
 

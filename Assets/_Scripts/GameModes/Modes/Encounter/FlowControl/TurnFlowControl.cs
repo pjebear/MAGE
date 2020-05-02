@@ -11,11 +11,21 @@ class TurnFlowControl
     , IInputHandler
     , IEventHandler<EncounterEvent>
 {
+    const int CONFIRM_BUTTON_IDX = 0;
+    const int CANCEL_BUTTON_IDX = 1;
+
+    const int ACT_BUTTON_IDX = 0;
+    const int MOVE_BUTTON_IDX = 1;
+    const int WAIT_BUTTON_IDX = 2;
+
     string Tag = "TurnFlowControl";
 
-    List<TileSelection> mSelectionStack;
+    TileSelectionStack mSelectionStack;
+
     bool mDisplaySelections = false;
     Tile mHoveredTile = null;
+    List<Tile> mValidHoverSelections = null;
+    RangeInfo mHoverRangeInfo = RangeInfo.Unit;
 
     Tile mSelectedTile = null;
     int mActionIdxSelected = 0;
@@ -37,7 +47,8 @@ class TurnFlowControl
 
     public void Init()
     {
-        mSelectionStack = new List<TileSelection>();
+        mSelectionStack = new TileSelectionStack();
+
         EncounterEventRouter.Instance.RegisterHandler(this);
     }
 
@@ -71,164 +82,173 @@ class TurnFlowControl
 
     private void HandleActionSelectInteraction(IUIInteractionInfo interactionInfo)
     {
-        switch ((ActorActions.ComponentId)interactionInfo.ComponentId)
+        if ((ActorActions.ComponentId)interactionInfo.ComponentId == ActorActions.ComponentId.ButtonList
+            && interactionInfo.InteractionType == UIInteractionType.Click)
         {
-            case (ActorActions.ComponentId.ButtonList):
-                if (interactionInfo.InteractionType == UIInteractionType.Click)
+            UIButtonList.ButtonListInteractionInfo buttonListInfo = (UIButtonList.ButtonListInteractionInfo)interactionInfo;
+            switch (mState)
+            {
+                // User is selection to Act, Move or Wait
+                // No tiles are highlighted currently
+                case (TurnState.SelectAction):
                 {
-                    UIButtonList.ButtonListInteractionInfo buttonListInfo = (UIButtonList.ButtonListInteractionInfo)interactionInfo;
-                    switch (mState)
-                    {
-                        // User is selection to Act, Move or Wait
-                        // No tiles are highlighted currently
-                        case (TurnState.SelectAction):
-                            switch (buttonListInfo.ButtonIdx)
-                            {
-                                case (0):
-                                    {
-                                        mState = TurnState.SelectAbility;
-
-                                        UIManager.Instance.Publish(UIContainerId.ActorActionsView);
-                                    }
-                                   
-                                    break;
-
-                                case (1):
-                                    {
-                                        mState = TurnState.SelectMovementLocation;
-
-                                        TileSelection selection = Map.Instance.GetMovementTilesForActor(mActor);
-                                        selection.SelectionType = Tile.HighlightState.MovementSelect;
-                                        AddTileSelection(selection);
-
-                                        TileSelection hoverSelection = TileSelection.EmptySelection;
-                                        hoverSelection.SelectionType = Tile.HighlightState.AOESelect;
-                                        AddTileSelection(hoverSelection);
-                                        SetSelectedTile(mHoveredTile);
-
-                                        ToggleSelectedTiles(true);
-
-                                        UIManager.Instance.Publish(UIContainerId.ActorActionsView);
-                                    }
-                                   
-                                    break;
-
-                                case (2):
-                                    mActor.DEBUG_IsTurnComplete = true;
-
-                                    OnActionSelected();
-                                    EncounterEventRouter.Instance.NotifyEvent(new EncounterEvent(EncounterEvent.EventType.TurnFinished));
-                                    break;
-                            }
-                            break;
-                        // User is selection a specific action
-                        // No tiles are highlighted currently
-                        case (TurnState.SelectAbility):
-                            if (buttonListInfo.ButtonIdx < mActor.Actions.Count)
-                            {
-                                mState = TurnState.SelectAbilityTarget;
-                                mActionIdxSelected = buttonListInfo.ButtonIdx;
-
-                                ActionInfo actionInfo = mActor.GetActionInfo(mActor.Actions[mActionIdxSelected]);
-                                TileSelection selection = Map.Instance.GetTilesInRange(EncounterModule.CharacterDirector.GetActorPosition(mActor), actionInfo.CastRange.MaxRange);
-                                selection.SelectionType = Tile.HighlightState.TargetSelect;
-                                AddTileSelection(selection);
-
-                                TileSelection hoverSelection = TileSelection.EmptySelection;
-                                hoverSelection.SelectionType = Tile.HighlightState.AOESelect;
-                                AddTileSelection(hoverSelection);
-                                SetSelectedTile(mHoveredTile);
-
-                                ToggleSelectedTiles(true);
-
-                                UIManager.Instance.Publish(UIContainerId.ActorActionsView);
-                            }
-                            else
-                            {
-                                mState = TurnState.SelectAction;
-
-                                UIManager.Instance.Publish(UIContainerId.ActorActionsView);
-
-                            }
-                            break;
-
-                        case (TurnState.SelectMovementLocation):
-                            switch (buttonListInfo.ButtonIdx)
-                            {
-                                case (0): // back
-                                    {
-                                        mState = TurnState.SelectAction;
-
-                                        ClearTileSelections();
-
-                                        UIManager.Instance.Publish(UIContainerId.ActorActionsView);
-                                    }
-                                    break;
-                            }
-                            break;
-                        case (TurnState.SelectAbilityTarget):
-                            switch (buttonListInfo.ButtonIdx)
-                            {
-                                case (0): // back
-                                    {
-                                        mState = TurnState.SelectAbility;
-
-                                        ClearTileSelections();
-                                        UIManager.Instance.Publish(UIContainerId.ActorActionsView);
-                                    }
-                                    break;
-                            }
-                            break;
-                        case (TurnState.ConfirmAbilityTarget):
-                            switch (buttonListInfo.ButtonIdx)
-                            {
-                                case (0): // yes
-                                    {
-                                        mState = TurnState.SelectAction;
-                                        mActor.DEBUG_HasActed = true;
-
-                                        ActionProposal actionProposal = new ActionProposal(
-                                            mActor,
-                                            mActor.Actions[mActionIdxSelected],
-                                            new TargetSelection(new Target(mSelectedTile.Idx))); // GROSs
-
-                                        OnActionSelected();
-
-                                        EncounterModule.ActionDirector.DirectAction(actionProposal);
-                                    }
-                                    break;
-                                case (1): // no
-                                    {
-                                        mState = TurnState.SelectAbilityTarget;
-
-                                        UIManager.Instance.Publish(UIContainerId.ActorActionsView);
-                                    }
-                                    break;
-                            }
-                            break;
-                        case (TurnState.ConfirmMovementTarget):
-                            switch (buttonListInfo.ButtonIdx)
-                            {
-                                case (0): // yes
-                                    {
-                                        mActor.DEBUG_HasMoved = true;
-                                        EncounterModule.CharacterDirector.MoveActor(mActor, mSelectedTile.Idx);
-                                        OnActionSelected();
-                                    }
-                                    break;
-                                case (1):
-                                    {
-                                        mState = TurnState.SelectMovementLocation;
-
-                                        UIManager.Instance.Publish(UIContainerId.ActorActionsView);
-                                    }
-                                    break;
-                            }
-                            break;
-                    }
+                    HandleSelectActionInput(buttonListInfo.ButtonIdx);
                 }
+                break;
+                // User is selection a specific action
+                // No tiles are highlighted currently
+                case (TurnState.SelectAbility):
+                {
+                    HandleSelectAbilityInput(buttonListInfo.ButtonIdx);
+                }
+                break;
+
+                // Cancel movement selection
+                case (TurnState.SelectMovementLocation):
+                {
+                    Logger.Assert(buttonListInfo.ButtonIdx == 0, LogTag.FlowControl, Tag, "Unkonwn SelectMovementLocation button list input");
+
+                    mState = TurnState.SelectAction;
+                    ClearTileSelections();
+                    UIManager.Instance.Publish(UIContainerId.ActorActionsView);
+                }
+                break;
+
+                // Cancel Ability selection
+                case (TurnState.SelectAbilityTarget):
+                {
+                    Logger.Assert(buttonListInfo.ButtonIdx == 0, LogTag.FlowControl, Tag, "Unkonwn SelectMovementLocation button list input");
+
+                    mState = TurnState.SelectAbility;
+
+                    ClearTileSelections();
+                    UIManager.Instance.Publish(UIContainerId.ActorActionsView);
+                }
+                break;
+
+                case (TurnState.ConfirmAbilityTarget):
+                {
+                    HandleAbilityConfirmationInput(buttonListInfo.ButtonIdx == CONFIRM_BUTTON_IDX);
+                }
+                break;
+
+                case (TurnState.ConfirmMovementTarget):
+                {
+                    HandleMovementConfirmationInput(buttonListInfo.ButtonIdx == CONFIRM_BUTTON_IDX);
+                }
+                break;
+            }
+        }
+    }
+
+    private void HandleSelectActionInput(int selectedAction)
+    {
+        switch (selectedAction)
+        {
+            case (ACT_BUTTON_IDX):
+            {
+                mState = TurnState.SelectAbility;
+
+                UIManager.Instance.Publish(UIContainerId.ActorActionsView);
+            }
+
             break;
 
+            case (MOVE_BUTTON_IDX):
+            {
+                mState = TurnState.SelectMovementLocation;
+                mValidHoverSelections = EncounterModule.Map.GetMovementTilesForActor(mActor);
+                AddTileSelection(mValidHoverSelections, Tile.HighlightState.MovementSelect);
+                
+                AddTileSelection(new List<Tile>(), Tile.HighlightState.AOESelect);
+                mHoverRangeInfo = RangeInfo.Unit;
+
+                UpdateHoveredTile(mHoveredTile);
+
+                ToggleSelectedTiles(true);
+
+                UIManager.Instance.Publish(UIContainerId.ActorActionsView);
+            }
+
+            break;
+
+            case (WAIT_BUTTON_IDX):
+            {
+                mActor.DEBUG_IsTurnComplete = true;
+
+                OnActionSelected();
+                EncounterEventRouter.Instance.NotifyEvent(new EncounterEvent(EncounterEvent.EventType.TurnFinished));
+            }
+            break;
+        }
+    }
+
+    private void HandleSelectAbilityInput(int selectedAbility)
+    {
+        if (selectedAbility < mActor.Actions.Count)
+        {
+            ActionInfo actionInfo = mActor.GetActionInfo(mActor.Actions[selectedAbility]);
+
+            mState = TurnState.SelectAbilityTarget;
+            mActionIdxSelected = selectedAbility;
+            mHoverRangeInfo = actionInfo.EffectRange;
+
+            mValidHoverSelections = EncounterModule.Map.GetTilesInRange(EncounterModule.CharacterDirector.GetActorPosition(mActor), actionInfo.CastRange);
+            AddTileSelection(mValidHoverSelections, Tile.HighlightState.TargetSelect);
+
+            AddTileSelection(new List<Tile>(), Tile.HighlightState.AOESelect);
+
+            UpdateHoveredTile(mHoveredTile);
+
+            ToggleSelectedTiles(true);
+
+            UIManager.Instance.Publish(UIContainerId.ActorActionsView);
+        }
+        else
+        {
+            mState = TurnState.SelectAction;
+
+            UIManager.Instance.Publish(UIContainerId.ActorActionsView);
+        }
+    }
+
+    private void HandleMovementConfirmationInput(bool confirmed)
+    {
+        if (confirmed)
+        {
+            mActor.DEBUG_HasMoved = true;
+            EncounterModule.CharacterDirector.MoveActor(mActor, mSelectedTile.Idx);
+            OnActionSelected();
+        }
+        else
+        { 
+            mState = TurnState.SelectMovementLocation;
+
+            UIManager.Instance.Publish(UIContainerId.ActorActionsView);
+        }
+    }
+
+    private void HandleAbilityConfirmationInput(bool confirmed)
+    {
+        if (confirmed)
+        {
+            mState = TurnState.SelectAction;
+            mActor.DEBUG_HasActed = true;
+
+            ActionProposal actionProposal = new ActionProposal(
+                mActor,
+                mActor.Actions[mActionIdxSelected],
+                new TargetSelection(new Target(mSelectedTile.Idx), mHoverRangeInfo)); // GROSs
+
+            OnActionSelected();
+
+            EncounterModule.ActionDirector.DirectAction(actionProposal);
+        }
+        else
+        {
+            mState = TurnState.SelectAbilityTarget;
+
+            UIManager.Instance.Publish(UIContainerId.ActorActionsView);
         }
     }
 
@@ -286,28 +306,33 @@ class TurnFlowControl
     public void OnMouseHoverChange(GameObject mouseHover)
     {
         Tile tile = GetTileFromObj(mouseHover);
-        mHoveredTile = tile;
 
         if (mState == TurnState.SelectAbilityTarget
                || mState == TurnState.SelectMovementLocation)
         {
-            SetSelectedTile(mHoveredTile);
+            UpdateHoveredTile(tile);
         }
     }
 
     public void OnKeyPressed(InputSource source, int key, InputState state)
     {
-        if (mState == TurnState.SelectAbilityTarget && mHoveredTile != null)
+        if (IsValidHoveredTile(mHoveredTile) 
+            && source == InputSource.Mouse
+            && (MouseKey)key == MouseKey.Left 
+            && state == InputState.Down)
         {
-            mState = TurnState.ConfirmAbilityTarget;
-            mSelectedTile = mHoveredTile;
-            UIManager.Instance.Publish(UIContainerId.ActorActionsView);
-        }
-        else if (mState == TurnState.SelectMovementLocation && mHoveredTile != null)
-        {
-            mState = TurnState.ConfirmMovementTarget;
-            mSelectedTile = mHoveredTile;
-            UIManager.Instance.Publish(UIContainerId.ActorActionsView);
+            if (mState == TurnState.SelectAbilityTarget)
+            {
+                mState = TurnState.ConfirmAbilityTarget;
+                mSelectedTile = mHoveredTile;
+                UIManager.Instance.Publish(UIContainerId.ActorActionsView);
+            }
+            else if (mState == TurnState.SelectMovementLocation)
+            {
+                mState = TurnState.ConfirmMovementTarget;
+                mSelectedTile = mHoveredTile;
+                UIManager.Instance.Publish(UIContainerId.ActorActionsView);
+            }
         }
     }
 
@@ -320,66 +345,62 @@ class TurnFlowControl
     private void ToggleSelectedTiles(bool visible)
     {
         mDisplaySelections = visible;
-        VisualizeTileSelections();
-    }
-
-    private void VisualizeTileSelections()
-    {
-        foreach (TileSelection selection in mSelectionStack)
-        {
-            selection.ClearSelection();
-        }
-
         if (mDisplaySelections)
         {
-            foreach (TileSelection selection in mSelectionStack)
-            {
-                selection.HighlightSelection();
-            }
+            mSelectionStack.DisplayTiles();
         }
-    }
-
-    private void AddTileSelection(TileSelection selection)
-    {
-        mSelectionStack.Add(selection);
-        VisualizeTileSelections();
-    }
-
-    private bool PopTileSelection()
-    {
-        if (mSelectionStack.Count > 0)
+        else
         {
-            mSelectionStack[mSelectionStack.Count - 1].ClearSelection();
-            mSelectionStack.RemoveAt(mSelectionStack.Count - 1);
-            VisualizeTileSelections();
-            return true;
+            mSelectionStack.HideTiles();
         }
-        return false;
+    }
+
+    private void AddTileSelection(List<Tile> selection, Tile.HighlightState highlight)
+    {
+        mSelectionStack.AddLayer(selection, highlight);
+        if (mDisplaySelections)
+        {
+            mSelectionStack.RefreshDisplay();
+        }
+    }
+
+    private void PopTileSelection()
+    {
+        mSelectionStack.RemoveLayer();
+        if (mDisplaySelections)
+        {
+            mSelectionStack.RefreshDisplay();
+        }
     }
 
     private void ClearTileSelections()
     {
-        foreach (TileSelection selection in mSelectionStack)
-        {
-            selection.ClearSelection();
-        }
-        mSelectionStack.Clear();
+        mSelectionStack.Reset();
     }
 
-    private void SetSelectedTile(Tile selection)
+    private bool IsValidHoveredTile(Tile hoveredTile)
     {
-        mSelectionStack[mSelectionStack.Count - 1].Selection.Clear();
-        if (selection != null && IsValidHoverTile(selection))
-        {
-            mSelectionStack[mSelectionStack.Count - 1].Selection.Add(selection);
-        }
-
-        VisualizeTileSelections();
+        return hoveredTile != null && mValidHoverSelections.Contains(hoveredTile);
     }
 
-    private bool IsValidHoverTile(Tile tile)
+    private void UpdateHoveredTile(Tile hoveredTile)
     {
-        return tile.State != Tile.HighlightState.None;
+        if (IsValidHoveredTile(hoveredTile))
+        {
+            mHoveredTile = hoveredTile;
+        }
+        else
+        {
+            mHoveredTile = null;
+        }
+
+        List<Tile> hoverSelection = new List<Tile>();
+        if (mHoveredTile != null)
+        {
+            hoverSelection = EncounterModule.Map.GetTilesInRange(hoveredTile.Idx, mHoverRangeInfo);
+        }
+
+        mSelectionStack.UpdateLayer(mSelectionStack.Count - 1, hoverSelection);
     }
 
     private Tile GetTileFromObj(GameObject obj)

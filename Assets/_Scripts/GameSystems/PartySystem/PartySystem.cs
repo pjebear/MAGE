@@ -55,6 +55,13 @@ class PartySystem
         {
             Party.Inventory.Add(itemId);
         }
+
+        Party.AvatarId = (int)StoryCharacterId.Rheinhardt;
+    }
+
+    public int GetPartyAvatarId()
+    {
+        return Party.AvatarId;
     }
 
     public List<int> GetCharactersInParty()

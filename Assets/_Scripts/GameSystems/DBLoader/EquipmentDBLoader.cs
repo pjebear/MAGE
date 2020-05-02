@@ -162,7 +162,7 @@ class EquipmentDBLoader
             entry.Id = (int)EquippableId.Shield_0;
             entry.Category = (int)EquippableCategory.Shield;
             entry.Type = (int)ShieldType.Shield;
-            entry.BlockChance = 100;
+            entry.BlockChance = 20;
             entry.ParryChance = 0;
             entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
             {

@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 public enum UIContainerId
 {
     ActorActionsView,
+    EncounterIntroView,
+    EncounterUnitPlacementView,
     EncounterStatusView,
     EquipmentOutfiterView,
     ExplorationMenuView,

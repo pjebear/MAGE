@@ -7,6 +7,8 @@ using UnityEngine;
 
 class MainMenuModule : GameModeBase
 {
+    public bool AutoStart = true;
+
     MainMenuViewControl ViewControl;
 
     public override GameModeType GetGameModeType()
@@ -34,6 +36,12 @@ class MainMenuModule : GameModeBase
     protected override void StartMode()
     {
         ViewControl.Start();
+
+        if (AutoStart)
+        {
+            GameSystemModule.Instance.PrepareNewGame();
+            GameModesModule.Instance.Explore();
+        }
     }
 }
 

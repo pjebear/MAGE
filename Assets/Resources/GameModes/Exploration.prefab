@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3383998192742837921}
   - component: {fileID: 3383998192742837920}
   m_Layer: 0
-  m_Name: ExplorationModule
+  m_Name: Exploration
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,6 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6034db1c889408544bd40e33dbaf13a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ExplorationAvatarPrefab: {fileID: 6633418200390804314, guid: d468327717666fd4db366087a86ad299,
+    type: 3}
 --- !u!114 &3383998192742837920
 MonoBehaviour:
   m_ObjectHideFlags: 0

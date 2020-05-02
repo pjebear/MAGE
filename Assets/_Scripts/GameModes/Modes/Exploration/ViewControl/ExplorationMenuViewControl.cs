@@ -28,31 +28,36 @@ class ExplorationMenuViewControl
         switch (containerId)
         {
             case (int)UIContainerId.ExplorationMenuView:
+            {
+                if (interactionInfo.InteractionType == UIInteractionType.Click)
                 {
-                    if (interactionInfo.InteractionType == UIInteractionType.Click)
+                    switch (interactionInfo.ComponentId)
                     {
-                        switch (interactionInfo.ComponentId)
+                        case (int)ExplorationMenuView.ComponentId.SaveBtn:
                         {
-                            case (int)ExplorationMenuView.ComponentId.SaveBtn:
-                                {
-                                    GameSystemModule.Instance.Save();
-                                }
-                                break;
-
-                            case (int)ExplorationMenuView.ComponentId.ExitBtn:
-                                {
-                                    GameModesModule.Instance.Quit();
-                                }
-                                break;
-                            case (int)ExplorationMenuView.ComponentId.OutfiterBtn:
-                                {
-                                    GameModesModule.Instance.Outfit();
-                                }
-                                break;
+                            GameSystemModule.Instance.Save();
                         }
+                        break;
+
+                        case (int)ExplorationMenuView.ComponentId.ExitBtn:
+                        {
+                            GameModesModule.Instance.Quit();
+                        }
+                        break;
+                        case (int)ExplorationMenuView.ComponentId.OutfiterBtn:
+                        {
+                            GameModesModule.Instance.Outfit();
+                        }
+                        break;
+                        case (int)ExplorationMenuView.ComponentId.RandomEncounter:
+                        {
+                            ExplorationModule.Instance.TriggerRandomEncounter();
+                        }
+                        break;
                     }
                 }
-                break;
+            }
+            break;
         }
     }
 

@@ -34,6 +34,18 @@ class AuraDirector : MonoBehaviour
         aura.SetActive(activateImmediately);
     }
 
+    public void RemoveActor(EncounterActorController actor)
+    {
+        if (mAuras.ContainsKey(actor))
+        {
+            foreach (Aura aura in mAuras[actor])
+            {
+                Destroy(aura.gameObject);
+            }
+            mAuras.Remove(actor);
+        }
+    }
+
     public void HandleEvent(EncounterEvent eventInfo)
     {
         switch (eventInfo.Type)

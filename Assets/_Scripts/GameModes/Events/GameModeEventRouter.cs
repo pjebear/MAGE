@@ -47,17 +47,5 @@ class GameModeEventRouter
     : EventRouter<GameModeEvent>
 {
     public static GameModeEventRouter Instance;
-
-    private void Awake()
-    {
-        if (Instance != null)
-        {
-            Logger.Assert(Instance != null, LogTag.GameModes, "", "", LogLevel.Warning);
-        }
-        else
-        {
-            Instance = this;
-        }
-    }
 }
 

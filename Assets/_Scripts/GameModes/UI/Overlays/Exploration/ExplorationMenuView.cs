@@ -14,11 +14,13 @@ class ExplorationMenuView
         OutfiterBtn,
         SaveBtn,
         ExitBtn,
+        RandomEncounter,
     }
 
     public UIButton OutfiterBtn;
     public UIButton SaveBtn;
     public UIButton ExitBtn;
+    public UIButton RandomEncounter;
 
     public override void Publish(IDataProvider dataProvider)
     {
@@ -30,6 +32,7 @@ class ExplorationMenuView
         OutfiterBtn.Init((int)ComponentId.OutfiterBtn, this);
         SaveBtn.Init((int)ComponentId.SaveBtn, this);
         ExitBtn.Init((int)ComponentId.ExitBtn, this);
+        RandomEncounter.Init((int)ComponentId.RandomEncounter, this);
     }
 
     protected override void InitSelf()

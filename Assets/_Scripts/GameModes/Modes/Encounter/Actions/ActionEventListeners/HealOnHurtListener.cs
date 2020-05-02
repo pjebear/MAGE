@@ -32,6 +32,7 @@ class HealOnHurtListener : ActionResponderBase
                 && InRange(actor))
             {
                 TargetSelection selection = new TargetSelection(new Target(actor));
+                
                 EncounterModule.ActionDirector.DirectAction(new ActionProposal(Listener, ActionId.Heal, selection));
             }
         }

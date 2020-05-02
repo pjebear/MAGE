@@ -28,24 +28,46 @@ class CharacterDirector : MonoBehaviour
         
     }
 
-    public EncounterActorController AddCharacter(EncounterCharacter encounterCharacter, ActorSpawnParams actorParams, TileIdx atIdx)
+    public void CleanupCharacters()
+    {
+        foreach (EncounterCharacter encounterCharacter in CharacterActorLookup.Keys)
+        {
+            EncounterModule.AuraDirector.RemoveActor(CharacterActorLookup[encounterCharacter]);
+            EncounterModule.AnimationDirector.UnRegisterActor(CharacterActorLookup[encounterCharacter]);
+
+            Destroy(CharacterActorLookup[encounterCharacter].gameObject);
+        }
+    }
+
+    public EncounterActorController AddCharacter(DB.DBCharacter dBCharacter, TeamSide team, TileIdx atIdx)
     {
         Transform actorParent = GameObject.Find("Actors").transform;
-        EncounterActorController actorController = GameModesModule.ActorLoader.CreateActor(actorParams, actorParent);
 
-        CharacterActorLookup.Add(encounterCharacter, actorController);
-        actorController.EncounterCharacter = encounterCharacter;
+        EncounterCharacter character = new EncounterCharacter(team, CharacterLoader.LoadCharacter(dBCharacter));
+        character.Team = team;
+        EncounterModule.Model.Characters.Add(character.Id, character);
+        EncounterModule.Model.Teams[team].Add(character);
 
-        foreach (AuraType type in encounterCharacter.Auras)
+        EncounterActorController actorController = GameModesModule.ActorLoader.CreateActor(CharacterUtil.ActorParamsForCharacter(dBCharacter), actorParent);
+
+        CharacterActorLookup.Add(character, actorController);
+        actorController.EncounterCharacter = character;
+
+        foreach (AuraType type in actorController.EncounterCharacter.Auras)
         {
-            EncounterModule.AuraDirector.RegisterAura(encounterCharacter.GetAuraInfo(type), actorController, false);
+            EncounterModule.AuraDirector.RegisterAura(actorController.EncounterCharacter.GetAuraInfo(type), actorController, false);
         }
 
-        Map.Instance.PlaceAtTile(atIdx, actorController);
+        EncounterModule.Map.PlaceAtTile(atIdx, actorController);
         mActorPositions.Add(actorController, atIdx);
         EncounterModule.AnimationDirector.RegisterActor(actorController);
 
         return actorController;
+    }
+
+    public void RemoveCharacter()
+    {
+
     }
 
     public EncounterActorController GetController(EncounterCharacter character)

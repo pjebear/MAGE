@@ -15,19 +15,26 @@ class MasterFlowControl
 
     enum FlowState
     {
+        Intro,
+        UnitPlacement,
         //Init,
-        StatusIncrement,
+
+        CoreLoopBegin,
+        StatusIncrement = CoreLoopBegin,
         StatusCheck,
-        //ActionIncrement,
-        //ActionResolution,
+        ActionIncrement,
+        ActionResolution,
         TurnIncrement,
         TurnResolution,
+        CoreLoopEnd,
+
+        Outro,
 
         NUM
     }
 
-    private bool mIsFlowPaused;
-    private FlowState mState;
+    private bool mIsFlowPaused = true;
+    private FlowState mState = FlowState.Intro;
 
     private void IncrementClock()
     {
@@ -38,7 +45,7 @@ class MasterFlowControl
     public void Init()
     {
         EncounterEventRouter.Instance.RegisterHandler(this);
-        mState = FlowState.TurnIncrement;
+        mState = FlowState.Intro;
 
         mIsFlowPaused = true;
     }
@@ -88,32 +95,42 @@ class MasterFlowControl
 
                     break;
 
-                //case (FlowState.ActionIncrement):
-                //    // TODO:
-                //    ProgressState();
-                //    break;
+                case (FlowState.ActionIncrement):
+                    EncounterModule.ActionDirector.IncrementDelayedActions();
+                    ProgressState();
+                    break;
 
-                //case (FlowState.ActionResolution):
-                //    // TODO: 
-                //    ProgressState();
-                //    break;
+                case (FlowState.ActionResolution):
+                {
+                    if (EncounterModule.ActionDirector.HasReadyActions())
+                    {
+                        EncounterModule.ActionDirector.ProgressDelayedActions();
+                        mIsFlowPaused = true;
+                    }
+                    else
+                    {
+                        ProgressState();
+                    }
+                }
+                break;
 
                 case (FlowState.TurnIncrement):
-                    EncounterModule.Model.TurnOrder.Clear();
-
                     foreach (EncounterCharacter actor in EncounterModule.Model.Characters.Values)
                     {
                         if (actor.IsAlive)
                         {
-                            actor.DEBUG_HasActed = false;
-                            actor.DEBUG_HasMoved = false;
-                            actor.DEBUG_IsTurnComplete = false;
-                            EncounterModule.Model.TurnOrder.Add(actor);
+                            actor.DEBUG_ClockGuage += (int)actor.Attributes[new AttributeIndex(TertiaryStat.Speed)];
+                            if (actor.DEBUG_ClockGuage >= 100)
+                            {
+                                actor.DEBUG_HasActed = false;
+                                actor.DEBUG_HasMoved = false;
+                                actor.DEBUG_IsTurnComplete = false;
+                                EncounterModule.Model.TurnOrder.Add(actor);
+                            }
                         }
                     }
 
                     ProgressState();
-
                     break;
 
                 case (FlowState.TurnResolution):
@@ -123,6 +140,18 @@ class MasterFlowControl
                         EncounterCharacter toProgress = EncounterModule.Model.TurnOrder[0];
                         if ((toProgress.DEBUG_HasActed && toProgress.DEBUG_HasMoved) || toProgress.DEBUG_IsTurnComplete)
                         {
+                            EncounterCharacter turnComplete = EncounterModule.Model.TurnOrder[0];
+                            int clockDecrement = 40;
+                            if (toProgress.DEBUG_HasActed && toProgress.DEBUG_HasMoved)
+                            {
+                                clockDecrement = 80;
+                            }
+                            else if (toProgress.DEBUG_HasActed || toProgress.DEBUG_HasMoved)
+                            {
+                                clockDecrement = 60;
+                            }
+                            turnComplete.DEBUG_ClockGuage -= clockDecrement;
+
                             EncounterModule.Model.TurnOrder.RemoveAt(0);
                         }
                         else
@@ -135,6 +164,10 @@ class MasterFlowControl
                     {
                         ProgressState();
                     }
+                    break;
+
+                default:
+                    mIsFlowPaused = true;
                     break;
             }
         }
@@ -179,7 +212,7 @@ class MasterFlowControl
     {
         bool encounterLost = false;
 
-        foreach (EncounterCondition loseCondition in EncounterModule.Model.LoseConditions)
+        foreach (EncounterCondition loseCondition in EncounterModule.Model.EncounterContext.LoseConditions)
         {
             bool isConditionMet = loseCondition.IsConditionMet(EncounterModule.Model);
 
@@ -198,7 +231,7 @@ class MasterFlowControl
     {
         bool encounterWon = false;
 
-        foreach (EncounterCondition winCondition in EncounterModule.Model.WinConditions)
+        foreach (EncounterCondition winCondition in EncounterModule.Model.EncounterContext.WinConditions)
         {
             bool isConditionMet = winCondition.IsConditionMet(EncounterModule.Model);
 
@@ -216,9 +249,14 @@ class MasterFlowControl
     private void ProgressState()
     {
         mState++;
-        if (mState == FlowState.NUM)
+
+        if (mState == FlowState.CoreLoopBegin)
         {
-            mState = FlowState.StatusIncrement;
+            ProgressFlow();
+        }
+        else if (mState == FlowState.CoreLoopEnd)
+        {
+            mState = FlowState.CoreLoopBegin;
             IncrementClock();
         }
     }
@@ -236,7 +274,20 @@ class MasterFlowControl
         switch (eventInfo.Type)
         {
             case EncounterEvent.EventType.EncounterBegun:
-                ProgressFlow();
+                EncounterModule.IntroViewControl.Show();
+                break;
+
+            case EncounterEvent.EventType.IntroComplete:
+                EncounterModule.IntroViewControl.Hide();
+                ProgressState();
+                EncounterModule.UnitPlacementViewControl.Start();
+                break;
+
+            case EncounterEvent.EventType.UnitPlacementComplete:
+
+                EncounterModule.UnitPlacementViewControl.Cleanup();
+                ProgressState();
+
                 break;
             case EncounterEvent.EventType.ActionResolved:
                 ProgressFlow();
@@ -247,8 +298,10 @@ class MasterFlowControl
                 break;
 
             case EncounterEvent.EventType.TurnFinished:
+            {
                 ProgressFlow();
-                break;
+            }    
+            break;
 
             case EncounterEvent.EventType.CharacterKO:
                 {

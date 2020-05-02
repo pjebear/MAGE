@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 class GameModesModule 
     : IAssetManager<GameModeBase>
@@ -29,11 +28,13 @@ class GameModesModule
         Instance = this;
         ActorLoader = gameObject.AddComponent<ActorLoader>();
 
+        GameModeEventRouter.Instance = GetComponent<GameModeEventRouter>();
+        LevelManager.Instance = GetComponent<LevelManager>();
+
         GameModeEventRouter.Instance.RegisterHandler(this);
 
         // IAssetManager
         InitializeAssets();
-
     }
 
     private void OnDestroy()
@@ -62,8 +63,6 @@ class GameModesModule
 
     public void LoadGameMode(GameModeType gameMode)
     {
-        SceneManager.LoadSceneAsync(gameMode.ToString());
-
         Instantiate(GetAsset(gameMode.ToString()), transform);
 
         // Continue loading on 'NotifyGameModeLoaded'

@@ -18,8 +18,9 @@ GameObject:
   - component: {fileID: 4917393075697840157}
   - component: {fileID: 7258414283594579392}
   - component: {fileID: 1439410062478391652}
+  - component: {fileID: -2637688570931525983}
   m_Layer: 0
-  m_Name: EncounterModule
+  m_Name: Encounter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65,16 +66,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RunDebug: 1
-  AllySpawnPoints:
-  - {x: 0, y: 0}
-  - {x: 0, y: 1}
-  - {x: 0, y: 2}
-  - {x: 0, y: 3}
-  EnemySpawnPoints:
-  - {x: 3, y: 3}
-  - {x: 3, y: 2}
-  - {x: 3, y: 1}
-  - {x: 3, y: 0}
   MapPrefab: {fileID: 928888066830617226, guid: 0e1b6644e0fc2a7478ad43bea15fea4e,
     type: 3}
 --- !u!114 &4924682771786383623
@@ -125,8 +116,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1cb1ea230cfc6945af0c3d4fd454045, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StateRigPrefab: {fileID: 7984180887772981500, guid: 3fe3f5761273b5846bdd13eab19e0198,
-    type: 3}
 --- !u!114 &4917393075697840157
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -167,6 +156,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AuraPrefab: {fileID: -6966047575463070696, guid: 62ce89a00d0668d458c5fc582645596e,
     type: 3}
+--- !u!114 &-2637688570931525983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1219296962061803554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c0fad6530912db48b5aef4aca2afe85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3274251066895782800
 PrefabInstance:
   m_ObjectHideFlags: 0

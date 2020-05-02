@@ -10,4 +10,5 @@ class Party
     public int Currency = 0;
     public Inventory Inventory = new Inventory();
     public List<int> CharacterIds = new List<int>();
+    public int AvatarId = 0;
 }

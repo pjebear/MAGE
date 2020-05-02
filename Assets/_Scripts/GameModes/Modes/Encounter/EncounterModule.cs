@@ -11,8 +11,6 @@ class EncounterModule : GameModeBase
     private string TAG = "EncounterModule";
 
     public bool RunDebug = false;
-    public List<Vector2> AllySpawnPoints = new List<Vector2>() { new Vector2(0,0), new Vector2(0, 1) };
-    public List<Vector2> EnemySpawnPoints = new List<Vector2>() { new Vector2(2, 0), new Vector2(2, 1) };
 
     public GameObject MapPrefab;
     
@@ -27,6 +25,8 @@ class EncounterModule : GameModeBase
     public static EffectSpawner EffectSpawner;
     public static Map Map;
 
+    public static EncounterIntroViewControl IntroViewControl;
+    public static EncounterUnitPlacementViewControl UnitPlacementViewControl;
     public static EncounterStatusControl StatusViewControl;
     public static MasterFlowControl MasterFlowControl;
     public static TurnFlowControl TurnFlowControl;
@@ -42,6 +42,8 @@ class EncounterModule : GameModeBase
         AuraDirector = GetComponent<AuraDirector>();
         EffectSpawner = GetComponentInChildren<EffectSpawner>();
 
+        IntroViewControl = GetComponent<EncounterIntroViewControl>();
+        UnitPlacementViewControl = new EncounterUnitPlacementViewControl();
         StatusViewControl = GetComponent<EncounterStatusControl>();
         TurnFlowControl = GetComponent<TurnFlowControl>();
         MasterFlowControl = GetComponent<MasterFlowControl>();
@@ -51,67 +53,68 @@ class EncounterModule : GameModeBase
     {
         Logger.Log(LogTag.GameModes, TAG, "::SetupMode()");
 
+        Model.EncounterContext = GameSystemModule.Instance.GetEncounterContext();
+
         AuraDirector.Init();
+        ActionDirector.Init();
         MasterFlowControl.Init();
         TurnFlowControl.Init();
         StatusViewControl.Init();
+        IntroViewControl.Init();
+        UnitPlacementViewControl.Init();
 
-        Map = GameObject.Find("Map").GetComponent<Map>();
-        if (Map == null)
-        {
-            Map = Instantiate(MapPrefab).GetComponent<Map>();
-        }
+
+        // Level Manager:
+        //TODO: Load level if needed
+        Level level = LevelManager.Instance.GetLoadedLevel();
+
+        Map = new Map();
+        Map.Initialize(level.Tiles, Model.EncounterContext.BottomLeft, Model.EncounterContext.TopRight);
+
+        CalculateSpawnPoints();
 
         if (Camera.main.GetComponent<CameraDirector>() == null)
         {
             Camera.main.gameObject.AddComponent<CameraDirector>();
         }
-        CameraDirector = Camera.main.GetComponent<CameraDirector>();
 
-        EncounterContext context = GameSystemModule.Instance.GetEncounterContext();
+        CameraDirector = Camera.main.GetComponent<CameraDirector>();
 
         int count = 0;
         TeamSide team = TeamSide.AllyHuman;
-
         Model.Teams.Add(team, new List<EncounterCharacter>());
-        List<Vector2> spawnPoints = AllySpawnPoints;
-        foreach (DB.DBCharacter dBCharacter in DB.DBHelper.LoadCharactersOnTeam(team))
-        {
-            TileIdx atPostition = new TileIdx((int)spawnPoints[count].x, (int)spawnPoints[count].y);
 
-            EncounterCharacter character = new EncounterCharacter(team, CharacterLoader.LoadCharacter(dBCharacter));
-            Model.Characters.Add(character.Id, character);
-            Model.Teams[team].Add(character);
+        //foreach (DB.DBCharacter dBCharacter in DB.DBHelper.LoadCharactersOnTeam(team))
+        //{
+        //    TileIdx atPostition = new TileIdx((int)spawnPoints[count].x + context.BottomLeft.x, (int)spawnPoints[count].y + context.BottomLeft.y);
 
-            CharacterDirector.AddCharacter(character, CharacterUtil.ActorParamsForCharacter(dBCharacter), atPostition);
+        //    EncounterCharacter character = new EncounterCharacter(team, CharacterLoader.LoadCharacter(dBCharacter));
+        //    Model.Characters.Add(character.Id, character);
+        //    Model.Teams[team].Add(character);
 
-            count++;
-        }
+        //    CharacterDirector.AddCharacter(character, CharacterUtil.ActorParamsForCharacter(dBCharacter), atPostition);
+
+        //    count++;
+        //}
 
         count = 0;
         team = TeamSide.EnemyAI;
         Model.Teams.Add(team, new List<EncounterCharacter>());
-        spawnPoints = EnemySpawnPoints;
         foreach (DB.DBCharacter dBCharacter in DB.DBHelper.LoadCharactersOnTeam(team))
         {
-            TileIdx atPostition = new TileIdx((int)spawnPoints[count].x, (int)spawnPoints[count].y);
-
-            EncounterCharacter character = new EncounterCharacter(team, CharacterLoader.LoadCharacter(dBCharacter));
-            Model.Characters.Add(character.Id, character);
-            Model.Teams[team].Add(character);
-            CharacterDirector.AddCharacter(character, CharacterUtil.ActorParamsForCharacter(dBCharacter), atPostition);
-
+            CharacterDirector.AddCharacter(dBCharacter, team, Model.EnemySpawnPoints[count]);
             count++;
         }
-
-        Model.WinConditions = context.WinConditions;
-        Model.LoseConditions = context.LoseConditions;
 
         GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.ModeSetup_Complete));
     }
 
     protected override void CleanUpMode()
     {
+        Map.Cleanup();
+        Destroy(CameraDirector);
+        CharacterDirector.CleanupCharacters();
+
         GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.ModeTakedown_Complete));
     }
 
@@ -139,6 +142,27 @@ class EncounterModule : GameModeBase
     public override GameModeType GetGameModeType()
     {
         return GameModeType.Encounter;
+    }
+
+    protected void CalculateSpawnPoints()
+    {
+        Model.AllySpawnPoints = new List<TileIdx>();
+        for (int y = 0; y < 2; ++y)
+        {
+            for (int x = 0; x < Map.Width; ++x)
+            {
+                Model.AllySpawnPoints.Add(new TileIdx(x + Map.TileIdxOffset.x, y + Map.TileIdxOffset.y));
+            }
+        }
+
+        Model.EnemySpawnPoints = new List<TileIdx>();
+        for (int y = 0; y < 2; ++y)
+        {
+            for (int x = 0; x < Map.Width; ++x)
+            {
+                Model.EnemySpawnPoints.Add(new TileIdx(x + Map.TileIdxOffset.x, Map.Length - 1 - y + Map.TileIdxOffset.y));
+            }
+        }
     }
 }
 

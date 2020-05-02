@@ -14,12 +14,17 @@ public struct TileIdx
     }
 
 
-    public static int Distance(TileIdx lhs, TileIdx rhs)
+    public static int ManhattanDistance(TileIdx lhs, TileIdx rhs)
     {
         int xDiff = Mathf.Abs(lhs.x - rhs.x);
         int yDiff = Mathf.Abs(lhs.y - rhs.y);
 
         return xDiff + yDiff;
+    }
+
+    public static Vector2 Displacement(TileIdx lhs, TileIdx rhs)
+    {
+        return new Vector2(rhs.x - lhs.x, rhs.y - lhs.y);
     }
 
     public static bool operator==(TileIdx lhs, TileIdx rhs)
@@ -62,7 +67,8 @@ class Tile : MonoBehaviour
     public void Init(TileIdx tileIdx)
     {
         Idx = tileIdx;
-        TextMesh.text = string.Format("[{0},{1}]", Idx.x, Idx.y);
+        TextMesh.text = string.Format("[{0},{1}]", Idx.y, Idx.x);
+        name = string.Format("[{0},{1}]", Idx.y, Idx.x);
     }
 
     public float DistanceTo(Tile otherTile)

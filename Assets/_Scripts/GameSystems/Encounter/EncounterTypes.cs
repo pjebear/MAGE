@@ -5,6 +5,22 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+enum EncounterType
+{
+    Random,
+    Scenario,
+
+    NUM
+}
+
+enum EncounterScenarioId
+{
+    Random,
+    Debug,
+
+    NUM
+}
+
 enum TeamSide
 {
     INVALID = -1,
@@ -45,7 +61,11 @@ class Teams
 
 struct EncounterCreateParams
 {
+    public LevelId LevelId;
+    public EncounterScenarioId ScenarioId;
 
+    public TileIdx BottomLeft;
+    public TileIdx TopRight;
 }
 
 class EncounterResultInfo

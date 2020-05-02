@@ -16,8 +16,9 @@ enum AreaType
     NUM
 }
 
-class RangeInfo
+struct RangeInfo
 {
+    public static RangeInfo Unit { get { return new RangeInfo(0, 0, 0, AreaType.Circle); } }
     public int MinRange;
     public int MaxRange;
     public int MaxElevationChange;
@@ -32,7 +33,7 @@ class RangeInfo
     }
 }
 
-class ActionTargetDetails
+struct ActionTargetDetails
 {
     public RangeInfo CastDetails;
     public RangeInfo SelectionDetails;
@@ -46,18 +47,18 @@ class ActionTargetDetails
     }
 }
 
-class TargetSelection
+struct TargetSelection
 {
     public Target FocalTarget;
-    public List<Target> PeripheralTargets;
-    public TargetSelection(Target focalTarget, List<Target> peripheralTargets)
+    public RangeInfo SelectionRange;
+    public TargetSelection(Target focalTarget, RangeInfo range)
     {
         FocalTarget = focalTarget;
-        PeripheralTargets = peripheralTargets;
+        SelectionRange = range;
     }
 
     public TargetSelection(Target target)
-        : this(target, new List<Target>())
+        : this(target, RangeInfo.Unit)
     {
     }
 }
@@ -71,7 +72,7 @@ enum TargetSelectionType
     NUM
 }
 
-class Target
+struct Target
 {
     public TileIdx TileTarget;
     public EncounterCharacter ActorTarget;
@@ -81,12 +82,14 @@ class Target
     {
         TargetType = TargetSelectionType.Tile;
         TileTarget = tileTarget;
+        ActorTarget = null;
     }
 
     public Target(EncounterCharacter actorTarget)
     {
         TargetType = TargetSelectionType.Actor;
         ActorTarget = actorTarget;
+        TileTarget = new TileIdx();
     }
 
     public Transform GetTargetTransform()

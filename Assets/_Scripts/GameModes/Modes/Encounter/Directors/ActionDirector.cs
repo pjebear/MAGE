@@ -1,20 +1,26 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 class ActionDirector : MonoBehaviour
+    
 {
     private Timeline<ActionEvent> mActionTimeline;
     private ActionResult mActionResult;
 
     private Queue<ActionProposal> mActionQueue;
-    private List<KeyValuePair<ActionProposal, int>> mDelayedActions;
+    private Dictionary<ActionProposal, int> mDelayedActions;
 
-
-    void Awake()
+    public void Init()
     {
         mActionQueue = new Queue<ActionProposal>();
-        mDelayedActions = new List<KeyValuePair<ActionProposal, int>>();
+        mDelayedActions = new Dictionary<ActionProposal, int>();
+    }
+
+    public void Cleanup()
+    {
+       
     }
 
     // Update is called once per frame
@@ -26,14 +32,16 @@ class ActionDirector : MonoBehaviour
         }
     }
 
-    public void DirectAction(ActionProposal proposal, int withDelay = 0)
+    public void DirectAction(ActionProposal proposal)
     {
-        if (withDelay > 0)
+        int castSpeed = proposal.Owner.GetActionInfo(proposal.Action).CastSpeed;
+
+        if (castSpeed != ActionConstants.INSTANT_CAST_SPEED)
         {
-            mDelayedActions.Add(new KeyValuePair<ActionProposal, int>(proposal, withDelay));
+            mDelayedActions.Add(proposal, castSpeed);
             EncounterEventRouter.Instance.NotifyEvent(new EncounterEvent(EncounterEvent.EventType.ActionResolved));
         }
-        else if (withDelay == 0)
+        else
         {
             if (mActionTimeline != null)
             {
@@ -44,7 +52,26 @@ class ActionDirector : MonoBehaviour
                 BeginNextAction(proposal);
             }
         }
-       
+    }
+
+    public bool HasReadyActions()
+    {
+        return GetReadyActions().Count > 0;
+    }
+
+    public void ProgressDelayedActions()
+    {
+        List<ActionProposal> readyActions = GetReadyActions();
+        if (readyActions.Count > 0)
+        {
+            mDelayedActions.Remove(readyActions[0]);
+            BeginNextAction(readyActions[0]);
+        }
+    }
+
+    public List<ActionProposal> GetReadyActions()
+    {
+        return mDelayedActions.Where(x => x.Value <= 0).Select(x => x.Key).ToList();
     }
 
     void BeginNextAction(ActionProposal nextAction)
@@ -87,6 +114,14 @@ class ActionDirector : MonoBehaviour
         foreach (var actorResultPair in mActionResult.TargetResults)
         {
             EncounterModule.CharacterDirector.ApplyStateChange(actorResultPair.Key, actorResultPair.Value.StateChange);
+        }
+    }
+
+    public void IncrementDelayedActions()
+    {
+        foreach (ActionProposal proposal in mDelayedActions.Keys.ToList())
+        {
+            mDelayedActions[proposal]--;
         }
     }
 }

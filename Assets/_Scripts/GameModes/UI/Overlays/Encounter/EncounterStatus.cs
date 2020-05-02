@@ -11,7 +11,9 @@ class EncounterStatus : UIContainer
 
     public enum ComponentId
     {
-        ContinueBtn
+        ContinueBtn,
+        WinBtn,
+        LoseBtn,
     }
 
 
@@ -48,6 +50,8 @@ class EncounterStatus : UIContainer
     public GameObject EncounterStatusObj;
 
     public UIButton ContinueButton;
+    public UIButton WinButton;
+    public UIButton LoseButton;
 
     public override void Publish(IDataProvider dataProvider)
     {
@@ -93,6 +97,8 @@ class EncounterStatus : UIContainer
     protected override void InitComponents()
     {
         ContinueButton.Init((int)ComponentId.ContinueBtn, this);
+        WinButton.Init((int)ComponentId.WinBtn, this);
+        LoseButton.Init((int)ComponentId.LoseBtn, this);
 
         EncounterOverObj.gameObject.SetActive(false);
     }

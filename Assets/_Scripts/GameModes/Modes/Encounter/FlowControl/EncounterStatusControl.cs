@@ -24,14 +24,26 @@ class EncounterStatusControl
        switch (containerId)
         {
             case (int)UIContainerId.EncounterStatusView:
+            {
+                if (interactionInfo.ComponentId == (int)EncounterStatus.ComponentId.ContinueBtn
+                    && interactionInfo.InteractionType == UIInteractionType.Click)
                 {
-                    if (interactionInfo.ComponentId == (int)EncounterStatus.ComponentId.ContinueBtn
-                        && interactionInfo.InteractionType == UIInteractionType.Click)
-                    {
-                        GameModesModule.Instance.Explore();
-                    }
+                    GameModesModule.Instance.Explore();
                 }
-                break;
+                else if (interactionInfo.ComponentId == (int)EncounterStatus.ComponentId.WinBtn
+                    && interactionInfo.InteractionType == UIInteractionType.Click)
+                {
+                    EncounterModule.Model.EncounterState = EncounterState.Win;
+                    GameModesModule.Instance.Explore();
+                }
+                if (interactionInfo.ComponentId == (int)EncounterStatus.ComponentId.LoseBtn
+                    && interactionInfo.InteractionType == UIInteractionType.Click)
+                {
+                    EncounterModule.Model.EncounterState = EncounterState.Defeat;
+                    GameModesModule.Instance.Explore();
+                }
+            }
+            break;
         }
     }
 
@@ -39,7 +51,7 @@ class EncounterStatusControl
     {
         switch (eventInfo.Type)
         {
-            case (EncounterEvent.EventType.EncounterBegun):
+            case (EncounterEvent.EventType.UnitPlacementComplete):
                 UIManager.Instance.PostContainer(UIContainerId.EncounterStatusView, this);
                 break;
 

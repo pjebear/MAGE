@@ -2,78 +2,63 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-class Map : MonoBehaviour
+class Map
 {
-    public Tile TilePrefab;
-    public int Width = 4;
-    public int Length = 4;
+    public TileIdx TileIdxOffset = new TileIdx(0,0);
 
-    public Transform TileContainer;
-
+    public int Width = 1;
+    public int Length = 1;
     public Dictionary<EncounterActorController, Tile> ActorPositionLookup;
     public HashSet<EncounterActorController> ActorsInMap;
     public Tile[,] Tiles;
-
-    public static Map Instance;
 
     public Tile this[TileIdx idx]
     {
         get
         {
-            return Tiles[idx.y, idx.x];
+            return Tiles[idx.y - TileIdxOffset.y, idx.x - TileIdxOffset.x];
         }
         set
         {
-            Tiles[idx.y, idx.x] = value;
+            Tiles[idx.y - TileIdxOffset.y, idx.x - TileIdxOffset.x] = value;
         }
     }
 
-    private void Awake()
+    public Map()
     {
         ActorPositionLookup = new Dictionary<EncounterActorController, Tile>();
         ActorsInMap = new HashSet<EncounterActorController>();
-
-        Tile[] tiles = GetComponentsInChildren<Tile>();
-        int size = (int)Mathf.Sqrt(tiles.Length);
-        Width = size;
-        Length = size;
-
-        Tiles = new Tile[Length, Width];
-
-        for (int i = 0; i < TileContainer.childCount; ++i)
-        {
-            Transform row = TileContainer.GetChild(i);
-
-            int z = (int)row.localPosition.z;
-            foreach (Tile tile in row.GetComponentsInChildren<Tile>())
-            {
-                int x = (int)tile.transform.localPosition.x;
-                Tiles[z, x] = tile;
-
-                TileIdx index = new TileIdx(x, z);
-                tile.Init(index);
-            }
-        }
-
-        Instance = this;
     }
 
-    public void Initialize()
+    public void Initialize(TileContainer tileContainer, TileIdx bottomLeft, TileIdx topRight)
     {
-        Tiles = new Tile[Length, Width];
+        TileIdxOffset = bottomLeft;
+        Vector2 tileRange = TileIdx.Displacement(bottomLeft, topRight);
+        Width = (int)tileRange.x + 1;
+        Length = (int)tileRange.y + 1;
+
+        Tiles = new Tile[Width, Length];
+
         for (int z = 0; z < Length; z++)
         {
-            GameObject row = new GameObject("row " + z);
-            row.transform.SetParent(transform);
-            row.transform.Translate(Vector3.forward * z);
-
             for (int x = 0; x < Width; ++x)
             {
-                TileIdx forTile = new TileIdx(x, z);
-                this[forTile] = Instantiate(TilePrefab, row.transform, false);
-                this[forTile].transform.localPosition = Vector3.right * x;
+                TileIdx tileIdx = new TileIdx(bottomLeft.x + x, bottomLeft.y + z);
 
-                this[forTile].Init(forTile);
+                Tiles[z, x] = tileContainer.Tiles[bottomLeft.y + z][bottomLeft.x + x];
+                Tiles[z, x].gameObject.SetActive(true);
+            }
+        }
+    }
+
+    public void Cleanup()
+    {
+        for (int z = 0; z < Length; z++)
+        {
+            for (int x = 0; x < Width; ++x)
+            {
+                Tiles[z, x].gameObject.SetActive(false);
+                Tiles[z, x].SetHighlightState(Tile.HighlightState.None);
             }
         }
     }
@@ -103,50 +88,44 @@ class Map : MonoBehaviour
     {
         List<EncounterCharacter> onTiles = new List<EncounterCharacter>();
 
+        TileIdx centralTile = new TileIdx();
         if (targetSelection.FocalTarget.TargetType == TargetSelectionType.Actor)
         {
-            onTiles.Add(targetSelection.FocalTarget.ActorTarget);
+            centralTile = GetActorsTile(targetSelection.FocalTarget.ActorTarget).Idx;
         }
         else if (targetSelection.FocalTarget.TargetType == TargetSelectionType.Tile)
         {
-            EncounterActorController actorOnTile = this[targetSelection.FocalTarget.TileTarget].OnTile;
-            if (actorOnTile != null)
-            {
-                onTiles.Add(actorOnTile.EncounterCharacter);
-            }
+            centralTile = targetSelection.FocalTarget.TileTarget;
         }
 
-        foreach (Target target in targetSelection.PeripheralTargets)
+        List<Tile> tiles = GetTilesInRange(centralTile, targetSelection.SelectionRange);
+        foreach (Tile tile in tiles)
         {
-            if (target.TargetType == TargetSelectionType.Actor)
+            if (tile.OnTile != null)
             {
-                onTiles.Add(target.ActorTarget);
-            }
-            else if (target.TargetType == TargetSelectionType.Tile)
-            {
-                EncounterActorController actorOnTile = this[targetSelection.FocalTarget.TileTarget].OnTile;
-                if (actorOnTile != null)
-                {
-                    onTiles.Add(actorOnTile.EncounterCharacter);
-                }
+                onTiles.Add(tile.OnTile.EncounterCharacter);
             }
         }
 
         return onTiles;
     }
 
-    public TileSelection GetMovementTilesForActor(EncounterCharacter actor)
+    public List<Tile> GetMovementTilesForActor(EncounterCharacter actor)
     {
         Tile actorsTile = GetActorsTile(actor);
 
-        TileSelection selection = GetTilesInRange(actorsTile.Idx, (int)actor.Attributes[AttributeCategory.Stat][(int)TertiaryStat.Movement].Value);
+        RangeInfo movementRangeInfo = new RangeInfo(
+            1, 
+            (int)actor.Attributes[AttributeCategory.Stat][(int)TertiaryStat.Movement].Value, 
+            (int)actor.Attributes[AttributeCategory.Stat][(int)TertiaryStat.Jump].Value, 
+            AreaType.Cross);
 
-        selection.SelectionType = Tile.HighlightState.MovementSelect;
+        List<Tile> movementTiles = GetTilesInRange(actorsTile.Idx, movementRangeInfo);
 
-        return selection;
+        return movementTiles;
     }
 
-    public TileSelection GetTilesInRange(TileIdx centerPoint, int range)
+    public List<Tile> GetTilesInRange(TileIdx centerPoint, RangeInfo rangeInfo)
     {
         List<Tile> inRange = new List<Tile>();
 
@@ -154,14 +133,14 @@ class Map : MonoBehaviour
         {
             for (int j = 0; j < Width; ++j)
             {
-                if (Tiles[i,j].Idx != centerPoint
-                    && TileIdx.Distance(Tiles[i,j].Idx, centerPoint) <= range)
+                int manhattanDistance = TileIdx.ManhattanDistance(Tiles[i, j].Idx, centerPoint);
+                if (manhattanDistance >= rangeInfo.MinRange && manhattanDistance <= rangeInfo.MaxRange)
                 {
                     inRange.Add(Tiles[i, j]);
                 }
             }
         }
 
-        return new TileSelection(inRange, Tile.HighlightState.None);
+        return inRange;
     }
 }

@@ -31,6 +31,8 @@ class ModulesContainer : MonoBehaviour
             {
                 GameSystemModule.Instance.PrepareNewGame();
                 EncounterCreateParams encounterCreateParams = new EncounterCreateParams();
+                encounterCreateParams.BottomLeft = new TileIdx(0, 0);
+                encounterCreateParams.TopRight = new TileIdx(6, 6);
                 GameSystemModule.Instance.PrepareEncounter(encounterCreateParams);
             }
         }

@@ -24,6 +24,8 @@ class EncounterCharacter
     public bool DEBUG_HasActed = false;
     public bool DEBUG_HasMoved = false;
     public void DEBUG_Reset() { DEBUG_HasActed = false; DEBUG_HasMoved = false; }
+    public int DEBUG_ClockGuage = 0;
+
     public string Name { get { return mCharacter.Name; } }
     public List<ActionId> Actions { get { return mCharacter.Actions; } }
     public List<AuraType> Auras { get { return mCharacter.Auras; } }

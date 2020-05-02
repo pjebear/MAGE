@@ -24,6 +24,15 @@ class AnimationDirector : MonoBehaviour
         mActorToAnimationRigLookup.Add(actor, rig);
     }
 
+    public void UnRegisterActor(EncounterActorController actor)
+    {
+        if (mActorToAnimationRigLookup.ContainsKey(actor))
+        {
+            Destroy(mActorToAnimationRigLookup[actor].gameObject);
+            mActorToAnimationRigLookup.Remove(actor);
+        }
+    }
+
     public void AnimateActor(EncounterActorController actor, AnimationPlaceholder animation)
     {
         mActorToAnimationRigLookup[actor].DisplayAnimation(animation);

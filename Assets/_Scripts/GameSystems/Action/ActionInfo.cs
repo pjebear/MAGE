@@ -9,14 +9,16 @@ abstract class ActionInfo
     public StateChange ActionCost;
     public ActionRange ActionRange;
     public ActionSource ActionSource;
+    public int CastSpeed;
     public RangeInfo CastRange;
     public RangeInfo EffectRange;
     public bool IsSelfCast;
 
-    public ActionInfo(StateChange actionCost, ActionRange actionRange, ActionSource actionSource, RangeInfo castRange, RangeInfo effectRange, bool isSelfCast)
+    public ActionInfo(StateChange actionCost, ActionRange actionRange, ActionSource actionSource, int castSpeed, RangeInfo castRange, RangeInfo effectRange, bool isSelfCast)
     {
         ActionCost = actionCost;
         ActionCost.Type = StateChangeType.ActionCost;
+        CastSpeed = castSpeed;
         ActionRange = actionRange;
         ActionSource = actionSource;
         CastRange = castRange;
@@ -32,7 +34,8 @@ class MeleeAttackInfo : ActionInfo
     public float DamageAmp = 1.0f;
 
     public MeleeAttackInfo(RangeInfo castRange, RangeInfo effectRange) 
-        : base(new StateChange(StateChangeType.ActionCost, 0,0), ActionRange.Meele, ActionSource.Weapon, castRange, effectRange, false)
+        : base(new StateChange(StateChangeType.ActionCost, 0,0), ActionRange.Meele, ActionSource.Weapon,
+            ActionConstants.INSTANT_CAST_SPEED, castRange, effectRange, false)
     {
     }
 
@@ -48,8 +51,8 @@ class WeaponActionInfoBase : ActionInfo
 {
     public HeldEquippable Weapon;
 
-    public WeaponActionInfoBase(HeldEquippable weapon, StateChange actionCost, ActionRange actionRange, RangeInfo castRange, RangeInfo effectRange)
-        : base(actionCost, ActionRange.Meele, ActionSource.Weapon, castRange, effectRange, false)
+    public WeaponActionInfoBase(HeldEquippable weapon, StateChange actionCost, ActionRange actionRange, int castSpeed, RangeInfo castRange, RangeInfo effectRange)
+        : base(actionCost, ActionRange.Meele, ActionSource.Weapon, castSpeed, castRange, effectRange, false)
     {
         Weapon = weapon;
     }
@@ -74,8 +77,8 @@ class HealInfo : ActionInfo
 {
     public float HealAmp = 1.0f;
 
-    public HealInfo(RangeInfo castRange, RangeInfo effectRange)
-        : base(new StateChange(StateChangeType.ActionCost, 0, 0), ActionRange.AOE, ActionSource.Cast, castRange, effectRange, false)
+    public HealInfo(int castSpeed, RangeInfo castRange, RangeInfo effectRange)
+        : base(new StateChange(StateChangeType.ActionCost, 0, 0), ActionRange.AOE, ActionSource.Cast, castSpeed, castRange, effectRange, false)
     {
     }
 
@@ -89,8 +92,8 @@ class HealInfo : ActionInfo
 
 class ProtectionInfo : ActionInfo
 { 
-    public ProtectionInfo(RangeInfo castRange, RangeInfo effectRange)
-        : base(new StateChange(StateChangeType.ActionCost, 0, 0), ActionRange.AOE, ActionSource.Cast, castRange, effectRange, false)
+    public ProtectionInfo(int castSpeed, RangeInfo castRange, RangeInfo effectRange)
+        : base(new StateChange(StateChangeType.ActionCost, 0, 0), ActionRange.AOE, ActionSource.Cast, castSpeed, castRange, effectRange, false)
     {
     }
 
@@ -106,8 +109,8 @@ class MightyBlowInfo : WeaponActionInfoBase
 {
     int damagePerStack = 3;
 
-    public MightyBlowInfo(HeldEquippable weapon, StateChange actionCost, ActionRange actionRange, RangeInfo castRange, RangeInfo effectRange)
-        : base(weapon, actionCost, actionRange, castRange, effectRange)
+    public MightyBlowInfo(HeldEquippable weapon, StateChange actionCost, ActionRange actionRange, int castSpeed, RangeInfo castRange, RangeInfo effectRange)
+        : base(weapon, actionCost, actionRange, castSpeed, castRange, effectRange)
     {
     }
 
