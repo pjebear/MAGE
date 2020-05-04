@@ -21,9 +21,9 @@ class Level : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (LevelManager.Instance != null)
+        if (GameModesModule.LevelManager != null)
         {
-            LevelManager.Instance.NotifyLevelLoaded(this);
+            GameModesModule.LevelManager.NotifyLevelLoaded(this);
         }
     }
 

@@ -20,7 +20,7 @@ class SwordAttackComposer
         List <ActionEvent> timelineEvents = new List<ActionEvent>();
         AnimationPlaceholder swordSwing = AnimationFactory.CheckoutAnimation(AnimationId.SwordSwing);
         timelineEvents.Add(new AnimationEvent(owner, swordSwing, 0, proposal.ActionTarget.FocalTarget.GetTargetTransform()));
-
+        timelineEvents.Add(new AudioEvent(EncounterModule.CharacterDirector.CharacterActorLookup[owner].GetComponent<AudioSource>(), SFXId.WeaponSwing, 0));
         List<EncounterCharacter> targets = EncounterModule.Map.GetActors(proposal.ActionTarget);
         List<InteractionResult> interactionResults = InteractionResolver.ResolveInteraction(owner, actionInfo, targets);
         for (int i = 0; i < targets.Count; ++i)
@@ -43,6 +43,7 @@ class SwordAttackComposer
             }
            
             AnimationPlaceholder animation = AnimationFactory.CheckoutAnimation(AnimationUtil.InteractionResultTypeToAnimationId(interactionResult.InteractionResultType));
+            
             SyncPoint.Syncronize(swordSwing, AllignmentPosition.Interaction, animation, AllignmentPosition.Interaction, 0);
 
             Transform targetFocus = null;
@@ -52,6 +53,13 @@ class SwordAttackComposer
             }
             timelineEvents.Add(new AnimationEvent(target, animation, animation.Parent.GetAbsoluteOffset(AllignmentPosition.Start), targetFocus));
             timelineEvents.Add(new StateChangeEvent(target, interactionResult.StateChange, animation.Parent.GetAbsoluteOffset(AllignmentPosition.Interaction)));
+
+            SFXId targetSFX = InteractionUtil.GetSFXForInteractionResult(interactionResult.InteractionResultType);
+            if (targetSFX != SFXId.INVALID)
+            {
+                timelineEvents.Add(new AudioEvent(EncounterModule.CharacterDirector.CharacterActorLookup[target].GetComponent<AudioSource>()
+                    , targetSFX, animation.Parent.GetAbsoluteOffset(AllignmentPosition.Interaction)));
+            }
         }
 
         result = new ActionResult(owner, ActionId.SwordAttack, actionInfo,

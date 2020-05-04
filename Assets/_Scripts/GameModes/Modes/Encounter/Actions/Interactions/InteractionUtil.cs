@@ -63,5 +63,19 @@ static class InteractionUtil
 
         return orientation;
     }
+
+    public static SFXId GetSFXForInteractionResult(InteractionResultType resultType)
+    {
+        SFXId sFXId = SFXId.INVALID;
+
+        switch (resultType)
+        {
+            case InteractionResultType.Block: sFXId = SFXId.ShieldBlock; break;
+            case InteractionResultType.Dodge: sFXId = SFXId.Dodge; break;
+            case InteractionResultType.Parry: sFXId = SFXId.Parry; break;
+            case InteractionResultType.Hit: sFXId = SFXId.Slash; break;
+        }
+        return sFXId;
+    }
 }
 

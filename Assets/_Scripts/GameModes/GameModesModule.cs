@@ -11,8 +11,11 @@ class GameModesModule
 {
     private string TAG = "GameModesModule";
 
-    public static ActorLoader ActorLoader;
     public static GameModesModule Instance;
+
+    public static ActorLoader ActorLoader;
+    public static AudioManager AudioManager;
+    public static LevelManager LevelManager;
 
     private GameModeType mPendingGameMode = GameModeType.INVALID;
     private GameModeBase mLoadedGameMode = null;
@@ -29,10 +32,10 @@ class GameModesModule
 
         Instance = this;
         ActorLoader = gameObject.AddComponent<ActorLoader>();
+        AudioManager = GetComponent<AudioManager>();
+        LevelManager = GetComponent<LevelManager>();
 
         GameModeEventRouter.Instance = GetComponent<GameModeEventRouter>();
-        LevelManager.Instance = GetComponent<LevelManager>();
-
         GameModeEventRouter.Instance.RegisterHandler(this);
 
         mGameModeLoader = new AssetLoader<GameModeBase>("GameModes");

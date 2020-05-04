@@ -14,6 +14,7 @@ class ExplorationModule : GameModeBase
 
     GameObject mExplorationAvatar;
     ExplorationMenuViewControl MenuControl;
+    AudioSource mAmbientSoundSource;
 
     protected override void SetupMode()
     {
@@ -23,17 +24,17 @@ class ExplorationModule : GameModeBase
 
         LevelId levelToExplore = GameSystemModule.Instance.GetCurrentLevel();
 
-        Level level = LevelManager.Instance.GetLoadedLevel();
+        Level level = GameModesModule.LevelManager.GetLoadedLevel();
         if (level != null && level.LevelId != levelToExplore)
         {
-            LevelManager.Instance.UnloadLevel();
+            GameModesModule.LevelManager.UnloadLevel();
             level = null;
         }
 
         if (level == null)
         {
-            LevelManager.Instance.LoadLevel(levelToExplore);
-            level = LevelManager.Instance.GetLoadedLevel();
+            GameModesModule.LevelManager.LoadLevel(levelToExplore);
+            level = GameModesModule.LevelManager.GetLoadedLevel();
         }
 
         //DB.DBCharacter avatar = DB.DBHelper.LoadCharacter(GameSystemModule.Instance.GetPartyAvatarId());
@@ -45,6 +46,15 @@ class ExplorationModule : GameModeBase
         mExplorationAvatar.transform.SetPositionAndRotation(level.SpawnPoint.position, level.SpawnPoint.rotation);
 
         Camera.main.gameObject.AddComponent<vThirdPersonCamera>().SetMainTarget(mExplorationAvatar.transform);
+
+        mExplorationAvatar.AddComponent<AudioListener>();
+
+        mAmbientSoundSource = gameObject.AddComponent<AudioSource>();
+        mAmbientSoundSource.clip = GameModesModule.AudioManager.GetTrack(TrackId.Explore);
+        mAmbientSoundSource.loop = true;
+        mAmbientSoundSource.spatialBlend = 0; // global volume
+        mAmbientSoundSource.Play();
+        GameModesModule.AudioManager.FadeInTrack(mAmbientSoundSource, 5, .5f);
 
         GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.ModeSetup_Complete));
     }
@@ -80,7 +90,7 @@ class ExplorationModule : GameModeBase
 
         EncounterCreateParams randomParams = new EncounterCreateParams();
         randomParams.ScenarioId = EncounterScenarioId.Random;
-        randomParams.LevelId = LevelManager.Instance.GetLoadedLevel().LevelId;
+        randomParams.LevelId = GameModesModule.LevelManager.GetLoadedLevel().LevelId;
         randomParams.BottomLeft = new TileIdx((int)mExplorationAvatar.transform.position.x, (int)mExplorationAvatar.transform.position.z);
         randomParams.TopRight = new TileIdx(randomParams.BottomLeft.x + 5, randomParams.BottomLeft.y + 5);
 

@@ -40,6 +40,7 @@ class UIManager : MonoBehaviour
     private Dictionary<UIContainerId, KeyValuePair<UIContainer, UIContainerControl>> mContainerControlPairs;
     private HashSet<UIContainerId> mContainersToPublish;
     private AssetLoader<UIContainer> mViewLoader = null;
+    private AudioSource mUIAudioSource = null;
 
     public void Initialize()
     {
@@ -53,6 +54,10 @@ class UIManager : MonoBehaviour
 
         mViewLoader = new AssetLoader<UIContainer>("UI");
         mViewLoader.LoadAssets("Views");
+
+        mUIAudioSource = gameObject.AddComponent<AudioSource>();
+        mUIAudioSource.spatialBlend = 0; // no fall off
+        mUIAudioSource.volume = .2f;
 
         GameModeEventRouter.Instance.RegisterHandler(this);
     }
@@ -79,6 +84,11 @@ class UIManager : MonoBehaviour
 
             mContainersToPublish.Clear();
         }
+    }
+
+    public void PlaySFX(SFXId sFXId)
+    {
+        mUIAudioSource.PlayOneShot(GameModesModule.AudioManager.GetSFXClip(sFXId));
     }
 
     public void PostContainer(UIContainerId containerId, UIContainerControl provider)

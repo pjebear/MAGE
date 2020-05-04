@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,17 @@ using UnityEngine;
 
 enum SFXId
 {
+    INVALID = -1,
 
+    Cancel,
+    Confirm,
+    Dodge,
+    MaleDeath,
+    MenuHover,
+    Parry,
+    ShieldBlock,
+    Slash,
+    WeaponSwing
 }
 
 enum TrackId
@@ -36,6 +47,34 @@ class AudioManager : MonoBehaviour
     public AudioClip GetTrack(TrackId trackId)
     {
         return mAudioLoader.GetAsset(trackId.ToString());
+    }
+
+    public void FadeInTrack(AudioSource source, float fadeInDuration, float maxVolume = 1.0f)
+    {
+        StartCoroutine(FadeAudio(source, fadeInDuration, 0, maxVolume));
+    }
+
+    public void FadeOutTrack(AudioSource source, float fadeOutDuration)
+    {
+        StartCoroutine(FadeAudio(source, fadeOutDuration, source.volume, 0));
+    }
+
+    private IEnumerator FadeAudio(AudioSource source, float duration, float startVolume, float endVolume)
+    {
+        source.volume = startVolume;
+        source.Play();
+
+        float fadeIncrement = (endVolume - startVolume) / duration;
+
+        while (source != null && source.volume < 1)
+        {
+            source.volume += fadeIncrement * Time.deltaTime;
+            if (source.volume > endVolume)
+            {
+                source.volume = endVolume;
+            }
+            yield return new WaitForFixedUpdate();
+        }
     }
 }
 

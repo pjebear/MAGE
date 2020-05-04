@@ -98,7 +98,10 @@ class CharacterDirector : MonoBehaviour
         character.ApplyStateChange(stateChange);
         if (!character.IsAlive)
         {
-            EncounterModule.AnimationDirector.AnimateActor(CharacterActorLookup[character], AnimationFactory.CheckoutAnimation(AnimationId.Faint));
+            EncounterActorController controller = CharacterActorLookup[character];
+            EncounterModule.AnimationDirector.AnimateActor(controller, AnimationFactory.CheckoutAnimation(AnimationId.Faint));
+            controller.GetComponent<AudioSource>().PlayOneShot(GameModesModule.AudioManager.GetSFXClip(SFXId.MaleDeath));
+
             EncounterEventRouter.Instance.NotifyEvent(new EncounterEvent(EncounterEvent.EventType.CharacterKO, character));
         }
     }

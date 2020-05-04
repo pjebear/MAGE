@@ -15,6 +15,7 @@ class EncounterModule : GameModeBase
     public GameObject MapPrefab;
     
     private GameObject View;
+    private AudioSource mAmbientSoundSource;
 
     public static EncounterModel Model;
     public static CharacterDirector CharacterDirector;
@@ -66,7 +67,7 @@ class EncounterModule : GameModeBase
 
         // Level Manager:
         //TODO: Load level if needed
-        Level level = LevelManager.Instance.GetLoadedLevel();
+        Level level = GameModesModule.LevelManager.GetLoadedLevel();
 
         Map = new Map();
         Map.Initialize(level.Tiles, Model.EncounterContext.BottomLeft, Model.EncounterContext.TopRight);
@@ -120,6 +121,13 @@ class EncounterModule : GameModeBase
 
     protected override void StartMode()
     {
+        mAmbientSoundSource = gameObject.AddComponent<AudioSource>();
+        mAmbientSoundSource.clip = GameModesModule.AudioManager.GetTrack(TrackId.Encounter);
+        mAmbientSoundSource.loop = true;
+        mAmbientSoundSource.spatialBlend = 0; // global volume
+        mAmbientSoundSource.Play();
+        GameModesModule.AudioManager.FadeInTrack(mAmbientSoundSource, 10, .5f);
+
         EncounterEventRouter.Instance.NotifyEvent(new EncounterEvent(EncounterEvent.EventType.EncounterBegun));
     }
 

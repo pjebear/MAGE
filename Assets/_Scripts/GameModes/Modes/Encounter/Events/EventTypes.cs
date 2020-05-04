@@ -57,6 +57,24 @@ class AnimationEvent : ActionEvent
     }
 }
 
+class AudioEvent : ActionEvent
+{
+    public AudioSource AudioSource;
+    public SFXId Audio;
+
+    public AudioEvent(AudioSource source, SFXId audio, int startPointOffset)
+        : base(startPointOffset, 0)
+    {
+        AudioSource = source;
+        Audio = audio;
+    }
+
+    public override void Trigger()
+    {
+        AudioSource.PlayOneShot(GameModesModule.AudioManager.GetSFXClip(Audio));
+    }
+}
+
 class StateChangeEvent : ActionEvent
 {
     public EncounterCharacter HavingStateChanged;

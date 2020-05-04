@@ -24,10 +24,14 @@ abstract class UIInteractibleComponent : UIComponentBase
     , IPointerExitHandler
 {
     public bool IsClickable = true;
+    public SFXId ClickSFX = SFXId.Confirm;
+
     public bool IsHoverable = true;
+    public SFXId HoverSFX = SFXId.MenuHover;
 
     protected virtual void HandlePointerClick()
     {
+        UIManager.Instance.PlaySFX(ClickSFX);
         NotifyInteraction(mId, UIInteractionType.Click);
     }
 
@@ -41,6 +45,7 @@ abstract class UIInteractibleComponent : UIComponentBase
 
     protected virtual void HandlePointerEnter()
     {
+        UIManager.Instance.PlaySFX(HoverSFX);
         NotifyInteraction(mId, UIInteractionType.MouseOver);
     }
 

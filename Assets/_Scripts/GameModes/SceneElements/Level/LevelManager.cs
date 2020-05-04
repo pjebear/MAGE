@@ -10,8 +10,6 @@ class LevelManager : MonoBehaviour
     private Level mLoadedLevel = null;
     private AssetLoader<Level> mLevelLoader = null;
 
-    public static LevelManager Instance;
-
     private void Awake()
     {
         mLevelLoader = new AssetLoader<Level>("Levels");
