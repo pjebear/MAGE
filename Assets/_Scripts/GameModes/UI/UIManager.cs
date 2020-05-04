@@ -30,8 +30,7 @@ public enum UIInteractionType
     NUM
 }
 
-class UIManager
-    : IAssetManager<UIContainer>
+class UIManager : MonoBehaviour
     , IEventHandler<GameModeEvent>
 {
     private string TAG = "UIManager";
@@ -39,8 +38,8 @@ class UIManager
     public static UIManager Instance;
 
     private Dictionary<UIContainerId, KeyValuePair<UIContainer, UIContainerControl>> mContainerControlPairs;
-
     private HashSet<UIContainerId> mContainersToPublish;
+    private AssetLoader<UIContainer> mViewLoader = null;
 
     public void Initialize()
     {
@@ -51,10 +50,11 @@ class UIManager
 
         mContainerControlPairs = new Dictionary<UIContainerId, KeyValuePair<UIContainer, UIContainerControl>>();
         mContainersToPublish = new HashSet<UIContainerId>();
-        GameModeEventRouter.Instance.RegisterHandler(this);
 
-        // IAssetManager
-        InitializeAssets();
+        mViewLoader = new AssetLoader<UIContainer>("UI");
+        mViewLoader.LoadAssets("Views");
+
+        GameModeEventRouter.Instance.RegisterHandler(this);
     }
 
     private void OnDestroy()
@@ -86,7 +86,7 @@ class UIManager
         UIContainer toPost = null;
         Debug.Assert(!mContainerControlPairs.ContainsKey(containerId));
 
-        toPost = Instantiate(GetAsset(containerId.ToString()), transform).GetComponent<UIContainer>();
+        toPost = Instantiate(mViewLoader.GetAsset(containerId.ToString()), transform).GetComponent<UIContainer>();
 
         mContainerControlPairs.Add(containerId, new KeyValuePair<UIContainer, UIContainerControl>(toPost, provider));
 
@@ -153,17 +153,5 @@ class UIManager
                 }
                 break;
         }
-    }
-
-    protected override string GetAssetPath()
-    {
-        return "UI";
-    }
-
-    protected override void OnInitializeAssets()
-    {
-        base.OnInitializeAssets();
-
-        LoadAssets("Views");
     }
 }

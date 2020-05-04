@@ -5,32 +5,22 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class LevelManager : IAssetManager<Level>
+class LevelManager : MonoBehaviour
 {
     private Level mLoadedLevel = null;
+    private AssetLoader<Level> mLevelLoader = null;
 
     public static LevelManager Instance;
 
     private void Awake()
     {
-        InitializeAssets();   
-    }
-
-    protected override void OnInitializeAssets()
-    {
-        base.OnInitializeAssets();
-
-        LoadAssets("");
-    }
-
-    protected override string GetAssetPath()
-    {
-        return "Levels";
+        mLevelLoader = new AssetLoader<Level>("Levels");
+        mLevelLoader.LoadAssets();
     }
 
     public void LoadLevel(LevelId levelId)
     {
-        mLoadedLevel = Instantiate(GetAsset(levelId.ToString()));
+        mLoadedLevel = Instantiate(mLevelLoader.GetAsset(levelId.ToString()));
     }
 
     public Level GetLoadedLevel()

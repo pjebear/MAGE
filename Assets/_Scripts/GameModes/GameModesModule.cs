@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 class GameModesModule 
-    : IAssetManager<GameModeBase>
+    : MonoBehaviour
     , IEventHandler<GameModeEvent>
 {
     private string TAG = "GameModesModule";
@@ -16,6 +16,8 @@ class GameModesModule
 
     private GameModeType mPendingGameMode = GameModeType.INVALID;
     private GameModeBase mLoadedGameMode = null;
+
+    private AssetLoader<GameModeBase> mGameModeLoader = null;
 
     public void InitModule()
     {
@@ -33,8 +35,8 @@ class GameModesModule
 
         GameModeEventRouter.Instance.RegisterHandler(this);
 
-        // IAssetManager
-        InitializeAssets();
+        mGameModeLoader = new AssetLoader<GameModeBase>("GameModes");
+        mGameModeLoader.LoadAssets();
     }
 
     private void OnDestroy()
@@ -63,7 +65,7 @@ class GameModesModule
 
     public void LoadGameMode(GameModeType gameMode)
     {
-        Instantiate(GetAsset(gameMode.ToString()), transform);
+        Instantiate(mGameModeLoader.GetAsset(gameMode.ToString()), transform);
 
         // Continue loading on 'NotifyGameModeLoaded'
     }
@@ -143,16 +145,6 @@ class GameModesModule
     public void Quit()
     {
         TransitionTo(GameModeType.MainMenu);
-    }
-
-    protected override string GetAssetPath()
-    {
-        return "GameModes";
-    }
-
-    protected override void OnInitializeAssets()
-    {
-        LoadAssets("");
     }
 }
 

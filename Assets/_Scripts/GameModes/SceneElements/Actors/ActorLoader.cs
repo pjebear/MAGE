@@ -5,44 +5,34 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class ActorLoader : IAssetManager<GameObject>
+class ActorLoader : MonoBehaviour
 {
+    private AssetLoader<GameObject> mActorLoader;
+
     private void Awake()
     {
-        // IAssetManager
-        InitializeAssets();
-    }
-
-    protected override string GetAssetPath()
-    {
-        return "Props";
-    }
-
-    protected override void OnInitializeAssets()
-    {
-        base.OnInitializeAssets();
-
-        LoadAssets("Bodies");
-        LoadAssets("Apparel");  
+        mActorLoader = new AssetLoader<GameObject>("Props");
+        mActorLoader.LoadAssets("Bodies");
+        mActorLoader.LoadAssets("Apparel");
     }
 
     public EncounterActorController CreateActor(ActorSpawnParams actorParams, Transform parent)
     {
-        EncounterActorController actorController = Instantiate(GetAsset(actorParams.BodyType.GetAssetName(AppearanceType.Prefab)), parent).GetComponent<EncounterActorController>();
+        EncounterActorController actorController = Instantiate(mActorLoader.GetAsset(actorParams.BodyType.GetAssetName(AppearanceType.Prefab)), parent).GetComponent<EncounterActorController>();
 
         if (actorParams.HeldLeftHand[AppearanceType.Prefab] != Appearance.NO_ASSET)
         {
-            Instantiate(GetAsset(actorParams.HeldLeftHand.GetAssetName(AppearanceType.Prefab)), actorController.Actor.LeftHand);
+            Instantiate(mActorLoader.GetAsset(actorParams.HeldLeftHand.GetAssetName(AppearanceType.Prefab)), actorController.Actor.LeftHand);
         }
 
         if (actorParams.HeldRightHand[AppearanceType.Prefab] != Appearance.NO_ASSET)
         {
-            Instantiate(GetAsset(actorParams.HeldRightHand.GetAssetName(AppearanceType.Prefab)), actorController.Actor.RightHand);
+            Instantiate(mActorLoader.GetAsset(actorParams.HeldRightHand.GetAssetName(AppearanceType.Prefab)), actorController.Actor.RightHand);
         }
 
         if (actorParams.Worn[AppearanceType.Prefab] != Appearance.NO_ASSET)
         {
-            Instantiate(GetAsset(actorParams.Worn.GetAssetName(AppearanceType.Prefab)), actorController.Actor.Body);
+            Instantiate(mActorLoader.GetAsset(actorParams.Worn.GetAssetName(AppearanceType.Prefab)), actorController.Actor.Body);
         }
 
         return actorController;
