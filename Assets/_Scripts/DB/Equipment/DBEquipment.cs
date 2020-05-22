@@ -10,6 +10,7 @@ namespace DB
     class DBEquipment : DBEntryBase
     {
         public int Id;
+        public string Name;
         public int Category;
         public int Type;
         public float BlockChance;
@@ -24,6 +25,7 @@ namespace DB
             DBEquipment to = _to as DBEquipment;
 
             to.Id = from.Id;
+            to.Name = from.Name;
             to.Category = from.Category;
             to.Type = from.Type;
             to.BlockChance = from.BlockChance;

@@ -7,12 +7,18 @@ using UnityEngine;
 
 namespace DB
 {
+    interface IDBUpdateListener<KeyType>
+    {
+        void OnDBUpdated(KeyType updatedEntry);
+    }
+
     abstract class DBBase<KeyType, ValueType> 
         where ValueType : DBEntryBase, new()
     {
         public List<KeyType> Keys { get { return new List<KeyType>(mDB.Keys); } }
         protected string TAG = "";
         protected Dictionary<KeyType, ValueType> mDB = new Dictionary<KeyType, ValueType>();
+        protected HashSet<IDBUpdateListener<KeyType>> mDBUpdateListeners = new HashSet<IDBUpdateListener<KeyType>>();
         
         protected DBBase(string dbName)
         {
@@ -83,6 +89,24 @@ namespace DB
         public ValueType EmptyEntry()
         {
             return new ValueType();
+        }
+
+        public void RegisterUpdateListener(IDBUpdateListener<KeyType> dBUpdateListener)
+        {
+            Logger.Assert(!mDBUpdateListeners.Contains(dBUpdateListener), LogTag.DB, TAG, "Listener already registered");
+            if (!mDBUpdateListeners.Contains(dBUpdateListener))
+            {
+                mDBUpdateListeners.Add(dBUpdateListener);
+            }
+        }
+
+        public void UnRegisterUpdateListener(IDBUpdateListener<KeyType> dBUpdateListener)
+        {
+            Logger.Assert(mDBUpdateListeners.Contains(dBUpdateListener), LogTag.DB, TAG, "Listener isn't registered");
+            if (mDBUpdateListeners.Contains(dBUpdateListener))
+            {
+                mDBUpdateListeners.Remove(dBUpdateListener);
+            }
         }
 
         public abstract void Save(string path);

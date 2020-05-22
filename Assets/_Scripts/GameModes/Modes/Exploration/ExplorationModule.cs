@@ -10,8 +10,6 @@ class ExplorationModule : GameModeBase
 {
     public static ExplorationModule Instance;
 
-    public GameObject ExplorationAvatarPrefab;
-
     GameObject mExplorationAvatar;
     ExplorationMenuViewControl MenuControl;
     AudioSource mAmbientSoundSource;
@@ -37,17 +35,18 @@ class ExplorationModule : GameModeBase
             level = GameModesModule.LevelManager.GetLoadedLevel();
         }
 
-        //DB.DBCharacter avatar = DB.DBHelper.LoadCharacter(GameSystemModule.Instance.GetPartyAvatarId());
-        //GameObject go = GameModesModule.ActorLoader.CreateActor(CharacterUtil.ActorParamsForCharacter(avatar), level.SpawnPoint).gameObject;
+        DB.DBCharacter avatar = DB.DBHelper.LoadCharacter(GameSystemModule.Instance.GetPartyAvatarId());
+        mExplorationAvatar = GameModesModule.ActorLoader.CreateActor(CharacterUtil.ActorParamsForCharacter(avatar), level.SpawnPoint).gameObject;
         //go.AddComponent<vThirdPersonMotor>();
         //go.AddComponent<vThirdPersonController>();
         //go.AddComponent<vThirdPersonInput>();
-        mExplorationAvatar = Instantiate(ExplorationAvatarPrefab, level.transform);
-        mExplorationAvatar.transform.SetPositionAndRotation(level.SpawnPoint.position, level.SpawnPoint.rotation);
+        //mExplorationAvatar = Instantiate(ExplorationAvatarPrefab, level.transform);
+        //mExplorationAvatar.transform.SetPositionAndRotation(level.SpawnPoint.position, level.SpawnPoint.rotation);
 
-        Camera.main.gameObject.AddComponent<vThirdPersonCamera>().SetMainTarget(mExplorationAvatar.transform);
+        Camera.main.gameObject.AddComponent<ThirdPersonCamera>().SetTarget(mExplorationAvatar.transform);
 
         mExplorationAvatar.AddComponent<AudioListener>();
+        mExplorationAvatar.AddComponent<ThirdPersonActorController>();
 
         mAmbientSoundSource = gameObject.AddComponent<AudioSource>();
         mAmbientSoundSource.clip = GameModesModule.AudioManager.GetTrack(TrackId.Explore);
@@ -61,7 +60,7 @@ class ExplorationModule : GameModeBase
 
     protected override void CleanUpMode()
     {
-        Destroy(Camera.main.gameObject.GetComponent<vThirdPersonCamera>());
+        Destroy(Camera.main.gameObject.GetComponent<ThirdPersonCamera>());
         Destroy(mExplorationAvatar);
         
         GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.ModeTakedown_Complete));

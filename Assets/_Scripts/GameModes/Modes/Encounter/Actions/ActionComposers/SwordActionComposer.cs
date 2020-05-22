@@ -20,7 +20,7 @@ class SwordAttackComposer
         List <ActionEvent> timelineEvents = new List<ActionEvent>();
         AnimationPlaceholder swordSwing = AnimationFactory.CheckoutAnimation(AnimationId.SwordSwing);
         timelineEvents.Add(new AnimationEvent(owner, swordSwing, 0, proposal.ActionTarget.FocalTarget.GetTargetTransform()));
-        timelineEvents.Add(new AudioEvent(EncounterModule.CharacterDirector.CharacterActorLookup[owner].GetComponent<AudioSource>(), SFXId.WeaponSwing, 0));
+        timelineEvents.Add(new AudioEvent(EncounterModule.CharacterDirector.CharacterActorLookup[owner].Actor.AudioSource, SFXId.WeaponSwing, 0));
         List<EncounterCharacter> targets = EncounterModule.Map.GetActors(proposal.ActionTarget);
         List<InteractionResult> interactionResults = InteractionResolver.ResolveInteraction(owner, actionInfo, targets);
         for (int i = 0; i < targets.Count; ++i)

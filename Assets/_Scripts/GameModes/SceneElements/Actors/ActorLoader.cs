@@ -18,21 +18,23 @@ class ActorLoader : MonoBehaviour
 
     public EncounterActorController CreateActor(ActorSpawnParams actorParams, Transform parent)
     {
-        EncounterActorController actorController = Instantiate(mActorLoader.GetAsset(actorParams.BodyType.GetAssetName(AppearanceType.Prefab)), parent).GetComponent<EncounterActorController>();
+        Actor actor = Instantiate(mActorLoader.GetAsset(actorParams.BodyType.GetAssetName(AppearanceType.Prefab)), parent).GetComponent<Actor>();
+        EncounterActorController actorController = actor.gameObject.AddComponent<EncounterActorController>();
+        actorController.Actor = actor;
 
         if (actorParams.HeldLeftHand[AppearanceType.Prefab] != Appearance.NO_ASSET)
         {
-            Instantiate(mActorLoader.GetAsset(actorParams.HeldLeftHand.GetAssetName(AppearanceType.Prefab)), actorController.Actor.LeftHand);
+            Instantiate(mActorLoader.GetAsset(actorParams.HeldLeftHand.GetAssetName(AppearanceType.Prefab)), actor.LeftHand);
         }
 
         if (actorParams.HeldRightHand[AppearanceType.Prefab] != Appearance.NO_ASSET)
         {
-            Instantiate(mActorLoader.GetAsset(actorParams.HeldRightHand.GetAssetName(AppearanceType.Prefab)), actorController.Actor.RightHand);
+            Instantiate(mActorLoader.GetAsset(actorParams.HeldRightHand.GetAssetName(AppearanceType.Prefab)), actor.RightHand);
         }
 
         if (actorParams.Worn[AppearanceType.Prefab] != Appearance.NO_ASSET)
         {
-            Instantiate(mActorLoader.GetAsset(actorParams.Worn.GetAssetName(AppearanceType.Prefab)), actorController.Actor.Body);
+            Instantiate(mActorLoader.GetAsset(actorParams.Worn.GetAssetName(AppearanceType.Prefab)), actor.Body);
         }
 
         return actorController;

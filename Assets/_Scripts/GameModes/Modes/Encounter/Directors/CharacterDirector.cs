@@ -4,7 +4,7 @@ using UnityEngine;
 
 class CharacterDirector : MonoBehaviour
 {
-    
+    public BillboardEmitter BillboardEmitterPrefab;
 
     private Dictionary<EncounterActorController, TileIdx> mActorPositions = null;
 
@@ -49,6 +49,7 @@ class CharacterDirector : MonoBehaviour
         EncounterModule.Model.Teams[team].Add(character);
 
         EncounterActorController actorController = GameModesModule.ActorLoader.CreateActor(CharacterUtil.ActorParamsForCharacter(dBCharacter), actorParent);
+        actorController.BillboardEmitter = Instantiate(BillboardEmitterPrefab, actorController.transform);
 
         CharacterActorLookup.Add(character, actorController);
         actorController.EncounterCharacter = character;

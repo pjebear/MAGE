@@ -12,7 +12,9 @@ class EquipmentDBLoader
         // ---------------------------------------------------------------------------------------------------------------------------------------
         { // Axe
             DB.DBEquipment entry = new DB.DBEquipment();
+            
             entry.Id = (int)EquippableId.Mace_0;
+            entry.Name = EquippableId.Mace_0.ToString();
             entry.Category = (int)EquippableCategory.OneHandWeapon;
             entry.Type = (int)OneHandWeaponType.Axe;
             entry.BlockChance = 0;

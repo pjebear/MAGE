@@ -116,6 +116,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1cb1ea230cfc6945af0c3d4fd454045, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BillboardEmitterPrefab: {fileID: 1735537285286592397, guid: 6a8ce0c85adeb564c9d9693c1dfb16ad,
+    type: 3}
 --- !u!114 &4917393075697840157
 MonoBehaviour:
   m_ObjectHideFlags: 0
