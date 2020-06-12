@@ -9,9 +9,25 @@ static class CharacterUtil
 {
     private static string TAG = "CharacterUtil";
 
-    public static DB.DBCharacter CreateEmptyCharacter()
+    public static int ScenarioIdToDBId(ScenarioId scenarioId, int characterId)
+    {
+        return
+            CharacterConstants.SCENARIO_CHARACTER_ID_OFFSET
+            + CharacterConstants.SUB_CATEGORY_RANGE * (int)scenarioId
+            + characterId;
+    }
+
+    public static int DBIdToScenarioId(int dbId)
+    {
+        return dbId % CharacterConstants.SUB_CATEGORY_RANGE;
+    }
+
+    public static DB.DBCharacter CreateEmptyDBCharacter()
     {
         DB.DBCharacter emptyCharacter = new DB.DBCharacter();
+
+        // Appearance
+        emptyCharacter.Appearance = new DB.Character.DBAppearance();
 
         // Equipment
         emptyCharacter.Equipment = Enumerable.Repeat((int)EquippableId.INVALID, (int)Equipment.Slot.NUM).ToList();
@@ -37,22 +53,28 @@ static class CharacterUtil
         return emptyCharacter;
     }
 
-    public static DB.DBCharacter CreateBaseCharacter(int id, string name, SpecializationType specialization, List<int> equipmentIds)
+    public static DB.DBCharacter CreateBaseDBCharacter(int id, string name, BodyType bodyType, PortraitSpriteId portraitSprite, SpecializationType specialization)
     {
-        DB.DBCharacter dbCharacter = CreateEmptyCharacter();
+        DB.DBCharacter dbCharacter = CreateEmptyDBCharacter();
 
+        // Info
         dbCharacter.Id = id;
         dbCharacter.CharacterInfo.Name = name;
         dbCharacter.CharacterInfo.CurrentSpecialization = (int)specialization;
         dbCharacter.CharacterInfo.Experience = 0;
 
+        // Appearance
+        dbCharacter.Appearance.BodyType = (int)bodyType;
+        dbCharacter.Appearance.PortraitSpriteId = (int)portraitSprite;
+
+        // Attributes
         dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)PrimaryStat.Might] = 20;
         dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)PrimaryStat.Magic] = 20;
+        dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)SecondaryStat.Fortitude] = 60;
+        dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)SecondaryStat.Attunement] = 40;
         dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)TertiaryStat.Movement] = 5;
         dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)TertiaryStat.Speed] = 7;
         dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Resource].Attributes[(int)ResourceType.Health] = 20;
-
-        dbCharacter.Equipment = equipmentIds;
 
         return dbCharacter;
     }
@@ -94,31 +116,105 @@ static class CharacterUtil
         return characterType;
     }
 
-    public static ActorSpawnParams ActorParamsForCharacter(DB.DBCharacter dBCharacter)
+    public static Optional<int> UnEquipCharacter(CharacterInfo toUnEquip, Equipment.Slot inSlot)
     {
-        ActorSpawnParams spawnParams = new ActorSpawnParams();
-
-        spawnParams.BodyType[AppearanceType.Prefab] = (int)AppearancePrefabId.Body_0;
-
-        int slotId = (int)Equipment.Slot.Armor;
-        if (dBCharacter.Equipment[slotId] != (int)EquippableId.INVALID)
+        Optional<int> unequipped = Optional<int>.Empty;
+        if (!EquipmentUtil.IsSlotEmpty(toUnEquip.Equipment, inSlot))
         {
-            spawnParams.Worn = ItemFactory.LoadEquipable((EquippableId)dBCharacter.Equipment[slotId]).Appearance;
+            Equippable unEquiped = toUnEquip.Equipment[inSlot];
+
+            unequipped = (int)unEquiped.EquipmentId;
+
+            // Remove equipment modifiers
+            foreach (AttributeModifier attributeModifier in unEquiped.EquipBonuses)
+            {
+                toUnEquip.Attributes.Revert(attributeModifier);
+            }
+
+            if (EquipmentUtil.IsHeld(inSlot)) // replace with fists
+            {
+                toUnEquip.Equipment[inSlot] = ItemFactory.LoadEquipable(EquippableId.Fists_0);
+                // Apply modifiers to the equipment itself incase it changes how it is equipped
+                foreach (EquippableModifier equippableModifier in toUnEquip.EquippableModifiers)
+                {
+                    equippableModifier.Modify(toUnEquip.Equipment[inSlot]);
+                }
+            }
+            else
+            {
+                toUnEquip.Equipment[inSlot] = Equipment.NO_EQUIPMENT;
+            }
+
+            CharacterUpdateAppearanceAfterEquipmentChange(toUnEquip, inSlot);
         }
 
-        slotId = (int)Equipment.Slot.LeftHand;
-        if (dBCharacter.Equipment[slotId] != (int)EquippableId.INVALID)
+        return unequipped;
+    }
+
+    public static List<int> EquipCharacter(CharacterInfo toEquip, Equippable equippable, Equipment.Slot inSlot)
+    {
+        List<int> unequippedItems = new List<int>();
+
+        bool fitsInSlot = EquipmentUtil.FitsInSlot(equippable.EquipmentTag.Category, inSlot);
+        bool hasProficiency = EquipmentUtil.HasProficiencyFor(toEquip.CurrentSpecialization, equippable);
+        Logger.Assert(fitsInSlot && hasProficiency, LogTag.GameSystems, TAG, string.Format("EquipCharacter() - Item [{0}] doesn't fit in slot [{1}].", equippable.EquipmentId.ToString(), inSlot.ToString()));
+        if (fitsInSlot && hasProficiency)
         {
-            spawnParams.HeldLeftHand = ItemFactory.LoadEquipable((EquippableId)dBCharacter.Equipment[slotId]).Appearance;
+            // Apply modifiers to the equipment itself incase it changes how it is equipped
+            foreach (EquippableModifier equippableModifier in toEquip.EquippableModifiers)
+            {
+                equippableModifier.Modify(equippable);
+            }
+
+            // unequip slots that new item will now occupy
+            if (!EquipmentUtil.IsSlotEmpty(toEquip.Equipment, inSlot))
+            {
+                unequippedItems.Add(UnEquipCharacter(toEquip, inSlot).Value);
+            }
+
+            if (inSlot == Equipment.Slot.LeftHand || inSlot == Equipment.Slot.RightHand)
+            {
+                int numHands = (equippable as HeldEquippable).NumHandsRequired;
+                if (numHands == 2)
+                {
+                    Equipment.Slot otherSlot = inSlot == Equipment.Slot.LeftHand ? Equipment.Slot.RightHand : Equipment.Slot.LeftHand;
+                    if (!EquipmentUtil.IsSlotEmpty(toEquip.Equipment,otherSlot))
+                    {
+                        unequippedItems.Add(UnEquipCharacter(toEquip, otherSlot).Value);
+                    }
+                }
+            }
+
+            // Finall, equip the item
+            toEquip.Equipment[inSlot] = equippable;
+
+            // Update character with equipment modifiers
+            foreach (AttributeModifier attributeModifier in equippable.EquipBonuses)
+            {
+                toEquip.Attributes.Modify(attributeModifier);
+            }
+
+            CharacterUpdateAppearanceAfterEquipmentChange(toEquip, inSlot);
+        }
+        else
+        {
+            unequippedItems.Add((int)equippable.EquipmentId);
         }
 
-        slotId = (int)Equipment.Slot.RightHand;
-        if (dBCharacter.Equipment[slotId] != (int)EquippableId.INVALID)
-        {
-            spawnParams.HeldRightHand = ItemFactory.LoadEquipable((EquippableId)dBCharacter.Equipment[slotId]).Appearance;
-        }
+        return unequippedItems;
+    }
 
-        return spawnParams;
+    public static void CharacterUpdateAppearanceAfterEquipmentChange(CharacterInfo toRefresh, Equipment.Slot changedSlot)
+    {
+        AppearancePrefabId newPrefabId = toRefresh.Equipment[changedSlot] == Equipment.NO_EQUIPMENT ? AppearancePrefabId.prefab_none : toRefresh.Equipment[changedSlot].PrefabId;
+
+        switch (changedSlot)
+        {
+            case Equipment.Slot.Accessory: /* empty */ break;
+            case Equipment.Slot.Armor: toRefresh.Appearance.ArmorId = newPrefabId; break;
+            case Equipment.Slot.LeftHand: toRefresh.Appearance.LeftHeldId = newPrefabId; break;
+            case Equipment.Slot.RightHand: toRefresh.Appearance.RightHeldId = newPrefabId; break;
+        }
     }
 
     public static void RefreshCharactersEquipment(int characterId)

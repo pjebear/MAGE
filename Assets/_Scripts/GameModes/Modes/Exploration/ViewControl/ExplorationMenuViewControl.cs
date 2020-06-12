@@ -23,7 +23,7 @@ class ExplorationMenuViewControl
         UIManager.Instance.RemoveOverlay(UIContainerId.ExplorationMenuView);
     }
 
-    public void HandleComponentInteraction(int containerId, IUIInteractionInfo interactionInfo)
+    public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
     {
         switch (containerId)
         {
@@ -61,7 +61,7 @@ class ExplorationMenuViewControl
         }
     }
 
-    public IDataProvider Publish()
+    public IDataProvider Publish(int containerId)
     {
         return IDataProvider.Empty;
     }

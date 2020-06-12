@@ -16,6 +16,12 @@ class GameSystem
         LocationSystem = new LocationSystem();
         PartySystem = new PartySystem();
         EncounterSystem = new EncounterSystem();
+
+        ConversationDBLoader.LoadDB();
+        SpecializationDBLoader.LoadDB();
+        EquipmentDBLoader.LoadDB();
+
+        CharacterDBLoader.LoadDB();
     }
 
     // ! Encounter
@@ -70,9 +76,6 @@ class GameSystem
     // ! SaveLoad
     public void PrepareNewGame()
     {
-        SpecializationDBLoader.LoadDB();
-        EquipmentDBLoader.LoadDB();
-
         PartySystem.CreateDefaultParty();
     }
 

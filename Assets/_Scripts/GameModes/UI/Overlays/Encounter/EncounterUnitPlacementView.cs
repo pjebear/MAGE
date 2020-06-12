@@ -38,22 +38,11 @@ class EncounterUnitPlacementView : UIContainer
         AutoFillButton.Publish(new UIButton.DataProvider("Auto Assign", true));
     }
 
-    protected override void InitComponents()
+    protected override void InitChildren()
     {
         CharacterSelectLeftBtn.Init((int)ComponentId.CharacterSelectLeftBtn, this);
         CharacterSelectRightBtn.Init((int)ComponentId.CharacterSelectRightBtn, this);
         AutoFillButton.Init((int)ComponentId.AutoFillBtn, this);
         ConfirmButton.Init((int)ComponentId.ConfirmBtn, this);
-    }
-
-    protected override void InitSelf()
-    {
-        mId = (int)UIContainerId.EncounterUnitPlacementView;
-        mContainerName = UIContainerId.EncounterUnitPlacementView.ToString();
-    }
-
-    protected override IUIInteractionInfo ModifyInteractionInfo(IUIInteractionInfo interactionInfo)
-    {
-        return interactionInfo;
     }
 }

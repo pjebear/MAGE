@@ -8,16 +8,16 @@ class CameraDirector : MonoBehaviour, IInputHandler
     [SerializeField]
     private Vector3 mTargetOffset = new Vector3(0,0,10);
 
-    public float MaxFOV = 100;
-    public float MinFOV = 50;
-    public float FOV = 35;
-    public float ZoomSensitivity = 1;
+    public float MaxFOV = 30;
+    public float MinFOV = 10;
+    public float FOV = 20;
+    public float ZoomSensitivity = 2;
 
     public float Rotation = 0;
     public float RotationSensitivity = 1;
 
     public float CameraHeight = 10;
-    public float CameraHeightSensitivity = 1;
+    public float CameraHeightSensitivity = .5f;
     public float MaxCameraHeight = 13;
     public float MinCameraHeight = 7;
 

@@ -12,14 +12,20 @@ class ExplorationModule : GameModeBase
 
     GameObject mExplorationAvatar;
     ExplorationMenuViewControl MenuControl;
+    InteractionFlowControl mInteractionFlowControl;
+    ScenarioFlowControl mScenarioFlowControl;
     AudioSource mAmbientSoundSource;
+
+    public MovementDirector MovementDirector;
 
     protected override void SetupMode()
     {
         Instance = this;
 
         MenuControl = new ExplorationMenuViewControl();
-
+        mInteractionFlowControl = GetComponent<InteractionFlowControl>();
+        mScenarioFlowControl = GetComponent<ScenarioFlowControl>();
+        MovementDirector = gameObject.AddComponent<MovementDirector>();
         LevelId levelToExplore = GameSystemModule.Instance.GetCurrentLevel();
 
         Level level = GameModesModule.LevelManager.GetLoadedLevel();
@@ -35,15 +41,19 @@ class ExplorationModule : GameModeBase
             level = GameModesModule.LevelManager.GetLoadedLevel();
         }
 
+        level.ScenarioContainer.gameObject.SetActive(true);
+        level.NPCContainer.gameObject.SetActive(true);
+
         DB.DBCharacter avatar = DB.DBHelper.LoadCharacter(GameSystemModule.Instance.GetPartyAvatarId());
-        mExplorationAvatar = GameModesModule.ActorLoader.CreateActor(CharacterUtil.ActorParamsForCharacter(avatar), level.SpawnPoint).gameObject;
+
+        mExplorationAvatar = GameModesModule.ActorLoader.CreateActor(DB.CharacterHelper.FromDB(avatar.Appearance), level.SpawnPoint).gameObject;
         //go.AddComponent<vThirdPersonMotor>();
         //go.AddComponent<vThirdPersonController>();
         //go.AddComponent<vThirdPersonInput>();
         //mExplorationAvatar = Instantiate(ExplorationAvatarPrefab, level.transform);
         //mExplorationAvatar.transform.SetPositionAndRotation(level.SpawnPoint.position, level.SpawnPoint.rotation);
 
-        Camera.main.gameObject.AddComponent<ThirdPersonCamera>().SetTarget(mExplorationAvatar.transform);
+        Camera.main.gameObject.AddComponent<ThirdPersonCamera>().Follow(mExplorationAvatar.transform);
 
         mExplorationAvatar.AddComponent<AudioListener>();
         mExplorationAvatar.AddComponent<ThirdPersonActorController>();
@@ -52,17 +62,26 @@ class ExplorationModule : GameModeBase
         mAmbientSoundSource.clip = GameModesModule.AudioManager.GetTrack(TrackId.Explore);
         mAmbientSoundSource.loop = true;
         mAmbientSoundSource.spatialBlend = 0; // global volume
-        mAmbientSoundSource.Play();
+        //mAmbientSoundSource.Play();
         GameModesModule.AudioManager.FadeInTrack(mAmbientSoundSource, 5, .5f);
+
+        mInteractionFlowControl.Init(mExplorationAvatar.GetComponent<ThirdPersonActorController>());
+        mScenarioFlowControl.Init(mExplorationAvatar.GetComponent<ThirdPersonActorController>());
 
         GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.ModeSetup_Complete));
     }
 
     protected override void CleanUpMode()
     {
+        mInteractionFlowControl.CleanUp();
+        mScenarioFlowControl.CleanUp();
+
         Destroy(Camera.main.gameObject.GetComponent<ThirdPersonCamera>());
         Destroy(mExplorationAvatar);
-        
+
+        GameModesModule.LevelManager.GetLoadedLevel().ScenarioContainer.gameObject.SetActive(false);
+        GameModesModule.LevelManager.GetLoadedLevel().NPCContainer.gameObject.SetActive(false);
+
         GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.ModeTakedown_Complete));
 
         Instance = null;

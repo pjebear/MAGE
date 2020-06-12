@@ -26,6 +26,11 @@ class UIText : UIComponentBase
 
     public TextMeshProUGUI TMPro;
 
+    public void Publish(string text)
+    {
+        TMPro.text = text;
+    }
+
     public override void Publish(IDataProvider dataProvider)
     {
         DataProvider dp = (DataProvider)dataProvider;

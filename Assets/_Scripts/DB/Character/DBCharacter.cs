@@ -11,6 +11,7 @@ namespace DB
     {
         public int Id = -1;
         public Character.DBCharacterInfo CharacterInfo = new Character.DBCharacterInfo();
+        public Character.DBAppearance Appearance = new Character.DBAppearance();
         public List<int> Equipment = new List<int>();
         public List<Character.DBSpecializationInfo> Specializations = new List<Character.DBSpecializationInfo>();
 
@@ -22,6 +23,8 @@ namespace DB
             to.Id = from.Id;
 
             from.CharacterInfo.CopyTo(to.CharacterInfo);
+
+            from.Appearance.CopyTo(to.Appearance);
 
             to.Equipment = new List<int>(from.Equipment);
 

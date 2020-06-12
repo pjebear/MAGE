@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TMPro;
 using UnityEngine.UI;
 
-class UIButton : UIInteractibleComponent
+class UIButton : UIComponentBase
 {
     public class DataProvider : IDataProvider
     {

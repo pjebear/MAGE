@@ -31,7 +31,7 @@ class SpecializationOutfiterViewControl
         UIManager.Instance.RemoveOverlay(UIContainerId.SpecializationOutfiterView);
     }
 
-    public void HandleComponentInteraction(int containerId, IUIInteractionInfo interactionInfo)
+    public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
     {
         switch (containerId)
         {
@@ -50,8 +50,8 @@ class SpecializationOutfiterViewControl
 
                             case (int)SpecializationOutfiterView.ComponentId.TalentBtns:
                                 {
-                                    UIButtonList.ButtonListInteractionInfo buttonListInteractionInfo = interactionInfo as UIButtonList.ButtonListInteractionInfo;
-                                    AssignTalentPoint(mTalentIds[buttonListInteractionInfo.ButtonIdx]);
+                                    ListInteractionInfo buttonListInteractionInfo = interactionInfo as ListInteractionInfo;
+                                    AssignTalentPoint(mTalentIds[buttonListInteractionInfo.ListIdx]);
 
                                     UIManager.Instance.Publish(UIContainerId.SpecializationOutfiterView);
                                 }
@@ -68,7 +68,7 @@ class SpecializationOutfiterViewControl
         return "SpecializationOutfiterViewControl";
     }
 
-    public IDataProvider Publish()
+    public IDataProvider Publish(int containerId)
     {
         SpecializationOutfiterView.DataProvider dataProvider = new SpecializationOutfiterView.DataProvider();
 

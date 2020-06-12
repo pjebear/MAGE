@@ -11,10 +11,28 @@ class ThirdPersonCamera
     : MonoBehaviour
     , IInputHandler
 {
+    public enum CameraState
+    {
+        Follow,
+        Interact,
 
-    public Transform Target = null;
-    [SerializeField] private float mFollowDistance = 5;
-    [SerializeField] private float mHeight = 1;
+        NUM
+    }
+
+    // 
+    [SerializeField] private Vector3 mFollowTargetOffset = new Vector3(0, 2, -5);
+    [SerializeField] private Vector3 mFollowFocusOffset = new Vector3(0, 1.5f, 5);
+    [SerializeField] private float mFollowFOV = 60;
+    [SerializeField] private Vector3 mInteractTargetOffset = new Vector3(2, 2, -1);
+    [SerializeField] private Vector3 mInteractFocusOffset = new Vector3(0, 1.5f, 0);
+    [SerializeField] private float mInteractFOV = 60;
+
+    private Transform mTarget = null;
+    private Transform mFocus = null;
+
+    [SerializeField] private Vector3 mTargetOffset = Vector3.zero;
+    [SerializeField] private Vector3 mFocusOffset = Vector3.zero;
+    [SerializeField] private float mFOV;
 
     void OnDestroy()
     {
@@ -23,20 +41,47 @@ class ThirdPersonCamera
 
     void FixedUpdate()
     {
-        transform.position = Target.position - Target.forward * mFollowDistance + Vector3.up * mHeight;
-        transform.LookAt(Target);
+        if (mTarget != null)
+        {
+            transform.position = mTarget.position 
+                + mTarget.forward * mTargetOffset.z
+                + mTarget.up * mTargetOffset.y 
+                + mTarget.right * mTargetOffset.x;
+
+            Vector3 focusPosition =
+                 mFocus.transform.position
+                + mFocus.forward * mFocusOffset.z
+                + mFocus.up * mFocusOffset.y
+                + mFocus.right * mFocusOffset.x;
+
+            transform.LookAt(focusPosition);
+
+            Camera.main.fieldOfView = mFOV;
+        }
     }
 
-    public void SetTarget(Transform target)
+    public void Follow(Transform target)
     {
-        Target = target;
-        //transform.SetParent(target);
-        //transform.localPosition = target.forward * -1 * mFollowDistance + Vector3.up * mHeight;
+        mTarget = target;
+
+        mFocus = target;
+        mFOV = mFollowFOV;
+        mTargetOffset = mFollowTargetOffset;
+        mFocusOffset = mFollowFocusOffset;
     }
 
-    #region IInputHandler
-    // IInputHandler
-    public void OnKeyPressed(InputSource source, int key, InputState state)
+    public void Interact(Transform interacting, Transform with)
+    {
+        mTarget = interacting;
+        mFocus = with;
+        mFOV = mInteractFOV;
+        mTargetOffset = mInteractTargetOffset;
+        mFocusOffset = mInteractFocusOffset;
+    }
+
+        #region IInputHandler
+        // IInputHandler
+        public void OnKeyPressed(InputSource source, int key, InputState state)
     {
         if (source == InputSource.Keyboard)
         {

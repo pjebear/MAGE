@@ -87,6 +87,7 @@ enum ProficiencyType
     INVALID = -1,
 
     // One hands
+    Fists,
     Sword,
     Axe,
     Hammer,

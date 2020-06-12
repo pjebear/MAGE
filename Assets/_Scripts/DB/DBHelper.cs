@@ -10,14 +10,16 @@ namespace DB
     {
         static string TAG = "DBHelper";
 
+        static AppearnaceDB AppearanceDB = new AppearnaceDB();
         static CharacterDB CharacterDB = new CharacterDB();
+        static ConversationDB ConversationDB = new ConversationDB();
         static SpecializationDB SpecializationDB = new SpecializationDB();
         static EquipmentDB EquipmentDB = new EquipmentDB();
         static TeamDB TeamDB = new TeamDB();
 
         static int sNewCharacterId;
 
-        //! Character DB
+        #region CharacterDB
         public static DBCharacter WriteNewCharacter(DBCharacter character, TeamSide teamSide = TeamSide.INVALID)
         {
             character.Id = sNewCharacterId++;
@@ -95,19 +97,22 @@ namespace DB
             return dBCharacters;
         }
 
-        public static void ClearTeam(TeamSide teamSide, bool removePlayers)
+        public static List<int> LoadTeam(TeamSide teamSide)
+        {
+            List<int> team = new List<int>();
+
+            if (TeamDB.ContainsEntry(teamSide))
+            {
+                team = TeamDB.Load(teamSide).CharacterIds;
+            }
+
+            return team;
+        }
+
+        public static void ClearTeam(TeamSide teamSide)
         {
             if (TeamDB.ContainsEntry(teamSide))
             {
-                if (removePlayers)
-                {
-                    DBTeam team = TeamDB.Load(teamSide);
-                    foreach (int characterId in team.CharacterIds)
-                    {
-                        RemoveCharacter(characterId);
-                    }
-                }
-
                 TeamDB.Clear(teamSide);
             }
         }
@@ -116,10 +121,9 @@ namespace DB
         {
             return CharacterDB.Keys;
         }
+#endregion //CharacterDB
 
-        //! Character DB End
-
-        //! Equipment DB
+        #region EquipmentDB
         public static void WriteEquipment(int equipmentId, DB.DBEquipment equipment)
         {
             EquipmentDB.Write(equipmentId, equipment);
@@ -129,9 +133,31 @@ namespace DB
         {
             return EquipmentDB.Load(equipmentId);
         }
-        //! EquipmentDB End
 
-        //! SpecializationDB
+        public static void UpdateEquipmentDB()
+        {
+            EquipmentDB.Save(FileUtil.FolderName.DB.ToString());
+        }
+        #endregion //EquipmentDB
+
+        #region ConversationDB
+        public static void WriteConversation(int conversationId, DBConversation conversation)
+        {
+            ConversationDB.Write(conversationId, conversation);
+        }
+
+        public static DBConversation LoadConversation(int conversationId)
+        {
+            return ConversationDB.Load(conversationId);
+        }
+
+        public static void UpdateConversationDB()
+        {
+            ConversationDB.Save(FileUtil.FolderName.DB.ToString());
+        }
+        #endregion //ConversationDB
+
+        #region SpecializationDB
         public static void WriteSpecialization(DBSpecialization dBSpecialization)
         {
             SpecializationDB.Write(dBSpecialization.SpecializationType, dBSpecialization);
@@ -142,19 +168,15 @@ namespace DB
             return SpecializationDB.Load((int)specializationType);
         }
 
-        public static void Save(string path)
-        {
-            CharacterDB.Save(path);
-        }
-
         public static void UpdateSpecializationDB()
         {
             SpecializationDB.Save(FileUtil.FolderName.DB.ToString());
         }
+        #endregion SpecializationDB
 
-        public static void UpdateEquipmentDB()
+        public static void Save(string path)
         {
-            EquipmentDB.Save(FileUtil.FolderName.DB.ToString());
+            CharacterDB.Save(path);
         }
 
         public static void Load(string path)

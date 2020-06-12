@@ -16,28 +16,44 @@ static class StatusEffectFactory
         switch (type)
         {
             case StatusEffectType.Poison:
+                info.Duration = StatusEffectConstants.MEDIUM_DURATION;
+                info.Beneficial = false;
+                info.SpriteId = StatusIconSpriteId.Poison;
                 effect = new PoisonEffect(owner, info);
                 break;
 
             case StatusEffectType.Protection:
+                info.Duration = StatusEffectConstants.MEDIUM_DURATION;
+                info.Beneficial = true;
+                info.SpriteId = StatusIconSpriteId.Protection;
                 effect = new ProtectionEffect(owner, info);
                 break;
 
             case StatusEffectType.Aura_Protection:
-                info.Duration = StatusEffectInfo.PERMANENT_DURATION;
+                info.Duration = StatusEffectConstants.PERMANENT_DURATION;
+                info.Beneficial = true;
+                info.SpriteId = StatusIconSpriteId.Protection;
                 effect = new ProtectionEffect(owner, info);
                 break;
 
             case StatusEffectType.Regen:
+                info.Duration = StatusEffectConstants.MEDIUM_DURATION;
+                info.Beneficial = true;
+                info.SpriteId = StatusIconSpriteId.Protection;
                 effect = new RegenEffect(owner, info);
                 break;
 
             case StatusEffectType.Aura_Regen:
-                info.Duration = StatusEffectInfo.PERMANENT_DURATION;
+                info.Duration = StatusEffectConstants.PERMANENT_DURATION;
+                info.Beneficial = true;
+                info.SpriteId = StatusIconSpriteId.Protection;
                 effect = new RegenEffect(owner, info);
                 break;
 
             case StatusEffectType.BloodScent:
+                info.Duration = StatusEffectConstants.PERMANENT_DURATION;
+                info.Beneficial = true;
+                info.SpriteId = StatusIconSpriteId.BloodScent;
                 effect = new BloodScentEffect(owner, info);
                 break;
 

@@ -5,26 +5,25 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-
-
 abstract class UIContainer : UIComponentBase
 {
-    protected string mContainerName = "Someone forgot to write a name!";
-    private void Awake()
+    public override void Init(int id, UIContainer container)
     {
-        InitSelf();
-        InitComponents();
+        base.Init(id, container);
+
+        InitChildren();
     }
 
-    protected abstract void InitSelf();
-    protected abstract void InitComponents();
-    public string Name() { return mContainerName; }
+    protected abstract void InitChildren();
 
-    protected abstract IUIInteractionInfo ModifyInteractionInfo(IUIInteractionInfo interactionInfo);
-
-    public void HandleInteraction(IUIInteractionInfo interactionInfo)
+    protected virtual UIInteractionInfo ModifyInteractionInfo(UIInteractionInfo interactionInfo)
     {
-        IUIInteractionInfo modifiedInfo = ModifyInteractionInfo(interactionInfo);
+        return interactionInfo;
+    }
+
+    public void HandleInteraction(UIInteractionInfo interactionInfo)
+    {
+        UIInteractionInfo modifiedInfo = ModifyInteractionInfo(interactionInfo);
 
         if (mContainer != null)
         {

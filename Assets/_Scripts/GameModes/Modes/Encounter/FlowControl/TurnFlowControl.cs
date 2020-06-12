@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Events;
 
 class TurnFlowControl 
     : MonoBehaviour
@@ -30,6 +31,9 @@ class TurnFlowControl
     Tile mSelectedTile = null;
     int mActionIdxSelected = 0;
 
+    // movement
+    MovementTileCalculator mMovementCalculator;
+
     private EncounterCharacter mActor;
 
     enum TurnState
@@ -48,7 +52,7 @@ class TurnFlowControl
     public void Init()
     {
         mSelectionStack = new TileSelectionStack();
-
+        mMovementCalculator = new MovementTileCalculator(EncounterModule.Map);
         EncounterEventRouter.Instance.RegisterHandler(this);
     }
 
@@ -64,13 +68,20 @@ class TurnFlowControl
         EncounterModule.CameraDirector.FocusTarget(actorTransform);
         mState = TurnState.SelectAction;
 
+        mMovementCalculator.CalculatePathTiles(
+            EncounterModule.Map[EncounterModule.CharacterDirector.GetActorPosition(mActor)], 
+            (int)mActor.Attributes[TertiaryStat.Movement], 
+            (int)mActor.Attributes[TertiaryStat.Jump], 
+            mActor.Team);
+
         InputManager.Instance.RegisterHandler(this, false);
         UIManager.Instance.PostContainer(UIContainerId.ActorActionsView, this);
+        UIManager.Instance.PostContainer(UIContainerId.EncounterCharacterInfoView, this);
     }
 
 
     // UIContainerControl
-    public void HandleComponentInteraction(int containerId, IUIInteractionInfo interactionInfo)
+    public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
     {
         switch ((UIContainerId)containerId)
         {
@@ -80,33 +91,33 @@ class TurnFlowControl
         }
     }
 
-    private void HandleActionSelectInteraction(IUIInteractionInfo interactionInfo)
+    private void HandleActionSelectInteraction(UIInteractionInfo interactionInfo)
     {
-        if ((ActorActions.ComponentId)interactionInfo.ComponentId == ActorActions.ComponentId.ButtonList
+        if ((ActorActions.ComponentId)interactionInfo.ComponentId == ActorActions.ComponentId.ActionList
             && interactionInfo.InteractionType == UIInteractionType.Click)
         {
-            UIButtonList.ButtonListInteractionInfo buttonListInfo = (UIButtonList.ButtonListInteractionInfo)interactionInfo;
+            ListInteractionInfo buttonListInfo = (ListInteractionInfo)interactionInfo;
             switch (mState)
             {
                 // User is selection to Act, Move or Wait
                 // No tiles are highlighted currently
                 case (TurnState.SelectAction):
                 {
-                    HandleSelectActionInput(buttonListInfo.ButtonIdx);
+                    HandleSelectActionInput(buttonListInfo.ListIdx);
                 }
                 break;
                 // User is selection a specific action
                 // No tiles are highlighted currently
                 case (TurnState.SelectAbility):
                 {
-                    HandleSelectAbilityInput(buttonListInfo.ButtonIdx);
+                    HandleSelectAbilityInput(buttonListInfo.ListIdx);
                 }
                 break;
 
                 // Cancel movement selection
                 case (TurnState.SelectMovementLocation):
                 {
-                    Logger.Assert(buttonListInfo.ButtonIdx == 0, LogTag.FlowControl, Tag, "Unkonwn SelectMovementLocation button list input");
+                    Logger.Assert(buttonListInfo.ListIdx == 0, LogTag.FlowControl, Tag, "Unkonwn SelectMovementLocation button list input");
 
                     mState = TurnState.SelectAction;
                     ClearTileSelections();
@@ -117,7 +128,7 @@ class TurnFlowControl
                 // Cancel Ability selection
                 case (TurnState.SelectAbilityTarget):
                 {
-                    Logger.Assert(buttonListInfo.ButtonIdx == 0, LogTag.FlowControl, Tag, "Unkonwn SelectMovementLocation button list input");
+                    Logger.Assert(buttonListInfo.ListIdx == 0, LogTag.FlowControl, Tag, "Unkonwn SelectMovementLocation button list input");
 
                     mState = TurnState.SelectAbility;
 
@@ -128,13 +139,13 @@ class TurnFlowControl
 
                 case (TurnState.ConfirmAbilityTarget):
                 {
-                    HandleAbilityConfirmationInput(buttonListInfo.ButtonIdx == CONFIRM_BUTTON_IDX);
+                    HandleAbilityConfirmationInput(buttonListInfo.ListIdx == CONFIRM_BUTTON_IDX);
                 }
                 break;
 
                 case (TurnState.ConfirmMovementTarget):
                 {
-                    HandleMovementConfirmationInput(buttonListInfo.ButtonIdx == CONFIRM_BUTTON_IDX);
+                    HandleMovementConfirmationInput(buttonListInfo.ListIdx == CONFIRM_BUTTON_IDX);
                 }
                 break;
             }
@@ -157,7 +168,7 @@ class TurnFlowControl
             case (MOVE_BUTTON_IDX):
             {
                 mState = TurnState.SelectMovementLocation;
-                mValidHoverSelections = EncounterModule.Map.GetMovementTilesForActor(mActor);
+                mValidHoverSelections = mMovementCalculator.GetValidMovementTiles();
                 AddTileSelection(mValidHoverSelections, Tile.HighlightState.MovementSelect);
                 
                 AddTileSelection(new List<Tile>(), Tile.HighlightState.AOESelect);
@@ -217,7 +228,19 @@ class TurnFlowControl
         if (confirmed)
         {
             mActor.DEBUG_HasMoved = true;
-            EncounterModule.CharacterDirector.MoveActor(mActor, mSelectedTile.Idx);
+            EncounterModule.CharacterDirector.UpdateCharacterPosition(mActor, mSelectedTile.Idx);
+
+            List<Tile> tilePath = mMovementCalculator.GetPathTo(mSelectedTile);
+            List<Transform> route = new List<Transform>();
+            foreach (Tile tile in tilePath) { route.Add(tile.transform); }
+
+            EncounterModule.MovementDirector.DirectMovement(
+                EncounterModule.CharacterDirector.GetController(mActor).ActorController,
+                route, () =>
+                {
+                    EncounterEventRouter.Instance.NotifyEvent(new EncounterEvent(EncounterEvent.EventType.MoveResolved));
+                });
+
             OnActionSelected();
         }
         else
@@ -252,9 +275,63 @@ class TurnFlowControl
         }
     }
 
-    public IDataProvider Publish()
+    public IDataProvider Publish(int containerId)
     {
-        List<UIButton.DataProvider> buttonsInState = new List<UIButton.DataProvider>();
+        IDataProvider dataProvider = null;
+
+        switch ((UIContainerId)containerId)
+        {
+            case UIContainerId.ActorActionsView:
+                dataProvider = PublishActorActions();
+                break;
+            case UIContainerId.EncounterCharacterInfoView:
+                dataProvider = PublishCharacterInfo();
+                break;
+        }
+
+        return dataProvider;
+    }
+
+    IDataProvider PublishCharacterInfo()
+    {
+        EncounterCharacterInfoView.DataProvider dp = new EncounterCharacterInfoView.DataProvider();
+
+        dp.IsAlly = mActor.Team == TeamSide.AllyHuman;
+        dp.PortraitAsset = mActor.Appearance.PortraitSpriteId.ToString();
+        dp.Name = mActor.Name;
+        dp.Level = mActor.Level;
+        dp.Exp = mActor.Exp;
+        dp.Specialization = mActor.Specialization.ToString();
+        dp.CurrentHP = mActor.Resources[ResourceType.Health].Current;
+        dp.MaxHP = mActor.Resources[ResourceType.Health].Max;
+        dp.CurrentMP = mActor.Resources[ResourceType.Mana].Current;
+        dp.MaxMP = mActor.Resources[ResourceType.Mana].Max;
+        dp.Might = (int)mActor.Attributes[PrimaryStat.Might];
+        dp.Finesse = (int)mActor.Attributes[PrimaryStat.Finese];
+        dp.Magic = (int)mActor.Attributes[PrimaryStat.Magic];
+        dp.Fortitude = (int)mActor.Attributes[SecondaryStat.Fortitude];
+        dp.Attunement = (int)mActor.Attributes[SecondaryStat.Attunement];
+        dp.Block = (int)mActor.Attributes[TertiaryStat.Block];
+        dp.Dodge = (int)mActor.Attributes[TertiaryStat.Dodge];
+        dp.Parry = (int)mActor.Attributes[TertiaryStat.Parry];
+
+        List<IDataProvider> statusEffects = new List<IDataProvider>();
+        foreach (StatusEffect effect in mActor.StatusEffects)
+        {
+            StatusIcon.DataProvider statusDp = new StatusIcon.DataProvider();
+            statusDp.Count = effect.StackCount;
+            statusDp.IsBeneficial = effect.Beneficial;
+            statusDp.AssetName = effect.SpriteId.ToString();
+            statusEffects.Add(statusDp);
+        }
+        dp.StatusEffects = new UIList.DataProvider(statusEffects);
+
+        return dp;
+    }
+
+        IDataProvider PublishActorActions()
+    {
+        List<IDataProvider> buttonsInState = new List<IDataProvider>();
 
         switch (mState)
         {
@@ -269,7 +346,7 @@ class TurnFlowControl
                 {
                     buttonsInState.Add(new UIButton.DataProvider(action.ToString(), true));
                 }
-               
+
                 buttonsInState.Add(new UIButton.DataProvider("Back", true));
                 break;
 
@@ -291,8 +368,8 @@ class TurnFlowControl
 
         }
 
-        ActorActions.DataProvider dp = new ActorActions.DataProvider(
-            new UIButtonList.DataProvider(buttonsInState));
+        ActorActions.DataProvider dp = new ActorActions.DataProvider();
+        dp.ButtonListDP = new UIList.DataProvider(buttonsInState);
 
         return dp;
     }
@@ -422,6 +499,7 @@ class TurnFlowControl
         ClearTileSelections();
         InputManager.Instance.ReleaseHandler(this);
         UIManager.Instance.RemoveOverlay(UIContainerId.ActorActionsView);
+        UIManager.Instance.RemoveOverlay(UIContainerId.EncounterCharacterInfoView);
     }
 
     // IEventHandler<EncounterEvent>

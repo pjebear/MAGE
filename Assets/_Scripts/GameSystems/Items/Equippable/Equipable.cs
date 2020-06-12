@@ -22,14 +22,16 @@ class Equippable : Item
 {
     public EquippableTag EquipmentTag;
     public EquippableId EquipmentId { get { return (EquippableId)ItemTag.ItemId; } }
+    public AppearancePrefabId PrefabId;
 
     public List<AttributeModifier> EquipBonuses;
 
-    public Equippable(EquippableId id, EquippableTag tag, Appearance appearance, List<AttributeModifier> equipBonuses)
-        : base(new ItemTag(id), appearance)
+    public Equippable(EquippableId id, EquippableTag tag, AppearancePrefabId prefabId, ItemIconSpriteId spriteId, List<AttributeModifier> equipBonuses)
+        : base(new ItemTag(id), spriteId)
     {
         EquipmentTag = tag;
         EquipBonuses = equipBonuses;
+        PrefabId = prefabId;
     }
 }
 
@@ -40,8 +42,8 @@ class HeldEquippable : Equippable
     public List<AttributeScalar> EffectivenessScalars = new List<AttributeScalar>();
     public int NumHandsRequired;
 
-    public HeldEquippable(int numHandsRequired, float blockChance, float parryChance, List<AttributeScalar> effectivenessScalars, EquippableId id, EquippableTag tag, Appearance appearance, List<AttributeModifier> modifiers) 
-        : base(id, tag, appearance, modifiers)
+    public HeldEquippable(int numHandsRequired, float blockChance, float parryChance, List<AttributeScalar> effectivenessScalars, EquippableId id, EquippableTag tag, AppearancePrefabId prefabId, ItemIconSpriteId spriteId, List<AttributeModifier> modifiers) 
+        : base(id, tag, prefabId, spriteId, modifiers)
     {
         BlockChance = blockChance;
         ParryChance = parryChance;

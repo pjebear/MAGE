@@ -37,7 +37,7 @@ class EquipmentOutfiterView
         public bool WornSelected;
 
         public bool CanUnequip;
-        public List<EquipableDP> EquipableOptions = new List<EquipableDP>();
+        public List<EquipableDP> EquipableOptions;
     }
 
     public Image LeftHighlightImage;
@@ -47,7 +47,7 @@ class EquipmentOutfiterView
     public Image WornHighlightImage;
     public UIButton WornBtn;
     public UIButton UnEquipBtn;
-    public UIButtonList EquipableOptionsBtns;
+    public UIList EquipableOptionsBtns;
 
     public override void Publish(IDataProvider dataProvider)
     {
@@ -94,34 +94,23 @@ class EquipmentOutfiterView
         }
 
         { // Equipable Options
-            List<UIButton.DataProvider> btnListDP = new List<UIButton.DataProvider>();
+            List<IDataProvider> btnListDP = new List<IDataProvider>();
             foreach (EquipableDP equipableDP in dp.EquipableOptions)
             {
                 string text = string.Format("[{0}] x {1}", equipableDP.Name, equipableDP.Count);
                 btnListDP.Add(new UIButton.DataProvider(text, equipableDP.CanEquip));
             }
-            EquipableOptionsBtns.Publish(new UIButtonList.DataProvider(btnListDP));
+            EquipableOptionsBtns.Publish(new UIList.DataProvider(btnListDP));
         }
     }
 
-    protected override void InitComponents()
+    protected override void InitChildren()
     {
         LeftHeldBtn.Init((int)ComponentId.LeftHeldSlotBtn, this);
         RightHeldBtn.Init((int)ComponentId.RightHeldSlotBtn, this);
         WornBtn.Init((int)ComponentId.WornSlotBtn, this);
         UnEquipBtn.Init((int)ComponentId.UnEquipBtn, this);
         EquipableOptionsBtns.Init((int)ComponentId.EquipableSelectionBtns, this);
-    }
-
-    protected override void InitSelf()
-    {
-        mId = (int)UIContainerId.EquipmentOutfiterView;
-        mContainerName = UIContainerId.EquipmentOutfiterView.ToString();
-    }
-
-    protected override IUIInteractionInfo ModifyInteractionInfo(IUIInteractionInfo interactionInfo)
-    {
-        return interactionInfo;
     }
 }
 

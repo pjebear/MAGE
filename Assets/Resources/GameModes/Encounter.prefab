@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 7258414283594579392}
   - component: {fileID: 1439410062478391652}
   - component: {fileID: -2637688570931525983}
+  - component: {fileID: -8308158420752307349}
   m_Layer: 0
   m_Name: Encounter
   m_TagString: Untagged
@@ -168,6 +169,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9c0fad6530912db48b5aef4aca2afe85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-8308158420752307349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1219296962061803554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ec225a5d48a7f44096700d1bbc25a0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &3274251066895782800

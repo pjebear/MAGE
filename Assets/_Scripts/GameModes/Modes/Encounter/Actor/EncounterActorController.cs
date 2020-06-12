@@ -9,10 +9,11 @@ using UnityEngine;
 class EncounterActorController : MonoBehaviour
 {
     private float mBillboardDuration = 1f;
-    private float mBillboardHeight = 1.2f;
+    private float mBillboardHeight = 2;
     public BillboardEmitter BillboardEmitter;
     public Actor Actor;
     public EncounterCharacter EncounterCharacter;
+    public ActorController ActorController;
 
     private void Awake()
     {

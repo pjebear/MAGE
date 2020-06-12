@@ -22,6 +22,7 @@ class EncounterModule : GameModeBase
     public static AuraDirector AuraDirector;
     public static AnimationDirector AnimationDirector;
     public static ActionDirector ActionDirector;
+    public static MovementDirector MovementDirector;
     public static CameraDirector CameraDirector;
     public static EffectSpawner EffectSpawner;
     public static Map Map;
@@ -39,6 +40,7 @@ class EncounterModule : GameModeBase
         CharacterDirector = GetComponent<CharacterDirector>();
         AnimationDirector = GetComponent<AnimationDirector>();
         ActionDirector = GetComponent<ActionDirector>();
+        MovementDirector = GetComponent<MovementDirector>();
         AnimationDirector = GetComponent<AnimationDirector>();
         AuraDirector = GetComponent<AuraDirector>();
         EffectSpawner = GetComponentInChildren<EffectSpawner>();
@@ -56,13 +58,7 @@ class EncounterModule : GameModeBase
 
         Model.EncounterContext = GameSystemModule.Instance.GetEncounterContext();
 
-        AuraDirector.Init();
-        ActionDirector.Init();
-        MasterFlowControl.Init();
-        TurnFlowControl.Init();
-        StatusViewControl.Init();
-        IntroViewControl.Init();
-        UnitPlacementViewControl.Init();
+        
 
 
         // Level Manager:
@@ -80,7 +76,18 @@ class EncounterModule : GameModeBase
         }
 
         CameraDirector = Camera.main.GetComponent<CameraDirector>();
+        Camera.main.gameObject.AddComponent<AudioListener>();
 
+        AuraDirector.Init();
+        ActionDirector.Init();
+        MovementDirector.Init();
+        MasterFlowControl.Init();
+        TurnFlowControl.Init();
+        StatusViewControl.Init();
+        IntroViewControl.Init();
+        UnitPlacementViewControl.Init();
+
+        // Load players
         int count = 0;
         TeamSide team = TeamSide.AllyHuman;
         Model.Teams.Add(team, new List<EncounterCharacter>());
@@ -98,13 +105,20 @@ class EncounterModule : GameModeBase
         //    count++;
         //}
 
-        count = 0;
         team = TeamSide.EnemyAI;
         Model.Teams.Add(team, new List<EncounterCharacter>());
         foreach (DB.DBCharacter dBCharacter in DB.DBHelper.LoadCharactersOnTeam(team))
         {
-            CharacterDirector.AddCharacter(dBCharacter, team, Model.EnemySpawnPoints[count]);
-            count++;
+            CharacterInfo character = DB.CharacterHelper.FromDB(dBCharacter);
+            EncounterCharacter encounterCharacter = new EncounterCharacter(team, character);
+
+            TileIdx spawnPoint = Model.EnemySpawnPoints.Find((x)=>Map[x].OnTile == null);
+            if (Model.EncounterContext.CharacterPositions.ContainsKey(dBCharacter.Id))
+            {
+                spawnPoint = Map[Model.EncounterContext.CharacterPositions[dBCharacter.Id]].Idx;
+            }
+
+            CharacterDirector.AddCharacter(encounterCharacter, spawnPoint);
         }
 
         GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.ModeSetup_Complete));
@@ -114,6 +128,7 @@ class EncounterModule : GameModeBase
     {
         Map.Cleanup();
         Destroy(CameraDirector);
+        Destroy(Camera.main.GetComponent<AudioListener>());
         CharacterDirector.CleanupCharacters();
 
         GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.ModeTakedown_Complete));

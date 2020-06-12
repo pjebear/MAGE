@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -7,28 +8,21 @@ using UnityEngine.SceneManagement;
 public enum UIContainerId
 {
     ActorActionsView,
+    ConversationView,
+    EncounterCharacterInfoView,
     EncounterIntroView,
     EncounterUnitPlacementView,
     EncounterStatusView,
     EquipmentOutfiterView,
     ExplorationMenuView,
     MainMenuView,
+    NPCActionSelectView,
     OutfiterSelectView,
     SpecializationOutfiterView,
 
     NUM
 }
 
-public enum UIInteractionType
-{
-    None,
-
-    Click,
-    MouseOver,
-    MouseExit,
-
-    NUM
-}
 
 class UIManager : MonoBehaviour
     , IEventHandler<GameModeEvent>
@@ -40,7 +34,9 @@ class UIManager : MonoBehaviour
     private Dictionary<UIContainerId, KeyValuePair<UIContainer, UIContainerControl>> mContainerControlPairs;
     private HashSet<UIContainerId> mContainersToPublish;
     private AssetLoader<UIContainer> mViewLoader = null;
+    private AssetLoader<Sprite> mSpriteLoader = null;
     private AudioSource mUIAudioSource = null;
+    private CursorControl mCursorControl = null;
 
     public void Initialize()
     {
@@ -52,8 +48,14 @@ class UIManager : MonoBehaviour
         mContainerControlPairs = new Dictionary<UIContainerId, KeyValuePair<UIContainer, UIContainerControl>>();
         mContainersToPublish = new HashSet<UIContainerId>();
 
-        mViewLoader = new AssetLoader<UIContainer>("UI");
-        mViewLoader.LoadAssets("Views");
+        mViewLoader = new AssetLoader<UIContainer>(Path.Combine("UI","Views"));
+        mViewLoader.LoadAssets();
+
+        mSpriteLoader = new AssetLoader<Sprite>(Path.Combine("UI","Sprites"));
+        mSpriteLoader.LoadAssets();
+
+        mCursorControl = new CursorControl();
+        mCursorControl.SetCursorState(CursorControl.CursorType.Default);
 
         mUIAudioSource = gameObject.AddComponent<AudioSource>();
         mUIAudioSource.spatialBlend = 0; // no fall off
@@ -74,10 +76,10 @@ class UIManager : MonoBehaviour
             foreach (UIContainerId id in mContainersToPublish)
             {
                 Debug.Assert(mContainerControlPairs.ContainsKey(id));
-                IDataProvider publish = mContainerControlPairs[id].Value.Publish();
+                IDataProvider publish = mContainerControlPairs[id].Value.Publish((int)id);
 
-                Logger.Log(LogTag.UI, TAG, string.Format("Publishing from {0} -> {1}: {2}",
-                    mContainerControlPairs[id].Value.Name(), mContainerControlPairs[id].Key.Name(), publish.ToString()));
+                //Logger.Log(LogTag.UI, TAG, string.Format("Publishing from {0} -> {1}: {2}",
+                //    mContainerControlPairs[id].Value.Name(), mContainerControlPairs[id].Key.Name(), publish.ToString()));
 
                 mContainerControlPairs[id].Key.Publish(publish);
             }
@@ -91,16 +93,26 @@ class UIManager : MonoBehaviour
         mUIAudioSource.PlayOneShot(GameModesModule.AudioManager.GetSFXClip(sFXId));
     }
 
+    public void SetCursor(CursorControl.CursorType cursorType)
+    {
+        mCursorControl.SetCursorState(cursorType);
+    }
+
+    public Sprite LoadSprite(string assetName)
+    {
+        return mSpriteLoader.GetAsset(assetName);
+    }
+
     public void PostContainer(UIContainerId containerId, UIContainerControl provider)
     {
         UIContainer toPost = null;
         Debug.Assert(!mContainerControlPairs.ContainsKey(containerId));
 
         toPost = Instantiate(mViewLoader.GetAsset(containerId.ToString()), transform).GetComponent<UIContainer>();
-
+        toPost.Init((int)containerId, null);
         mContainerControlPairs.Add(containerId, new KeyValuePair<UIContainer, UIContainerControl>(toPost, provider));
 
-        Logger.Log(LogTag.UI, TAG, string.Format("{0} Posting Container {1}",provider.Name(), toPost.Name()));
+        //Logger.Log(LogTag.UI, TAG, string.Format("{0} Posting Container {1}",provider.Name(), toPost.Name()));
 
         mContainersToPublish.Add(containerId);
     }
@@ -112,7 +124,7 @@ class UIManager : MonoBehaviour
         UIContainer overlay = mContainerControlPairs[containerId].Key;
         mContainerControlPairs.Remove(containerId);
 
-        Logger.Log(LogTag.UI, TAG, string.Format("Removing Container {0}", overlay.Name()));
+        //Logger.Log(LogTag.UI, TAG, string.Format("Removing Container {0}", overlay.Name()));
 
         overlay.gameObject.SetActive(false);
         Destroy(overlay.gameObject);
@@ -120,12 +132,12 @@ class UIManager : MonoBehaviour
 
     public void Publish(UIContainerId containerId)
     {
-        Logger.Log(LogTag.UI, TAG, string.Format("Publish Queued for Container {0}", mContainerControlPairs[containerId].Key.Name()));
+        //Logger.Log(LogTag.UI, TAG, string.Format("Publish Queued for Container {0}", mContainerControlPairs[containerId].Key.Name()));
 
         mContainersToPublish.Add(containerId);
     }
 
-    public void ComponentInteracted(int containerId, IUIInteractionInfo interactionInfo)
+    public void ComponentInteracted(int containerId, UIInteractionInfo interactionInfo)
     {
         UIContainerId id = (UIContainerId)containerId;
         Debug.Assert(mContainerControlPairs.ContainsKey(id), string.Format("UIContainer {0} interacted with but is not being managed by UIManager", id.ToString()));

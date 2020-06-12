@@ -48,7 +48,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GameModesModule: {fileID: 3543582949660923392}
   GameSystemModule: {fileID: 3543582949942244969}
-  UIManager: {fileID: 7445674429281508430}
+  UIManager: {fileID: 6336763545272645972}
+  DebugRun: 0
 --- !u!1001 &2339876682442422620
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -211,9 +212,9 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 6650772624624343319}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7445674429281508430 stripped
+--- !u!114 &6336763545272645972 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4258174369306035545, guid: c6a7bff0b792cac4b87cfe32fbaf52aa,
+  m_CorrespondingSourceObject: {fileID: 845830827836088387, guid: c6a7bff0b792cac4b87cfe32fbaf52aa,
     type: 3}
   m_PrefabInstance: {fileID: 6650772624624343319}
   m_PrefabAsset: {fileID: 0}

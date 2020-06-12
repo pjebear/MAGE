@@ -21,6 +21,8 @@ abstract class StatusEffect
     public StatusEffectType EffectType { get { return mStatusEffectInfo.Type; } }
     public EncounterCharacter CreatedBy;
     public int StackCount;
+    public StatusIconSpriteId SpriteId { get { return mStatusEffectInfo.SpriteId; } }
+    public bool Beneficial { get { return mStatusEffectInfo.Beneficial; } }
     protected int mCurrentDuration;
     protected StatusEffectInfo mStatusEffectInfo;
 
@@ -60,7 +62,7 @@ abstract class StatusEffect
     }
     public bool HasExpired()
     {
-        if (mStatusEffectInfo.Duration == StatusEffectInfo.PERMANENT_DURATION)
+        if (mStatusEffectInfo.Duration == StatusEffectConstants.PERMANENT_DURATION)
         {
             return false;
         }

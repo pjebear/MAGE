@@ -39,18 +39,21 @@ class CharacterDirector : MonoBehaviour
         }
     }
 
-    public EncounterActorController AddCharacter(DB.DBCharacter dBCharacter, TeamSide team, TileIdx atIdx)
+    public EncounterActorController AddCharacter(EncounterCharacter character, TileIdx atIdx)
     {
-        Transform actorParent = GameObject.Find("Actors").transform;
+        Transform actorParent = GameObject.Find("EncounterContainer").transform;
 
-        EncounterCharacter character = new EncounterCharacter(team, CharacterLoader.LoadCharacter(dBCharacter));
-        character.Team = team;
         EncounterModule.Model.Characters.Add(character.Id, character);
-        EncounterModule.Model.Teams[team].Add(character);
+        EncounterModule.Model.Teams[character.Team].Add(character);
 
-        EncounterActorController actorController = GameModesModule.ActorLoader.CreateActor(CharacterUtil.ActorParamsForCharacter(dBCharacter), actorParent);
+        Actor actor = GameModesModule.ActorLoader.CreateActor(character.Appearance, actorParent);
+        EncounterActorController actorController = actor.gameObject.AddComponent<EncounterActorController>();
+        actorController.Actor = actor;
+
         actorController.BillboardEmitter = Instantiate(BillboardEmitterPrefab, actorController.transform);
-
+        actorController.ActorController = actorController.gameObject.AddComponent<ActorController>();
+        actorController.ActorController.MoveSpeed = 2;
+        actorController.ActorController.RotSpeed = 60;
         CharacterActorLookup.Add(character, actorController);
         actorController.EncounterCharacter = character;
 
@@ -81,17 +84,10 @@ class CharacterDirector : MonoBehaviour
         return mActorPositions[GetController(character)];
     }
 
-    public void MoveActor(EncounterCharacter character, TileIdx toLocation)
+    public void UpdateCharacterPosition(EncounterCharacter character, TileIdx toLocation)
     {
-        StartCoroutine(MoveCharacter(character, toLocation));
-    }
-
-    IEnumerator MoveCharacter(EncounterCharacter character, TileIdx toLocation)
-    {
-        yield return new WaitForEndOfFrame();
         mActorPositions[CharacterActorLookup[character]] = toLocation;
         EncounterModule.Map.PlaceAtTile(toLocation, CharacterActorLookup[character]);
-        EncounterEventRouter.Instance.NotifyEvent(new EncounterEvent(EncounterEvent.EventType.MoveResolved));
     }
 
     public void ApplyStateChange(EncounterCharacter character, StateChange stateChange)

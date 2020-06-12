@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 interface UIContainerControl
 {
-    IDataProvider Publish();
+    IDataProvider Publish(int containerId);
 
-    void HandleComponentInteraction(int containerId, IUIInteractionInfo interactionInfo);
+    void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo);
     string Name();
 }
 

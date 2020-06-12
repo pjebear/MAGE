@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 static class ActionConstants
 {
     public static readonly int INSTANT_CAST_SPEED = -1;
-    public static readonly int FAST_CAST_SPEED = 16;
-    public static readonly int NORMAL_CAST_SPEED = 32;
-    public static readonly int SLOW_CAST_SPEED = 48;
+    public static readonly int FAST_CAST_SPEED = 8;
+    public static readonly int NORMAL_CAST_SPEED = 16;
+    public static readonly int SLOW_CAST_SPEED = 24;
 }
 
 enum ActionMedium

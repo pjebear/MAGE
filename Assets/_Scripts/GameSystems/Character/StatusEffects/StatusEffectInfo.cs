@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 class StatusEffectInfo
 {
-    public static int PERMANENT_DURATION = -1;
+    
 
     public StatusEffectType Type;
     public int MaxStackCount = 5;
     public int Duration = 3;
+    public bool Beneficial = true;
+    public StatusIconSpriteId SpriteId;
 }
 

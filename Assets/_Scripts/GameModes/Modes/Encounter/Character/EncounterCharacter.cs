@@ -7,7 +7,7 @@ using UnityEngine;
 class EncounterCharacter
 {
     // Private
-    private Character mCharacter;
+    private CharacterInfo mCharacter;
     private List<AttributeModifier> mAttributeModifiers;
     
     // Public
@@ -18,6 +18,7 @@ class EncounterCharacter
     public Attributes Attributes { get; private set; }
     public List<StatusEffect> StatusEffects { get; private set; }
     public Equipment Equipment { get { return mCharacter.Equipment; } }
+    public Appearance Appearance { get { return mCharacter.Appearance; } }
     // Accessors
     public bool IsAlive { get { return Resources[ResourceType.Health].Ratio > 0; } }
     public bool DEBUG_IsTurnComplete = false;
@@ -27,10 +28,13 @@ class EncounterCharacter
     public int DEBUG_ClockGuage = 0;
 
     public string Name { get { return mCharacter.Name; } }
+    public int Level { get { return mCharacter.Level; } }
+    public int Exp { get { return mCharacter.Experience; } }
+    public SpecializationType Specialization { get { return mCharacter.CurrentSpecializationType; } }
     public List<ActionId> Actions { get { return mCharacter.Actions; } }
     public List<AuraType> Auras { get { return mCharacter.Auras; } }
     
-    public EncounterCharacter(TeamSide team, Character character)
+    public EncounterCharacter(TeamSide team, CharacterInfo character)
     {
         Id = character.Id;
         Team = team;

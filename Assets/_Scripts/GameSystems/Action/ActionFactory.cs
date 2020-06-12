@@ -55,7 +55,7 @@ class ActionFactory
                     int minSelectionRange = 0, maxSelectionRange = 1, maxSelectionElevationChange = 0;
                     RangeInfo effectRange = new RangeInfo(minSelectionRange, maxSelectionRange, maxSelectionElevationChange, AreaType.Circle);
 
-                    info = new HealInfo(ActionConstants.NORMAL_CAST_SPEED, castRange, effectRange);
+                    info = new HealInfo(ActionConstants.FAST_CAST_SPEED, castRange, effectRange);
                 }
                 break;
 

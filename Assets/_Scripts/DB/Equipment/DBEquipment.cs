@@ -15,10 +15,11 @@ namespace DB
         public int Type;
         public float BlockChance;
         public float ParryChance;
+        public int SpriteId;
+        public int PrefabId;
         public List<DBAttributeScalar> EffectivenessScalars = new List<DBAttributeScalar>();
         public List<DBAttributeModifier> EquipBonuses = new List<DBAttributeModifier>();
-        public List<int> AppearanceIds = new List<int>();
-
+        
         public override void Copy(DBEntryBase _from, DBEntryBase _to)
         {
             DBEquipment from = _from as DBEquipment;
@@ -30,13 +31,15 @@ namespace DB
             to.Type = from.Type;
             to.BlockChance = from.BlockChance;
             to.ParryChance = from.ParryChance;
+            to.SpriteId = from.SpriteId;
+            to.PrefabId = from.PrefabId;
 
             to.EffectivenessScalars.Clear();
             foreach (DBAttributeScalar scalar in from.EffectivenessScalars)
             {
                 DBAttributeScalar toAdd = new DBAttributeScalar();
                 toAdd.Set(scalar);
-                to.EffectivenessScalars.Add(scalar);
+                to.EffectivenessScalars.Add(toAdd);
             }
 
             to.EquipBonuses.Clear();
@@ -44,10 +47,8 @@ namespace DB
             {
                 DBAttributeModifier toAdd = new DBAttributeModifier();
                 toAdd.Set(bonus);
-                to.EquipBonuses.Add(bonus);
+                to.EquipBonuses.Add(toAdd);
             }
-
-            to.AppearanceIds = new List<int>(from.AppearanceIds);
         }
     }
     

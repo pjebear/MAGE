@@ -15,7 +15,8 @@ static class ItemFactory
         EquippableTag tag = new EquippableTag((EquippableCategory)dbEquipment.Category, dbEquipment.Type);
 
         // Appearance
-        Appearance appearance = new Appearance(dbEquipment.AppearanceIds);
+        AppearancePrefabId appearancePrefabId = (AppearancePrefabId)dbEquipment.PrefabId;
+        ItemIconSpriteId spriteId = (ItemIconSpriteId)dbEquipment.SpriteId;
         
         // Equip Bonuses
         List<AttributeModifier> equipBonuses = new List<AttributeModifier>();
@@ -44,7 +45,7 @@ static class ItemFactory
         {
             case EquippableCategory.Accessory:
             case EquippableCategory.Armor:
-                equippable = new Equippable(id, tag, appearance, equipBonuses);
+                equippable = new Equippable(id, tag, appearancePrefabId, spriteId, equipBonuses);
                 break;
 
             case EquippableCategory.OneHandWeapon:
@@ -52,7 +53,7 @@ static class ItemFactory
             case EquippableCategory.Shield:
             {
                 int numHandsRequired = category == EquippableCategory.TwoHandWeapon ? 2 : 1;
-                equippable = new HeldEquippable(numHandsRequired, dbEquipment.BlockChance, dbEquipment.ParryChance, proficiencyBonuses, id, tag, appearance, equipBonuses);
+                equippable = new HeldEquippable(numHandsRequired, dbEquipment.BlockChance, dbEquipment.ParryChance, proficiencyBonuses, id, tag, appearancePrefabId, spriteId, equipBonuses);
             }
             break;
 
@@ -65,62 +66,67 @@ static class ItemFactory
         return equippable;
     }
 
-    static Equippable CreateEquipable(ItemId itemId)
-    {
-        Appearance appearance = new Appearance();
+    //static Equippable CreateEquipable(ItemId itemId)
+    //{
+    //    Appearance appearance = new Appearance();
 
-        Debug.Assert(ItemUtil.TypeFromId((int)itemId) == ItemType.Equippable);
-        EquippableId equippableId = (EquippableId)itemId;
-        EquippableTag tag = null;
+    //    Debug.Assert(ItemUtil.TypeFromId((int)itemId) == ItemType.Equippable);
+    //    EquippableId equippableId = (EquippableId)itemId;
+    //    EquippableTag tag = null;
 
-        switch (equippableId)
-        {
-            case EquippableId.Sword_0:
-                appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Sword_0;
-                tag = new EquippableTag(OneHandWeaponType.Sword);
-                break;
+    //    switch (equippableId)
+    //    {
+    //        case EquippableId.Sword_0:
+    //            appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Sword_0;
+    //            tag = new EquippableTag(OneHandWeaponType.Sword);
+    //            break;
 
-            case EquippableId.Axe_0:
-                appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Axe_0;
-                tag = new EquippableTag(OneHandWeaponType.Axe);
-                break;
+    //        case EquippableId.Axe_0:
+    //            appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Axe_0;
+    //            tag = new EquippableTag(OneHandWeaponType.Axe);
+    //            break;
 
-            case EquippableId.Mace_0:
-                appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Mace_0;
-                tag = new EquippableTag(OneHandWeaponType.Mace);
-                break;
+    //        case EquippableId.Mace_0:
+    //            appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Mace_0;
+    //            tag = new EquippableTag(OneHandWeaponType.Mace);
+    //            break;
 
-            case EquippableId.Shield_0:
-                appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Shield_0;
-                tag = new EquippableTag(ShieldType.Shield);
-                break;
+    //        case EquippableId.Shield_0:
+    //            appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Shield_0;
+    //            tag = new EquippableTag(ShieldType.Shield);
+    //            break;
 
-            case EquippableId.Staff_0:
-                appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Staff_0;
-                tag = new EquippableTag(TwoHandWeaponType.Staff);
-                break;
+    //        case EquippableId.Staff_0:
+    //            appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Staff_0;
+    //            tag = new EquippableTag(TwoHandWeaponType.Staff);
+    //            break;
 
-            case EquippableId.ChainArmor_0:
-                appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Chain_0;
-                tag = new EquippableTag(ArmorType.Chain);
-                break;
+    //        case EquippableId.ChainArmor_0:
+    //            appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Chain_0;
+    //            tag = new EquippableTag(ArmorType.Chain);
+    //            break;
 
-            case EquippableId.LeatherArmor_0:
-                appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Leather_0;
-                tag = new EquippableTag(ArmorType.Leather);
-                break;
+    //        case EquippableId.LeatherArmor_0:
+    //            appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Leather_0;
+    //            tag = new EquippableTag(ArmorType.Leather);
+    //            break;
 
-            case EquippableId.ClothArmor_0:
-                appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Cloth_0;
-                tag = new EquippableTag(ArmorType.Cloth);
-                break;
+    //        case EquippableId.ClothArmor_0:
+    //            appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Cloth_0;
+    //            tag = new EquippableTag(ArmorType.Cloth);
+    //            break;
 
-            default:
-                Debug.Assert(false);
-                break;
-        }
+    //        case EquippableId.Relic:
+    //            appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Cloth_0;
+    //            tag = new EquippableTag(ArmorType.Cloth);
+    //            break;
 
-        return new Equippable(equippableId, tag, appearance, new List<AttributeModifier>());
-    }
+    //        default:
+    //            Debug.Assert(false);
+    //            break;
+    //    }
+
+    //    return new Equippable(equippableId, tag, appearance, new List<AttributeModifier>());
+    //}
 }
 

@@ -30,7 +30,7 @@ class SpecializationOutfiterView
         public List<TalentDP> TalentDPs = new List<TalentDP>();
     }
 
-    public UIButtonList TalentBtns;
+    public UIList TalentBtns;
     public UIText AvailablePointsTxt;
     public UIText SpecializationTxt;
     public UIButton ResetTalentsBtn;
@@ -40,14 +40,13 @@ class SpecializationOutfiterView
         DataProvider dp = dataProvider as DataProvider;
 
         { // Talent btns
-            List<UIButton.DataProvider> talentStrings = new List<UIButton.DataProvider>();
+            List<IDataProvider> talentStrings = new List<IDataProvider>();
             foreach (TalentDP talentDP in dp.TalentDPs)
             {
                 talentStrings.Add(new UIButton.DataProvider(string.Format("{0} [{1}/{2}]", talentDP.TalentName, talentDP.AssignedPoints, talentDP.MaxPoints), talentDP.IsSelectable));
             }
 
-            UIButtonList.DataProvider buttonListDP = new UIButtonList.DataProvider(talentStrings);
-            TalentBtns.Publish(buttonListDP);
+            TalentBtns.Publish(new UIList.DataProvider(talentStrings));
         }
 
         AvailablePointsTxt.Publish(new UIText.DataProvider(dp.SpecializationName));
@@ -55,21 +54,10 @@ class SpecializationOutfiterView
         SpecializationTxt.Publish(new UIText.DataProvider(dp.SpecializationName));
     }
 
-    protected override void InitComponents()
+    protected override void InitChildren()
     {
         TalentBtns.Init((int)ComponentId.TalentBtns, this);
         ResetTalentsBtn.Init((int)ComponentId.ResetTalentsBtn, this);
-    }
-
-    protected override void InitSelf()
-    {
-        mId = (int)UIContainerId.SpecializationOutfiterView;
-        mContainerName = UIContainerId.SpecializationOutfiterView.ToString();
-    }
-
-    protected override IUIInteractionInfo ModifyInteractionInfo(IUIInteractionInfo interactionInfo)
-    {
-        return interactionInfo;
     }
 }
 

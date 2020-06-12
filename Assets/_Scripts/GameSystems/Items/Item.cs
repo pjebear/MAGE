@@ -24,11 +24,11 @@ struct ItemTag
 abstract class Item
 {
     public ItemTag ItemTag;
-    public Appearance Appearance;
+    public ItemIconSpriteId SpriteId;
 
-    protected Item(ItemTag tag, Appearance appearance)
+    protected Item(ItemTag tag, ItemIconSpriteId spriteId)
     {
         ItemTag = tag;
-        Appearance = appearance;
+        SpriteId = spriteId;
     }
 }

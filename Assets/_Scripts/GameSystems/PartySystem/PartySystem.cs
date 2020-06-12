@@ -13,52 +13,6 @@ class PartySystem
 
     private Party Party = new Party();
 
-    public void CreateDefaultParty()
-    {
-        DB.DBCharacter Rheinhardt = CharacterUtil.CreateBaseCharacter( (int)StoryCharacterId.Rheinhardt, StoryCharacterId.Rheinhardt.ToString(), SpecializationType.Footman,
-                new List<int>() { (int)EquippableId.ChainArmor_0, (int)EquippableId.Shield_0, (int)EquippableId.Sword_0, (int)EquippableId.INVALID });
-
-        DB.DBHelper.WriteCharacter(Rheinhardt);
-
-        Party.CharacterIds.Add(Rheinhardt.Id);
-        foreach (int equippedItem in Rheinhardt.Equipment)
-        {
-            if (equippedItem != (int)EquippableId.INVALID)
-            {
-                Party.Inventory.Add(equippedItem);
-            }
-        }
-
-        DB.DBCharacter Asmund = CharacterUtil.CreateBaseCharacter( (int)StoryCharacterId.Asmund, StoryCharacterId.Asmund.ToString(), SpecializationType.Monk,
-                new List<int>() { (int)EquippableId.ClothArmor_0, (int)EquippableId.Staff_0, (int)EquippableId.INVALID, (int)EquippableId.INVALID });
-
-        DB.DBHelper.WriteCharacter(Asmund);
-
-        Party.CharacterIds.Add(Asmund.Id);
-        foreach (int equippedItem in Asmund.Equipment)
-        {
-            if (equippedItem != (int)EquippableId.INVALID)
-            {
-                Party.Inventory.Add(equippedItem);
-            }
-        }
-
-        List<int> defaultInventory = new List<int>()
-        {
-             (int)EquippableId.Axe_0
-             , (int)EquippableId.Mace_0
-             , (int)EquippableId.Sword_0
-             , (int)EquippableId.LeatherArmor_0
-        };
-
-        foreach (int itemId in defaultInventory)
-        {
-            Party.Inventory.Add(itemId);
-        }
-
-        Party.AvatarId = (int)StoryCharacterId.Rheinhardt;
-    }
-
     public int GetPartyAvatarId()
     {
         return Party.AvatarId;
@@ -79,6 +33,48 @@ class PartySystem
         Party.Inventory.Add(itemId);
     }
 
+    public void UnEquipCharacter(int characterId, Equipment.Slot inSlot, bool returnToInventory = true)
+    {
+        DB.DBCharacter dbCharacter = DB.DBHelper.LoadCharacter(characterId);
+        Logger.Assert(dbCharacter.Id != -1, LogTag.GameSystems, TAG, string.Format("UnEquipCharacter() - Failed to find character [{0}] in db.", characterId));
+        if (dbCharacter.Id != -1)
+        {
+            CharacterInfo toUnEquip = DB.CharacterHelper.FromDB(dbCharacter);
+            Optional<int> unequipped = CharacterUtil.UnEquipCharacter(toUnEquip, inSlot);
+            if (unequipped.HasValue)
+            {
+                Party.Inventory.Add(unequipped.Value);
+            }
+        }
+    }
+
+    public void EquipCharacter(int characterId, EquippableId equippableId, Equipment.Slot inSlot, bool pullFromInventory = true)
+    {
+        DB.DBCharacter dbCharacter = DB.DBHelper.LoadCharacter(characterId);
+        Logger.Assert(dbCharacter.Id != -1, LogTag.GameSystems, TAG, string.Format("EquipCharacter() - Failed to find character [{0}] in db.", characterId));
+        if (dbCharacter.Id != -1)
+        {
+            CharacterInfo toEquip = DB.CharacterHelper.FromDB(dbCharacter);
+
+            if (pullFromInventory)
+            {
+                Logger.Assert(Party.Inventory.Contains((int)equippableId), LogTag.GameSystems, TAG, string.Format("EquipCharacter() - Failed to find item in inventory [{0}].", equippableId.ToString()));
+                if (Party.Inventory.Contains((int)equippableId))
+                {
+                    Party.Inventory.Remove((int)equippableId);
+                }
+            }
+
+            Equippable equipable = ItemFactory.LoadEquipable(equippableId);
+
+            List<int> unequippedItems = CharacterUtil.EquipCharacter(toEquip, equipable, inSlot);
+            foreach (int itemId in unequippedItems)
+            {
+                Party.Inventory.Add(itemId);
+            }
+        }
+    }
+
     public void PrepareForEncounter(EncounterCreateParams createParams)
     {
         foreach (int characterId in Party.CharacterIds)
@@ -89,7 +85,7 @@ class PartySystem
 
     public void UpdateOnEncounterEnd(EncounterResultInfo resultInfo)
     {
-        DB.DBHelper.ClearTeam(TeamSide.AllyHuman, false);
+        DB.DBHelper.ClearTeam(TeamSide.AllyHuman);
 
         foreach (int characterId in resultInfo.PlayersInEncounter[TeamSide.AllyHuman])
         {
@@ -159,5 +155,28 @@ class PartySystem
         mSaveFileName = saveFile.Name;
         Party = SaveLoadUtil.ExtractParty(saveFile);
     }
+
+    #region DEBUG
+    public void CreateDefaultParty()
+    {
+        Party.CharacterIds.Add((int)StoryCharacterId.Rheinhardt);
+        Party.CharacterIds.Add((int)StoryCharacterId.Asmund);
+
+        List<int> defaultInventory = new List<int>()
+        {
+             (int)EquippableId.Axe_0
+             , (int)EquippableId.Mace_0
+             , (int)EquippableId.Sword_0
+             , (int)EquippableId.LeatherArmor_0
+        };
+
+        foreach (int itemId in defaultInventory)
+        {
+            Party.Inventory.Add(itemId);
+        }
+
+        Party.AvatarId = (int)StoryCharacterId.Rheinhardt;
+    }
+    #endregion
 }
 

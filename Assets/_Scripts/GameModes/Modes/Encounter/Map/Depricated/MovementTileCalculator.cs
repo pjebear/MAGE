@@ -4,167 +4,181 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
+struct TilePath
+{
+    public Tile Previous;
+    public int Length;
+    public bool IsValidEndTile;
 
+    public TilePath(Tile previous, int length, bool isValidEndTile)
+    {
+        Previous = previous;
+        Length = length;
+        IsValidEndTile = isValidEndTile;
+    }
+}
 
-//class MovementTileCalculator
-//{
-//    private const float ElevationDifferenceBuffer = 0.1f;
-//    private Dictionary<MapTile, TilePath> mPotentialMapPaths; // key = destination, value = path to get there
-//    private Dictionary<int, MapTile> mPotentialMovementTiles; // key = tile id, value = tile
-//    private EncounterMap mEncounterMap;
+class MovementTileCalculator
+{
+    private readonly string TAG = "MovementTileCalculator";
 
-//    public MovementTileCalculator(EncounterMap encounterMap)
-//    {
-//        mPotentialMapPaths = new Dictionary<MapTile, TilePath>();
-//        mPotentialMovementTiles = new Dictionary<int, MapTile>();
-//        mEncounterMap = encounterMap;
-//    }
+    private const float ElevationDifferenceBuffer = 0.1f;
+    private Dictionary<Tile, TilePath> mPotentialMapPaths; // key = destination, value = path to get there
+    private Dictionary<TileIdx, Tile> mPotentialMovementTiles; // key = tile id, value = tile
+    private Map mMap;
 
-//    public bool IsValidMoveTile(MapTile tile)
-//    {
-//        return mPotentialMovementTiles.ContainsKey(tile.Id);
-//    }
+    public MovementTileCalculator(Map map)
+    {
+        mPotentialMapPaths = new Dictionary<Tile, TilePath>();
+        mPotentialMovementTiles = new Dictionary<TileIdx, Tile>();
+        mMap = map;
+    }
 
-//    public Stack<MapTile> GetPathTo(MapTile destination)
-//    {
-//        if (IsValidMoveTile(destination))
-//        {
-//            //create a path for unit to follow
-//            Stack<MapTile> movementPath = new Stack<MapTile>();
-//            do
-//            {
-//                movementPath.Push(destination);
-//                if (mPotentialMapPaths.ContainsKey(destination))
-//                {
-//                    destination = mPotentialMapPaths[destination].previous;
-//                }
-//            } while (mPotentialMapPaths[destination].previous != null);
+    public bool IsValidMoveTile(Tile tile)
+    {
+        return mPotentialMovementTiles.ContainsKey(tile.Idx);
+    }
 
-//            return movementPath;
-//        }
-//        else
-//        {
-//            return null;
-//        }
-//    }
+    public List<Tile> GetPathTo(Tile destination)
+    {
+        Logger.Assert(IsValidMoveTile(destination), LogTag.GameModes, TAG, "Invalid destination provided");
 
-//    public List<MapTile> GetValidMovementTiles()
-//    {
-//        List<MapTile> validMovementTiles = new List<MapTile>();
-//        validMovementTiles.AddRange(mPotentialMovementTiles.Values);
-//        return validMovementTiles;
-//    }
+        List<Tile> movementPath = new List<Tile>();
 
-//    public Dictionary<MapTile, TilePath> GetMapPaths()
-//    {
-//        return mPotentialMapPaths;
-//    }
+        if (IsValidMoveTile(destination))
+        {
+            //create a path for unit to follow
+            do
+            {
+                movementPath.Add(destination);
+                if (mPotentialMapPaths.ContainsKey(destination))
+                {
+                    destination = mPotentialMapPaths[destination].Previous;
+                }
+            } while (mPotentialMapPaths[destination].Previous != null);
 
-//    public void CalculatePathTiles(MapTile startTile, int distance, float jump, bool playerControlled)
-//    {
-//        mPotentialMapPaths.Clear();
-//        mPotentialMovementTiles.Clear();
+            movementPath.Reverse();
+        }
 
-//        int maxDistance = distance;
+        return movementPath;
+    }
 
-//        List<KeyValuePair<MapTile, int>> sortedList = new List<KeyValuePair<MapTile, int>>();
-                
-//        mPotentialMapPaths.Add(startTile, new TilePath(0, null, false));
-//        sortedList.Add(new KeyValuePair<MapTile, int>(startTile, 0));
+    public List<Tile> GetValidMovementTiles()
+    {
+        List<Tile> validMovementTiles = new List<Tile>();
+        validMovementTiles.AddRange(mPotentialMovementTiles.Values);
+        return validMovementTiles;
+    }
 
-//        while (sortedList.Count() > 0)
-//        {
-//            sortedList.Sort((x, y) => y.Value.CompareTo(x.Value));
+    public Dictionary<Tile, TilePath> GetMapPaths()
+    {
+        return mPotentialMapPaths;
+    }
 
-//            MapTile currentTile = sortedList[sortedList.Count- 1].Key;
-//            sortedList.RemoveAt(sortedList.Count - 1);
-//            TileIndex currentIndex = currentTile.GetLocalMapIndex();
+    public void CalculatePathTiles(Tile startTile, int distance, float jump, TeamSide sideBeingMoved)
+    {
+        mPotentialMapPaths.Clear();
+        mPotentialMovementTiles.Clear();
 
-//            //add all tiles around
-//            TileIndex nextIndex = currentIndex + TileIndex.up;
-//            AddIfValid(ref sortedList, mEncounterMap.GetTileAt(nextIndex), currentTile, maxDistance, jump, playerControlled);
-//            nextIndex = currentIndex + TileIndex.
-//                ;
-//            AddIfValid(ref sortedList, mEncounterMap.GetTileAt(nextIndex), currentTile, maxDistance, jump, playerControlled);
-//            nextIndex = currentIndex + TileIndex.down;
-//            AddIfValid(ref sortedList, mEncounterMap.GetTileAt(nextIndex), currentTile, maxDistance, jump, playerControlled);
-//            nextIndex = currentIndex + TileIndex.left;
-//            AddIfValid(ref sortedList, mEncounterMap.GetTileAt(nextIndex), currentTile, maxDistance, jump, playerControlled);
-//        }
-//    }
+        int maxDistance = distance;
 
-//    private void AddIfValid(ref List<KeyValuePair<MapTile,int>> stack, MapTile tileToCheck, MapTile previousTile, int maxDistance, float maxJump, bool playerControlled)
-//    {
-//        // Tile is outside map boundaries
-//        if (tileToCheck == null)
-//        {
-//            return;
-//        }
-//        // Tile is above/below max jump distance
-//        float elevationDifference = Mathf.Abs(tileToCheck.transform.localPosition.y - previousTile.transform.localPosition.y);
-//        if (elevationDifference > maxJump + ElevationDifferenceBuffer)
-//        {
-//            return;
-//        }
+        List<KeyValuePair<Tile, int>> sortedList = new List<KeyValuePair<Tile, int>>();
 
-//        int costToMoveToTile = (int)Mathf.Abs(1 + elevationDifference);
+        mPotentialMapPaths.Add(startTile, new TilePath(null, 0, false));
+        sortedList.Add(new KeyValuePair<Tile, int>(startTile, 0));
 
-//        if (mPotentialMapPaths.ContainsKey(tileToCheck))//has tile already been reached?
-//        {
-//            int newDistance = mPotentialMapPaths[previousTile].pathLength + costToMoveToTile;
-//            int oldDistance = mPotentialMapPaths[tileToCheck].pathLength;
-//            if (oldDistance > newDistance)// shorter path found
-//            {
-//                TilePath path = mPotentialMapPaths[tileToCheck];
-//                path.previous = previousTile;
-//                path.pathLength = newDistance;
-//                mPotentialMapPaths[tileToCheck] = path;
+        while (sortedList.Count() > 0)
+        {
+            sortedList.Sort((x, y) => y.Value.CompareTo(x.Value));
 
-//                // if found a shorter path to tile, check if needs to be added to potential movement tiles
-//                if (oldDistance > maxDistance && newDistance <= maxDistance)
-//                {
-//                    mPotentialMovementTiles.Add(tileToCheck.Id, tileToCheck);
-//                }
-//            }
-//            //else potential route is a longer path. Discard
+            Tile currentTile = sortedList[sortedList.Count - 1].Key;
+            sortedList.RemoveAt(sortedList.Count - 1);
+            TileIdx currentIndex = currentTile.Idx;
 
-//            return;
-                    
-//        }
-//        else // new path found
-//        {
-//            // is there anyone currently on the tile?
-//            CharacterManager onTile = tileToCheck.GetCharacterOnTile();
-//            if (onTile != null)
-//            {
-//                //is the unit friendly?
-//                if (!(onTile.IsPlayerControlled ^ playerControlled) || !onTile.IsAlive)// !(different teams)
-//                {
-//                    //not a valid tile, but valid path
-//                    mPotentialMapPaths.Add(tileToCheck, new TilePath(mPotentialMapPaths[previousTile].pathLength + 1, previousTile, false));
-//                }
-//                else //cant move through this tile. Discard
-//                {
-//                    return;
-//                }
-//            }
-//            else
-//            {
-//                mPotentialMapPaths.Add(tileToCheck, new TilePath(mPotentialMapPaths[previousTile].pathLength + 1, previousTile, true));
-//            }
-//        }
+            //add all tiles around
+            // Forward
+            TileIdx nextIndex = new TileIdx(currentIndex.x, currentIndex.y + 1);
+            if (mMap.IsValidIdx(nextIndex)) AddIfValid(ref sortedList,  mMap[nextIndex], currentTile, maxDistance, jump, sideBeingMoved);
+            // Right
+            nextIndex = new TileIdx(currentIndex.x + 1, currentIndex.y);
+            if (mMap.IsValidIdx(nextIndex)) AddIfValid(ref sortedList, mMap[nextIndex], currentTile, maxDistance, jump, sideBeingMoved);
+            // Behind
+            nextIndex = new TileIdx(currentIndex.x, currentIndex.y - 1);
+            if (mMap.IsValidIdx(nextIndex)) AddIfValid(ref sortedList, mMap[nextIndex], currentTile, maxDistance, jump, sideBeingMoved);
+            // Left
+            nextIndex = new TileIdx(currentIndex.x - 1, currentIndex.y);
+            if (mMap.IsValidIdx(nextIndex)) AddIfValid(ref sortedList, mMap[nextIndex], currentTile, maxDistance, jump, sideBeingMoved);
+        }
+    }
 
-//        if (mPotentialMapPaths[tileToCheck].pathLength <= maxDistance && mPotentialMapPaths[tileToCheck].isValidEndTile)
-//        {
-//            mPotentialMovementTiles.Add(tileToCheck.Id, tileToCheck);
-//        }
+    private void AddIfValid(ref List<KeyValuePair<Tile, int>> stack, Tile tileToCheck, Tile previousTile, int maxDistance, float maxJump, TeamSide sideBeingMoved)
+    {
+        // Tile is above/below max jump distance
+        float elevationDifference = Mathf.Abs(tileToCheck.transform.localPosition.y - previousTile.transform.localPosition.y);
+        if (elevationDifference > maxJump + ElevationDifferenceBuffer)
+        {
+            return;
+        }
 
-//        stack.Add(new KeyValuePair<MapTile,int>(tileToCheck, mPotentialMapPaths[tileToCheck].pathLength));
-//    }
+        int costToMoveToTile = (int)Mathf.Abs(1 + elevationDifference);
 
-//    public void ResetMovementTiles()
-//    {
-//        mPotentialMapPaths.Clear();
-//        mPotentialMovementTiles.Clear();
-//    }
-//}
+        if (mPotentialMapPaths.ContainsKey(tileToCheck))//has tile already been reached?
+        {
+            int newDistance = mPotentialMapPaths[previousTile].Length + costToMoveToTile;
+            int oldDistance = mPotentialMapPaths[tileToCheck].Length;
+            if (oldDistance > newDistance)// shorter path found
+            {
+                TilePath path = mPotentialMapPaths[tileToCheck];
+                path.Previous = previousTile;
+                path.Length = newDistance;
+                mPotentialMapPaths[tileToCheck] = path;
+
+                // if found a shorter path to tile, check if needs to be added to potential movement tiles
+                if (oldDistance > maxDistance && newDistance <= maxDistance)
+                {
+                    mPotentialMovementTiles.Add(tileToCheck.Idx, tileToCheck);
+                }
+            }
+            //else potential route is a longer path. Discard
+
+            return;
+
+        }
+        else // new path found
+        {
+            // is there anyone currently on the tile?
+            EncounterActorController onTile = tileToCheck.OnTile;
+            if (onTile != null)
+            {
+                bool isOnSameTeam = onTile.EncounterCharacter.Team == sideBeingMoved;
+                //is the unit friendly?
+                if (isOnSameTeam || !onTile.EncounterCharacter.IsAlive)
+                {
+                    //not a valid tile, but valid path
+                    mPotentialMapPaths.Add(tileToCheck, new TilePath(previousTile, mPotentialMapPaths[previousTile].Length + 1, false));
+                }
+                else //cant move through this tile. Discard
+                {
+                    return;
+                }
+            }
+            else
+            {
+                mPotentialMapPaths.Add(tileToCheck, new TilePath(previousTile, mPotentialMapPaths[previousTile].Length + 1, true));
+            }
+        }
+
+        if (mPotentialMapPaths[tileToCheck].Length <= maxDistance && mPotentialMapPaths[tileToCheck].IsValidEndTile)
+        {
+            mPotentialMovementTiles.Add(tileToCheck.Idx, tileToCheck);
+        }
+
+        stack.Add(new KeyValuePair<Tile, int>(tileToCheck, mPotentialMapPaths[tileToCheck].Length));
+    }
+
+    public void ResetMovementTiles()
+    {
+        mPotentialMapPaths.Clear();
+        mPotentialMovementTiles.Clear();
+    }
+}

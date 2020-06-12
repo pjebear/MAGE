@@ -27,23 +27,12 @@ class ExplorationMenuView
         // empty
     }
 
-    protected override void InitComponents()
+    protected override void InitChildren()
     {
         OutfiterBtn.Init((int)ComponentId.OutfiterBtn, this);
         SaveBtn.Init((int)ComponentId.SaveBtn, this);
         ExitBtn.Init((int)ComponentId.ExitBtn, this);
         RandomEncounter.Init((int)ComponentId.RandomEncounter, this);
-    }
-
-    protected override void InitSelf()
-    {
-        mId = (int)UIContainerId.ExplorationMenuView;
-        mContainerName = UIContainerId.ExplorationMenuView.ToString();
-    }
-
-    protected override IUIInteractionInfo ModifyInteractionInfo(IUIInteractionInfo interactionInfo)
-    {
-        return interactionInfo;
     }
 }
 

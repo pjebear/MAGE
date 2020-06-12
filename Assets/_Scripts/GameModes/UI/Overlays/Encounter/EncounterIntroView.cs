@@ -61,20 +61,9 @@ class EncounterIntroView : UIContainer
         RewardsText.Publish(new UIText.DataProvider(rewardsText));
     }
 
-    protected override void InitComponents()
+    protected override void InitChildren()
     {
         ContinueButton.Init((int)ComponentId.ContinueBtn, this);
-    }
-
-    protected override void InitSelf()
-    {
-        mId = (int)UIContainerId.EncounterIntroView;
-        mContainerName = tag;
-    }
-
-    protected override IUIInteractionInfo ModifyInteractionInfo(IUIInteractionInfo interactionInfo)
-    {
-        return interactionInfo;
     }
 }
 

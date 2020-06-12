@@ -30,6 +30,9 @@ enum TrackId
 
 class AudioManager : MonoBehaviour
 {
+    [SerializeField]
+    private bool mMuteMusic = false;
+
     private AssetLoader<AudioClip> mAudioLoader = null;
 
     private void Awake()
@@ -51,6 +54,8 @@ class AudioManager : MonoBehaviour
 
     public void FadeInTrack(AudioSource source, float fadeInDuration, float maxVolume = 1.0f)
     {
+        if (mMuteMusic) return;
+
         StartCoroutine(FadeAudio(source, fadeInDuration, 0, maxVolume));
     }
 

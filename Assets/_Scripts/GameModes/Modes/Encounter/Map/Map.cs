@@ -5,7 +5,7 @@ using UnityEngine;
 class Map
 {
     public TileIdx TileIdxOffset = new TileIdx(0,0);
-
+    
     public int Width = 1;
     public int Length = 1;
     public Dictionary<EncounterActorController, Tile> ActorPositionLookup;
@@ -142,5 +142,16 @@ class Map
         }
 
         return inRange;
+    }
+
+    public TileIdx TruncateIdx(TileIdx idx)
+    {
+        return new TileIdx(idx.y - TileIdxOffset.y, idx.x - TileIdxOffset.x);
+    }
+
+    public bool IsValidIdx(TileIdx idx)
+    {
+        TileIdx truncated = TruncateIdx(idx);
+        return !(truncated.x < 0 || truncated.x >= Width || truncated.y < 0 || truncated.y >= Length);
     }
 }

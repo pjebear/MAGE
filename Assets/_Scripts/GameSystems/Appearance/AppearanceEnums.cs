@@ -1,11 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-enum AppearanceType
+enum PortraitSpriteId
 {
     INVALID = -1,
 
-    Prefab,
+    // Custom Heads
+    Rheinhardt,
+    Asmund,
+    Lothar,
+    Maric,
+
+    // Professions
+    Footman,
+    Monk,
+
+    // NPCs
+    BanditLeader,
+    Bandit_0,
+    Vendor,
 
     NUM
 }
@@ -36,6 +49,7 @@ enum AppearancePrefabId
 
     // Armor
     Cloth_0,
+    Cloth_1,
     Leather_0,
     Chain_0,
     Plate_0,

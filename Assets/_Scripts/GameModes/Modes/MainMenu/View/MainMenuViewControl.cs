@@ -21,7 +21,7 @@ class MainMenuViewControl : UIContainerControl
         UIManager.Instance.RemoveOverlay(UIContainerId.MainMenuView);
     }
 
-    public void HandleComponentInteraction(int containerId, IUIInteractionInfo interactionInfo)
+    public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
     {
         switch (containerId)
         {
@@ -40,8 +40,8 @@ class MainMenuViewControl : UIContainerControl
 
                             case (int)MainMenuView.ComponentId.SaveFileBtns:
                                 {
-                                    UIButtonList.ButtonListInteractionInfo buttonListInteractionInfo = interactionInfo as UIButtonList.ButtonListInteractionInfo;
-                                    string saveFileName = SaveFiles[buttonListInteractionInfo.ButtonIdx];
+                                    ListInteractionInfo buttonListInteractionInfo = interactionInfo as ListInteractionInfo;
+                                    string saveFileName = SaveFiles[buttonListInteractionInfo.ListIdx];
 
                                     GameSystemModule.Instance.Load(saveFileName);
                                     GameModesModule.Instance.Explore();
@@ -59,7 +59,7 @@ class MainMenuViewControl : UIContainerControl
         return "MainMenuControl";
     }
 
-    public IDataProvider Publish()
+    public IDataProvider Publish(int containerId)
     {
         MainMenuView.DataProvider dataProvider = new MainMenuView.DataProvider();
 

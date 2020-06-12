@@ -3,23 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-class UIImage : UIInteractibleComponent
+class UIImage : UIComponentBase
 {
     public Image Image;
 
-    class DataProvider : IDataProvider
+    public void Publish(string assetName)
     {
-        public Optional<ImageAssetId> AssetId;
-
-        public DataProvider(Optional<ImageAssetId> assetId)
-        {
-            AssetId = assetId;
-        }
-
-        public override string ToString()
-        {
-            return "UIImageDP";
-        }
+        Image.sprite = UIManager.Instance.LoadSprite(assetName);
     }
 
     public override void Publish(IDataProvider dataProvider)

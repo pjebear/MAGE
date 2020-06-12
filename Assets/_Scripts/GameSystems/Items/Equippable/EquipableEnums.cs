@@ -54,7 +54,9 @@ enum ShieldType
 
 enum AccessoryType
 {
+    StatBonus,
 
+    NUM
 }
 
 enum EquippableId
@@ -89,5 +91,7 @@ enum EquippableId
     TowerShield_0,
 
     // Accessories
-    END = TowerShield_0
+    Relic,
+
+    END = Relic
 }

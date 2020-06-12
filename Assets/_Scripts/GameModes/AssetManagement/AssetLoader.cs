@@ -8,7 +8,6 @@ using UnityEngine;
 
 class AssetLoader<T> where T : UnityEngine.Object
 {
-    private bool mIsInitialized = false;
     private Dictionary<string, List<string>> mLoadedDirectories;
     private Dictionary<string, T> mAssetLookup;
     private string mBaseAssetPath;

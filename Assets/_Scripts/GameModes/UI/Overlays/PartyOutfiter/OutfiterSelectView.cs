@@ -43,23 +43,12 @@ class OutfiterSelectView : UIContainer
         SelectedCharacterText.Publish(new UIText.DataProvider(dp.character));
     }
 
-    protected override void InitComponents()
+    protected override void InitChildren()
     {
         CharacterSelectLeftBtn.Init((int)ComponentId.CharacterSelectLeftBtn, this);
         CharacterSelectRightBtn.Init((int)ComponentId.CharacterSelectRightBtn, this);
         SpecBtn.Init((int)ComponentId.SpecBtn, this);
         EquipBtn.Init((int)ComponentId.EquipBtn, this);
         ExitButton.Init((int)ComponentId.ExitBtn, this);
-    }
-
-    protected override void InitSelf()
-    {
-        mId = (int)UIContainerId.OutfiterSelectView;
-        mContainerName = UIContainerId.OutfiterSelectView.ToString();
-    }
-
-    protected override IUIInteractionInfo ModifyInteractionInfo(IUIInteractionInfo interactionInfo)
-    {
-        return interactionInfo;
     }
 }

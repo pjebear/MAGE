@@ -4,7 +4,6 @@ using System.Linq;
 using UnityEngine;
 
 class ActionDirector : MonoBehaviour
-    
 {
     private Timeline<ActionEvent> mActionTimeline;
     private ActionResult mActionResult;

@@ -27,6 +27,11 @@ class Attributes
         }
     }
 
+    public float this[PrimaryStat stat] { get { return this[new AttributeIndex(stat)]; } }
+    public float this[SecondaryStat stat] { get { return this[new AttributeIndex(stat)]; } }
+    public float this[TertiaryStat stat] { get { return this[new AttributeIndex(stat)]; } }
+    public float this[ResourceType resource] { get { return this[new AttributeIndex(resource)]; } }
+    public float this[AllignmentType allignmentType] { get { return this[new AttributeIndex(allignmentType)]; } }
     public float this[AttributeIndex index]
     {
         get
@@ -40,30 +45,6 @@ class Attributes
     public Attributes(Attribute[][] attributes)
     {
         mAttributes = attributes;
-    }
-
-    public Attributes(List<DB.DBAttributes> attributes)
-        : this(Attributes.Empty)
-    {
-        for (int attributeCategory = 0; attributeCategory < attributes.Count; ++attributeCategory)
-        {
-            Logger.Assert(attributes[attributeCategory].AttributeCategory == attributeCategory, LogTag.Character, "Attributes",
-                string.Format("Invalid attribute category for db attributes. Expected {0}, Got {1}",
-                ((AttributeCategory)attributeCategory).ToString(), attributes[attributeCategory].AttributeCategory.ToString()), LogLevel.Error);
-
-            Logger.Assert(attributes[attributeCategory].Attributes.Count == mAttributes[attributeCategory].Length, LogTag.Character, "Attributes",
-                string.Format("Invalid attribute length from db for attribute type {0}. Expected {1}, Got {2}", 
-                attributeCategory, mAttributes[attributeCategory].Length, attributes[attributeCategory].Attributes.Count), LogLevel.Error);
-
-            if (attributes[attributeCategory].Attributes.Count == mAttributes[attributeCategory].Length 
-                && attributes[attributeCategory].AttributeCategory == attributeCategory)
-            {
-                for (int attributeIdx = 0; attributeIdx < mAttributes[attributeCategory].Length; ++attributeIdx)
-                {
-                    mAttributes[attributeCategory][attributeIdx].Set(attributes[attributeCategory].Attributes[attributeIdx]);
-                }
-            }  
-        }
     }
 
     public Attributes(Attributes container)

@@ -16,7 +16,7 @@ enum EncounterType
 enum EncounterScenarioId
 {
     Random,
-    Debug,
+    Scenario,
 
     NUM
 }

@@ -26,7 +26,7 @@ class EncounterIntroViewControl
         UIManager.Instance.RemoveOverlay(UIContainerId.EncounterIntroView);
     }
 
-    public void HandleComponentInteraction(int containerId, IUIInteractionInfo interactionInfo)
+    public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
     {
        switch (containerId)
         {
@@ -47,7 +47,7 @@ class EncounterIntroViewControl
         return Tag;
     }
 
-    public IDataProvider Publish()
+    public IDataProvider Publish(int containerId)
     {
         EncounterIntroView.DataProvider dp = new EncounterIntroView.DataProvider();
 

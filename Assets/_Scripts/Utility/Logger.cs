@@ -15,6 +15,7 @@ public enum LogTag
     GameModes,
     GameSystems,
     Input,
+    Level,
     UI,
     
     NUM
@@ -44,7 +45,8 @@ static class Logger
 
     public static void Log(LogTag tag, string name, string message, LogLevel logLevel = LogLevel.Notify)
     {
-        if (!LogFilters[(int)tag])
+        // Still allow log messages that are above logLevel through the filter
+        if (!LogFilters[(int)tag] && logLevel < LogThreshold)
         {
             return;
         }

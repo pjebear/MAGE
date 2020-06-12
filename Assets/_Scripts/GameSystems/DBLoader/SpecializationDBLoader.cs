@@ -20,6 +20,7 @@ class SpecializationDBLoader
             dbSpecialization.Proficiencies = new List<int>()
             {
                 (int)ProficiencyType.OneHands,
+                (int)ProficiencyType.Accessorys,
                 (int)ProficiencyType.Sheild,
                 (int)ProficiencyType.Chain,
                 (int)ProficiencyType.Leather
@@ -68,8 +69,10 @@ class SpecializationDBLoader
             // Proficiencies
             dbSpecialization.Proficiencies = new List<int>()
             {
+                (int)ProficiencyType.Fists,
                 (int)ProficiencyType.Staff,
-                (int)ProficiencyType.Cloth
+                (int)ProficiencyType.Cloth,
+                (int)ProficiencyType.Accessorys
             };
 
             // Level up modifiers

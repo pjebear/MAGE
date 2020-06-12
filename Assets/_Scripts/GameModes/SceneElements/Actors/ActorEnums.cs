@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 enum BodyType
 {
-    DefaultBody,
+    Body_0,
 
     NUM
 }

@@ -94,24 +94,13 @@ class EncounterStatus : UIContainer
         }
     }
 
-    protected override void InitComponents()
+    protected override void InitChildren()
     {
         ContinueButton.Init((int)ComponentId.ContinueBtn, this);
         WinButton.Init((int)ComponentId.WinBtn, this);
         LoseButton.Init((int)ComponentId.LoseBtn, this);
 
         EncounterOverObj.gameObject.SetActive(false);
-    }
-
-    protected override void InitSelf()
-    {
-        mId = (int)UIContainerId.EncounterStatusView;
-        mContainerName = tag;
-    }
-
-    protected override IUIInteractionInfo ModifyInteractionInfo(IUIInteractionInfo interactionInfo)
-    {
-        return interactionInfo;
     }
 }
 

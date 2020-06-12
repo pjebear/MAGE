@@ -41,7 +41,7 @@ class PartyOutfiterViewControl : UIContainerControl
         UIManager.Instance.RemoveOverlay(UIContainerId.OutfiterSelectView);
     }
 
-    public void HandleComponentInteraction(int containerId, IUIInteractionInfo interactionInfo)
+    public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
     {
         switch (containerId)
         {
@@ -96,7 +96,7 @@ class PartyOutfiterViewControl : UIContainerControl
         return "PartyOutfiterViewControl";
     }
 
-    public IDataProvider Publish()
+    public IDataProvider Publish(int containerId)
     {
         OutfiterSelectView.DataProvider dataProvider = new OutfiterSelectView.DataProvider();
 
@@ -145,7 +145,7 @@ class PartyOutfiterViewControl : UIContainerControl
             GameObject.Destroy(mCharacterSpawnPoint.GetChild(0).gameObject);
         }
 
-        GameModesModule.ActorLoader.CreateActor(CharacterUtil.ActorParamsForCharacter(mOutfitingCharacter), mCharacterSpawnPoint);
+        GameModesModule.ActorLoader.CreateActor(DB.CharacterHelper.FromDB(mOutfitingCharacter.Appearance), mCharacterSpawnPoint);
     }
 }
 

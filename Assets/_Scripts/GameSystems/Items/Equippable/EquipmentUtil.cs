@@ -35,6 +35,11 @@ static class EquipmentUtil
         return proficiencyType;
     }
 
+    public static bool IsHeld(Equipment.Slot slot)
+    {
+        return (slot == Equipment.Slot.LeftHand || slot == Equipment.Slot.RightHand);
+    }
+
     public static bool FitsInSlot(EquippableCategory category, Equipment.Slot slot)
     {
         bool fits = false;
@@ -59,6 +64,11 @@ static class EquipmentUtil
         return fits;
     }
 
+    public static bool IsSlotEmpty(Equipment equipment, Equipment.Slot slot)
+    {
+        return equipment[slot] == null || IsHeld(slot) && equipment[slot].EquipmentId == EquippableId.Fists_0;
+    }
+
     public static ProficiencyType EquipableTagToProficiency(EquippableCategory category, int equipableType)
     {
         ProficiencyType proficiencyType = ProficiencyType.INVALID;
@@ -81,6 +91,7 @@ static class EquipmentUtil
             {
                 switch ((OneHandWeaponType)equipableType)
                 {
+                    case OneHandWeaponType.Fist:        proficiencyType = ProficiencyType.Fists;    break;
                     case OneHandWeaponType.Axe:         proficiencyType = ProficiencyType.Axe;      break;
                     case OneHandWeaponType.Sword:       proficiencyType = ProficiencyType.Sword;    break;
                     case OneHandWeaponType.Mace:        proficiencyType = ProficiencyType.Hammer;   break;
@@ -117,7 +128,7 @@ static class EquipmentUtil
             {
                 switch ((AccessoryType)equipableType)
                 {
-                   
+                    default: proficiencyType = ProficiencyType.Accessorys; break;
                 }
             }
             break;

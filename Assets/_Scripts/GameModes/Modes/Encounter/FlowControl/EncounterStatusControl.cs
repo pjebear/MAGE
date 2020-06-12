@@ -19,7 +19,7 @@ class EncounterStatusControl
         EncounterEventRouter.Instance.RegisterHandler(this);
     }
 
-    public void HandleComponentInteraction(int containerId, IUIInteractionInfo interactionInfo)
+    public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
     {
        switch (containerId)
         {
@@ -78,7 +78,7 @@ class EncounterStatusControl
         return Tag;
     }
 
-    public IDataProvider Publish()
+    public IDataProvider Publish(int containerId)
     {
         EncounterStatus.DataProvider dp = new EncounterStatus.DataProvider();
 

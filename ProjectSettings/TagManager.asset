@@ -16,8 +16,8 @@ TagManager:
   - Tile
   - Interactible
   - Terrain
-  - 
-  - 
+  - Actor
+  - Scenario
   - 
   - 
   - 

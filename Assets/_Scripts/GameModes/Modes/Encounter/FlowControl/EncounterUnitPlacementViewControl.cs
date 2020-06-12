@@ -11,7 +11,7 @@ class EncounterUnitPlacementViewControl
 {
     private string TAG = "EncounterUnitPlacementViewControl";
 
-    private List<DB.DBCharacter> mCharactersToPlace = new List<DB.DBCharacter>();
+    private List<EncounterCharacter> mCharactersToPlace = new List<EncounterCharacter>();
     private int mCharacterIdx = 0;
     private List<Tile> mPlacementTiles = new List<Tile>();
     private Dictionary<int, TileIdx> mPlacedCharacterLookup = new Dictionary<int, TileIdx>();
@@ -30,20 +30,41 @@ class EncounterUnitPlacementViewControl
 
     public void Start()
     {
-        mCharactersToPlace = DB.DBHelper.LoadCharactersOnTeam(TeamSide.AllyHuman);
-
-        foreach (TileIdx tileIdx in EncounterModule.Model.AllySpawnPoints)
+        foreach (DB.DBCharacter dBCharacter in DB.DBHelper.LoadCharactersOnTeam(TeamSide.AllyHuman))
         {
-            mPlacementTiles.Add(EncounterModule.Map[tileIdx]);
+            EncounterCharacter encounterCharacter = new EncounterCharacter(TeamSide.AllyHuman, DB.CharacterHelper.FromDB(dBCharacter));
+            if (EncounterModule.Model.EncounterContext.CharacterPositions.ContainsKey(encounterCharacter.Id))
+            {
+                TileIdx atTile = EncounterModule.Model.EncounterContext.CharacterPositions[encounterCharacter.Id];
+
+                EncounterModule.CharacterDirector.AddCharacter(encounterCharacter, atTile);
+                mPlacedCharacterLookup.Add(dBCharacter.Id, atTile);
+            }
+            else
+            {
+                mCharactersToPlace.Add(encounterCharacter);
+            }
         }
 
-        mTileSelectionStack.UpdateLayer(mAvailableTileLayer, mPlacementTiles);
-        mTileSelectionStack.DisplayTiles();
+        if (mCharactersToPlace.Count > 0)
+        {
+            foreach (TileIdx tileIdx in EncounterModule.Model.AllySpawnPoints)
+            {
+                mPlacementTiles.Add(EncounterModule.Map[tileIdx]);
+            }
 
-        EncounterModule.CameraDirector.FocusTarget(mPlacementTiles[0].transform);
+            mTileSelectionStack.UpdateLayer(mAvailableTileLayer, mPlacementTiles);
+            mTileSelectionStack.DisplayTiles();
 
-        InputManager.Instance.RegisterHandler(this, false);
-        UIManager.Instance.PostContainer(UIContainerId.EncounterUnitPlacementView, this);
+            EncounterModule.CameraDirector.FocusTarget(mPlacementTiles[0].transform);
+
+            InputManager.Instance.RegisterHandler(this, false);
+            UIManager.Instance.PostContainer(UIContainerId.EncounterUnitPlacementView, this);
+        }
+        else
+        {
+            EncounterEventRouter.Instance.NotifyEvent(new EncounterEvent(EncounterEvent.EventType.UnitPlacementComplete));
+        }
     }
 
     public void Cleanup()
@@ -53,7 +74,7 @@ class EncounterUnitPlacementViewControl
         UIManager.Instance.RemoveOverlay(UIContainerId.EncounterUnitPlacementView);
     }
 
-    public void HandleComponentInteraction(int containerId, IUIInteractionInfo interactionInfo)
+    public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
     {
         switch (containerId)
         {
@@ -83,7 +104,6 @@ class EncounterUnitPlacementViewControl
 
                         case (int)EncounterUnitPlacementView.ComponentId.ConfirmBtn:
                         {
-                            CommitCharactersToGame();
                             EncounterEventRouter.Instance.NotifyEvent(new EncounterEvent(EncounterEvent.EventType.UnitPlacementComplete));
                         }
                         break;
@@ -99,11 +119,11 @@ class EncounterUnitPlacementViewControl
         return TAG;
     }
 
-    public IDataProvider Publish()
+    public IDataProvider Publish(int containerId)
     {
         EncounterUnitPlacementView.DataProvider dataProvider = new EncounterUnitPlacementView.DataProvider();
 
-        dataProvider.character = mCharactersToPlace[mCharacterIdx].CharacterInfo.Name;
+        dataProvider.character = mCharactersToPlace[mCharacterIdx].Name;
 
         return dataProvider;
     }
@@ -224,7 +244,7 @@ class EncounterUnitPlacementViewControl
         {
             mPlacedCharacterLookup.Add(selectedCharacterId, tile.Idx);
 
-            EncounterModule.CharacterDirector.AddCharacter(mCharactersToPlace[mCharacterIdx], TeamSide.AllyHuman, tile.Idx);
+            EncounterModule.CharacterDirector.AddCharacter(mCharactersToPlace[mCharacterIdx], tile.Idx);
         }
     }
 

@@ -39,7 +39,7 @@ class EquipmentOutfiterViewControl
         UIManager.Instance.RemoveOverlay(UIContainerId.EquipmentOutfiterView);
     }
 
-    public void HandleComponentInteraction(int containerId, IUIInteractionInfo interactionInfo)
+    public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
     {
         switch (containerId)
         {
@@ -80,8 +80,8 @@ class EquipmentOutfiterViewControl
 
                         case (int)EquipmentOutfiterView.ComponentId.EquipableSelectionBtns:
                         {
-                            UIButtonList.ButtonListInteractionInfo buttonListInteractionInfo = interactionInfo as UIButtonList.ButtonListInteractionInfo;
-                            Equip(mEquipmentSelections[buttonListInteractionInfo.ButtonIdx]);
+                            ListInteractionInfo buttonListInteractionInfo = interactionInfo as ListInteractionInfo;
+                            Equip(mEquipmentSelections[buttonListInteractionInfo.ListIdx]);
                             mSelectedSlot = Equipment.Slot.INVALID;
                             UIManager.Instance.Publish(UIContainerId.EquipmentOutfiterView);
                         }
@@ -120,7 +120,7 @@ class EquipmentOutfiterViewControl
         mOnUpdatedCB();
     }
 
-    public IDataProvider Publish()
+    public IDataProvider Publish(int containerId)
     {
         EquipmentOutfiterView.DataProvider dataProvider = new EquipmentOutfiterView.DataProvider();
 

@@ -17,7 +17,9 @@ static class FileUtil
 
     public enum FileName
     {
+        AppearanceDB,
         CharacterDB,
+        ConversationDB,
         EquipmentDB,
         SpecializationDB,
         TeamDB,

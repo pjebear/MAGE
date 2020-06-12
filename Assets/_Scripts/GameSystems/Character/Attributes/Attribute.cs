@@ -8,7 +8,7 @@ using UnityEngine;
 class Attribute
 {
     // members
-    private float mValue;
+    private float mBase;
     private float mIncrement;
     private float mMultiplier;
 
@@ -17,7 +17,15 @@ class Attribute
     {
         get
         {
-            return (mValue + mIncrement) * mMultiplier;
+            return (mBase + mIncrement) * mMultiplier;
+        }
+    }
+
+    public float Base
+    {
+        get
+        {
+            return mBase;
         }
     }
     
@@ -46,7 +54,7 @@ class Attribute
 
     public void Set(float value)
     {
-        mValue = value;
+        mBase = value;
         mIncrement = 0;
         mMultiplier = 1;
     }
