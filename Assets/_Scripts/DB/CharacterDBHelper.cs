@@ -46,7 +46,7 @@ namespace DB
             character.Level = dbCharacter.CharacterInfo.Level;
             character.Experience = dbCharacter.CharacterInfo.Experience;
             character.Attributes = FromDB(dbCharacter.CharacterInfo.Attributes);
-            character.Actions.Add(ActionId.SwordAttack);
+            character.Actions.Add(ActionId.WeaponAttack);
 
             character.Appearance = FromDB(dbCharacter.Appearance);
 

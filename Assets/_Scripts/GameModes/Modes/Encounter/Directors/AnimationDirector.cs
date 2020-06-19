@@ -41,8 +41,11 @@ class AnimationDirector : MonoBehaviour
 
     public void RotateActorTowards(EncounterActorController actor, Transform target, float rotationDuration)
     {
-        mRotatingActors.Add(actor);
-        StartCoroutine(RotateActor(actor, target, rotationDuration));
+        
+        EncounterModule.MovementDirector.RotateActor(actor.ActorController, target, null);
+        
+        //mRotatingActors.Add(actor);
+        //StartCoroutine(RotateActor(actor, target, rotationDuration));
     }
 
     private IEnumerator RotateActor(EncounterActorController actor, Transform target, float rotationDuration)

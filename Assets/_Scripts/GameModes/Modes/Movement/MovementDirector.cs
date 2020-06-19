@@ -149,6 +149,7 @@ class MovementDirector : MonoBehaviour
     void GoalReached()
     {
         mCurrentGoalIdx++;
+        mBeingMoved.mRigidBody.angularVelocity = Vector3.zero;
         if (mCurrentGoalIdx < mRoute.Count)
         {
             StartCoroutine(RotateToNextGoal(mRoute[mCurrentGoalIdx].transform));

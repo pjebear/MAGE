@@ -159,7 +159,20 @@ class PartySystem
     #region DEBUG
     public void CreateDefaultParty()
     {
-        Party.CharacterIds.Add((int)StoryCharacterId.Rheinhardt);
+        // Default party members
+        DB.DBCharacter partyMember = CharacterUtil.CreateBaseDBCharacter(CharacterUtil.GetNextAvailableCreateCharacterId(), "Francious", BodyType.Body_0, PortraitSpriteId.Archer, SpecializationType.Archer);
+        DB.DBHelper.WriteCharacter(partyMember);
+        {
+            CharacterInfo character = DB.CharacterHelper.FromDB(partyMember);
+            CharacterUtil.EquipCharacter(character, ItemFactory.LoadEquipable(EquippableId.LeatherArmor_0), Equipment.Slot.Armor);
+            CharacterUtil.EquipCharacter(character, ItemFactory.LoadEquipable(EquippableId.Bow_0), Equipment.Slot.RightHand);
+
+            DB.DBHelper.WriteCharacter(DB.CharacterHelper.ToDB(character));
+            //Party.CharacterIds.Add(partyMember.Id);
+        }
+
+        
+        //Party.CharacterIds.Add((int)StoryCharacterId.Rheinhardt);
         Party.CharacterIds.Add((int)StoryCharacterId.Asmund);
 
         List<int> defaultInventory = new List<int>()

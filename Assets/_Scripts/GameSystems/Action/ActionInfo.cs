@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 abstract class ActionInfo
 {
+    public ActionId ActionId;
     public StateChange ActionCost;
     public ActionRange ActionRange;
     public ActionSource ActionSource;
@@ -14,8 +15,9 @@ abstract class ActionInfo
     public RangeInfo EffectRange;
     public bool IsSelfCast;
 
-    public ActionInfo(StateChange actionCost, ActionRange actionRange, ActionSource actionSource, int castSpeed, RangeInfo castRange, RangeInfo effectRange, bool isSelfCast)
+    public ActionInfo(ActionId actionId, StateChange actionCost, ActionRange actionRange, ActionSource actionSource, int castSpeed, RangeInfo castRange, RangeInfo effectRange, bool isSelfCast)
     {
+        ActionId = actionId;
         ActionCost = actionCost;
         ActionCost.Type = StateChangeType.ActionCost;
         CastSpeed = castSpeed;
@@ -29,30 +31,12 @@ abstract class ActionInfo
     public abstract StateChange GetTargetStateChange(EncounterCharacter caster, EncounterCharacter target);
 }
 
-class MeleeAttackInfo : ActionInfo
-{
-    public float DamageAmp = 1.0f;
-
-    public MeleeAttackInfo(RangeInfo castRange, RangeInfo effectRange) 
-        : base(new StateChange(StateChangeType.ActionCost, 0,0), ActionRange.Meele, ActionSource.Weapon,
-            ActionConstants.INSTANT_CAST_SPEED, castRange, effectRange, false)
-    {
-    }
-
-    public override StateChange GetTargetStateChange(EncounterCharacter caster, EncounterCharacter target)
-    {
-        AttributeIndex index = new AttributeIndex(AttributeCategory.Stat, (int)PrimaryStat.Might);
-        int damage = -(int)(caster.Attributes[index] * DamageAmp);
-        return new StateChange(StateChangeType.ActionTarget, damage, 0);
-    }
-}
-
 class WeaponActionInfoBase : ActionInfo
 {
     public HeldEquippable Weapon;
-
-    public WeaponActionInfoBase(HeldEquippable weapon, StateChange actionCost, ActionRange actionRange, int castSpeed, RangeInfo castRange, RangeInfo effectRange)
-        : base(actionCost, ActionRange.Meele, ActionSource.Weapon, castSpeed, castRange, effectRange, false)
+    public float DamageAmp = 1;
+    public WeaponActionInfoBase(ActionId actionId, HeldEquippable weapon, StateChange actionCost, ActionRange actionRange, int castSpeed, RangeInfo castRange, RangeInfo effectRange)
+        : base(actionId, actionCost, ActionRange.Meele, ActionSource.Weapon, castSpeed, castRange, effectRange, false)
     {
         Weapon = weapon;
     }
@@ -60,16 +44,19 @@ class WeaponActionInfoBase : ActionInfo
     protected float GetWeaponStrength(EncounterCharacter caster)
     {
         float damage = 0;
+
         foreach (AttributeScalar scalar in Weapon.EffectivenessScalars)
         {
             damage += caster.Attributes[scalar.AttributeIndex] * scalar.Scalar;
         }
+
         return damage;
     }
 
     public override StateChange GetTargetStateChange(EncounterCharacter caster, EncounterCharacter target)
     {
-        return new StateChange(StateChangeType.ActionTarget, -(int)GetWeaponStrength(caster), 0);
+        int damage = -(int)(GetWeaponStrength(caster) * DamageAmp);
+        return new StateChange(StateChangeType.ActionTarget, damage, 0);
     }
 }
 
@@ -78,7 +65,7 @@ class HealInfo : ActionInfo
     public float HealAmp = 1.0f;
 
     public HealInfo(int castSpeed, RangeInfo castRange, RangeInfo effectRange)
-        : base(new StateChange(StateChangeType.ActionCost, 0, 0), ActionRange.AOE, ActionSource.Cast, castSpeed, castRange, effectRange, false)
+        : base(ActionId.Heal, new StateChange(StateChangeType.ActionCost, 0, 0), ActionRange.AOE, ActionSource.Cast, castSpeed, castRange, effectRange, false)
     {
     }
 
@@ -93,7 +80,7 @@ class HealInfo : ActionInfo
 class ProtectionInfo : ActionInfo
 { 
     public ProtectionInfo(int castSpeed, RangeInfo castRange, RangeInfo effectRange)
-        : base(new StateChange(StateChangeType.ActionCost, 0, 0), ActionRange.AOE, ActionSource.Cast, castSpeed, castRange, effectRange, false)
+        : base(ActionId.Protection, new StateChange(StateChangeType.ActionCost, 0, 0), ActionRange.AOE, ActionSource.Cast, castSpeed, castRange, effectRange, false)
     {
     }
 
@@ -105,12 +92,28 @@ class ProtectionInfo : ActionInfo
     }
 }
 
+class FireballInfo : ActionInfo
+{
+    public float DamageAmp = 1;
+    public FireballInfo(int castSpeed, RangeInfo castRange, RangeInfo effectRange)
+        : base(ActionId.FireBall, new StateChange(StateChangeType.ActionCost, 0, -5), ActionRange.Projectile, ActionSource.Cast, castSpeed, castRange, effectRange, false)
+    {
+    }
+
+    public override StateChange GetTargetStateChange(EncounterCharacter caster, EncounterCharacter target)
+    {
+        AttributeIndex index = new AttributeIndex(AttributeCategory.Stat, (int)PrimaryStat.Magic);
+        int damage = -(int)(caster.Attributes[index] * DamageAmp);
+        return new StateChange(StateChangeType.ActionTarget, damage, 0);
+    }
+}
+
 class MightyBlowInfo : WeaponActionInfoBase
 {
     int damagePerStack = 3;
 
     public MightyBlowInfo(HeldEquippable weapon, StateChange actionCost, ActionRange actionRange, int castSpeed, RangeInfo castRange, RangeInfo effectRange)
-        : base(weapon, actionCost, actionRange, castSpeed, castRange, effectRange)
+        : base(ActionId.MightyBlow, weapon, actionCost, actionRange, castSpeed, castRange, effectRange)
     {
     }
 

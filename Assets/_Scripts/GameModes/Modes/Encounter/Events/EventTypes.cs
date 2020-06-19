@@ -95,17 +95,17 @@ class StateChangeEvent : ActionEvent
 
 class ProjectileSpawnEvent : ActionEvent
 {
-    public ProjectileDetails SpawnDetails;
+    public ProjectileSpawnParams SpawnParams;
 
-    public ProjectileSpawnEvent(ProjectileDetails details, Tile eventLocation, int startPointOffset)
-        : base(startPointOffset, details.FlightTimeFrames)
+    public ProjectileSpawnEvent(ProjectileSpawnParams spawnParams, int startPointOffset)
+        : base(startPointOffset, AnimationConstants.FRAMES_IN_DURATION(spawnParams.FlightDuration))
     {
-        SpawnDetails = details;
+        SpawnParams = spawnParams;
     }
 
     public override void Trigger()
     {
-       //ProjectileSpawner.Instance.SpawnProjectile(SpawnDetails);
+       EncounterModule.ProjectileDirector.SpawnProjectile(SpawnParams);
     }
 }
 

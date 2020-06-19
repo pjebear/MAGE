@@ -68,11 +68,32 @@ static class CharacterUtil
         dbCharacter.Appearance.PortraitSpriteId = (int)portraitSprite;
 
         // Attributes
-        dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)PrimaryStat.Might] = 20;
-        dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)PrimaryStat.Magic] = 20;
+        PrimaryStat primaryStat = PrimaryStat.Might;
+        switch (specialization)
+        {
+            case SpecializationType.Archer:
+            {
+                primaryStat = PrimaryStat.Finese;
+            }
+            break;
+            case SpecializationType.Footman:
+            {
+                primaryStat = PrimaryStat.Might;
+            }
+            break;
+            case SpecializationType.Monk:
+            {
+                primaryStat = PrimaryStat.Magic;
+            }
+            break;
+        }
+        dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)PrimaryStat.Might] = primaryStat == PrimaryStat.Might ? 20 : 10;
+        dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)PrimaryStat.Finese] = primaryStat == PrimaryStat.Finese ? 20 : 10;
+        dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)PrimaryStat.Magic] = primaryStat == PrimaryStat.Magic ? 20 : 10;
         dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)SecondaryStat.Fortitude] = 60;
         dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)SecondaryStat.Attunement] = 40;
         dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)TertiaryStat.Movement] = 5;
+        dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)TertiaryStat.Jump] = 2;
         dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)TertiaryStat.Speed] = 7;
         dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Resource].Attributes[(int)ResourceType.Health] = 20;
 

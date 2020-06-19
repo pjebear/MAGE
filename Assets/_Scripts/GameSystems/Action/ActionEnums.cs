@@ -92,10 +92,16 @@ enum ActionId
 {
     INVALID = -1,
 
+    BowAttack,
     SwordAttack,
     Heal,
     Protection,
     MightyBlow,
+
+    // spells
+    FireBall,
+
+    WeaponAttack,
 
     // Followup
     Riptose,

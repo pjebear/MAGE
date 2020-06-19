@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 class EquipmentDBLoader
 {
+    private static DB.DBRangeInfo MELEE_RANGE = new DB.DBRangeInfo() { Min = 1, Max = 1, Elevation = 1, Type = (int)AreaType.Circle };
+    private static DB.DBRangeInfo BOW_RANGE = new DB.DBRangeInfo() { Min = 3, Max = 6, Elevation = 7, Type = (int)AreaType.Expanding };
+
     public static void LoadDB()
     {
         #region Armor
@@ -86,6 +89,8 @@ class EquipmentDBLoader
             entry.Type = (int)OneHandWeaponType.Fist;
             entry.BlockChance = 0;
             entry.ParryChance = 0;
+            entry.ActionId = (int)ActionId.SwordAttack;
+            entry.Range = MELEE_RANGE;
 
             entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
             {
@@ -113,6 +118,9 @@ class EquipmentDBLoader
             entry.Type = (int)OneHandWeaponType.Axe;
             entry.BlockChance = 0;
             entry.ParryChance = 15;
+            entry.ActionId = (int)ActionId.SwordAttack;
+            entry.Range = MELEE_RANGE;
+
             entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
             {
                 new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Might, Scalar = .75f}
@@ -137,6 +145,9 @@ class EquipmentDBLoader
             entry.Type = (int)OneHandWeaponType.Mace;
             entry.BlockChance = 0;
             entry.ParryChance = 10;
+            entry.ActionId = (int)ActionId.SwordAttack;
+            entry.Range = MELEE_RANGE;
+
             entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
             {
                 new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Might, Scalar = 1}
@@ -160,6 +171,9 @@ class EquipmentDBLoader
             entry.Type = (int)OneHandWeaponType.Sword;
             entry.BlockChance = 0;
             entry.ParryChance = 20;
+            entry.ActionId = (int)ActionId.SwordAttack;
+            entry.Range = MELEE_RANGE;
+
             entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
             {
                 new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Might, Scalar = .5f}
@@ -179,6 +193,33 @@ class EquipmentDBLoader
 
         #region TwoHands
         // ---------------------------------------------------------------------------------------------------------------------------------------
+        { // Bow
+            DB.DBEquipment entry = new DB.DBEquipment();
+            entry.Id = (int)EquippableId.Bow_0;
+            entry.Category = (int)EquippableCategory.TwoHandWeapon;
+            entry.Type = (int)TwoHandWeaponType.Bow;
+            entry.BlockChance = 0;
+            entry.ParryChance = 0;
+            entry.ActionId = (int)ActionId.BowAttack;
+            entry.Range = BOW_RANGE;
+
+            entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
+            {
+                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Might, Scalar = .5f},
+                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Finese, Scalar = .5f}
+            };
+
+            entry.EquipBonuses = new List<DB.DBAttributeModifier>()
+            {
+                // empty
+            };
+
+            entry.SpriteId = (int)ItemIconSpriteId.INVALID;
+            entry.PrefabId = (int)AppearancePrefabId.Bow_0;
+
+            DB.DBHelper.WriteEquipment(entry.Id, entry);
+        }
+        // ---------------------------------------------------------------------------------------------------------------------------------------
         { // Staff
             DB.DBEquipment entry = new DB.DBEquipment();
             entry.Id = (int)EquippableId.Staff_0;
@@ -186,6 +227,9 @@ class EquipmentDBLoader
             entry.Type = (int)TwoHandWeaponType.Staff;
             entry.BlockChance = 0;
             entry.ParryChance = 0;
+            entry.ActionId = (int)ActionId.SwordAttack;
+            entry.Range = MELEE_RANGE;
+            
             entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
             {
                 new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Might, Scalar = .5f}
@@ -212,6 +256,7 @@ class EquipmentDBLoader
             entry.Type = (int)ShieldType.Shield;
             entry.BlockChance = 20;
             entry.ParryChance = 0;
+
             entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
             {
                // empty

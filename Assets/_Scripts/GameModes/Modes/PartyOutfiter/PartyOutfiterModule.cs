@@ -16,6 +16,16 @@ class PartyOutfiterModule : GameModeBase
         return GameModeType.PartyOutfiter;
     }
 
+    public override LevelId GetLevelId()
+    {
+        return GameModesModule.LevelManager.GetLoadedLevel().LevelId;
+    }
+
+    public override void Init()
+    {
+        
+    }
+
     protected override void CleanUpMode()
     {
         // nothing to cleanup

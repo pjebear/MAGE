@@ -29,10 +29,11 @@ class TurnFlowControl
     RangeInfo mHoverRangeInfo = RangeInfo.Unit;
 
     Tile mSelectedTile = null;
-    int mActionIdxSelected = 0;
+    ActionInfo mSelectedAction = null;
 
     // movement
     MovementTileCalculator mMovementCalculator;
+    ActionTileCalculator mActionCalculator;
 
     private EncounterCharacter mActor;
 
@@ -53,6 +54,7 @@ class TurnFlowControl
     {
         mSelectionStack = new TileSelectionStack();
         mMovementCalculator = new MovementTileCalculator(EncounterModule.Map);
+        mActionCalculator = new ActionTileCalculator(EncounterModule.Map);
         EncounterEventRouter.Instance.RegisterHandler(this);
     }
 
@@ -198,13 +200,12 @@ class TurnFlowControl
     {
         if (selectedAbility < mActor.Actions.Count)
         {
-            ActionInfo actionInfo = mActor.GetActionInfo(mActor.Actions[selectedAbility]);
+            mSelectedAction = mActor.GetActionInfo(mActor.Actions[selectedAbility]);
 
             mState = TurnState.SelectAbilityTarget;
-            mActionIdxSelected = selectedAbility;
-            mHoverRangeInfo = actionInfo.EffectRange;
+            mHoverRangeInfo = mSelectedAction.EffectRange;
 
-            mValidHoverSelections = EncounterModule.Map.GetTilesInRange(EncounterModule.CharacterDirector.GetActorPosition(mActor), actionInfo.CastRange);
+            mValidHoverSelections = mActionCalculator.CalculateTilesInRange(EncounterModule.CharacterDirector.GetActorPosition(mActor), mSelectedAction.CastRange);
             AddTileSelection(mValidHoverSelections, Tile.HighlightState.TargetSelect);
 
             AddTileSelection(new List<Tile>(), Tile.HighlightState.AOESelect);
@@ -228,7 +229,6 @@ class TurnFlowControl
         if (confirmed)
         {
             mActor.DEBUG_HasMoved = true;
-            EncounterModule.CharacterDirector.UpdateCharacterPosition(mActor, mSelectedTile.Idx);
 
             List<Tile> tilePath = mMovementCalculator.GetPathTo(mSelectedTile);
             List<Transform> route = new List<Transform>();
@@ -239,6 +239,7 @@ class TurnFlowControl
                 route, () =>
                 {
                     EncounterEventRouter.Instance.NotifyEvent(new EncounterEvent(EncounterEvent.EventType.MoveResolved));
+                    EncounterModule.CharacterDirector.UpdateCharacterPosition(mActor, mSelectedTile.Idx);
                 });
 
             OnActionSelected();
@@ -260,7 +261,7 @@ class TurnFlowControl
 
             ActionProposal actionProposal = new ActionProposal(
                 mActor,
-                mActor.Actions[mActionIdxSelected],
+                mSelectedAction.ActionId,
                 new TargetSelection(new Target(mSelectedTile.Idx), mHoverRangeInfo)); // GROSs
 
             OnActionSelected();
@@ -474,7 +475,7 @@ class TurnFlowControl
         List<Tile> hoverSelection = new List<Tile>();
         if (mHoveredTile != null)
         {
-            hoverSelection = EncounterModule.Map.GetTilesInRange(hoveredTile.Idx, mHoverRangeInfo);
+            hoverSelection = mActionCalculator.CalculateTilesInRange(hoveredTile.Idx, mHoverRangeInfo);
         }
 
         mSelectionStack.UpdateLayer(mSelectionStack.Count - 1, hoverSelection);
@@ -494,8 +495,6 @@ class TurnFlowControl
 
     private void OnActionSelected()
     {
-        mState = TurnState.NUM;
-        mActor = null;
         ClearTileSelections();
         InputManager.Instance.ReleaseHandler(this);
         UIManager.Instance.RemoveOverlay(UIContainerId.ActorActionsView);

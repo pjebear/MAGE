@@ -16,6 +16,16 @@ class MainMenuModule : GameModeBase
         return GameModeType.MainMenu;
     }
 
+    public override LevelId GetLevelId()
+    {
+        return LevelId.INVALID;
+    }
+
+    public override void Init()
+    {
+        
+    }
+
     protected override void CleanUpMode()
     {
         // nothing to cleanup

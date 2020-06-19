@@ -18,8 +18,16 @@ class ActionComposer
                 SwordAttackComposer.ComposeAction(proposal, out result, out timeline);
                 break;
 
+            case (ActionId.BowAttack):
+                ProjectileActionComposer.ComposeAction(proposal, out result, out timeline);
+                break;
+
             case (ActionId.Heal):
                 HealActionComposer.ComposeAction(proposal, out result, out timeline);
+                break;
+
+            case (ActionId.FireBall):
+                ProjectileSpellActionComposer.ComposeAction(proposal, out result, out timeline);
                 break;
 
             case (ActionId.Protection):

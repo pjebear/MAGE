@@ -12,6 +12,7 @@ enum PortraitSpriteId
     Maric,
 
     // Professions
+    Archer,
     Footman,
     Monk,
 

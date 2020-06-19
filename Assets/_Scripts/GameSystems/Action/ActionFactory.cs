@@ -10,13 +10,37 @@ class ActionFactory
     {
         ActionInfo info = null;
 
+        if (actionId == ActionId.WeaponAttack)
+        {
+            actionId = ((WeaponEquippable)character.Equipment[Equipment.Slot.RightHand]).Action;
+        }
+
         switch (actionId)
         {
-            case (ActionId.Riptose):
             case (ActionId.SwordAttack):
             {
+                WeaponEquippable weapon = (WeaponEquippable)character.Equipment[Equipment.Slot.RightHand];
+
+                StateChange cost = new StateChange(StateChangeType.ActionCost, 0, 0);
+                
+                info = new WeaponActionInfoBase(weapon.Action, weapon, cost, ActionRange.Meele, ActionConstants.INSTANT_CAST_SPEED, weapon.Range, RangeInfo.Unit);
+            }
+            break;
+
+            case (ActionId.BowAttack):
+            {
+                WeaponEquippable weapon = (WeaponEquippable)character.Equipment[Equipment.Slot.RightHand];
+
+                StateChange cost = new StateChange(StateChangeType.ActionCost, 0, 0);
+
+                info = new WeaponActionInfoBase(weapon.Action, weapon, cost, ActionRange.Projectile, ActionConstants.INSTANT_CAST_SPEED, weapon.Range, RangeInfo.Unit);
+            }
+            break;
+
+            case (ActionId.Riptose):
+            {
                 int minCastRange = 1, maxCastRange = 1, maxCastElevationChange = 1;
-                RangeInfo castRange = new RangeInfo(minCastRange, maxCastRange, maxCastElevationChange, AreaType.Cross);
+                RangeInfo castRange = new RangeInfo(minCastRange, maxCastRange, maxCastElevationChange, AreaType.Circle);
 
                 int minSelectionRange = 0, maxSelectionRange = 0, maxSelectionElevationChange = 0;
                 RangeInfo effectRange = new RangeInfo(minSelectionRange, maxSelectionRange, maxSelectionElevationChange, AreaType.Circle);
@@ -24,14 +48,14 @@ class ActionFactory
                 HeldEquippable weapon = (HeldEquippable)character.Equipment[Equipment.Slot.RightHand];
                 StateChange cost = new StateChange(StateChangeType.ActionCost, 0, 0);
 
-                info = new WeaponActionInfoBase(weapon, cost, ActionRange.Meele, ActionConstants.INSTANT_CAST_SPEED, castRange, effectRange);
+                info = new WeaponActionInfoBase(ActionId.Riptose, weapon, cost, ActionRange.Meele, ActionConstants.INSTANT_CAST_SPEED, castRange, effectRange);
             }
-                break;
+            break;
 
             case (ActionId.MightyBlow):
             {
                 int minCastRange = 1, maxCastRange = 1, maxCastElevationChange = 1;
-                RangeInfo castRange = new RangeInfo(minCastRange, maxCastRange, maxCastElevationChange, AreaType.Cross);
+                RangeInfo castRange = new RangeInfo(minCastRange, maxCastRange, maxCastElevationChange, AreaType.Circle);
 
                 int minSelectionRange = 0, maxSelectionRange = 0, maxSelectionElevationChange = 0;
                 RangeInfo effectRange = new RangeInfo(minSelectionRange, maxSelectionRange, maxSelectionElevationChange, AreaType.Circle);
@@ -70,6 +94,18 @@ class ActionFactory
                     info = new ProtectionInfo(ActionConstants.FAST_CAST_SPEED, castRange, effectRange);
                 }
                 break;
+
+            case (ActionId.FireBall):
+            {
+                int minCastRange = 1, maxCastRange = 4, maxCastElevationChange = 2;
+                RangeInfo castRange = new RangeInfo(minCastRange, maxCastRange, maxCastElevationChange, AreaType.Circle);
+
+                int minSelectionRange = 0, maxSelectionRange = 0, maxSelectionElevationChange = 0;
+                RangeInfo effectRange = new RangeInfo(minSelectionRange, maxSelectionRange, maxSelectionElevationChange, AreaType.Circle);
+
+                info = new FireballInfo(ActionConstants.FAST_CAST_SPEED, castRange, effectRange);
+            }
+            break;
 
             default:
                 throw new Exception();

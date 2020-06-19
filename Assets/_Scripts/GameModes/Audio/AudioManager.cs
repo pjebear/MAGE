@@ -10,7 +10,10 @@ enum SFXId
 {
     INVALID = -1,
 
+    ArrowDraw,
+    ArrowRelease,
     Cancel,
+    Cast,
     Confirm,
     Dodge,
     MaleDeath,

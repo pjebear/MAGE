@@ -10,7 +10,7 @@ class ActorController : MonoBehaviour
     [SerializeField]
     public float MoveSpeed = 5;
     [SerializeField]
-    public float RotSpeed = 150;
+    public float RotSpeed = 200;
     private Animator mAnimator;
 
     private Vector3 mMovementInput;

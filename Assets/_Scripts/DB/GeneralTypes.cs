@@ -7,6 +7,26 @@ using System.Threading.Tasks;
 namespace DB
 {
     [System.Serializable]
+    class DBRangeInfo : DBEntryBase
+    {
+        public int Min;
+        public int Max;
+        public int Elevation;
+        public int Type;
+
+        public override void Copy(DBEntryBase _from, DBEntryBase _to)
+        {
+            DBRangeInfo from = _from as DBRangeInfo;
+            DBRangeInfo to = _to as DBRangeInfo;
+
+            to.Min = from.Min;
+            to.Max = from.Max;
+            to.Elevation = from.Elevation;
+            to.Type = from.Type;
+        }
+    }
+
+    [System.Serializable]
     class DBAttributeModifier : DBEntryBase
     {
         public int AttributeCategory;

@@ -16,7 +16,10 @@ class Map
     {
         get
         {
-            return Tiles[idx.y - TileIdxOffset.y, idx.x - TileIdxOffset.x];
+            int x = idx.x - TileIdxOffset.x;
+            int z = idx.y - TileIdxOffset.y;
+            Logger.Assert(x >= 0 && x < Width && z >= 0 && z < Length, LogTag.GameModes, "Map", string.Format("Inavlid TileIdx{0}{1}", idx.x, idx.y));
+            return Tiles[z, x];
         }
         set
         {
@@ -37,7 +40,7 @@ class Map
         Width = (int)tileRange.x + 1;
         Length = (int)tileRange.y + 1;
 
-        Tiles = new Tile[Width, Length];
+        Tiles = new Tile[Length, Width];
 
         for (int z = 0; z < Length; z++)
         {
@@ -68,7 +71,7 @@ class Map
         // Clear previous tile
         if (ActorPositionLookup.ContainsKey(actor))
         {
-            ActorPositionLookup[actor].OnTile = null;
+            ActorPositionLookup[actor].ClearOnTile();
         }
 
         Debug.Assert(this[tileIdx].OnTile == null);
@@ -118,7 +121,7 @@ class Map
             1, 
             (int)actor.Attributes[AttributeCategory.Stat][(int)TertiaryStat.Movement].Value, 
             (int)actor.Attributes[AttributeCategory.Stat][(int)TertiaryStat.Jump].Value, 
-            AreaType.Cross);
+            AreaType.Circle);
 
         List<Tile> movementTiles = GetTilesInRange(actorsTile.Idx, movementRangeInfo);
 
@@ -144,9 +147,19 @@ class Map
         return inRange;
     }
 
+    public Tile Relative(TileIdx tileIdx)
+    {
+        return Tiles[tileIdx.y, tileIdx.x];
+    }
+
+    public Tile Absolute(TileIdx tileIdx)
+    {
+        return this[TruncateIdx(tileIdx)];
+    }
+
     public TileIdx TruncateIdx(TileIdx idx)
     {
-        return new TileIdx(idx.y - TileIdxOffset.y, idx.x - TileIdxOffset.x);
+        return new TileIdx(idx.x - TileIdxOffset.x, idx.y - TileIdxOffset.y);
     }
 
     public bool IsValidIdx(TileIdx idx)

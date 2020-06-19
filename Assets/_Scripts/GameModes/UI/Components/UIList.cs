@@ -35,17 +35,18 @@ class UIList : UIContainer
                 AddElement();
             }
         }
-        else if (Elements.Count > numElements)
+        
+        for (int i = 0; i < Elements.Count; ++i)
         {
-            for (int i = numElements; i < Elements.Count; ++i)
+            if (i < numElements)
+            {
+                Elements[i].Publish(dp.Elements[i]);
+                Elements[i].gameObject.SetActive(true);
+            }
+            else
             {
                 Elements[i].gameObject.SetActive(false);
             }
-        }
-        
-        for (int i = 0; i < numElements; ++i)
-        {
-            Elements[i].Publish(dp.Elements[i]);
         }
     }
 

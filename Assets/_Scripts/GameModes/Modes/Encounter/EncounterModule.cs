@@ -24,6 +24,7 @@ class EncounterModule : GameModeBase
     public static ActionDirector ActionDirector;
     public static MovementDirector MovementDirector;
     public static CameraDirector CameraDirector;
+    public static ProjectileDirector ProjectileDirector;
     public static EffectSpawner EffectSpawner;
     public static Map Map;
 
@@ -33,9 +34,11 @@ class EncounterModule : GameModeBase
     public static MasterFlowControl MasterFlowControl;
     public static TurnFlowControl TurnFlowControl;
 
-    private void Awake()
+    public override void Init()
     {
         Model = new EncounterModel();
+
+        Model.EncounterContext = GameSystemModule.Instance.GetEncounterContext();
 
         CharacterDirector = GetComponent<CharacterDirector>();
         AnimationDirector = GetComponent<AnimationDirector>();
@@ -43,6 +46,7 @@ class EncounterModule : GameModeBase
         MovementDirector = GetComponent<MovementDirector>();
         AnimationDirector = GetComponent<AnimationDirector>();
         AuraDirector = GetComponent<AuraDirector>();
+        ProjectileDirector = GetComponent<ProjectileDirector>();
         EffectSpawner = GetComponentInChildren<EffectSpawner>();
 
         IntroViewControl = GetComponent<EncounterIntroViewControl>();
@@ -52,19 +56,24 @@ class EncounterModule : GameModeBase
         MasterFlowControl = GetComponent<MasterFlowControl>();
     }
 
+    public override LevelId GetLevelId()
+    {
+        return Model.EncounterContext.LevelId;
+    }
+
     protected override void SetupMode()
     {
         Logger.Log(LogTag.GameModes, TAG, "::SetupMode()");
 
-        Model.EncounterContext = GameSystemModule.Instance.GetEncounterContext();
-
-        
-
-
         // Level Manager:
         //TODO: Load level if needed
-        Level level = GameModesModule.LevelManager.GetLoadedLevel();
 
+        Level level = GameModesModule.LevelManager.GetLoadedLevel();
+        if (level == null || level.LevelId != Model.EncounterContext.LevelId)
+        {
+            GameModesModule.LevelManager.LoadLevel(Model.EncounterContext.LevelId);
+            level = GameModesModule.LevelManager.GetLoadedLevel();
+        }
         Map = new Map();
         Map.Initialize(level.Tiles, Model.EncounterContext.BottomLeft, Model.EncounterContext.TopRight);
 
@@ -81,6 +90,7 @@ class EncounterModule : GameModeBase
         AuraDirector.Init();
         ActionDirector.Init();
         MovementDirector.Init();
+        ProjectileDirector.Init();
         MasterFlowControl.Init();
         TurnFlowControl.Init();
         StatusViewControl.Init();

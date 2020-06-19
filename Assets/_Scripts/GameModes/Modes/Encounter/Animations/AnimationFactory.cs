@@ -16,6 +16,7 @@ static class AnimationFactory
                 numFrames = 60;
                 syncFrame = 30;
                 break;
+
             case AnimationId.Cast:
                 numFrames = 90;
                 syncFrame = 60;

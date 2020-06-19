@@ -18,7 +18,7 @@ class ExplorationModule : GameModeBase
 
     public MovementDirector MovementDirector;
 
-    protected override void SetupMode()
+    public override void Init()
     {
         Instance = this;
 
@@ -26,20 +26,16 @@ class ExplorationModule : GameModeBase
         mInteractionFlowControl = GetComponent<InteractionFlowControl>();
         mScenarioFlowControl = GetComponent<ScenarioFlowControl>();
         MovementDirector = gameObject.AddComponent<MovementDirector>();
-        LevelId levelToExplore = GameSystemModule.Instance.GetCurrentLevel();
+    }
 
+    public override LevelId GetLevelId()
+    {
+        return GameSystemModule.Instance.GetCurrentLevel();
+    }
+
+    protected override void SetupMode()
+    {
         Level level = GameModesModule.LevelManager.GetLoadedLevel();
-        if (level != null && level.LevelId != levelToExplore)
-        {
-            GameModesModule.LevelManager.UnloadLevel();
-            level = null;
-        }
-
-        if (level == null)
-        {
-            GameModesModule.LevelManager.LoadLevel(levelToExplore);
-            level = GameModesModule.LevelManager.GetLoadedLevel();
-        }
 
         level.ScenarioContainer.gameObject.SetActive(true);
         level.NPCContainer.gameObject.SetActive(true);

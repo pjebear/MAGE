@@ -8,10 +8,11 @@ using UnityEngine;
 enum AreaType
 {
     Circle,
-    Ring,
-    Cone,
-    Line,
-    Cross,
+    //Ring,
+    //Cone,
+    //Line,
+    //Cross,
+    Expanding,
 
     NUM
 }

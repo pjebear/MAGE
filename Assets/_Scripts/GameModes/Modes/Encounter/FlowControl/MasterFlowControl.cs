@@ -274,7 +274,15 @@ class MasterFlowControl
         switch (eventInfo.Type)
         {
             case EncounterEvent.EventType.EncounterBegun:
-                EncounterModule.IntroViewControl.Show();
+                if (ModulesContainer.Container.DebugEncounter)
+                {
+                    ProgressState();
+                    EncounterModule.UnitPlacementViewControl.Start();
+                }
+                else
+                {
+                    EncounterModule.IntroViewControl.Show();
+                }
                 break;
 
             case EncounterEvent.EventType.IntroComplete:

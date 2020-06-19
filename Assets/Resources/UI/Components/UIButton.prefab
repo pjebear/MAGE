@@ -49,9 +49,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f20254229542f50479fc33fab47002db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mId: -1
   IsClickable: 1
+  ClickSFX: 4
   IsHoverable: 1
+  HoverSFX: 7
+  mId: -1
   Button: {fileID: 2660977789418977858}
   Text: {fileID: 1279252043328286378}
 --- !u!1 &6526302002156805366

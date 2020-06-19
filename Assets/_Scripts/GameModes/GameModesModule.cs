@@ -78,6 +78,20 @@ class GameModesModule
         Logger.Assert(mLoadedGameMode == null, LogTag.GameModes, TAG, "::NotifyGameModeLoaded() - GameMode already loaded", LogLevel.Warning);
 
         mLoadedGameMode = gameMode;
+        mLoadedGameMode.Init();
+        LevelId levelId = mLoadedGameMode.GetLevelId();
+        if (levelId != LevelId.INVALID)
+        {
+            Level loadedLevel = LevelManager.GetLoadedLevel();
+            if (loadedLevel == null || loadedLevel.LevelId != levelId)
+            {
+                LevelManager.LoadLevel(levelId);
+            }
+        }
+        else
+        {
+            LevelManager.UnloadLevel();
+        }
 
         GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.UISetup_Begin));
     }
@@ -130,6 +144,11 @@ class GameModesModule
     }
 
     // Debug
+    public void MainMenu()
+    {
+        TransitionTo(GameModeType.MainMenu);
+    }
+
     public void Explore()
     {
         TransitionTo(GameModeType.Exploration);

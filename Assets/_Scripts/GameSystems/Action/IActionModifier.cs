@@ -16,7 +16,7 @@ class SwordActionModifier : IActionModifier
 
     public void Modify(ActionInfo info)
     {
-        MeleeAttackInfo meleeAttackInfo = (MeleeAttackInfo)info;
+        WeaponActionInfoBase meleeAttackInfo = (WeaponActionInfoBase)info;
 
         meleeAttackInfo.DamageAmp += .5f;
     }

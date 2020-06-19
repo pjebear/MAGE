@@ -28,8 +28,11 @@ class LevelManager : MonoBehaviour
 
     public void UnloadLevel()
     {
-        Destroy(mLoadedLevel.gameObject);
-        mLoadedLevel = null;
+        if (mLoadedLevel != null)
+        {
+            Destroy(mLoadedLevel.gameObject);
+            mLoadedLevel = null;
+        }
     }
 
     public void NotifyLevelLoaded(Level level)

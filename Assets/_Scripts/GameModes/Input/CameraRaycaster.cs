@@ -11,10 +11,10 @@ class CameraRaycaster : MonoBehaviour
     private const int TILE_LAYER = 8;
     private const int INTERACTABLE_LAYER = 9;
 
-    private int[] mRayCastLayers =
+    private List<RayCastLayer> mRayCastLayers = new List<RayCastLayer>()
     {
-        TILE_LAYER,
-        INTERACTABLE_LAYER
+        RayCastLayer.Tile,
+        RayCastLayer.Interactible,
     };
 
     [SerializeField]
@@ -43,15 +43,7 @@ class CameraRaycaster : MonoBehaviour
         {
             Ray ray = Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
 
-            for (int layerIndex = 0; layerIndex < mRayCastLayers.Length; ++layerIndex)
-            {
-                int layerMask = 1 << mRayCastLayers[layerIndex];
-                if (Physics.Raycast(ray, out mHit, mMaxCastRange, layerMask))
-                {
-                    hovered = mHit.collider.gameObject;
-                    break; // return the first hit in the priority search
-                }
-            }
+            hovered = RaycastUtil.GetObjectHitByRay(ray, mMaxCastRange, mRayCastLayers);
         }
 
         if (mHovered != hovered)

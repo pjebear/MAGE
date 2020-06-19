@@ -7,12 +7,14 @@ public enum AnimationId
 {
     INVALID = -1,
 
+    BowDraw,
     SwordSwing,
     Block,
     Dodge,
     Parry,
     Hurt,
     Cast,
+    ChargeUp,
     Faint,
     Revive,
    

@@ -52,3 +52,15 @@ class HeldEquippable : Equippable
     }
 }
 
+class WeaponEquippable : HeldEquippable
+{
+    public ActionId Action;
+    public RangeInfo Range;
+    public WeaponEquippable(ActionId actionId, RangeInfo range, int numHandsRequired, float blockChance, float parryChance, List<AttributeScalar> effectivenessScalars, EquippableId id, EquippableTag tag, AppearancePrefabId prefabId, ItemIconSpriteId spriteId, List<AttributeModifier> modifiers)
+       : base(numHandsRequired, blockChance, parryChance, effectivenessScalars, id, tag, prefabId, spriteId, modifiers)
+    {
+        Action = actionId;
+        Range = range;
+    }
+}
+

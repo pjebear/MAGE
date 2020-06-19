@@ -9,6 +9,52 @@ class SpecializationDBLoader
 {
     public static void LoadDB()
     {
+        // Archer
+        {
+            DB.DBSpecialization dbSpecialization = new DB.DBSpecialization();
+
+            // Type
+            dbSpecialization.SpecializationType = (int)SpecializationType.Archer;
+
+            // Proficiencies
+            dbSpecialization.Proficiencies = new List<int>()
+            {
+                (int)ProficiencyType.Fists,
+                (int)ProficiencyType.Dagger,
+                (int)ProficiencyType.Bow,
+                (int)ProficiencyType.Accessorys,
+                (int)ProficiencyType.Leather
+            };
+
+            // Level up modifiers
+            dbSpecialization.LevelUpModifiers = new List<DB.DBAttribute>()
+            {
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Might, Value = 5},
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Finese, Value = 2},
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Magic, Value = 1},
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)SecondaryStat.Fortitude, Value = 5},
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)SecondaryStat.Attunement, Value = 1}
+            };
+
+            // talents
+            dbSpecialization.TalentIds = new List<int>()
+            {
+            };
+
+            // Listeners
+            dbSpecialization.ResponseListenerIds = new List<int>()
+            {
+            };
+
+            // Actions
+            dbSpecialization.ActionIds = new List<int>()
+            {
+            };
+                // none
+
+            DB.DBHelper.WriteSpecialization(dbSpecialization);
+        }
+
         // Footman
         {
             DB.DBSpecialization dbSpecialization = new DB.DBSpecialization();
@@ -54,7 +100,7 @@ class SpecializationDBLoader
             {
                 (int)ActionId.MightyBlow
             };
-                // none
+            // none
 
             DB.DBHelper.WriteSpecialization(dbSpecialization);
         }
@@ -96,7 +142,9 @@ class SpecializationDBLoader
             dbSpecialization.ActionIds = new List<int>()
             {
                 (int)ActionId.Heal,
-                (int)ActionId.Protection
+                (int)ActionId.Protection,
+                (int)ActionId.FireBall
+
             };
 
             DB.DBHelper.WriteSpecialization(dbSpecialization);

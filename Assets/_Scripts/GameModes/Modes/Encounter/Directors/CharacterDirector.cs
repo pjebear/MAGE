@@ -52,8 +52,7 @@ class CharacterDirector : MonoBehaviour
 
         actorController.BillboardEmitter = Instantiate(BillboardEmitterPrefab, actorController.transform);
         actorController.ActorController = actorController.gameObject.AddComponent<ActorController>();
-        actorController.ActorController.MoveSpeed = 2;
-        actorController.ActorController.RotSpeed = 60;
+        actorController.ActorController.MoveSpeed = 3;
         CharacterActorLookup.Add(character, actorController);
         actorController.EncounterCharacter = character;
 

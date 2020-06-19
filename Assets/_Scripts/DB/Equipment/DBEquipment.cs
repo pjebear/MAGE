@@ -9,14 +9,16 @@ namespace DB
     [System.Serializable]
     class DBEquipment : DBEntryBase
     {
-        public int Id;
-        public string Name;
-        public int Category;
-        public int Type;
-        public float BlockChance;
-        public float ParryChance;
-        public int SpriteId;
-        public int PrefabId;
+        public int Id = -1;
+        public string Name = "INVALID";
+        public int Category = -1;
+        public int Type = -1;
+        public float BlockChance = 0;
+        public float ParryChance = 0;
+        public int SpriteId = -1;
+        public int PrefabId = -1;
+        public int ActionId = -1;
+        public DBRangeInfo Range = new DBRangeInfo();
         public List<DBAttributeScalar> EffectivenessScalars = new List<DBAttributeScalar>();
         public List<DBAttributeModifier> EquipBonuses = new List<DBAttributeModifier>();
         
@@ -33,6 +35,8 @@ namespace DB
             to.ParryChance = from.ParryChance;
             to.SpriteId = from.SpriteId;
             to.PrefabId = from.PrefabId;
+            to.ActionId = from.ActionId;
+            to.Range.Set(from.Range);
 
             to.EffectivenessScalars.Clear();
             foreach (DBAttributeScalar scalar in from.EffectivenessScalars)

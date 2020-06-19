@@ -27,33 +27,34 @@ abstract class GameModeBase
         switch (eventInfo.Type)
         {
             case GameModeEvent.EventType.ModeSetup_Begin:
-                {
-                    SetupMode();
-                }
-                break;
+            {
+                SetupMode();
+            }
+            break;
 
             case GameModeEvent.EventType.ModeTakedown_Begin:
-                {
+            {
                     
-                    CleanUpMode();
-                }
-                break;
+                CleanUpMode();
+            }
+            break;
 
             case GameModeEvent.EventType.ModeStart:
-                {
-                    StartMode();
-                }
-                break;
+            {
+                StartMode();
+            }
+            break;
 
             case GameModeEvent.EventType.ModeEnd:
-                {
-
-                    EndMode();
-                }
-                break;
+            {
+                EndMode();
+            }
+            break;
         }
     }
 
+    public abstract void Init();
+    public abstract LevelId GetLevelId();
     protected abstract void SetupMode();
     protected abstract void StartMode();
     protected abstract void EndMode();

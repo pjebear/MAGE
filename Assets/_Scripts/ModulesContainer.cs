@@ -4,13 +4,13 @@ using UnityEngine;
 
 class ModulesContainer : MonoBehaviour
 {
-    static ModulesContainer Container = null;
+    public static ModulesContainer Container = null;
 
     public GameModesModule GameModesModule;
     public GameSystemModule GameSystemModule;
     public UIManager UIManager;
 
-    public bool DebugRun = false;
+    public bool DebugEncounter = false;
 
     private void Awake()
     {
@@ -27,13 +27,18 @@ class ModulesContainer : MonoBehaviour
             GameModesModule.InitModule();
             UIManager.Initialize();
 
-            if (DebugRun)
+            if (DebugEncounter)
             {
                 GameSystemModule.Instance.PrepareNewGame();
                 EncounterCreateParams encounterCreateParams = new EncounterCreateParams();
-                encounterCreateParams.BottomLeft = new TileIdx(0, 0);
-                encounterCreateParams.TopRight = new TileIdx(6, 6);
+                encounterCreateParams.BottomLeft = new TileIdx(12, 4);
+                encounterCreateParams.TopRight = new TileIdx(24, 8);
                 GameSystemModule.Instance.PrepareEncounter(encounterCreateParams);
+                GameModesModule.Encounter();
+            }
+            else
+            {
+                GameModesModule.MainMenu();
             }
         }
     }

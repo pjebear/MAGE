@@ -14,8 +14,8 @@ enum SpecializationType
     NONE = -2,
     Base = -1,
 
+    Archer,
     Footman,
-    //Archer,
     Monk,
     //Adept,
     ////Footman Tree

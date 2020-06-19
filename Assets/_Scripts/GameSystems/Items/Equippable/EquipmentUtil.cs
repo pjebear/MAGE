@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 
 static class EquipmentUtil
-{
+{ 
     public static bool HasProficiencyFor(Specialization specialization, Equippable equippable)
     {
         bool hasProficiency 
