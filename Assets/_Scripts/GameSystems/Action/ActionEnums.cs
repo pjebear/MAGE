@@ -12,6 +12,18 @@ static class ActionConstants
     public static readonly int SLOW_CAST_SPEED = 24;
 }
 
+enum CastSpeed
+{
+    INVALID = -1,
+
+    Instant,
+    Slow,
+    Normal,
+    Fast,
+
+    NUM
+}
+
 enum ActionMedium
 {
     Physical,
@@ -92,8 +104,6 @@ enum ActionId
 {
     INVALID = -1,
 
-    BowAttack,
-    SwordAttack,
     Heal,
     Protection,
     MightyBlow,

@@ -47,7 +47,7 @@ class DebugAnimationRig : MonoBehaviour
             
     }
 
-    public void DisplayAnimation(AnimationPlaceholder animation)
+    public void DisplayAnimation(AnimationInfo animation)
     {
         gameObject.SetActive(true);
         Animation = ConverPlaceholderToAnimation(animation);
@@ -56,7 +56,7 @@ class DebugAnimationRig : MonoBehaviour
         AnimationName.text = Animation.Name;
     }
 
-    private RuntimeAnimation ConverPlaceholderToAnimation(AnimationPlaceholder animationPh)
+    private RuntimeAnimation ConverPlaceholderToAnimation(AnimationInfo animationPh)
     {
         RuntimeAnimation animation = new RuntimeAnimation();
         animation.Name = animationPh.TriggerName;

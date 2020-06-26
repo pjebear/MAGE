@@ -33,7 +33,7 @@ class ActionDirector : MonoBehaviour
 
     public void DirectAction(ActionProposal proposal)
     {
-        int castSpeed = proposal.Owner.GetActionInfo(proposal.Action).CastSpeed;
+        int castSpeed = ActionUtil.GetTurnCountForCastSpeed(proposal.Owner.GetActionInfo(proposal.Action).CastSpeed);
 
         if (castSpeed != ActionConstants.INSTANT_CAST_SPEED)
         {

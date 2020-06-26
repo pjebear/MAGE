@@ -19,7 +19,7 @@ class EffectSpawner : MonoBehaviour
         
     }
 
-    public void SpawnEffect(EffectPlaceholder effectInfo)
+    public void SpawnEffect(EffectInfo effectInfo)
     {
         Effect effect = null;
         switch (effectInfo.EffectType)

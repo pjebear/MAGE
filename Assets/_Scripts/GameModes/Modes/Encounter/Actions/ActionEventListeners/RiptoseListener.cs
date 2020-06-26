@@ -24,7 +24,7 @@ class RiptoseListener : ActionResponderBase
                 && result.InteractionResultType == InteractionResultType.Parry)
             {
                 TargetSelection selection = new TargetSelection(new Target(actionResult.Initiator));
-                EncounterModule.ActionDirector.DirectAction(new ActionProposal(Listener, ActionId.SwordAttack, selection));
+                EncounterModule.ActionDirector.DirectAction(new ActionProposal(Listener, ActionId.WeaponAttack, selection));
             }
         }
     }

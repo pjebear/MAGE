@@ -20,6 +20,7 @@ class GameSystem
         ConversationDBLoader.LoadDB();
         SpecializationDBLoader.LoadDB();
         EquipmentDBLoader.LoadDB();
+        ActionDBLoader.LoadDB();
 
         CharacterDBLoader.LoadDB();
     }

@@ -7,13 +7,15 @@ using UnityEngine;
 
 enum EffectType
 {
+    INVALID,
+
     Heal,
     Fire, 
 
     NUM
 }
 
-class EffectPlaceholder : ISynchronizable
+class EffectInfo : ISynchronizable
 {
     public SyncPoint Parent { get; set; }
     public int NumFrames { get; private set; }
@@ -22,7 +24,7 @@ class EffectPlaceholder : ISynchronizable
     public EffectType EffectType;
     public Transform SpawnParent;
 
-    public EffectPlaceholder(EffectType effectType, Transform parent, int syncedFrame, int numFrames)
+    public EffectInfo(EffectType effectType, Transform parent, int syncedFrame, int numFrames)
     {
         EffectType = effectType;
         NumFrames = numFrames;

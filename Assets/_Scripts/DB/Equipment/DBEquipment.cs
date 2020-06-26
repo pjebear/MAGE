@@ -17,7 +17,8 @@ namespace DB
         public float ParryChance = 0;
         public int SpriteId = -1;
         public int PrefabId = -1;
-        public int ActionId = -1;
+        public int AnimationId = -1;
+        public int ProjectileId = -1;
         public DBRangeInfo Range = new DBRangeInfo();
         public List<DBAttributeScalar> EffectivenessScalars = new List<DBAttributeScalar>();
         public List<DBAttributeModifier> EquipBonuses = new List<DBAttributeModifier>();
@@ -35,7 +36,8 @@ namespace DB
             to.ParryChance = from.ParryChance;
             to.SpriteId = from.SpriteId;
             to.PrefabId = from.PrefabId;
-            to.ActionId = from.ActionId;
+            to.AnimationId = from.AnimationId;
+            to.ProjectileId = from.ProjectileId;
             to.Range.Set(from.Range);
 
             to.EffectivenessScalars.Clear();

@@ -53,15 +53,17 @@ static class ItemFactory
             case EquippableCategory.Shield:
             {
                 int numHandsRequired = category == EquippableCategory.TwoHandWeapon ? 2 : 1;
+                AnimationId animationId = (AnimationId)dbEquipment.AnimationId;
+                ProjectileId projectileId = (ProjectileId)dbEquipment.ProjectileId;
+
                 if (category == EquippableCategory.Shield)
                 {
                     equippable = new HeldEquippable(numHandsRequired, dbEquipment.BlockChance, dbEquipment.ParryChance, proficiencyBonuses, id, tag, appearancePrefabId, spriteId, equipBonuses);
                 }
                 else
                 {
-                    ActionId actionId = (ActionId)dbEquipment.ActionId;
                     RangeInfo range = new RangeInfo(dbEquipment.Range.Min, dbEquipment.Range.Max, dbEquipment.Range.Elevation, (AreaType)dbEquipment.Range.Type);
-                    equippable = new WeaponEquippable(actionId, range, numHandsRequired, dbEquipment.BlockChance, dbEquipment.ParryChance, proficiencyBonuses, id, tag, appearancePrefabId, spriteId, equipBonuses);
+                    equippable = new WeaponEquippable(animationId, projectileId, range, numHandsRequired, dbEquipment.BlockChance, dbEquipment.ParryChance, proficiencyBonuses, id, tag, appearancePrefabId, spriteId, equipBonuses);
                 }
             }
             break;

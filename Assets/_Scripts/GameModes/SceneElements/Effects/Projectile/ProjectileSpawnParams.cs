@@ -15,6 +15,8 @@ enum ProjectilePathType
 
 enum ProjectileId
 {
+    INVALID = -1,
+
     Arrow,
     FireBall,
 

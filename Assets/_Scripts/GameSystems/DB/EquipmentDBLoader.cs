@@ -19,8 +19,6 @@ class EquipmentDBLoader
             entry.Id = (int)EquippableId.ClothArmor_0;
             entry.Category = (int)EquippableCategory.Armor;
             entry.Type = (int)ArmorType.Cloth;
-            entry.BlockChance = 0;
-            entry.ParryChance = 0;
             entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
             {
                 // empty
@@ -41,8 +39,6 @@ class EquipmentDBLoader
             entry.Id = (int)EquippableId.LeatherArmor_0;
             entry.Category = (int)EquippableCategory.Armor;
             entry.Type = (int)ArmorType.Leather;
-            entry.BlockChance = 0;
-            entry.ParryChance = 0;
             entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
             {
                 // empty
@@ -63,8 +59,6 @@ class EquipmentDBLoader
             entry.Id = (int)EquippableId.ChainArmor_0;
             entry.Category = (int)EquippableCategory.Armor;
             entry.Type = (int)ArmorType.Chain;
-            entry.BlockChance = 0;
-            entry.ParryChance = 0;
             entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
             {
                 // empty
@@ -89,8 +83,9 @@ class EquipmentDBLoader
             entry.Type = (int)OneHandWeaponType.Fist;
             entry.BlockChance = 0;
             entry.ParryChance = 0;
-            entry.ActionId = (int)ActionId.SwordAttack;
+            entry.AnimationId = (int)AnimationId.SwordSwing;
             entry.Range = MELEE_RANGE;
+            
 
             entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
             {
@@ -118,7 +113,7 @@ class EquipmentDBLoader
             entry.Type = (int)OneHandWeaponType.Axe;
             entry.BlockChance = 0;
             entry.ParryChance = 15;
-            entry.ActionId = (int)ActionId.SwordAttack;
+            entry.AnimationId = (int)AnimationId.SwordSwing;
             entry.Range = MELEE_RANGE;
 
             entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
@@ -145,7 +140,7 @@ class EquipmentDBLoader
             entry.Type = (int)OneHandWeaponType.Mace;
             entry.BlockChance = 0;
             entry.ParryChance = 10;
-            entry.ActionId = (int)ActionId.SwordAttack;
+            entry.AnimationId = (int)AnimationId.SwordSwing;
             entry.Range = MELEE_RANGE;
 
             entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
@@ -171,7 +166,7 @@ class EquipmentDBLoader
             entry.Type = (int)OneHandWeaponType.Sword;
             entry.BlockChance = 0;
             entry.ParryChance = 20;
-            entry.ActionId = (int)ActionId.SwordAttack;
+            entry.AnimationId = (int)AnimationId.SwordSwing;
             entry.Range = MELEE_RANGE;
 
             entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
@@ -200,7 +195,8 @@ class EquipmentDBLoader
             entry.Type = (int)TwoHandWeaponType.Bow;
             entry.BlockChance = 0;
             entry.ParryChance = 0;
-            entry.ActionId = (int)ActionId.BowAttack;
+            entry.AnimationId = (int)AnimationId.BowDraw;
+            entry.ProjectileId = (int)ProjectileId.Arrow;
             entry.Range = BOW_RANGE;
 
             entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
@@ -227,7 +223,7 @@ class EquipmentDBLoader
             entry.Type = (int)TwoHandWeaponType.Staff;
             entry.BlockChance = 0;
             entry.ParryChance = 0;
-            entry.ActionId = (int)ActionId.SwordAttack;
+            entry.AnimationId = (int)AnimationId.SwordSwing;
             entry.Range = MELEE_RANGE;
             
             entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()

@@ -33,7 +33,7 @@ class AnimationDirector : MonoBehaviour
         }
     }
 
-    public void AnimateActor(EncounterActorController actor, AnimationPlaceholder animation)
+    public void AnimateActor(EncounterActorController actor, AnimationInfo animation)
     {
         mActorToAnimationRigLookup[actor].DisplayAnimation(animation);
         actor.Actor.Animator.SetTrigger(animation.TriggerName);

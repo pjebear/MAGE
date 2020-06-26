@@ -79,18 +79,20 @@ class AnimationConstants
     //}
 }
 
-class AnimationPlaceholder : ISynchronizable
+class AnimationInfo : ISynchronizable
 {
     public SyncPoint Parent { get; set; }
     public int NumFrames { get; private set; }
     public int SyncedFrame { get; private set; }
     public string TriggerName;
+    public SFXId SFXId = SFXId.INVALID;
 
-    public AnimationPlaceholder(string triggerName, int numFrames, int syncedFrame)
+    public AnimationInfo(string triggerName, int numFrames, int syncedFrame, SFXId sFXId)
     {
         NumFrames = numFrames;
         SyncedFrame = syncedFrame;
         TriggerName = triggerName;
+        SFXId = sFXId;
     }
 }
 

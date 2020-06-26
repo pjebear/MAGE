@@ -139,5 +139,17 @@ static class EquipmentUtil
 
         return proficiencyType;
     }
+
+    public static float GetHeldEquippableEffectiveness(EncounterCharacter caster, HeldEquippable held)
+    {
+        float effectiveness = 0;
+
+        foreach (AttributeScalar scalar in held.EffectivenessScalars)
+        {
+            effectiveness += caster.Attributes[scalar.AttributeIndex] * scalar.Scalar;
+        }
+
+        return effectiveness;
+    }
 }
 

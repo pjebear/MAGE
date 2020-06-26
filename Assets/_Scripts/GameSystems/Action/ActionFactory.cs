@@ -6,104 +6,66 @@ using System.Threading.Tasks;
 
 class ActionFactory
 {
+    static StateChange NO_COST = new StateChange(StateChangeType.ActionCost, 0, 0);
+    static StateChange SPELL_COST = new StateChange(StateChangeType.ActionCost, 0, -6);
+
     public static ActionInfo CreateActionInfoFromId(ActionId actionId, EncounterCharacter character)
     {
+        DB.DBAction dbAction = DB.DBHelper.LoadAction((int)actionId);
         ActionInfo info = null;
-
-        if (actionId == ActionId.WeaponAttack)
-        {
-            actionId = ((WeaponEquippable)character.Equipment[Equipment.Slot.RightHand]).Action;
-        }
 
         switch (actionId)
         {
-            case (ActionId.SwordAttack):
+            case (ActionId.Heal):
             {
-                WeaponEquippable weapon = (WeaponEquippable)character.Equipment[Equipment.Slot.RightHand];
-
-                StateChange cost = new StateChange(StateChangeType.ActionCost, 0, 0);
-                
-                info = new WeaponActionInfoBase(weapon.Action, weapon, cost, ActionRange.Meele, ActionConstants.INSTANT_CAST_SPEED, weapon.Range, RangeInfo.Unit);
+                info = new HealInfo();
+                ActionUtil.FromDB(dbAction, info);
+                info.ActionCost = SPELL_COST;
             }
             break;
 
-            case (ActionId.BowAttack):
+            case (ActionId.FireBall):
             {
-                WeaponEquippable weapon = (WeaponEquippable)character.Equipment[Equipment.Slot.RightHand];
-
-                StateChange cost = new StateChange(StateChangeType.ActionCost, 0, 0);
-
-                info = new WeaponActionInfoBase(weapon.Action, weapon, cost, ActionRange.Projectile, ActionConstants.INSTANT_CAST_SPEED, weapon.Range, RangeInfo.Unit);
+                info = new FireballInfo();
+                ActionUtil.FromDB(dbAction, info);
+                info.ActionCost = SPELL_COST;
             }
             break;
 
-            case (ActionId.Riptose):
+            case (ActionId.Protection):
             {
-                int minCastRange = 1, maxCastRange = 1, maxCastElevationChange = 1;
-                RangeInfo castRange = new RangeInfo(minCastRange, maxCastRange, maxCastElevationChange, AreaType.Circle);
-
-                int minSelectionRange = 0, maxSelectionRange = 0, maxSelectionElevationChange = 0;
-                RangeInfo effectRange = new RangeInfo(minSelectionRange, maxSelectionRange, maxSelectionElevationChange, AreaType.Circle);
-
-                HeldEquippable weapon = (HeldEquippable)character.Equipment[Equipment.Slot.RightHand];
-                StateChange cost = new StateChange(StateChangeType.ActionCost, 0, 0);
-
-                info = new WeaponActionInfoBase(ActionId.Riptose, weapon, cost, ActionRange.Meele, ActionConstants.INSTANT_CAST_SPEED, castRange, effectRange);
+                info = new ProtectionInfo();
+                ActionUtil.FromDB(dbAction, info);
+                info.ActionCost = SPELL_COST;
             }
             break;
 
             case (ActionId.MightyBlow):
             {
-                int minCastRange = 1, maxCastRange = 1, maxCastElevationChange = 1;
-                RangeInfo castRange = new RangeInfo(minCastRange, maxCastRange, maxCastElevationChange, AreaType.Circle);
-
-                int minSelectionRange = 0, maxSelectionRange = 0, maxSelectionElevationChange = 0;
-                RangeInfo effectRange = new RangeInfo(minSelectionRange, maxSelectionRange, maxSelectionElevationChange, AreaType.Circle);
-
-                HeldEquippable weapon = (HeldEquippable)character.Equipment[Equipment.Slot.RightHand];
-
                 int bloodScentCount = character.GetStackCountForStatus(StatusEffectType.BloodScent, character);
                 StatusEffect bloodScentCost = StatusEffectFactory.CheckoutStatusEffect(StatusEffectType.BloodScent, character, bloodScentCount);
-                StateChange cost = new StateChange(StateChangeType.ActionCost, 0, 0, new List<StatusEffect>() { bloodScentCost } );
+                StateChange cost = new StateChange(StateChangeType.ActionCost, 0, 0, new List<StatusEffect>() { bloodScentCost });
 
-                info = new MightyBlowInfo((HeldEquippable)character.Equipment[Equipment.Slot.RightHand], 
-                    cost, ActionRange.Meele, ActionConstants.INSTANT_CAST_SPEED, castRange, effectRange);
+                info = new MightyBlowInfo();
+                ActionUtil.FromDB(dbAction, info);
+                info.ActionCost = cost;
             }
             break;
 
-            case (ActionId.Heal):
-                {
-                    int minCastRange = 0, maxCastRange = 2, maxCastElevationChange = 1;
-                    RangeInfo castRange = new RangeInfo(minCastRange, maxCastRange, maxCastElevationChange, AreaType.Circle);
-
-                    int minSelectionRange = 0, maxSelectionRange = 1, maxSelectionElevationChange = 0;
-                    RangeInfo effectRange = new RangeInfo(minSelectionRange, maxSelectionRange, maxSelectionElevationChange, AreaType.Circle);
-
-                    info = new HealInfo(ActionConstants.FAST_CAST_SPEED, castRange, effectRange);
-                }
-                break;
-
-            case (ActionId.Protection):
-                {
-                    int minCastRange = 0, maxCastRange = 2, maxCastElevationChange = 1;
-                    RangeInfo castRange = new RangeInfo(minCastRange, maxCastRange, maxCastElevationChange, AreaType.Circle);
-
-                    int minSelectionRange = 0, maxSelectionRange = 1, maxSelectionElevationChange = 0;
-                    RangeInfo effectRange = new RangeInfo(minSelectionRange, maxSelectionRange, maxSelectionElevationChange, AreaType.Circle);
-
-                    info = new ProtectionInfo(ActionConstants.FAST_CAST_SPEED, castRange, effectRange);
-                }
-                break;
-
-            case (ActionId.FireBall):
+            case (ActionId.WeaponAttack):
             {
-                int minCastRange = 1, maxCastRange = 4, maxCastElevationChange = 2;
-                RangeInfo castRange = new RangeInfo(minCastRange, maxCastRange, maxCastElevationChange, AreaType.Circle);
+                WeaponEquippable weapon = (WeaponEquippable)character.Equipment[Equipment.Slot.RightHand];
 
-                int minSelectionRange = 0, maxSelectionRange = 0, maxSelectionElevationChange = 0;
-                RangeInfo effectRange = new RangeInfo(minSelectionRange, maxSelectionRange, maxSelectionElevationChange, AreaType.Circle);
+                StateChange cost = new StateChange(StateChangeType.ActionCost, 0, 0);
+                ActionRange actionRange = weapon.ProjectileInfo.ProjectileId == ProjectileId.INVALID ? ActionRange.Meele : ActionRange.Projectile;
 
-                info = new FireballInfo(ActionConstants.FAST_CAST_SPEED, castRange, effectRange);
+                info = new WeaponActionInfoBase();
+                ActionUtil.FromDB(dbAction, info);
+                info.ActionCost = NO_COST;
+                info.ProjectileInfo = weapon.ProjectileInfo;
+                info.AnimationInfo = weapon.AnimationInfo;
+                info.CastRange = weapon.Range;
+                info.ActionRange = weapon.ProjectileInfo.ProjectileId == ProjectileId.INVALID ? ActionRange.Meele : ActionRange.Projectile;
             }
             break;
 

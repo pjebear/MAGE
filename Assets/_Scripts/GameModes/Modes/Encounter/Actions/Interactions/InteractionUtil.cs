@@ -7,6 +7,27 @@ using UnityEngine;
 
 static class InteractionUtil
 {
+    public static InteractionResultType GetOwnerResultTypeFromResults(List<InteractionResult> results)
+    {
+        InteractionResultType interactionResultType = InteractionResultType.Miss;
+
+        foreach (InteractionResult interactionResult in results)
+        {
+            if (interactionResult.InteractionResultType == InteractionResultType.Hit)
+            {
+                interactionResultType = InteractionResultType.Hit;
+                break;
+            }
+            else
+            {
+                // don't break. Keep trying to find a hit
+                interactionResultType = InteractionResultType.Partial;
+            }
+        }
+        
+        return interactionResultType;
+    }
+
     public static RelativeOrientation GetRelativeOrientation(Transform relative, Transform to)
     {
         RelativeOrientation relativeOrientation = RelativeOrientation.Behind;

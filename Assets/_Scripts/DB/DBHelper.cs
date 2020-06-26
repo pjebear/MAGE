@@ -10,6 +10,7 @@ namespace DB
     {
         static string TAG = "DBHelper";
 
+        static ActionDB ActionDB = new ActionDB();
         static AppearnaceDB AppearanceDB = new AppearnaceDB();
         static CharacterDB CharacterDB = new CharacterDB();
         static ConversationDB ConversationDB = new ConversationDB();
@@ -18,6 +19,17 @@ namespace DB
         static TeamDB TeamDB = new TeamDB();
 
         static int sNewCharacterId;
+        #region ActionDB
+        public static void WriteAction(int actionId, DB.DBAction action)
+        {
+            ActionDB.Write(actionId, action);
+        }
+
+        public static DB.DBAction LoadAction(int actionId)
+        {
+            return ActionDB.Load(actionId);
+        }
+        #endregion
 
         #region CharacterDB
         public static DBCharacter WriteNewCharacter(DBCharacter character, TeamSide teamSide = TeamSide.INVALID)

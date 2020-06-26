@@ -2,7 +2,7 @@
 
 static class AnimationFactory
 {
-    public static AnimationPlaceholder CheckoutAnimation(AnimationId id)
+    public static AnimationInfo CheckoutAnimation(AnimationId id)
     {
         int numFrames = 60;
         int syncFrame = 30;
@@ -23,6 +23,19 @@ static class AnimationFactory
                 break;
         }
 
-        return new AnimationPlaceholder(id.ToString(), numFrames, syncFrame);
+        SFXId sFXId = SFXId.INVALID;
+        switch (id)
+        {
+            case AnimationId.SwordSwing:    sFXId = SFXId.WeaponSwing; break;
+            case AnimationId.Block:         sFXId = SFXId.ShieldBlock; break;
+            case AnimationId.Dodge:         sFXId = SFXId.Dodge; break;
+            case AnimationId.Parry:         sFXId = SFXId.Parry; break;
+            case AnimationId.Hurt:          sFXId = SFXId.Slash; break;
+            case AnimationId.BowDraw:       sFXId = SFXId.ArrowDraw; break;
+            case AnimationId.Cast:          sFXId = SFXId.Cast; break;
+            case AnimationId.Faint:         sFXId = SFXId.MaleDeath; break;
+        }
+
+        return new AnimationInfo(id.ToString(), numFrames, syncFrame, sFXId);
     }
 }

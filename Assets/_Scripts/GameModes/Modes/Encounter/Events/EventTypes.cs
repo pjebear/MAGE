@@ -32,11 +32,11 @@ abstract class ActionEvent : ITimelineEvent
 
 class AnimationEvent : ActionEvent
 {
-    public EncounterCharacter BeingAnimated;
-    public AnimationPlaceholder Animation;
+    public EncounterActorController BeingAnimated;
+    public AnimationInfo Animation;
     public Transform FocusTarget;
 
-    public AnimationEvent(EncounterCharacter actor, AnimationPlaceholder animation, int startPointOffset, Transform focusTarget)
+    public AnimationEvent(EncounterActorController actor, AnimationInfo animation, int startPointOffset, Transform focusTarget)
         : base(startPointOffset, animation.NumFrames)
     {
         BeingAnimated = actor;
@@ -46,13 +46,12 @@ class AnimationEvent : ActionEvent
 
     public override void Trigger()
     {
-        EncounterActorController controller = EncounterModule.CharacterDirector.GetController(BeingAnimated);
-        EncounterModule.AnimationDirector.AnimateActor(controller, Animation);
+        EncounterModule.AnimationDirector.AnimateActor(BeingAnimated, Animation);
 
         if (FocusTarget != null)
         {
             float rotationDuration = AnimationConstants.SECONDS_PER_FRAME * Animation.SyncedFrame;
-            EncounterModule.AnimationDirector.RotateActorTowards(controller, FocusTarget, rotationDuration);
+            EncounterModule.AnimationDirector.RotateActorTowards(BeingAnimated, FocusTarget, rotationDuration);
         }
     }
 }
@@ -111,9 +110,9 @@ class ProjectileSpawnEvent : ActionEvent
 
 class EffectSpawnEvent : ActionEvent
 {
-    public EffectPlaceholder Info;
+    public EffectInfo Info;
 
-    public EffectSpawnEvent(EffectPlaceholder info, int startPointOffset)
+    public EffectSpawnEvent(EffectInfo info, int startPointOffset)
         : base(startPointOffset, info.NumFrames)
     {
         Info = info;
@@ -122,5 +121,69 @@ class EffectSpawnEvent : ActionEvent
     public override void Trigger()
     {
         EncounterModule.EffectSpawner.SpawnEffect(Info);
+    }
+}
+
+abstract class TimelineBlock<T> : ISynchronizable where T : ITimelineEvent
+{
+    public List<T> Events = new List<T>();
+
+    public SyncPoint Parent { get; set; }
+
+    public int NumFrames { get; set; }
+
+    public int SyncedFrame { get; set; }
+
+    public void SyncronizeTo(AllignmentPosition allignPos, int offset, ISynchronizable syncronizeTo, AllignmentPosition toAllign)
+    {
+        Parent = SyncPoint.Syncronize(syncronizeTo, toAllign, this, allignPos, offset);
+        int startOffset = Parent.GetAbsoluteOffset(AllignmentPosition.Start);
+        foreach (T timelineEvent in Events)
+        {
+            timelineEvent.StartPointOffset += startOffset;
+        }
+    }
+}
+
+class ActorInteractionBlock : TimelineBlock<ActionEvent>
+{
+    public ActorInteractionBlock(EncounterActorController actorController, AnimationId animationId, Transform lookAt, StateChange stateChange)
+    {
+        AnimationInfo animation = AnimationFactory.CheckoutAnimation(animationId);
+        NumFrames = animation.NumFrames;
+        SyncedFrame = animation.SyncedFrame;
+
+        Events.Add(new AnimationEvent(actorController, animation, 0, lookAt));
+        if (animation.SFXId != SFXId.INVALID)
+        {
+            Events.Add(new AudioEvent(actorController.Actor.AudioSource, animation.SFXId, 0));
+        }
+        if (stateChange.Type != StateChangeType.None)
+        {
+            Events.Add(new StateChangeEvent(actorController.EncounterCharacter, stateChange, animation.SyncedFrame));
+        }
+    }
+}
+
+class ProjectileSpawnBlock : TimelineBlock<ActionEvent>
+{
+    public ProjectileSpawnBlock(ProjectileSpawnParams spawnParams)
+    {
+        NumFrames = AnimationConstants.FRAMES_IN_DURATION(spawnParams.FlightDuration);
+        SyncedFrame = NumFrames;
+
+        Events.Add(new ProjectileSpawnEvent(spawnParams, 0));
+    }
+}
+
+class EffectSpawnBlock : TimelineBlock<ActionEvent>
+{
+    public EffectSpawnBlock(EffectType effectType, Transform location)
+    {
+        EffectInfo effectInfo = EffectFactory.GetEffectPlaceholder(effectType, location);
+        NumFrames = effectInfo.NumFrames;
+        SyncedFrame = effectInfo.SyncedFrame;
+
+        Events.Add(new EffectSpawnEvent(effectInfo, 0));
     }
 }

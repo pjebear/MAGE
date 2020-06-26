@@ -12,13 +12,13 @@ interface IActionModifier : IModifier<ActionInfo>
 
 class SwordActionModifier : IActionModifier
 {
-    public ActionId ActionId { get { return ActionId.SwordAttack; } }
+    public ActionId ActionId { get { return ActionId.WeaponAttack; } }
 
     public void Modify(ActionInfo info)
     {
         WeaponActionInfoBase meleeAttackInfo = (WeaponActionInfoBase)info;
 
-        meleeAttackInfo.DamageAmp += .5f;
+        meleeAttackInfo.Effectiveness += .5f;
     }
 }
 
@@ -36,6 +36,6 @@ class HealModifier : IActionModifier
     {
         HealInfo healInfo = (HealInfo)info;
 
-        healInfo.HealAmp += HealAmp;
+        healInfo.Effectiveness += HealAmp;
     }
 }

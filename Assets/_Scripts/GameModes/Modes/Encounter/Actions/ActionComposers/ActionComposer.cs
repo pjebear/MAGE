@@ -10,29 +10,38 @@ class ActionComposer
 
     public static void ComposeAction(ActionProposal proposal, out ActionResult result, out Timeline<ActionEvent> timeline)
     {
+        ActionInfo actionInfo = proposal.Owner.GetActionInfo(proposal.Action);
+        EncounterActorController ownerController = EncounterModule.CharacterDirector.CharacterActorLookup[proposal.Owner];
+        TargetSelection targetSelection = proposal.ActionTarget;
+
         switch (proposal.Action)
         {
+            case (ActionId.WeaponAttack):
+            {
+                if (actionInfo.ProjectileInfo.ProjectileId == ProjectileId.INVALID)
+                {
+                    MeleeActionComposer.ComposeAction(ownerController, actionInfo, targetSelection, out result, out timeline);
+                }
+                else
+                {
+                    ProjectileActionComposer.ComposeAction(ownerController, actionInfo, targetSelection, out result, out timeline);
+                }
+            }
+            break;
             case (ActionId.MightyBlow):
-            case (ActionId.SwordAttack):
             case (ActionId.Riptose):
-                SwordAttackComposer.ComposeAction(proposal, out result, out timeline);
-                break;
-
-            case (ActionId.BowAttack):
-                ProjectileActionComposer.ComposeAction(proposal, out result, out timeline);
-                break;
-
-            case (ActionId.Heal):
-                HealActionComposer.ComposeAction(proposal, out result, out timeline);
-                break;
-
-            case (ActionId.FireBall):
-                ProjectileSpellActionComposer.ComposeAction(proposal, out result, out timeline);
+                MeleeActionComposer.ComposeAction(ownerController, actionInfo, targetSelection, out result, out timeline);
                 break;
 
             case (ActionId.Protection):
-                ProtectionActionComposer.ComposeAction(proposal, out result, out timeline);
+            case (ActionId.Heal):
+                EffectActionComposer.ComposeAction(ownerController, actionInfo, targetSelection, out result, out timeline);
                 break;
+
+            case (ActionId.FireBall):
+                ProjectileActionComposer.ComposeAction(ownerController, actionInfo, targetSelection, out result, out timeline);
+                break;
+
             default:
                 Debug.Assert(false);
                 result = null;

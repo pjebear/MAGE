@@ -21,7 +21,7 @@ namespace Tests.Projectiles
 
         public void Run()
         {
-            var param = ProjectileDirector.GenerateSpawnParams(Shooter, Target, ProjectilePathType.Arc, ProjectileId.Arrow);
+            var param = ProjectileUtil.GenerateSpawnParams(Shooter, Target, ProjectilePathType.Arc, ProjectileId.Arrow);
             ProjectileDirector.SpawnProjectile(param);
         }
     }

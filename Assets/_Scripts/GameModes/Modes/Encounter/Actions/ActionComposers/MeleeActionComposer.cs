@@ -5,42 +5,20 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class ProjectileActionComposer
+class MeleeActionComposer
 {
     public static void ComposeAction(EncounterActorController ownerController, ActionInfo actionInfo, TargetSelection targetSelection, out ActionResult result, out Timeline<ActionEvent> timeline)
     {
         List<ActionEvent> timelineEvents = new List<ActionEvent>();
         ActorInteractionBlock casterAnimationBlock = new ActorInteractionBlock(
-            ownerController,
+            ownerController, 
             actionInfo.AnimationInfo.AnimationId,
-            targetSelection.FocalTarget.GetTargetTransform(),
+            targetSelection.FocalTarget.GetTargetTransform(), 
             StateChange.Empty);
 
         timelineEvents.AddRange(casterAnimationBlock.Events);
 
-        Logger.Assert(actionInfo.ProjectileInfo.ProjectileId != ProjectileId.INVALID, LogTag.GameModes,
-            "ProjectileActionComposer", string.Format("No projectile information provided for action {0}", actionInfo.ActionId.ToString()));
-
-        ProjectileSpawnParams projectileSpawnParams = ProjectileUtil.GenerateSpawnParams(
-            EncounterModule.Map.ActorPositionLookup[ownerController],
-            targetSelection.FocalTarget,
-            actionInfo.CastRange.AreaType == AreaType.Expanding ? ProjectilePathType.Arc : ProjectilePathType.Linear,
-            actionInfo.ProjectileInfo.ProjectileId);
-
-        ProjectileSpawnBlock projectileSpawnBlock = new ProjectileSpawnBlock(projectileSpawnParams);
-        projectileSpawnBlock.SyncronizeTo(AllignmentPosition.Start, 0, casterAnimationBlock, AllignmentPosition.Interaction);
-        timelineEvents.AddRange(projectileSpawnBlock.Events);
-
-        List<EncounterCharacter> targets = new List<EncounterCharacter>();
-        if (projectileSpawnParams.CollisionWith != null)
-        {
-            EncounterActorController encounterActorController = projectileSpawnParams.CollisionWith.GetComponent<EncounterActorController>();
-            if (encounterActorController != null)
-            {
-                targets.Add(encounterActorController.EncounterCharacter);
-            }
-        }
-
+        List<EncounterCharacter> targets = EncounterModule.Map.GetActors(targetSelection);
         List<InteractionResult> interactionResults = InteractionResolver.ResolveInteraction(ownerController.EncounterCharacter, actionInfo, targets);
         Dictionary<EncounterCharacter, InteractionResult> targetResults = new Dictionary<EncounterCharacter, InteractionResult>();
 
@@ -66,3 +44,4 @@ class ProjectileActionComposer
         timeline = new Timeline<ActionEvent>(timelineEvents);
     }
 }
+

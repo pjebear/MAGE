@@ -7,11 +7,11 @@ using UnityEngine;
 
 static class EffectFactory
 {
-    public static EffectPlaceholder GetEffectPlaceholder(EffectType effectType, Transform parent)
+    public static EffectInfo GetEffectPlaceholder(EffectType effectType, Transform parent)
     {
         int numFrames = 120;
         int syncFrame = 60;
-        return new EffectPlaceholder(effectType, parent, syncFrame, numFrames);
+        return new EffectInfo(effectType, parent, syncFrame, numFrames);
     }
 }
 

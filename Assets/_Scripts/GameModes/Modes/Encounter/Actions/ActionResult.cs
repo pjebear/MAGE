@@ -13,10 +13,10 @@ class ActionResult
     public InteractionResult InitiatorResult;
     public Dictionary<EncounterCharacter, InteractionResult> TargetResults;
 
-    public ActionResult(EncounterCharacter initiator, ActionId actionId, ActionInfo actionInfo, InteractionResult initiatorResult, Dictionary<EncounterCharacter, InteractionResult> targetResults)
+    public ActionResult(EncounterCharacter initiator, ActionInfo actionInfo, InteractionResult initiatorResult, Dictionary<EncounterCharacter, InteractionResult> targetResults)
     {
         Initiator = initiator;
-        ActionId = actionId;
+        ActionId = actionInfo.ActionId;
         ActionInfo = actionInfo;
         InitiatorResult = initiatorResult;
         TargetResults = targetResults;
