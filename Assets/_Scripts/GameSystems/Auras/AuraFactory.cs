@@ -20,6 +20,9 @@ static class AuraFactory
             case AuraType.Regen:
                 auraEffectType = StatusEffectType.Aura_Regen;
                 break;
+            case AuraType.RighteousGlory:
+                auraEffectType = StatusEffectType.Aura_RighteousGlory;
+                break;
 
             default:
                 Debug.Assert(false);

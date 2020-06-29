@@ -16,9 +16,25 @@ class ActionFactory
 
         switch (actionId)
         {
+            case (ActionId.Anvil):
+            {
+                info = new WeaponActionInfoBase();
+                ActionUtil.FromDB(dbAction, info);
+                info.ActionCost = SPELL_COST;
+            }
+            break;
+
             case (ActionId.Heal):
             {
-                info = new HealInfo();
+                info = new SpellInfoBase(1, true);
+                ActionUtil.FromDB(dbAction, info);
+                info.ActionCost = SPELL_COST;
+            }
+            break;
+
+            case (ActionId.HolyLight):
+            {
+                info = new SpellInfoBase(.75f, true);
                 ActionUtil.FromDB(dbAction, info);
                 info.ActionCost = SPELL_COST;
             }
@@ -26,7 +42,7 @@ class ActionFactory
 
             case (ActionId.FireBall):
             {
-                info = new FireballInfo();
+                info = new SpellInfoBase(1, false);
                 ActionUtil.FromDB(dbAction, info);
                 info.ActionCost = SPELL_COST;
             }
@@ -49,6 +65,22 @@ class ActionFactory
                 info = new MightyBlowInfo();
                 ActionUtil.FromDB(dbAction, info);
                 info.ActionCost = cost;
+            }
+            break;
+
+            case (ActionId.Shackle):
+            {
+                info = new SpellInfoBase(StatusEffectType.Shackle);
+                ActionUtil.FromDB(dbAction, info);
+                info.ActionCost = SPELL_COST;
+            }
+            break;
+
+            case (ActionId.Smite):
+            {
+                info = new SpellInfoBase(.75f, false);
+                ActionUtil.FromDB(dbAction, info);
+                info.ActionCost = SPELL_COST;
             }
             break;
 
@@ -87,6 +119,12 @@ class ActionFactory
                     info = new ActionResponseInfo(25, 1);
                 }
                 break;
+
+            case (ActionResponseId.Avenger):
+            {
+                info = new ActionResponseInfo(100, 3);
+            }
+            break;
 
             case (ActionResponseId.HealOnHurtListener):
                 {

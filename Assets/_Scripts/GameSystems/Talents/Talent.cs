@@ -99,6 +99,56 @@ class HealIncreaseTalent : Talent
     }
 }
 
+class AttributeModifierTalentBase : Talent
+{
+    private AttributeModifier ToModify;
+
+    public AttributeModifierTalentBase(TalentId talentId, AttributeModifier toModify, int maxPoints)
+        : base(talentId, maxPoints)
+    {
+        ToModify = toModify;
+    }
+
+    public override List<AttributeModifier> GetAttributeModifiers()
+    {
+        List<AttributeModifier> modifiers = base.GetAttributeModifiers();
+
+        if (PointsAssigned > 0)
+        {
+            AttributeModifier attributeModifier = ToModify.Copy();
+            attributeModifier.Delta *= PointsAssigned;
+            modifiers.Add(attributeModifier);
+        }
+
+        return modifiers;
+    }
+}
+
+//class EquipmentModifierTalentBase : Talent
+//{
+//    private EquippableTag Tag;
+//    private AttributeScalar ToAdd;
+
+//    public EquipmentModifierTalentBase(EquippableTag tag, AttributeScalar toAdd, int blockIncrease, int parryIncrease, TalentId talentId, int maxPoints)
+//        : base(talentId, maxPoints)
+//    {
+//        Tag = tag;
+//        ToAdd = toAdd;
+//    }
+
+//    public override List<EquippableModifier> GetEquippableModifiers()
+//    {
+//        List<EquippableModifier> modifiers = base.GetEquippableModifiers();
+
+//        if (PointsAssigned > 0)
+//        {
+//            modifiers.Add(new EquippableModifier (ToModify, ModifierType, IncreasePerPoint * PointsAssigned));
+//        }
+
+//        return modifiers;
+//    }
+//}
+
 class MightyBlowTalent : Talent
 {
     public MightyBlowTalent()

@@ -20,6 +20,7 @@ class StateChange
     public int resourceChange = 0;
     public List<StatusEffect> statusEffects = new List<StatusEffect>();
     public StateChangeType Type;
+    
 
     public StateChange(StateChangeType type, List<StatusEffect> statusEffects)
         : this(type, 0, 0, statusEffects)
@@ -40,6 +41,19 @@ class StateChange
         healthChange += change.healthChange;
         resourceChange += change.resourceChange;
         statusEffects.AddRange(change.statusEffects);
+    }
+
+    public bool IsBeneficial()
+    {
+        bool areStatusEffectsBeneficial = true;
+        foreach (StatusEffect effect in statusEffects)
+        {
+            areStatusEffectsBeneficial &= effect.Beneficial;
+        }
+
+        return healthChange > 0
+        || resourceChange > 0
+        || areStatusEffectsBeneficial;
     }
 
     public StateChange Copy()

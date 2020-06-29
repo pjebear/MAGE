@@ -10,7 +10,7 @@ class CharacterDBLoader
     public static void LoadDB()
     {
         // Story Characters
-        DB.DBCharacter dbCharacter = CharacterUtil.CreateBaseDBCharacter((int)StoryCharacterId.Rheinhardt, StoryCharacterId.Rheinhardt.ToString(), BodyType.Body_0, PortraitSpriteId.Rheinhardt, SpecializationType.Footman);
+        DB.DBCharacter dbCharacter = CharacterUtil.CreateBaseDBCharacter((int)StoryCharacterId.Rheinhardt, StoryCharacterId.Rheinhardt.ToString(), BodyType.Body_0, PortraitSpriteId.Rheinhardt, SpecializationType.Paladin);
         DB.DBHelper.WriteCharacter(dbCharacter);
         {
             CharacterInfo character = DB.CharacterHelper.FromDB(dbCharacter);
@@ -18,6 +18,11 @@ class CharacterDBLoader
             CharacterUtil.EquipCharacter(character, ItemFactory.LoadEquipable(EquippableId.Shield_0), Equipment.Slot.LeftHand);
             CharacterUtil.EquipCharacter(character, ItemFactory.LoadEquipable(EquippableId.Mace_0), Equipment.Slot.RightHand);
             CharacterUtil.EquipCharacter(character, ItemFactory.LoadEquipable(EquippableId.Relic), Equipment.Slot.Accessory);
+
+            foreach (var talentPair in character.CurrentSpecialization.Talents)
+            {
+                talentPair.Value.PointsAssigned = talentPair.Value.MaxPoints;
+            }
 
             DB.DBHelper.WriteCharacter(DB.CharacterHelper.ToDB(character));
         }

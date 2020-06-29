@@ -150,6 +150,71 @@ class SpecializationDBLoader
             DB.DBHelper.WriteSpecialization(dbSpecialization);
         }
 
+        // Paladin
+        {
+            DB.DBSpecialization dbSpecialization = new DB.DBSpecialization();
+
+            // Type
+            dbSpecialization.SpecializationType = (int)SpecializationType.Paladin;
+
+            // Proficiencies
+            dbSpecialization.Proficiencies = new List<int>()
+            {
+                (int)ProficiencyType.Hammer,
+                (int)ProficiencyType.Sword,
+                (int)ProficiencyType.Accessorys,
+                (int)ProficiencyType.Sheild,
+                (int)ProficiencyType.Chain,
+                (int)ProficiencyType.Plate
+            };
+
+            // Level up modifiers
+            dbSpecialization.LevelUpModifiers = new List<DB.DBAttribute>()
+            {
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Might, Value = 5},
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Finese, Value = 3},
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Magic, Value = 4},
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)SecondaryStat.Fortitude, Value = 4},
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)SecondaryStat.Attunement, Value = 4}
+            };
+
+            // talents
+            dbSpecialization.TalentIds = new List<int>()
+            {
+                (int)TalentId.SpeedIncrease
+                , (int)TalentId.MoveIncrease
+                , (int)TalentId.MightIncrease
+                //, (int)TalentId.HammerIncrease
+                , (int)TalentId.MagicIncrease
+                //, (int)TalentId.ArmorIncrease
+            };
+
+            // Listeners
+            dbSpecialization.ResponseListenerIds = new List<int>()
+            {
+                (int)ActionResponseId.Avenger
+            };
+
+            // Actions
+            dbSpecialization.ActionIds = new List<int>()
+            {
+                (int)ActionId.Smite
+                ,(int)ActionId.Shackle
+                ,(int)ActionId.Anvil
+                ,(int)ActionId.HolyLight
+                ,(int)ActionId.Raise
+            };
+
+            // Actions
+            dbSpecialization.AuraIds = new List<int>()
+            {
+                (int)AuraType.RighteousGlory
+            };
+            
+
+            DB.DBHelper.WriteSpecialization(dbSpecialization);
+        }
+
         DB.DBHelper.UpdateSpecializationDB();
     }
 }

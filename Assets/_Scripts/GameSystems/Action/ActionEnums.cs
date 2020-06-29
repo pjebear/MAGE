@@ -108,6 +108,13 @@ enum ActionId
     Protection,
     MightyBlow,
 
+    //Paladin
+    Smite,
+    Shackle,
+    Anvil,
+    HolyLight,
+    Raise,
+
     // spells
     FireBall,
 
@@ -126,6 +133,7 @@ enum ActionResponseId
     Riptose,
     HealOnHurtListener,
     BloodScent,
+    Avenger,
 
     NUM
 }

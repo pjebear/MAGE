@@ -9,9 +9,9 @@ enum AreaType
 {
     Circle,
     //Ring,
-    //Cone,
+    Cone,
     //Line,
-    //Cross,
+    Cross,
     Expanding,
 
     NUM

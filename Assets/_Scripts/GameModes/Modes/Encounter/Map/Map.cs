@@ -12,6 +12,9 @@ class Map
     public HashSet<EncounterActorController> ActorsInMap;
     public Tile[,] Tiles;
 
+    MovementTileCalculator mMovementCalculator;
+    ActionTileCalculator mActionCalculator;
+
     public Tile this[TileIdx idx]
     {
         get
@@ -31,6 +34,8 @@ class Map
     {
         ActorPositionLookup = new Dictionary<EncounterActorController, Tile>();
         ActorsInMap = new HashSet<EncounterActorController>();
+        mMovementCalculator = new MovementTileCalculator(this);
+        mActionCalculator = new ActionTileCalculator(this);
     }
 
     public void Initialize(TileContainer tileContainer, TileIdx bottomLeft, TileIdx topRight)
@@ -87,7 +92,7 @@ class Map
         return ActorPositionLookup[controller];
     }
 
-    public List<EncounterCharacter> GetActors(TargetSelection targetSelection)
+    public List<EncounterCharacter> GetActors(TileIdx casterTile, TargetSelection targetSelection)
     {
         List<EncounterCharacter> onTiles = new List<EncounterCharacter>();
 
@@ -101,7 +106,7 @@ class Map
             centralTile = targetSelection.FocalTarget.TileTarget;
         }
 
-        List<Tile> tiles = GetTilesInRange(centralTile, targetSelection.SelectionRange);
+        List<Tile> tiles = mActionCalculator.CalculateTilesInRange(casterTile, centralTile, targetSelection.SelectionRange);
         foreach (Tile tile in tiles)
         {
             if (tile.OnTile != null)

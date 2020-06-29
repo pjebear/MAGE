@@ -10,15 +10,11 @@ class EffectActionComposer
     public static void ComposeAction(EncounterActorController ownerController, ActionInfo actionInfo, TargetSelection targetSelection, out ActionResult result, out Timeline<ActionEvent> timeline)
     {
         List<ActionEvent> timelineEvents = new List<ActionEvent>();
-        ActorInteractionBlock casterAnimationBlock = new ActorInteractionBlock(
-            ownerController,
-            actionInfo.AnimationInfo.AnimationId,
-            targetSelection.FocalTarget.GetTargetTransform(),
-            StateChange.Empty);
 
+        ActorInteractionBlock casterAnimationBlock = ActionCompositionUtil.CreateOwnerInteractionBlock(ownerController, targetSelection.FocalTarget, actionInfo.AnimationInfo.AnimationId);
         timelineEvents.AddRange(casterAnimationBlock.Events);
 
-        List<EncounterCharacter> targets = EncounterModule.Map.GetActors(targetSelection);
+        List<EncounterCharacter> targets = EncounterModule.Map.GetActors(EncounterModule.CharacterDirector.GetActorPosition(ownerController.EncounterCharacter), targetSelection);
         List<InteractionResult> interactionResults = InteractionResolver.ResolveInteraction(ownerController.EncounterCharacter, actionInfo, targets);
         Dictionary<EncounterCharacter, InteractionResult> targetResults = new Dictionary<EncounterCharacter, InteractionResult>();
 
@@ -37,12 +33,11 @@ class EffectActionComposer
 
             // Time the state change to effect spawn
 
-            ActorInteractionBlock targetInteractionBlock = ActionCompositionUtil.CreateInteractionBlock(
+            ActorInteractionBlock targetInteractionBlock = ActionCompositionUtil.CreateTargetInteractionBlock(
                 ownerController
                 , targetController
                 , interactionResult
-                , effectSpawnBlock
-                , timelineEvents);
+                , effectSpawnBlock );
 
             timelineEvents.AddRange(targetInteractionBlock.Events);
         }

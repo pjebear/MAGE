@@ -37,6 +37,7 @@ static class CharacterUtil
         emptyCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat]        = new DB.DBAttributes() { AttributeCategory = (int)AttributeCategory.Stat,           Attributes = Enumerable.Repeat(0f, (int)CharacterStat.NUM).ToList() };
         emptyCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Resource]    = new DB.DBAttributes() { AttributeCategory = (int)AttributeCategory.Resource,       Attributes = Enumerable.Repeat(0f, (int)ResourceType.NUM).ToList() };
         emptyCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Allignment]  = new DB.DBAttributes() { AttributeCategory = (int)AttributeCategory.Allignment,     Attributes = Enumerable.Repeat(0f, (int)AllignmentType.NUM).ToList() };
+        emptyCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Status]  = new DB.DBAttributes() { AttributeCategory = (int)AttributeCategory.Status,     Attributes = Enumerable.Repeat(0f, (int)StatusType.NUM).ToList() };
         
         // Sanity Check
         foreach (DB.DBAttributes attributes in emptyCharacter.CharacterInfo.Attributes)

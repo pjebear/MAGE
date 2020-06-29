@@ -20,6 +20,7 @@ static class ActionUtil
         fromDB.EffectInfo.EffectId = (EffectType)dbAction.EffectId;
         fromDB.ChainInfo.NumChainTargets = dbAction.NumChainBounces;
         fromDB.ChainInfo.ChainEffectFalloff = dbAction.ChainFalloff;
+        fromDB.IsSelfCast = dbAction.IsSelfCast;
     }
 
     public static int GetTurnCountForCastSpeed(CastSpeed castSpeed)

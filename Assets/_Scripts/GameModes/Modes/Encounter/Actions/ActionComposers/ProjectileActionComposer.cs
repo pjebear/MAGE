@@ -10,12 +10,8 @@ class ProjectileActionComposer
     public static void ComposeAction(EncounterActorController ownerController, ActionInfo actionInfo, TargetSelection targetSelection, out ActionResult result, out Timeline<ActionEvent> timeline)
     {
         List<ActionEvent> timelineEvents = new List<ActionEvent>();
-        ActorInteractionBlock casterAnimationBlock = new ActorInteractionBlock(
-            ownerController,
-            actionInfo.AnimationInfo.AnimationId,
-            targetSelection.FocalTarget.GetTargetTransform(),
-            StateChange.Empty);
 
+        ActorInteractionBlock casterAnimationBlock = ActionCompositionUtil.CreateOwnerInteractionBlock(ownerController, targetSelection.FocalTarget, actionInfo.AnimationInfo.AnimationId);
         timelineEvents.AddRange(casterAnimationBlock.Events);
 
         Logger.Assert(actionInfo.ProjectileInfo.ProjectileId != ProjectileId.INVALID, LogTag.GameModes,
@@ -49,12 +45,11 @@ class ProjectileActionComposer
             InteractionResult interactionResult = interactionResults[i];
             targetResults.Add(targets[i], interactionResult);
 
-            ActorInteractionBlock targetInteractionBlock = ActionCompositionUtil.CreateInteractionBlock(
+            ActorInteractionBlock targetInteractionBlock = ActionCompositionUtil.CreateTargetInteractionBlock(
                 ownerController
                 , EncounterModule.CharacterDirector.CharacterActorLookup[targets[i]]
                 , interactionResult
-                , casterAnimationBlock
-                , timelineEvents);
+                , casterAnimationBlock);
 
             timelineEvents.AddRange(targetInteractionBlock.Events);
         }

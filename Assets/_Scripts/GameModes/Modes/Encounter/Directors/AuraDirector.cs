@@ -50,7 +50,7 @@ class AuraDirector : MonoBehaviour
     {
         switch (eventInfo.Type)
         {
-            case EncounterEvent.EventType.EncounterBegun:
+            case EncounterEvent.EventType.UnitPlacementComplete:
                 {
                     foreach (List<Aura> auras in mAuras.Values)
                     {

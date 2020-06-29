@@ -15,6 +15,14 @@ static class StatusEffectFactory
 
         switch (type)
         {
+            case StatusEffectType.Avenger:
+                info.Duration = StatusEffectConstants.PERMANENT_DURATION;
+                info.Beneficial = true;
+                info.SpriteId = StatusIconSpriteId.Avenger;
+                info.MaxStackCount = 100;
+                effect = new AvengerEffect(owner, info);
+                break;
+
             case StatusEffectType.Poison:
                 info.Duration = StatusEffectConstants.MEDIUM_DURATION;
                 info.Beneficial = false;
@@ -48,6 +56,20 @@ static class StatusEffectFactory
                 info.Beneficial = true;
                 info.SpriteId = StatusIconSpriteId.Protection;
                 effect = new RegenEffect(owner, info);
+                break;
+
+            case StatusEffectType.Shackle:
+                info.Duration = StatusEffectConstants.SHORT_DURATION;
+                info.Beneficial = false;
+                info.SpriteId = StatusIconSpriteId.Disarm;
+                effect = new ShackleEffect(owner, info);
+                break;
+
+            case StatusEffectType.Aura_RighteousGlory:
+                info.Duration = StatusEffectConstants.PERMANENT_DURATION;
+                info.Beneficial = true;
+                info.SpriteId = StatusIconSpriteId.RighteousGlory;
+                effect = new RighteousGloryEffect(owner, info);
                 break;
 
             case StatusEffectType.BloodScent:

@@ -24,6 +24,9 @@ static class ActionResultListenerFactory
             case (ActionResponseId.BloodScent):
                 listener = new BloodScentListener(listenerOwner);
                 break;
+            case (ActionResponseId.Avenger):
+                listener = new AvengerListener(listenerOwner);
+                break;
 
             default:
                 Debug.Assert(false);

@@ -202,16 +202,37 @@ class TurnFlowControl
         {
             mSelectedAction = mActor.GetActionInfo(mActor.Actions[selectedAbility]);
 
-            mState = TurnState.SelectAbilityTarget;
-            mHoverRangeInfo = mSelectedAction.EffectRange;
+            if (mSelectedAction.IsSelfCast)
+            {
+                mState = TurnState.ConfirmAbilityTarget;
+                mHoveredTile = EncounterModule.Map[EncounterModule.CharacterDirector.GetActorPosition(mActor)];
+                mValidHoverSelections = new List<Tile>() { mHoveredTile };
 
-            mValidHoverSelections = mActionCalculator.CalculateTilesInRange(EncounterModule.CharacterDirector.GetActorPosition(mActor), mSelectedAction.CastRange);
-            AddTileSelection(mValidHoverSelections, Tile.HighlightState.TargetSelect);
+                List<Tile> autoSelection = mActionCalculator.CalculateTilesInRange(
+                    EncounterModule.CharacterDirector.GetActorPosition(mActor),
+                    EncounterModule.CharacterDirector.GetActorPosition(mActor),
+                    mSelectedAction.EffectRange);
 
-            AddTileSelection(new List<Tile>(), Tile.HighlightState.AOESelect);
+                AddTileSelection(autoSelection, Tile.HighlightState.AOESelect);
+            }
+            else
+            {
+                mState = TurnState.SelectAbilityTarget;
+                mHoverRangeInfo = mSelectedAction.EffectRange;
 
-            UpdateHoveredTile(mHoveredTile);
+                mValidHoverSelections = mActionCalculator.CalculateTilesInRange(
+                    EncounterModule.CharacterDirector.GetActorPosition(mActor),
+                    EncounterModule.CharacterDirector.GetActorPosition(mActor),
+                    mSelectedAction.CastRange);
 
+                AddTileSelection(mValidHoverSelections, Tile.HighlightState.TargetSelect);
+
+                AddTileSelection(new List<Tile>(), Tile.HighlightState.AOESelect);
+
+                UpdateHoveredTile(mHoveredTile);
+            }
+
+            
             ToggleSelectedTiles(true);
 
             UIManager.Instance.Publish(UIContainerId.ActorActionsView);
@@ -270,8 +291,16 @@ class TurnFlowControl
         }
         else
         {
-            mState = TurnState.SelectAbilityTarget;
-
+            if (mSelectedAction.IsSelfCast)
+            {
+                mState = TurnState.SelectAbility;
+                ClearTileSelections();
+            }
+            else
+            {
+                mState = TurnState.SelectAbilityTarget;
+            }
+            
             UIManager.Instance.Publish(UIContainerId.ActorActionsView);
         }
     }
@@ -475,7 +504,10 @@ class TurnFlowControl
         List<Tile> hoverSelection = new List<Tile>();
         if (mHoveredTile != null)
         {
-            hoverSelection = mActionCalculator.CalculateTilesInRange(hoveredTile.Idx, mHoverRangeInfo);
+            hoverSelection = mActionCalculator.CalculateTilesInRange(
+                EncounterModule.CharacterDirector.GetActorPosition(mActor),
+                 hoveredTile.Idx,
+                mHoverRangeInfo);
         }
 
         mSelectionStack.UpdateLayer(mSelectionStack.Count - 1, hoverSelection);

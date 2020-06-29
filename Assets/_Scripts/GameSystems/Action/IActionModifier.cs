@@ -34,8 +34,6 @@ class HealModifier : IActionModifier
 
     public void Modify(ActionInfo info)
     {
-        HealInfo healInfo = (HealInfo)info;
-
-        healInfo.Effectiveness += HealAmp;
+        info.Effectiveness += HealAmp;
     }
 }

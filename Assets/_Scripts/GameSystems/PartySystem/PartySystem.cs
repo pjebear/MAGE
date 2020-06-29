@@ -168,11 +168,11 @@ class PartySystem
             CharacterUtil.EquipCharacter(character, ItemFactory.LoadEquipable(EquippableId.Bow_0), Equipment.Slot.RightHand);
 
             DB.DBHelper.WriteCharacter(DB.CharacterHelper.ToDB(character));
-            //Party.CharacterIds.Add(partyMember.Id);
+            Party.CharacterIds.Add(partyMember.Id);
         }
 
         
-        //Party.CharacterIds.Add((int)StoryCharacterId.Rheinhardt);
+        Party.CharacterIds.Add((int)StoryCharacterId.Rheinhardt);
         Party.CharacterIds.Add((int)StoryCharacterId.Asmund);
 
         List<int> defaultInventory = new List<int>()

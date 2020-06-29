@@ -8,6 +8,7 @@ enum AuraType
 {
     Protection,
     Regen,
+    RighteousGlory,
 
     NUM
 }

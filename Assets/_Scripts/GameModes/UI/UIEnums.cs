@@ -9,9 +9,12 @@ enum StatusIconSpriteId
 {
     INVALID = -1,
 
+    Avenger,
+    Disarm,
     Protection,
     BloodScent,
     Poison,
+    RighteousGlory,
 
     NUM
 }

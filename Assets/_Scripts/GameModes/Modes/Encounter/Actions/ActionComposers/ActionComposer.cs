@@ -28,6 +28,7 @@ class ActionComposer
                 }
             }
             break;
+            case (ActionId.Anvil):
             case (ActionId.MightyBlow):
             case (ActionId.Riptose):
                 MeleeActionComposer.ComposeAction(ownerController, actionInfo, targetSelection, out result, out timeline);
@@ -35,6 +36,9 @@ class ActionComposer
 
             case (ActionId.Protection):
             case (ActionId.Heal):
+            case (ActionId.HolyLight):
+            case (ActionId.Smite):
+            case (ActionId.Shackle):
                 EffectActionComposer.ComposeAction(ownerController, actionInfo, targetSelection, out result, out timeline);
                 break;
 

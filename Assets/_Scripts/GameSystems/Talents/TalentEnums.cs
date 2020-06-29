@@ -6,9 +6,17 @@ using System.Threading.Tasks;
 
 enum TalentId
 {
+    ArmorIncrease,
     BlockIncrease,
+    HammerIncrease,
     HealOnHurt,
+    MagicIncrease,
+    MightIncrease,
     MightyBlow,
+    MoveIncrease,
+    SpeedIncrease,
+    
+
     HealIncrease,
 
     NUM

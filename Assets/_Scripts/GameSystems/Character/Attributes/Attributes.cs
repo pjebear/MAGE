@@ -15,6 +15,7 @@ class Attributes
                 new Attribute[(int)CharacterStat.NUM]
                 , new Attribute[(int)ResourceType.NUM]
                 , new Attribute[(int)AllignmentType.NUM]
+                , new Attribute[(int)StatusType.NUM]
             };
             for (int categoryIdx = 0; categoryIdx < (int)AttributeCategory.NUM; ++categoryIdx)
             {
@@ -32,6 +33,7 @@ class Attributes
     public float this[TertiaryStat stat] { get { return this[new AttributeIndex(stat)]; } }
     public float this[ResourceType resource] { get { return this[new AttributeIndex(resource)]; } }
     public float this[AllignmentType allignmentType] { get { return this[new AttributeIndex(allignmentType)]; } }
+    public float this[StatusType statusType] { get { return this[new AttributeIndex(statusType)]; } }
     public float this[AttributeIndex index]
     {
         get

@@ -21,8 +21,24 @@ static class TalentFactory
                 talent = new HealIncreaseTalent();
                 break;
 
+            case (TalentId.MagicIncrease):
+                talent = new AttributeModifierTalentBase(talentId, new AttributeModifier(PrimaryStat.Magic, ModifierType.Multiply, .1f), 3);
+                break;
+
             case (TalentId.MightyBlow):
                 talent = new MightyBlowTalent();
+                break;
+
+            case (TalentId.MightIncrease):
+                talent = new AttributeModifierTalentBase(talentId, new AttributeModifier(PrimaryStat.Might, ModifierType.Multiply, .1f), 3);
+                break;
+
+            case (TalentId.MoveIncrease):
+                talent = new AttributeModifierTalentBase(talentId, new AttributeModifier(TertiaryStat.Movement, ModifierType.Increment, 1), 2);
+                break;
+
+            case (TalentId.SpeedIncrease):
+                talent = new AttributeModifierTalentBase(talentId, new AttributeModifier(TertiaryStat.Speed, ModifierType.Increment, 2), 3);
                 break;
 
             case (TalentId.HealOnHurt):

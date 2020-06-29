@@ -17,6 +17,7 @@ enum SpecializationType
     Archer,
     Footman,
     Monk,
+    Paladin,
     //Adept,
     ////Footman Tree
     //ShieldWall,

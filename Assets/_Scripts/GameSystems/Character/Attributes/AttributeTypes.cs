@@ -73,6 +73,12 @@ struct AttributeIndex
         Type = AttributeCategory.Allignment;
         Index = (int)allignmentType;
     }
+
+    public AttributeIndex(StatusType statusType)
+    {
+        Type = AttributeCategory.Status;
+        Index = (int)statusType;
+    }
 }
 
 struct AttributeModifier
@@ -86,12 +92,18 @@ struct AttributeModifier
     public AttributeModifier(TertiaryStat stat, ModifierType type, float delta) : this( new AttributeIndex(stat), type, delta) { }
     public AttributeModifier(ResourceType resourceType, ModifierType type, float delta) : this( new AttributeIndex(resourceType), type, delta) { }
     public AttributeModifier(AllignmentType allignmentType, ModifierType type, float delta) : this( new AttributeIndex(allignmentType), type, delta) { }
+    public AttributeModifier(StatusType statusType, ModifierType type, float delta) : this( new AttributeIndex(statusType), type, delta) { }
 
     public AttributeModifier(AttributeIndex index, ModifierType type, float delta)
     {
         AttributeIndex = index;
         ModifierType = type;
         Delta = delta;
+    }
+
+    public AttributeModifier Copy()
+    {
+        return new AttributeModifier(AttributeIndex, ModifierType, Delta);
     }
 
     public override string ToString()
@@ -137,13 +149,13 @@ static class AttributeUtil
         switch (resourceType)
         {
             case (ResourceType.Health):
-                resourceValue += stats[AttributeCategory.Stat][(int)PrimaryStat.Might].Value;
+                resourceValue += stats[PrimaryStat.Might];
                 break;
             case (ResourceType.Mana):
-                resourceValue += stats[AttributeCategory.Stat][(int)PrimaryStat.Magic].Value;
+                resourceValue += stats[PrimaryStat.Magic];
                 break;
             case (ResourceType.Endurance):
-                resourceValue += stats[AttributeCategory.Stat][(int)PrimaryStat.Finese].Value;
+                resourceValue += stats[PrimaryStat.Finese];
                 break;
         }
 

@@ -33,15 +33,6 @@ class WeaponActionInfoBase : ActionInfo
     }
 }
 
-class HealInfo : ActionInfo
-{
-    public override StateChange GetTargetStateChange(EncounterCharacter caster, EncounterCharacter target)
-    {
-        AttributeIndex index = new AttributeIndex(AttributeCategory.Stat, (int)PrimaryStat.Magic);
-        int heal = (int)(caster.Attributes[index] * Effectiveness);
-        return new StateChange(StateChangeType.ActionTarget, heal, 0);
-    }
-}
 
 class ProtectionInfo : ActionInfo
 { 
@@ -53,13 +44,39 @@ class ProtectionInfo : ActionInfo
     }
 }
 
-class FireballInfo : ActionInfo
+class SpellInfoBase : ActionInfo
 {
+    bool mIsBeneficial = false;
+    StatusEffectType mStatusEffectType = StatusEffectType.INVALID;
+
+    public SpellInfoBase(StatusEffectType effectType)
+    {
+        Effectiveness = 0;
+        mStatusEffectType = effectType;
+    }
+
+    public SpellInfoBase(float strength, bool isBeneficial)
+    {
+        Effectiveness = strength;
+        mIsBeneficial = isBeneficial;
+    }
+
     public override StateChange GetTargetStateChange(EncounterCharacter caster, EncounterCharacter target)
     {
-        AttributeIndex index = new AttributeIndex(AttributeCategory.Stat, (int)PrimaryStat.Magic);
-        int damage = -(int)(caster.Attributes[index] * Effectiveness);
-        return new StateChange(StateChangeType.ActionTarget, damage, 0);
+        float healthChange = 0;
+        healthChange += caster.Attributes[PrimaryStat.Magic];
+        healthChange *= 1 + (caster.Attributes[SecondaryStat.Attunement] / 100);
+
+        healthChange *= Effectiveness;
+        healthChange *= mIsBeneficial ? 1 : -1;
+
+        List<StatusEffect> statusEffects = new List<StatusEffect>();
+        if (mStatusEffectType != StatusEffectType.INVALID)
+        {
+            statusEffects.Add(StatusEffectFactory.CheckoutStatusEffect(mStatusEffectType, caster));
+        }
+
+        return new StateChange(StateChangeType.ActionTarget, (int)healthChange, 0, statusEffects);
     }
 }
 

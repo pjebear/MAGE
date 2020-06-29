@@ -26,30 +26,35 @@ enum ArmorType
 
 enum OneHandWeaponType
 {
+    All = -1,
+
     Fist,
     Dagger,
     Sword,
     Axe,
     Mace,
     Crossbow,
-    All
+    
 }
 
 enum TwoHandWeaponType
 {
+    All = -1,
+
     BastardSword,
     BattleAxe,
     Maul,
     Staff,
     Bow,
-    All
 }
 
 enum ShieldType
 {
+    All = -1, 
+
     Shield,
     TowerShield,
-    All
+   
 }
 
 enum AccessoryType

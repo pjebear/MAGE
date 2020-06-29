@@ -7,6 +7,7 @@ enum AttributeCategory
     Stat,
     Resource,
     Allignment,
+    Status,
     NUM
 }
 
@@ -50,6 +51,7 @@ enum TertiaryStat
     MagicalMultiplier,
     CastSpeed, // 0 = regular cast speed, 1 * (1 + castSpeed) ticks removed per charge cycle 
     EnduranceRecovery, // .10 = 10 percent of max endurance per turn
+
 
     NUM = EnduranceRecovery - Speed + 1
 }

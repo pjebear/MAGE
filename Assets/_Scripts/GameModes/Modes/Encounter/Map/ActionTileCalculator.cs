@@ -10,7 +10,7 @@ class ActionTileCalculator
         mMap = map;
     }
 
-    public List<Tile> CalculateTilesInRange(TileIdx centerTile, RangeInfo rangeInfo)
+    public List<Tile> CalculateTilesInRange(TileIdx casterTile, TileIdx centerTile, RangeInfo rangeInfo)
     {
         List<Tile> tilesInRange = new List<Tile>();
         switch (rangeInfo.AreaType)
@@ -23,6 +23,16 @@ class ActionTileCalculator
             case AreaType.Expanding:
             {
                 tilesInRange = CalculateExpandingTiles(centerTile, rangeInfo.MinRange, rangeInfo.MaxRange, rangeInfo.MaxElevationChange);
+            }
+            break;
+            case AreaType.Cone:
+            {
+                tilesInRange = CalculateConeTiles(casterTile, centerTile, rangeInfo.MaxRange, rangeInfo.MaxElevationChange);
+            }
+            break;
+            case AreaType.Cross:
+            {
+                tilesInRange = CalculateCrossTiles(centerTile, rangeInfo.MinRange, rangeInfo.MaxRange, rangeInfo.MaxElevationChange);
             }
             break;
             default:
@@ -100,40 +110,82 @@ class ActionTileCalculator
         return tiles;
     }
 
-    //private void CalculateCrossTiles(MapTile origin, ref Dictionary<int, MapTile> tileMap, int minRange, int maxRange, int maxElevation, int elevationModifier = 1, bool localized = true /* actionarea*/)
-    //{
-    //    tileMap.Clear();
+    //// Cone Origin indicates the tile the user selected for the cone AOE to be spawned. the tip of the cone may start behind the cone origin but only tiles in the direction of the cone will be added. 
+    private List<Tile> CalculateConeTiles(TileIdx casterTile, TileIdx coneOrigin, int maxRange, int maxElevation)
+    {
+        List<Tile> tiles = new List<Tile>();
 
-    //    Vector3 centerTile = origin.transform.localPosition;
-    //    List<Vector3> directions = new List<Vector3>() { Vector3.forward, Vector3.back, Vector3.right, Vector3.left };
-    //    Debug.Log("center elevation " + centerElevation);
+        Tile originTile = mMap[coneOrigin];
+        Vector2 coneDirection = TileIdx.Displacement(casterTile, coneOrigin);
 
+        coneDirection.Normalize();
+        Vector2 widthDirection;
 
-    //    foreach (Vector3 direction in directions)
-    //    {
-    //        int tileCount = 1;
-    //        MapTile nextInLine = null;
-    //        while ((nextInLine = MapManager.Instance.GetTileAt(centerTile + direction * (tileCount))) != null)
-    //        {
-    //            if (tileCount > maxRange)
-    //            {
-    //                break;
-    //            }
-    //            else if (tileCount >= minRange)
-    //            {
-    //                if (Mathf.Abs(nextInLine.transform.position.y - centerTile.y) < maxElevation)
-    //                {
-    //                    tileMap.Add(nextInLine.Id, nextInLine);
-    //                }
-    //            }
-    //            tileCount++;
-    //        }
-    //    }
-    //    if (minRange == 0)
-    //    {
-    //        tileMap.Add(origin.Id, origin);
-    //    }
-    //}
+        if (coneDirection.y != 0) // up or down
+        {
+            widthDirection = Vector2.right;
+        }
+        else // left or right
+        {
+            widthDirection = Vector2.up;
+        }
+
+        int rowNumber = 0;
+        for (int coneLength = 0; coneLength <= maxRange; coneLength++)
+        {
+            if (coneLength >= 0) // don't add tiles behind cone origin
+            {
+                Vector2 spine = coneDirection * coneLength;
+                
+                // add @coneWidth tiles along the cones row at [@coneLength] to the list
+                for (int offsetFromSpine = -rowNumber; offsetFromSpine <= rowNumber; offsetFromSpine++)
+                {
+                    Vector2 rib = widthDirection * offsetFromSpine;
+                    Vector2 tileOffset = spine + rib;
+                    TileIdx potentialTile = new TileIdx(Mathf.RoundToInt(coneOrigin.x + tileOffset.x), Mathf.RoundToInt(coneOrigin.y + tileOffset.y));
+                    if (mMap.IsValidIdx(potentialTile))
+                    {
+                        Tile tile = mMap[potentialTile];
+                        if (Mathf.Abs(tile.ElevationDifference(originTile)) < maxElevation)
+                        {
+                            tiles.Add(tile);
+                        }
+                    }
+                }
+            }
+            rowNumber++;
+        }
+        return tiles;
+    }
+
+    private List<Tile> CalculateCrossTiles(TileIdx center, int minRange, int maxRange, int maxElevation)
+    {
+        List<Tile> tiles = new List<Tile>();
+
+        Tile centerTile = mMap[center];
+
+        for (int z = 0; z < mMap.Length; z++)
+        {
+            int width = z == center.y ? 1 : mMap.Width;
+            for (int x = 0; x < width; x++)
+            {
+                TileIdx tileIdx = new TileIdx(x, z);
+
+                Tile tile = mMap.Relative(tileIdx);
+
+                float distanceToTile = centerTile.ManhattanDistance(tile);
+                float elevationDifference = centerTile.ElevationDifference(tile);
+                if (distanceToTile >= minRange
+                    && distanceToTile <= maxRange
+                    && Mathf.Abs(elevationDifference) <= maxElevation)
+                {
+                    tiles.Add(tile);
+                }
+            }
+
+        }
+        return tiles;
+    }
 
     //private void CalculateLineTiles(MapTile lineOrigin, MapTile lineTarget, ref Dictionary<int, MapTile> tileMap, int minRange, int maxRange, int maxElevation, int elevationModifier = 1, bool localized = true /* actionarea*/)
     //{

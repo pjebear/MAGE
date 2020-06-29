@@ -29,6 +29,11 @@ namespace DB
         {
             return ActionDB.Load(actionId);
         }
+
+        public static void UpdateActionDB()
+        {
+            ActionDB.Save(FileUtil.FolderName.DB.ToString());
+        }
         #endregion
 
         #region CharacterDB

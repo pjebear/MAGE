@@ -7,12 +7,18 @@ using System.Threading.Tasks;
 
 enum StatusEffectType
 {
+    INVALID = -1,
+
+    Avenger,
     Poison,
     Protection,
     Aura_Protection,
     Regen,
     Aura_Regen,
+    Shackle,
     BloodScent,
+    Aura_RighteousGlory,
+
     NUM
 }
 
@@ -60,6 +66,7 @@ abstract class StatusEffect
 
         return HasExpired();
     }
+
     public bool HasExpired()
     {
         if (mStatusEffectInfo.Duration == StatusEffectConstants.PERMANENT_DURATION)
@@ -92,6 +99,80 @@ class ProtectionEffect : StatusEffect
 
         float protectionValue = stackValue * (StackCount);
         modifiers.Add(new AttributeModifier(new AttributeIndex(AttributeCategory.Stat, (int)TertiaryStat.PhysicalResistance), ModifierType.Increment, protectionValue));
+
+        return modifiers;
+    }
+
+    public override StateChange GetTurnStartStateChange()
+    {
+        return StateChange.Empty;
+    }
+}
+
+class ShackleEffect : StatusEffect
+{
+    public ShackleEffect(EncounterCharacter createdBy, StatusEffectInfo info)
+        : base(createdBy, info)
+    {
+
+    }
+
+    public override List<AttributeModifier> GetAttributeModifiers()
+    {
+        List<AttributeModifier> modifiers = new List<AttributeModifier>();
+
+        modifiers.Add(new AttributeModifier(new AttributeIndex(StatusType.Disarmed), ModifierType.Increment, 1));
+
+        return modifiers;
+    }
+
+    public override StateChange GetTurnStartStateChange()
+    {
+        return StateChange.Empty;
+    }
+}
+
+class AvengerEffect : StatusEffect
+{
+    public float StackCountToAttributeMultiplier = 0.01f; // 1 stack = 1 percent
+    public AvengerEffect(EncounterCharacter createdBy, StatusEffectInfo info)
+        : base(createdBy, info)
+    {
+
+    }
+
+    public override List<AttributeModifier> GetAttributeModifiers()
+    {
+        List<AttributeModifier> modifiers = new List<AttributeModifier>();
+
+        modifiers.Add(new AttributeModifier(PrimaryStat.Might, ModifierType.Multiply, StackCount * StackCountToAttributeMultiplier));
+        modifiers.Add(new AttributeModifier(PrimaryStat.Magic, ModifierType.Multiply, StackCount * StackCountToAttributeMultiplier));
+
+        return modifiers;
+    }
+
+    public override StateChange GetTurnStartStateChange()
+    {
+        return StateChange.Empty;
+    }
+}
+
+class RighteousGloryEffect : StatusEffect
+{
+    float StackCountToAttributeMultiplier = 0.2f;
+    public RighteousGloryEffect(EncounterCharacter createdBy, StatusEffectInfo info)
+        : base(createdBy, info)
+    {
+
+    }
+
+    public override List<AttributeModifier> GetAttributeModifiers()
+    {
+        List<AttributeModifier> modifiers = new List<AttributeModifier>();
+
+        modifiers.Add(new AttributeModifier(ResourceType.Health, ModifierType.Multiply, StackCount * StackCountToAttributeMultiplier));
+        modifiers.Add(new AttributeModifier(PrimaryStat.Might, ModifierType.Multiply, StackCount * StackCountToAttributeMultiplier));
+        modifiers.Add(new AttributeModifier(TertiaryStat.PhysicalResistance, ModifierType.Increment, StackCount * StackCountToAttributeMultiplier));
 
         return modifiers;
     }
@@ -145,6 +226,8 @@ class RegenEffect : StatusEffect
         return new StateChange(StateChangeType.StatusEffect, healthChange, 0);
     }
 }
+
+
 
 class BloodScentEffect : StatusEffect
 {
