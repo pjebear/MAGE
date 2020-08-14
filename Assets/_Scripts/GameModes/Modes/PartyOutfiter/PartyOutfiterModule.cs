@@ -1,55 +1,59 @@
-﻿using System;
+﻿using MAGE.GameModes.FlowControl;
+using MAGE.GameServices;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class PartyOutfiterModule : GameModeBase
+namespace MAGE.GameModes
 {
-    private Transform mCharacterSpawnPoint;
-
-    private PartyOutfiterViewControl ViewControl;
-
-    public override GameModeType GetGameModeType()
+    class PartyOutfiterModule : GameModeBase
     {
-        return GameModeType.PartyOutfiter;
-    }
+        private Transform mCharacterSpawnPoint;
 
-    public override LevelId GetLevelId()
-    {
-        return GameModesModule.LevelManager.GetLoadedLevel().LevelId;
-    }
+        private PartyOutfiterViewControl ViewControl;
 
-    public override void Init()
-    {
-        
-    }
+        public override GameModeType GetGameModeType()
+        {
+            return GameModeType.PartyOutfiter;
+        }
 
-    protected override void CleanUpMode()
-    {
-        // nothing to cleanup
-        GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.ModeTakedown_Complete));
-    }
+        public override LevelId GetLevelId()
+        {
+            return MAGE.GameModes.LevelManagementService.Get().GetLoadedLevel().LevelId;
+        }
 
-    protected override void EndMode()
-    {
-        ViewControl.Cleanup();
-    }
+        public override void Init()
+        {
 
-    protected override void SetupMode()
-    {
-        ViewControl = new PartyOutfiterViewControl();
-       
-        mCharacterSpawnPoint = GameObject.Find("SpawnPoint").transform;
-        ViewControl.Init(mCharacterSpawnPoint);
+        }
 
-        GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.ModeSetup_Complete));
-    }
+        protected override void CleanUpMode()
+        {
+            // nothing to cleanup
+            Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.ModeTakedown_Complete));
+        }
 
-    protected override void StartMode()
-    {
-        ViewControl.Start();
+        protected override void EndMode()
+        {
+            ViewControl.Cleanup();
+        }
+
+        protected override void SetupMode()
+        {
+            ViewControl = new PartyOutfiterViewControl();
+
+            mCharacterSpawnPoint = GameObject.Find("SpawnPoint").transform;
+            ViewControl.Init(mCharacterSpawnPoint);
+
+            Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.ModeSetup_Complete));
+        }
+
+        protected override void StartMode()
+        {
+            ViewControl.Start();
+        }
     }
 }
-

@@ -5,14 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class Terrain : MonoBehaviour
+namespace MAGE.GameModes.SceneElements
 {
-    public float Width;
-    public float Length;
-
-    private void Awake()
+    class Terrain : MonoBehaviour
     {
-        
+        public float Width;
+        public float Length;
+
+        private void Awake()
+        {
+
+        }
     }
 }
-

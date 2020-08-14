@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MAGE.GameModes.Encounter;
+using MAGE.GameModes.SceneElements;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

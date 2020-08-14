@@ -6,42 +6,46 @@ using System.Threading.Tasks;
 using TMPro;
 using UnityEngine.UI;
 
-class UIButton : UIComponentBase
+namespace MAGE.UI.Views
 {
-    public class DataProvider : IDataProvider
+    class UIButton : UIComponentBase
     {
-        public string Text;
-        public bool IsSelectable;
-
-        public DataProvider(string text, bool isSelectable)
+        public class DataProvider : IDataProvider
         {
-            Text = text;
-            IsSelectable = isSelectable;
+            public string Text;
+            public bool IsSelectable;
+
+            public DataProvider(string text, bool isSelectable)
+            {
+                Text = text;
+                IsSelectable = isSelectable;
+            }
+
+            public override string ToString()
+            {
+                return string.Format("[{0}|{1}]", Text, IsSelectable ? "True" : "False");
+            }
         }
 
-        public override string ToString()
+        public Button Button;
+        public TextMeshProUGUI Text;
+
+        private void Awake()
         {
-            return string.Format("[{0}|{1}]", Text, IsSelectable ? "True" : "False");
+            Button.onClick.AddListener(() => { OnPointerClick(null); });
+        }
+
+        public override void Publish(IDataProvider dataProvider)
+        {
+            if (dataProvider != null)
+            {
+                DataProvider dp = (DataProvider)dataProvider;
+
+                Text.text = dp.Text;
+                Button.interactable = dp.IsSelectable;
+            }
         }
     }
 
-    public Button Button;
-    public TextMeshProUGUI Text;
 
-    private void Awake()
-    {
-        Button.onClick.AddListener(()=> { OnPointerClick(null); });
-    }
-
-    public override void Publish(IDataProvider dataProvider)
-    {
-        if (dataProvider != null)
-        {
-            DataProvider dp = (DataProvider)dataProvider;
-        
-            Text.text = dp.Text;
-            Button.interactable = dp.IsSelectable;
-        }
-    }
 }
-

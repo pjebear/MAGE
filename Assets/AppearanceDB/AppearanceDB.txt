@@ -1,0 +1,1 @@
+{"List":[{"Key":220000,"Value":{"Id":220000,"PortraitSpriteId":9,"BodyType":0,"ArmorPrefabId":15,"HeldLeftPrefabId":-1,"HeldRightPrefabId":-1}}]}

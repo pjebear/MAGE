@@ -5,22 +5,26 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class ScenarioTriggerVolume : MonoBehaviour
+namespace MAGE.GameModes.SceneElements
 {
-    void OnTriggerEnter(Collider collider)
+    class ScenarioTriggerVolume : MonoBehaviour
     {
-        if (collider.gameObject.GetComponent<ThirdPersonActorController>() != null)
+        void OnTriggerEnter(Collider collider)
         {
-            GetComponentInParent<Scenario>().ScenarioTriggered();
+            if (collider.gameObject.GetComponent<ThirdPersonActorController>() != null)
+            {
+                GetComponentInParent<Scenario>().ScenarioTriggered();
+            }
         }
-    }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.collider.gameObject.GetComponent<ThirdPersonActorController>() != null)
+        private void OnCollisionEnter(Collision collision)
         {
-            GetComponentInParent<Scenario>().ScenarioTriggered();
+            if (collision.collider.gameObject.GetComponent<ThirdPersonActorController>() != null)
+            {
+                GetComponentInParent<Scenario>().ScenarioTriggered();
+            }
         }
     }
 }
+
 

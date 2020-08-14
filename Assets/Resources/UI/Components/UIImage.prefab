@@ -123,11 +123,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f08d6a587d7bf7d459bf6d620e560db4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mId: -1
   IsClickable: 1
-  ClickSFX: 1
+  ClickSFX: 4
   IsHoverable: 1
-  HoverSFX: 4
+  HoverSFX: 7
+  mId: -1
   Image: {fileID: 5474720301834447151}
 --- !u!114 &4879614012830604043
 MonoBehaviour:

@@ -4,35 +4,39 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-
-abstract class UIContainer : UIComponentBase
+namespace MAGE.UI.Views
 {
-    public override void Init(int id, UIContainer container)
+
+    abstract class UIContainer : UIComponentBase
     {
-        base.Init(id, container);
-
-        InitChildren();
-    }
-
-    protected abstract void InitChildren();
-
-    protected virtual UIInteractionInfo ModifyInteractionInfo(UIInteractionInfo interactionInfo)
-    {
-        return interactionInfo;
-    }
-
-    public void HandleInteraction(UIInteractionInfo interactionInfo)
-    {
-        UIInteractionInfo modifiedInfo = ModifyInteractionInfo(interactionInfo);
-
-        if (mContainer != null)
+        public override void Init(int id, UIContainer container)
         {
-            mContainer.HandleInteraction(modifiedInfo);
+            base.Init(id, container);
+
+            InitChildren();
         }
-        else
+
+        protected abstract void InitChildren();
+
+        protected virtual UIInteractionInfo ModifyInteractionInfo(UIInteractionInfo interactionInfo)
         {
-            UIManager.Instance.ComponentInteracted(mId, modifiedInfo);
+            return interactionInfo;
+        }
+
+        public void HandleInteraction(UIInteractionInfo interactionInfo)
+        {
+            UIInteractionInfo modifiedInfo = ModifyInteractionInfo(interactionInfo);
+
+            if (mContainer != null)
+            {
+                mContainer.HandleInteraction(modifiedInfo);
+            }
+            else
+            {
+                UIManager.Instance.ComponentInteracted(mId, modifiedInfo);
+            }
         }
     }
+
+
 }
-

@@ -5,11 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-interface UIContainerControl
+namespace MAGE.UI.Views
 {
-    IDataProvider Publish(int containerId);
+    interface UIContainerControl
+    {
+        IDataProvider Publish(int containerId);
 
-    void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo);
-    string Name();
+        void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo);
+        string Name();
+    }
 }
-

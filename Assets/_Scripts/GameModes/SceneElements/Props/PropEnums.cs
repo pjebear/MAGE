@@ -4,35 +4,42 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-enum PropType
+namespace MAGE.GameModes.SceneElements
 {
-    Environment,
-    Container,
-    NPC,
+    enum PropType
+    {
+        Environment,
+        Container,
+        NPC,
 
-    NUM
+        NUM
+    }
+
+    enum EnvironmentPropId
+    {
+        None = -1,
+
+        NUM
+    }
+
+    enum ContainerPropId
+    {
+        None = -1,
+
+        FieldVendorContainer = PropConstants.CONTAINER_ID_OFFSET,
+    
+
+        NUM
+    }
+
+    enum NPCPropId
+    {
+        None = -1,
+
+        FieldVendor = PropConstants.NPC_ID_OFFSET,
+
+        NUM
+    }
 }
 
-enum EnvironmentPropId
-{
-    None = -1,
 
-    NUM 
-
-}
-
-enum ContainerPropId
-{
-    None = -1,
-
-    NUM 
-}
-
-enum NPCId
-{
-    None = -1,
-
-    FieldVendor,
-
-    NUM
-}

@@ -1,63 +1,76 @@
-﻿using System;
+﻿using MAGE.GameServices;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-abstract class GameModeBase 
-    : MonoBehaviour
-    , IEventHandler<GameModeEvent>
+namespace MAGE.GameModes
 {
-    public abstract GameModeType GetGameModeType();
-
-    private void Start()
+    abstract class GameModeBase
+        : MonoBehaviour
+        , Messaging.IMessageHandler
     {
-        GameModeEventRouter.Instance.RegisterHandler(this);
-        GameModesModule.Instance.NotifyGameModeLoaded(this);
-    }
+        public abstract GameModeType GetGameModeType();
 
-    private void OnDestroy()
-    {
-        GameModeEventRouter.Instance.UnRegisterListener(this);
-    }
-
-    public virtual void HandleEvent(GameModeEvent eventInfo)
-    {
-        switch (eventInfo.Type)
+        private void Start()
         {
-            case GameModeEvent.EventType.ModeSetup_Begin:
-            {
-                SetupMode();
-            }
-            break;
-
-            case GameModeEvent.EventType.ModeTakedown_Begin:
-            {
-                    
-                CleanUpMode();
-            }
-            break;
-
-            case GameModeEvent.EventType.ModeStart:
-            {
-                StartMode();
-            }
-            break;
-
-            case GameModeEvent.EventType.ModeEnd:
-            {
-                EndMode();
-            }
-            break;
+            Messaging.MessageRouter.Instance.RegisterHandler(this);
+            GameModesModule.Instance.NotifyGameModeLoaded(this);
         }
-    }
 
-    public abstract void Init();
-    public abstract LevelId GetLevelId();
-    protected abstract void SetupMode();
-    protected abstract void StartMode();
-    protected abstract void EndMode();
-    protected abstract void CleanUpMode();
+        private void OnDestroy()
+        {
+            Messaging.MessageRouter.Instance.UnRegisterHandler(this);
+        }
+
+        public virtual void HandleMessage(Messaging.MessageInfoBase messageInfo)
+        {
+            switch (messageInfo.MessageId)
+            {
+                case GameModeMessage.Id:
+                {
+                    GameModeMessage gameModeMessage = messageInfo as GameModeMessage;
+
+                    switch (gameModeMessage.Type)
+                    {
+                        case GameModeMessage.EventType.ModeSetup_Begin:
+                        {
+                            SetupMode();
+                        }
+                        break;
+
+                        case GameModeMessage.EventType.ModeTakedown_Begin:
+                        {
+                            CleanUpMode();
+                        }
+                        break;
+
+                        case GameModeMessage.EventType.ModeStart:
+                        {
+                            StartMode();
+                        }
+                        break;
+
+                        case GameModeMessage.EventType.ModeEnd:
+                        {
+                            EndMode();
+                        }
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+
+        public abstract void Init();
+        public abstract LevelId GetLevelId();
+        protected abstract void SetupMode();
+        protected abstract void StartMode();
+        protected abstract void EndMode();
+        protected abstract void CleanUpMode();
+    }
 }
+
 

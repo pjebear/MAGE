@@ -1,4 +1,7 @@
-﻿using System;
+﻿using MAGE.GameModes.Exploration;
+using MAGE.GameModes.SceneElements;
+using MAGE.GameServices;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,34 +9,37 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 
-
-class Scenario : MonoBehaviour
+namespace MAGE.GameModes.SceneElements
 {
-    public ScenarioId ScenarioId = ScenarioId.INVALID;
-    public Transform NPCContainer;
-    public Dictionary<int, Actor> NPCs = new Dictionary<int, Actor>();
-
-    private void Start()
+    class Scenario : MonoBehaviour
     {
-        Init();
-    }
+        public ScenarioId ScenarioId = ScenarioId.INVALID;
+        public Transform NPCContainer;
+        public Dictionary<int, Actor> NPCs = new Dictionary<int, Actor>();
 
-    public void Init()
-    {
-        for (int i = 0; i < NPCContainer.childCount; ++i)
+        private void Start()
         {
-            ActorSpawner spawner = NPCContainer.GetChild(i).GetComponent<ActorSpawner>();
-            if (spawner != null)
+            Init();
+        }
+
+        public void Init()
+        {
+            for (int i = 0; i < NPCContainer.childCount; ++i)
             {
-                spawner.Spawn();
-                NPCs.Add(spawner.ActorId, spawner.Actor);
+                ActorSpawner spawner = NPCContainer.GetChild(i).GetComponent<ActorSpawner>();
+                if (spawner != null)
+                {
+                    spawner.Refresh();
+                    NPCs.Add(spawner.GetActorId(), spawner.Actor);
+                }
             }
         }
-    }
 
-    public void ScenarioTriggered()
-    {
-        ExplorationEventRouter.Instance.NotifyEvent(new ExplorationEvent(ExplorationEvent.EventType.ScenarioTriggered, this));
+        public void ScenarioTriggered()
+        {
+            Messaging.MessageRouter.Instance.NotifyMessage(new ExplorationMessage(ExplorationMessage.EventType.ScenarioTriggered, this));
+        }
     }
 }
+
 

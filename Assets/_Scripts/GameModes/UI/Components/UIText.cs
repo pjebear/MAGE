@@ -3,52 +3,56 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-class UIText : UIComponentBase
+namespace MAGE.UI.Views
 {
-    public class DataProvider : IDataProvider
+    class UIText : UIComponentBase
     {
-        public Optional<string> Text;
-
-        public DataProvider(Optional<string> text)
+        public class DataProvider : IDataProvider
         {
-            Text = text;
+            public Optional<string> Text;
+
+            public DataProvider(Optional<string> text)
+            {
+                Text = text;
+            }
+
+            public override string ToString()
+            {
+                return "UITextDP";
+            }
         }
 
-        public override string ToString()
+        public string Text;
+        public int FontSize;
+        public Color FontColor;
+
+        public TextMeshProUGUI TMPro;
+
+        public void Publish(string text)
         {
-            return "UITextDP";
+            TMPro.text = text;
+        }
+
+        public override void Publish(IDataProvider dataProvider)
+        {
+            DataProvider dp = (DataProvider)dataProvider;
+
+            if (dp.Text.HasValue) Text = dp.Text.Value;
+
+            TMPro.text = Text;
+        }
+
+        // Start is called before the first frame update
+        void Start()
+        {
+
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+
         }
     }
 
-    public string Text;
-    public int FontSize;
-    public Color FontColor;
-
-    public TextMeshProUGUI TMPro;
-
-    public void Publish(string text)
-    {
-        TMPro.text = text;
-    }
-
-    public override void Publish(IDataProvider dataProvider)
-    {
-        DataProvider dp = (DataProvider)dataProvider;
-
-        if (dp.Text.HasValue) Text = dp.Text.Value;
-
-        TMPro.text = Text;
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

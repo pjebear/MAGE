@@ -5,43 +5,46 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-static class ItemUtil
+namespace MAGE.GameServices
 {
-    public static ItemType TypeFromId(int itemId)
+    static class ItemUtil
     {
-        ItemType type = ItemType.Equippable;
+        public static ItemType TypeFromId(int itemId)
+        {
+            ItemType type = ItemType.Equippable;
 
-        if (itemId >= (int)ItemType.Bundle)
-        {
-            type = ItemType.Bundle;
-        }
-        else if (itemId >= (int)ItemType.Story)
-        {
-            type = ItemType.Story;
-        }
-        else if (itemId >= (int)ItemType.Consumable)
-        {
-            type = ItemType.Consumable;
+            if (itemId >= (int)ItemType.Bundle)
+            {
+                type = ItemType.Bundle;
+            }
+            else if (itemId >= (int)ItemType.Story)
+            {
+                type = ItemType.Story;
+            }
+            else if (itemId >= (int)ItemType.Consumable)
+            {
+                type = ItemType.Consumable;
+            }
+
+            return type;
         }
 
-        return type;
-    }
-
-    public static string ToString(int itemId)
-    {
-        ItemType type = TypeFromId(itemId);
-        switch (type)
+        public static string ToString(int itemId)
         {
-            case (ItemType.Equippable):
-                return ((EquippableId)itemId).ToString();
-            case (ItemType.Story):
-                return ((StoryItemId)itemId).ToString();
-            case (ItemType.Consumable):
-                return ((ConsumableId)itemId).ToString();
-            case (ItemType.Bundle):
-                return ((BundleId)itemId).ToString();
+            ItemType type = TypeFromId(itemId);
+            switch (type)
+            {
+                case (ItemType.Equippable):
+                    return ((EquippableId)itemId).ToString();
+                case (ItemType.Story):
+                    return ((StoryItemId)itemId).ToString();
+                case (ItemType.Consumable):
+                    return ((ConsumableId)itemId).ToString();
+                case (ItemType.Bundle):
+                    return ((BundleId)itemId).ToString();
+            }
+            Debug.LogWarning("");
+            return "INVALID";
         }
-        Debug.LogWarning("");
-        return "INVALID";
     }
 }

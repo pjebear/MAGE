@@ -4,29 +4,32 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-class ActorActions : UIContainer
+namespace MAGE.UI.Views
 {
-    public enum ComponentId
+    class ActorActions : UIContainer
     {
-        ActionList
-    }
+        public enum ComponentId
+        {
+            ActionList
+        }
 
-    public class DataProvider : IDataProvider
-    {
-        public UIList.DataProvider ButtonListDP;
-    }
+        public class DataProvider : IDataProvider
+        {
+            public UIList.DataProvider ButtonListDP;
+        }
 
-    public UIList ActionList;
+        public UIList ActionList;
 
-    public override void Publish(IDataProvider dataProvider)
-    {
-        DataProvider dp = (DataProvider)dataProvider;
+        public override void Publish(IDataProvider dataProvider)
+        {
+            DataProvider dp = (DataProvider)dataProvider;
 
-        ActionList.Publish(dp.ButtonListDP);
-    }
+            ActionList.Publish(dp.ButtonListDP);
+        }
 
-    protected override void InitChildren()
-    {
-        ActionList.Init((int)ComponentId.ActionList, this);
+        protected override void InitChildren()
+        {
+            ActionList.Init((int)ComponentId.ActionList, this);
+        }
     }
 }

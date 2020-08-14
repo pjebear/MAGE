@@ -3,17 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-class UIImage : UIComponentBase
+namespace MAGE.UI.Views
 {
-    public Image Image;
-
-    public void Publish(string assetName)
+    class UIImage : UIComponentBase
     {
-        Image.sprite = UIManager.Instance.LoadSprite(assetName);
-    }
+        public Image Image;
 
-    public override void Publish(IDataProvider dataProvider)
-    {
-        // TODO:
+        public void Publish(string assetName)
+        {
+            Image.sprite = UIManager.Instance.LoadSprite(assetName);
+        }
+
+        public override void Publish(IDataProvider dataProvider)
+        {
+            // TODO:
+        }
     }
 }
+

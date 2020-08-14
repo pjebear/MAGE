@@ -4,40 +4,44 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
-class MainMenuView : UIContainer
+namespace MAGE.UI.Views
 {
-    public enum ComponentId
+    class MainMenuView : UIContainer
     {
-        NewGameBtn,
-        SaveFileBtns,
-
-        NUM
-    }
-
-    public class DataProvider : IDataProvider
-    {
-        public List<string> SaveFiles;
-    }
-
-    public UIList SaveFileBtns;
-    public UIButton NewGameBtn;
-
-    public override void Publish(IDataProvider dataProvider)
-    {
-        DataProvider dp = dataProvider as DataProvider;
-
-        List<IDataProvider> buttonDPs = new List<IDataProvider>();
-        foreach (string saveFile in dp.SaveFiles)
+        public enum ComponentId
         {
-            buttonDPs.Add(new UIButton.DataProvider(saveFile, true));
+            NewGameBtn,
+            SaveFileBtns,
+
+            NUM
         }
-        SaveFileBtns.Publish(new UIList.DataProvider(buttonDPs));
+
+        public class DataProvider : IDataProvider
+        {
+            public List<string> SaveFiles;
+        }
+
+        public UIList SaveFileBtns;
+        public UIButton NewGameBtn;
+
+        public override void Publish(IDataProvider dataProvider)
+        {
+            DataProvider dp = dataProvider as DataProvider;
+
+            List<IDataProvider> buttonDPs = new List<IDataProvider>();
+            foreach (string saveFile in dp.SaveFiles)
+            {
+                buttonDPs.Add(new UIButton.DataProvider(saveFile, true));
+            }
+            SaveFileBtns.Publish(new UIList.DataProvider(buttonDPs));
+        }
+
+        protected override void InitChildren()
+        {
+            SaveFileBtns.Init((int)ComponentId.SaveFileBtns, this);
+            NewGameBtn.Init((int)ComponentId.NewGameBtn, this);
+        }
     }
 
-    protected override void InitChildren()
-    {
-        SaveFileBtns.Init((int)ComponentId.SaveFileBtns, this);
-        NewGameBtn.Init((int)ComponentId.NewGameBtn, this);
-    }
 }
+

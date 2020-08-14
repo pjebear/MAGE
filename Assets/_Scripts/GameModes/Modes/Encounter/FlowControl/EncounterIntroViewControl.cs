@@ -1,78 +1,88 @@
-﻿using System;
+﻿using MAGE.GameModes.Encounter;
+using MAGE.GameServices;
+using MAGE.GameServices.World;
+using MAGE.UI;
+using MAGE.UI.Views;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class EncounterIntroViewControl 
-    : MonoBehaviour, 
-    UIContainerControl
+namespace MAGE.GameModes.FlowControl
 {
-    private string Tag = "EncounterIntroViewControl";
-
-    public void Init()
+    class EncounterIntroViewControl
+    : MonoBehaviour,
+    UIContainerControl
     {
-        
-    }
+        private string Tag = "EncounterIntroViewControl";
 
-    public void Show()
-    {
-        UIManager.Instance.PostContainer(UIContainerId.EncounterIntroView, this);
-    }
-
-    public void Hide()
-    {
-        UIManager.Instance.RemoveOverlay(UIContainerId.EncounterIntroView);
-    }
-
-    public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
-    {
-       switch (containerId)
+        public void Init()
         {
-            case (int)UIContainerId.EncounterIntroView:
+
+        }
+
+        public void Show()
+        {
+            UIManager.Instance.PostContainer(UIContainerId.EncounterIntroView, this);
+        }
+
+        public void Hide()
+        {
+            UIManager.Instance.RemoveOverlay(UIContainerId.EncounterIntroView);
+        }
+
+        public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
+        {
+            switch (containerId)
             {
-                if (interactionInfo.ComponentId == (int)EncounterIntroView.ComponentId.ContinueBtn
-                    && interactionInfo.InteractionType == UIInteractionType.Click)
+                case (int)UIContainerId.EncounterIntroView:
                 {
-                    EncounterEventRouter.Instance.NotifyEvent(new EncounterEvent(EncounterEvent.EventType.IntroComplete));
+                    if (interactionInfo.ComponentId == (int)EncounterIntroView.ComponentId.ContinueBtn
+                        && interactionInfo.InteractionType == UIInteractionType.Click)
+                    {
+                        Messaging.MessageRouter.Instance.NotifyMessage(new EncounterMessage(EncounterMessage.EventType.IntroComplete));
+                    }
                 }
+                break;
             }
-            break;
         }
-    }
 
-    public string Name()
-    {
-        return Tag;
-    }
-
-    public IDataProvider Publish(int containerId)
-    {
-        EncounterIntroView.DataProvider dp = new EncounterIntroView.DataProvider();
-
-        EncounterContext context = EncounterModule.Model.EncounterContext;
-
-        dp.EncounterType = context.EncounterType.ToString();
-        dp.EncounterInfo = "";
-
-        foreach (EncounterCondition encounterCondition in context.WinConditions)
+        public string Name()
         {
-            dp.WinConditions.Add(encounterCondition.ToString());
+            return Tag;
         }
 
-        foreach (EncounterCondition encounterCondition in context.LoseConditions)
+        public IDataProvider Publish(int containerId)
         {
-            dp.LoseConditions.Add(encounterCondition.ToString());
-        }
+            EncounterIntroView.DataProvider dp = new EncounterIntroView.DataProvider();
 
-        dp.Rewards.Add(context.CurrencyReward.ToString() + " gil");
-        foreach (ItemId itemReward in context.ItemRewards)
-        {
-            dp.Rewards.Add(itemReward.ToString());
-        }
+            EncounterContext context = Encounter.EncounterModule.Model.EncounterContext;
 
-        return dp;
+            dp.EncounterType = context.EncounterType.ToString();
+            dp.EncounterInfo = "";
+
+            foreach (EncounterCondition encounterCondition in context.WinConditions)
+            {
+                dp.WinConditions.Add(encounterCondition.ToString());
+            }
+
+            foreach (EncounterCondition encounterCondition in context.LoseConditions)
+            {
+                dp.LoseConditions.Add(encounterCondition.ToString());
+            }
+
+            dp.Rewards.Add(context.CurrencyReward.ToString() + " gil");
+            foreach (ItemId itemReward in context.ItemRewards)
+            {
+                dp.Rewards.Add(itemReward.ToString());
+            }
+
+            return dp;
+        }
     }
 }
+
+
 

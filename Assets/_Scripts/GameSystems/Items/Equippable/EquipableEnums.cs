@@ -4,99 +4,103 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-enum EquippableCategory
+namespace MAGE.GameServices
 {
-    Armor,
-    OneHandWeapon,
-    TwoHandWeapon,
-    Shield,
-    Accessory,
+    enum EquippableCategory
+    {
+        Armor,
+        OneHandWeapon,
+        TwoHandWeapon,
+        Shield,
+        Accessory,
 
-    NUM
-}
+        NUM
+    }
 
-enum ArmorType
-{
-    Cloth,
-    Leather,
-    Chain,
-    Plate,
-    All
-}
+    enum ArmorType
+    {
+        Cloth,
+        Leather,
+        Chain,
+        Plate,
+        All
+    }
 
-enum OneHandWeaponType
-{
-    All = -1,
+    enum OneHandWeaponType
+    {
+        All = -1,
 
-    Fist,
-    Dagger,
-    Sword,
-    Axe,
-    Mace,
-    Crossbow,
-    
-}
+        Fist,
+        Dagger,
+        Sword,
+        Axe,
+        Mace,
+        Crossbow,
 
-enum TwoHandWeaponType
-{
-    All = -1,
+    }
 
-    BastardSword,
-    BattleAxe,
-    Maul,
-    Staff,
-    Bow,
-}
+    enum TwoHandWeaponType
+    {
+        All = -1,
 
-enum ShieldType
-{
-    All = -1, 
+        BastardSword,
+        BattleAxe,
+        Maul,
+        Staff,
+        Bow,
+    }
 
-    Shield,
-    TowerShield,
-   
-}
+    enum ShieldType
+    {
+        All = -1,
 
-enum AccessoryType
-{
-    StatBonus,
+        Shield,
+        TowerShield,
 
-    NUM
-}
+    }
 
-enum EquippableId
-{
-    INVALID = -1,
+    enum AccessoryType
+    {
+        StatBonus,
 
-    // Armor
-    ClothArmor_0 = ItemType.Equippable,
-    LeatherArmor_0,
-    ChainArmor_0,
-    PlateArmor_0,
+        NUM
+    }
 
-    // 1 handers
-    Fists_0,
-    Dagger_0,
-    Sword_0,
-    Axe_0,
-    Mace_0,
-    Crossbow_0,
+    enum EquippableId
+    {
+        INVALID = -1,
 
-    // 2 handers
-    BastardSword_0,
-    BattleAxe_0,
-    Maul_0,
-    Staff_0,
-    MageSource_0,
-    Bow_0,
-    LongBow_0,
+        // Armor
+        ClothArmor_0 = ItemType.Equippable,
+        LeatherArmor_0,
+        ChainArmor_0,
+        PlateArmor_0,
 
-    // shields
-    Shield_0,
-    TowerShield_0,
+        // 1 handers
+        Fists_0,
+        Dagger_0,
+        Sword_0,
+        Axe_0,
+        Mace_0,
+        Crossbow_0,
 
-    // Accessories
-    Relic,
+        // 2 handers
+        BastardSword_0,
+        BattleAxe_0,
+        Maul_0,
+        Staff_0,
+        MageSource_0,
+        Bow_0,
+        LongBow_0,
 
-    END = Relic
+        // shields
+        Shield_0,
+        TowerShield_0,
+
+        // Accessories
+        Relic,
+
+        END = Relic
+    }
+
 }

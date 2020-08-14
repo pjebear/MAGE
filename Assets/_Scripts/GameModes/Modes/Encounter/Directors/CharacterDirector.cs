@@ -1,139 +1,148 @@
-﻿using System.Collections;
+﻿using MAGE.GameModes.SceneElements;
+using MAGE.GameServices;
+using MAGE.GameServices.Character;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-class CharacterDirector : MonoBehaviour
+namespace MAGE.GameModes.Encounter
 {
-    public BillboardEmitter BillboardEmitterPrefab;
-
-    private Dictionary<EncounterActorController, TileIdx> mActorPositions = null;
-
-    public Dictionary<EncounterCharacter, EncounterActorController> CharacterActorLookup;
-
-    GameObject Canvas;
-
-
-    protected void Awake()
+    class CharacterDirector : MonoBehaviour
     {
-        
-        Canvas = GameObject.Find("Canvas");
-       
-        CharacterActorLookup = new Dictionary<EncounterCharacter, EncounterActorController>();
-        mActorPositions = new Dictionary<EncounterActorController, TileIdx>();
-    }
+        public BillboardEmitter BillboardEmitterPrefab;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+        private Dictionary<EncounterActorController, TileIdx> mActorPositions = null;
 
-    public void CleanupCharacters()
-    {
-        foreach (EncounterCharacter encounterCharacter in CharacterActorLookup.Keys)
+        public Dictionary<EncounterCharacter, EncounterActorController> CharacterActorLookup;
+
+        GameObject Canvas;
+
+
+        protected void Awake()
         {
-            EncounterModule.AuraDirector.RemoveActor(CharacterActorLookup[encounterCharacter]);
-            EncounterModule.AnimationDirector.UnRegisterActor(CharacterActorLookup[encounterCharacter]);
 
-            Destroy(CharacterActorLookup[encounterCharacter].gameObject);
-        }
-    }
+            Canvas = GameObject.Find("Canvas");
 
-    public EncounterActorController AddCharacter(EncounterCharacter character, TileIdx atIdx)
-    {
-        Transform actorParent = GameObject.Find("EncounterContainer").transform;
-
-        EncounterModule.Model.Characters.Add(character.Id, character);
-        EncounterModule.Model.Teams[character.Team].Add(character);
-
-        Actor actor = GameModesModule.ActorLoader.CreateActor(character.Appearance, actorParent);
-        EncounterActorController actorController = actor.gameObject.AddComponent<EncounterActorController>();
-        actorController.Actor = actor;
-
-        actorController.BillboardEmitter = Instantiate(BillboardEmitterPrefab, actorController.transform);
-        actorController.ActorController = actorController.gameObject.AddComponent<ActorController>();
-        actorController.ActorController.MoveSpeed = 3;
-        CharacterActorLookup.Add(character, actorController);
-        actorController.EncounterCharacter = character;
-
-        foreach (AuraType type in actorController.EncounterCharacter.Auras)
-        {
-            EncounterModule.AuraDirector.RegisterAura(actorController.EncounterCharacter.GetAuraInfo(type), actorController, false);
+            CharacterActorLookup = new Dictionary<EncounterCharacter, EncounterActorController>();
+            mActorPositions = new Dictionary<EncounterActorController, TileIdx>();
         }
 
-        EncounterModule.Map.PlaceAtTile(atIdx, actorController);
-        mActorPositions.Add(actorController, atIdx);
-        EncounterModule.AnimationDirector.RegisterActor(actorController);
-
-        return actorController;
-    }
-
-    public void RemoveCharacter()
-    {
-
-    }
-
-    public EncounterActorController GetController(EncounterCharacter character)
-    {
-        return CharacterActorLookup[character];
-    }
-
-    public TileIdx GetActorPosition(EncounterCharacter character)
-    {
-        return mActorPositions[GetController(character)];
-    }
-
-    public void UpdateCharacterPosition(EncounterCharacter character, TileIdx toLocation)
-    {
-        mActorPositions[CharacterActorLookup[character]] = toLocation;
-        EncounterModule.Map.PlaceAtTile(toLocation, CharacterActorLookup[character]);
-    }
-
-    public void ApplyStateChange(EncounterCharacter character, StateChange stateChange)
-    {
-        character.ApplyStateChange(stateChange);
-        if (!character.IsAlive)
+        // Start is called before the first frame update
+        void Start()
         {
-            EncounterActorController controller = CharacterActorLookup[character];
-            EncounterModule.AnimationDirector.AnimateActor(controller, AnimationFactory.CheckoutAnimation(AnimationId.Faint));
-            controller.GetComponent<AudioSource>().PlayOneShot(GameModesModule.AudioManager.GetSFXClip(SFXId.MaleDeath));
 
-            EncounterEventRouter.Instance.NotifyEvent(new EncounterEvent(EncounterEvent.EventType.CharacterKO, character));
         }
-    }
 
-    public void IncrementStatusEffects()
-    {
-        foreach (EncounterCharacter character in EncounterModule.Model.Characters.Values)
+        public void CleanupCharacters()
         {
-            if (character.IsAlive)
+            foreach (EncounterCharacter encounterCharacter in CharacterActorLookup.Keys)
             {
-                foreach (StatusEffect effect in character.ProgressStatusEffects())
+                EncounterModule.AuraDirector.RemoveActor(CharacterActorLookup[encounterCharacter]);
+                EncounterModule.AnimationDirector.UnRegisterActor(CharacterActorLookup[encounterCharacter]);
+
+                Destroy(CharacterActorLookup[encounterCharacter].gameObject);
+            }
+        }
+
+        public EncounterActorController AddCharacter(EncounterCharacter character, TileIdx atIdx)
+        {
+            Transform actorParent = GameObject.Find("EncounterContainer").transform;
+
+            EncounterModule.Model.Characters.Add(character.Id, character);
+            EncounterModule.Model.Teams[character.Team].Add(character);
+
+            Appearance appearance = GameModes.LevelManagementService.Get().GetAppearance(character.AppearanceId);
+            Actor actor = GameModesModule.ActorLoader.CreateActor(appearance, actorParent);
+            EncounterActorController actorController = actor.gameObject.AddComponent<EncounterActorController>();
+            actorController.Actor = actor;
+
+            actorController.BillboardEmitter = Instantiate(BillboardEmitterPrefab, actorController.transform);
+            actorController.ActorController = actorController.gameObject.AddComponent<ActorController>();
+            actorController.ActorController.MoveSpeed = 3;
+            CharacterActorLookup.Add(character, actorController);
+            actorController.EncounterCharacter = character;
+
+            foreach (AuraType type in actorController.EncounterCharacter.Auras)
+            {
+                EncounterModule.AuraDirector.RegisterAura(actorController.EncounterCharacter.GetAuraInfo(type), actorController, false);
+            }
+
+            EncounterModule.Map.PlaceAtTile(atIdx, actorController);
+            mActorPositions.Add(actorController, atIdx);
+            EncounterModule.AnimationDirector.RegisterActor(actorController);
+
+            return actorController;
+        }
+
+        public void RemoveCharacter()
+        {
+
+        }
+
+        public EncounterActorController GetController(EncounterCharacter character)
+        {
+            return CharacterActorLookup[character];
+        }
+
+        public TileIdx GetActorPosition(EncounterCharacter character)
+        {
+            return mActorPositions[GetController(character)];
+        }
+
+        public void UpdateCharacterPosition(EncounterCharacter character, TileIdx toLocation)
+        {
+            mActorPositions[CharacterActorLookup[character]] = toLocation;
+            EncounterModule.Map.PlaceAtTile(toLocation, CharacterActorLookup[character]);
+        }
+
+        public void ApplyStateChange(EncounterCharacter character, StateChange stateChange)
+        {
+            character.ApplyStateChange(stateChange);
+            if (!character.IsAlive)
+            {
+                EncounterActorController controller = CharacterActorLookup[character];
+                EncounterModule.AnimationDirector.AnimateActor(controller, AnimationFactory.CheckoutAnimation(AnimationId.Faint));
+                controller.GetComponent<AudioSource>().PlayOneShot(GameModesModule.AudioManager.GetSFXClip(SFXId.MaleDeath));
+
+                Messaging.MessageRouter.Instance.NotifyMessage(new EncounterMessage(EncounterMessage.EventType.CharacterKO, character));
+            }
+        }
+
+        public void IncrementStatusEffects()
+        {
+            foreach (EncounterCharacter character in EncounterModule.Model.Characters.Values)
+            {
+                if (character.IsAlive)
                 {
-                    CharacterActorLookup[character].DisplayStatusRemoval(effect);
+                    foreach (StatusEffect effect in character.ProgressStatusEffects())
+                    {
+                        CharacterActorLookup[character].DisplayStatusRemoval(effect);
+                    }
                 }
             }
         }
-    }
 
-    public void ApplyStatusEffects()
-    {
-        foreach (EncounterCharacter character in EncounterModule.Model.Characters.Values)
+        public void ApplyStatusEffects()
         {
-            if (character.IsAlive)
+            foreach (EncounterCharacter character in EncounterModule.Model.Characters.Values)
             {
-                foreach(StateChange stateChange in character.GetTurnStartStateChanges())
+                if (character.IsAlive)
                 {
-                    CharacterActorLookup[character].DisplayStateChange(stateChange);
-                    ApplyStateChange(character, stateChange);
+                    foreach (StateChange stateChange in character.GetTurnStartStateChanges())
+                    {
+                        CharacterActorLookup[character].DisplayStateChange(stateChange);
+                        ApplyStateChange(character, stateChange);
+                    }
                 }
             }
         }
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        // Update is called once per frame
+        void Update()
+        {
+
+        }
     }
 }
+
+

@@ -2,93 +2,95 @@
 using UnityEngine;
 
 
-class UIList : UIContainer
+namespace MAGE.UI.Views
 {
-    public class DataProvider : IDataProvider
+    class UIList : UIContainer
     {
-        public List<IDataProvider> Elements = new List<IDataProvider>();
-
-        public DataProvider() { }
-        public DataProvider(List<IDataProvider> elements)
+        public class DataProvider : IDataProvider
         {
-            Elements = elements;
-        }
-    }
+            public List<IDataProvider> Elements = new List<IDataProvider>();
 
-    public GameObject ElementPrefab;
-    public Transform ElementContainer;
-    public Vector2 ListDirection = Vector2.right;
-    public float Padding = 10f;
-
-    public List<UIComponentBase> Elements = new List<UIComponentBase>();
-
-    public override void Publish(IDataProvider dataProvider)
-    {
-        DataProvider dp = (DataProvider)dataProvider;
-
-        int numElements = dp.Elements.Count;
-
-        if (Elements.Count < numElements)
-        {
-            for (int i = Elements.Count; i < numElements; ++i)
+            public DataProvider() { }
+            public DataProvider(List<IDataProvider> elements)
             {
-                AddElement();
+                Elements = elements;
             }
         }
-        
-        for (int i = 0; i < Elements.Count; ++i)
+
+        public GameObject ElementPrefab;
+        public Transform ElementContainer;
+        public Vector2 ListDirection = Vector2.right;
+        public float Padding = 10f;
+
+        public List<UIComponentBase> Elements = new List<UIComponentBase>();
+
+        public override void Publish(IDataProvider dataProvider)
         {
-            if (i < numElements)
+            DataProvider dp = (DataProvider)dataProvider;
+
+            int numElements = dp.Elements.Count;
+
+            if (Elements.Count < numElements)
             {
-                Elements[i].Publish(dp.Elements[i]);
-                Elements[i].gameObject.SetActive(true);
+                for (int i = Elements.Count; i < numElements; ++i)
+                {
+                    AddElement();
+                }
+            }
+
+            for (int i = 0; i < Elements.Count; ++i)
+            {
+                if (i < numElements)
+                {
+                    Elements[i].Publish(dp.Elements[i]);
+                    Elements[i].gameObject.SetActive(true);
+                }
+                else
+                {
+                    Elements[i].gameObject.SetActive(false);
+                }
+            }
+        }
+
+        protected override UIInteractionInfo ModifyInteractionInfo(UIInteractionInfo interactionInfo)
+        {
+            return new ListInteractionInfo(mId, interactionInfo);
+        }
+
+        private UIComponentBase AddElement()
+        {
+            GameObject newElement = Instantiate(ElementPrefab, ElementContainer);
+
+            Rect elementRect = ElementPrefab.GetComponent<RectTransform>().rect;
+            Vector2 ElementDimensions = new Vector2(elementRect.width, elementRect.height) + Vector2.one * Padding;
+
+            int elementIdx = Elements.Count;
+            Vector2 localPos = Vector2.zero;
+            if (ListDirection == Vector2.left || ListDirection == Vector2.right)
+            {
+                localPos.x = ElementDimensions.x * elementIdx * (ListDirection == Vector2.left ? -1 : 1);
             }
             else
             {
-                Elements[i].gameObject.SetActive(false);
+                localPos.y = ElementDimensions.y * elementIdx * (ListDirection == Vector2.down ? -1 : 1);
+            }
+
+            newElement.transform.localPosition = localPos;
+            newElement.SetActive(true);
+
+            UIComponentBase component = newElement.GetComponent<UIComponentBase>();
+            component.Init(elementIdx, this);
+            Elements.Add(component);
+
+            return component;
+        }
+
+        protected override void InitChildren()
+        {
+            for (int i = 0; i < Elements.Count; ++i)
+            {
+                Elements[i].Init(i, this);
             }
         }
     }
-
-    protected override UIInteractionInfo ModifyInteractionInfo(UIInteractionInfo interactionInfo)
-    {
-        return new ListInteractionInfo(mId, interactionInfo);
-    }
-
-    private UIComponentBase AddElement()
-    {
-        GameObject newElement = Instantiate(ElementPrefab, ElementContainer);
-
-        Rect elementRect = ElementPrefab.GetComponent<RectTransform>().rect;
-        Vector2 ElementDimensions = new Vector2(elementRect.width, elementRect.height) + Vector2.one * Padding;
-
-        int elementIdx = Elements.Count;
-        Vector2 localPos = Vector2.zero;
-        if (ListDirection == Vector2.left || ListDirection == Vector2.right)
-        {
-            localPos.x = ElementDimensions.x * elementIdx * (ListDirection == Vector2.left ? -1 : 1);
-        }
-        else
-        {
-            localPos.y = ElementDimensions.y * elementIdx * (ListDirection == Vector2.down ? -1 : 1);
-        }
-
-        newElement.transform.localPosition = localPos;
-        newElement.SetActive(true);
-
-        UIComponentBase component = newElement.GetComponent<UIComponentBase>();
-        component.Init(elementIdx, this);
-        Elements.Add(component);
-
-        return component;
-    }
-
-    protected override void InitChildren()
-    {
-        for (int i = 0; i < Elements.Count; ++i)
-        {
-            Elements[i].Init(i, this);
-        }
-    }
 }
-

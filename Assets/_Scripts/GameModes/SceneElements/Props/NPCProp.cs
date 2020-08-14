@@ -1,16 +1,38 @@
-﻿using System;
+﻿using MAGE.GameServices;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
-class NPCInfo : PropInfoBase
+namespace MAGE.GameModes.SceneElements
 {
-    public string Name;
-    public Appearance Appearance = new Appearance();
+    class NPCProp : PropBase
+    {
+        public NPCPropId NPCId = NPCPropId.None;
 
-    public int Currency = 0;
-    public List<Item> Inventory = new List<Item>();
-    public List<Conversation> Conversations = new List<Conversation>();
+        private Actor mNPCActor;
+
+        public override void Start()
+        {
+            base.Start();
+        }
+
+        public override int GetPropId()
+        {
+            return (int)NPCId;
+        }
+
+        public override void OnInteractionEnd()
+        {
+            GetComponent<ActorSpawner>().Actor.Animator.SetTrigger(AnimationId.SwordSwing.ToString());
+        }
+
+        public override void OnInteractionStart()
+        {
+            GetComponent<ActorSpawner>().Actor.Animator.SetTrigger(AnimationId.SwordSwing.ToString());
+        }
+    }
 }
-

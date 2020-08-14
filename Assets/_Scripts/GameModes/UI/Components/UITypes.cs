@@ -4,36 +4,41 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public enum UIInteractionType
+namespace MAGE.UI
 {
-    None,
 
-    Click,
-    MouseOver,
-    MouseExit,
-
-    NUM
-}
-
-class UIInteractionInfo
-{
-    public int ComponentId;
-    public UIInteractionType InteractionType;
-
-    public UIInteractionInfo(int componentId, UIInteractionType interactionType)
+    public enum UIInteractionType
     {
-        ComponentId = componentId;
-        InteractionType = interactionType;
+        None,
+
+        Click,
+        MouseOver,
+        MouseExit,
+
+        NUM
     }
-}
 
-class ListInteractionInfo : UIInteractionInfo
-{
-    public int ListIdx;
-
-    public ListInteractionInfo(int componentId, UIInteractionInfo interactionInfo)
-        : base(componentId, interactionInfo.InteractionType)
+    class UIInteractionInfo
     {
-        ListIdx = interactionInfo.ComponentId;
+        public int ComponentId;
+        public UIInteractionType InteractionType;
+
+        public UIInteractionInfo(int componentId, UIInteractionType interactionType)
+        {
+            ComponentId = componentId;
+            InteractionType = interactionType;
+        }
     }
+
+    class ListInteractionInfo : UIInteractionInfo
+    {
+        public int ListIdx;
+
+        public ListInteractionInfo(int componentId, UIInteractionInfo interactionInfo)
+            : base(componentId, interactionInfo.InteractionType)
+        {
+            ListIdx = interactionInfo.ComponentId;
+        }
+    }
+
 }

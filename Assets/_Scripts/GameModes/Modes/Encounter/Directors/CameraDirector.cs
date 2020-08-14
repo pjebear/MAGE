@@ -28,12 +28,12 @@ class CameraDirector : MonoBehaviour, IInputHandler
 
     private void Awake()
     {
-        InputManager.Instance.RegisterHandler(this, false);
+        MAGE.Input.InputManager.Instance.RegisterHandler(this, false);
     }
 
     private void OnDestroy()
     {
-        InputManager.Instance.ReleaseHandler(this);
+        MAGE.Input.InputManager.Instance.ReleaseHandler(this);
     }
 
     private void Update()

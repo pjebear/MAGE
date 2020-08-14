@@ -1,42 +1,47 @@
-﻿using System;
+﻿using MAGE.GameServices;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class TileContainer : MonoBehaviour
+namespace MAGE.GameModes.SceneElements
 {
-    public List<List<Tile>> Tiles;
-
-    private void Start()
+    class TileContainer : MonoBehaviour
     {
-        Tiles = new List<List<Tile>>();
+        public List<List<Tile>> Tiles;
 
-        for (int rowIdx = 0; rowIdx < transform.childCount; ++rowIdx)
+        private void Start()
         {
-            List<Tile> tileRow = new List<Tile>();
-            
-            Transform rowContainer = transform.GetChild(rowIdx);
+            Tiles = new List<List<Tile>>();
 
-            for (int tileIdx = 0; tileIdx < rowContainer.childCount; ++tileIdx)
+            for (int rowIdx = 0; rowIdx < transform.childCount; ++rowIdx)
             {
-                Tile toAdd = rowContainer.GetChild(tileIdx).gameObject.GetComponent<Tile>();
-                if (toAdd != null)
-                {
-                    toAdd.Init(new TileIdx(tileIdx, rowIdx));
-                    rowContainer.GetChild(tileIdx).gameObject.SetActive(false);
-                    tileRow.Add(toAdd);
-                }
-                else
-                {
-                    //Debug.LogWarning(rowIdx + " " + tileIdx);
-                }
-                
-            }
+                List<Tile> tileRow = new List<Tile>();
 
-            Tiles.Add(tileRow);
+                Transform rowContainer = transform.GetChild(rowIdx);
+
+                for (int tileIdx = 0; tileIdx < rowContainer.childCount; ++tileIdx)
+                {
+                    Tile toAdd = rowContainer.GetChild(tileIdx).gameObject.GetComponent<Tile>();
+                    if (toAdd != null)
+                    {
+                        toAdd.Init(new TileIdx(tileIdx, rowIdx));
+                        rowContainer.GetChild(tileIdx).gameObject.SetActive(false);
+                        tileRow.Add(toAdd);
+                    }
+                    else
+                    {
+                        //Debug.LogWarning(rowIdx + " " + tileIdx);
+                    }
+
+                }
+
+                Tiles.Add(tileRow);
+            }
         }
     }
 }
+
 

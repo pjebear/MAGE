@@ -1,151 +1,158 @@
-﻿using System;
+﻿using MAGE.UI;
+using MAGE.UI.Views;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class PartyOutfiterViewControl : UIContainerControl
+namespace MAGE.GameModes.FlowControl
 {
-    private Transform mCharacterSpawnPoint;
-
-    private ICharacterOutfiter mSpecOutfiter = new SpecializationOutfiterViewControl();
-    private ICharacterOutfiter mEquipmentOutfiter = new EquipmentOutfiterViewControl();
-
-    private ICharacterOutfiter mOutfiter;
-    public int mOutfiterIdx = 0;
-
-    private List<int> mCharacterIds = new List<int>();
-    private int mCharacterIdx = 0;
-    private DB.DBCharacter mOutfitingCharacter = null;
-
-    public void Init(Transform characterSpawnPoint)
+    class PartyOutfiterViewControl : UIContainerControl
     {
-        mCharacterSpawnPoint = characterSpawnPoint;
-    }
+        private Transform mCharacterSpawnPoint;
 
-    public void Start()
-    {
-        mCharacterIds = GameSystemModule.Instance.GetCharactersInParty();
-        mCharacterIdx = 0;
-        mOutfitingCharacter = DB.DBHelper.LoadCharacter(mCharacterIds[mCharacterIdx]);
-        SpawnCharacter();
+        private ICharacterOutfiter mSpecOutfiter = new SpecializationOutfiterViewControl();
+        private ICharacterOutfiter mEquipmentOutfiter = new EquipmentOutfiterViewControl();
 
-        SetOutfiter(mEquipmentOutfiter);
+        private ICharacterOutfiter mOutfiter;
+        public int mOutfiterIdx = 0;
 
-        UIManager.Instance.PostContainer(UIContainerId.OutfiterSelectView, this);
-    }
+        private List<int> mCharacterIds = new List<int>();
+        private int mCharacterIdx = 0;
+        private MAGE.GameServices.Character.CharacterInfo mOutfitingCharacter = null;
 
-    public void Cleanup()
-    {
-        UIManager.Instance.RemoveOverlay(UIContainerId.OutfiterSelectView);
-    }
-
-    public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
-    {
-        switch (containerId)
+        public void Init(Transform characterSpawnPoint)
         {
-            case (int)UIContainerId.OutfiterSelectView:
+            mCharacterSpawnPoint = characterSpawnPoint;
+        }
+
+        public void Start()
+        {
+            mCharacterIds = MAGE.GameServices.WorldService.Get().GetCharactersInParty();
+            mCharacterIdx = 0;
+
+            mOutfitingCharacter = MAGE.GameServices.CharacterService.Get().GetCharacterInfo(mCharacterIds[mCharacterIdx]);
+            SpawnCharacter();
+
+            SetOutfiter(mEquipmentOutfiter);
+
+            UIManager.Instance.PostContainer(UIContainerId.OutfiterSelectView, this);
+        }
+
+        public void Cleanup()
+        {
+            UIManager.Instance.RemoveOverlay(UIContainerId.OutfiterSelectView);
+        }
+
+        public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
+        {
+            switch (containerId)
             {
-                if (interactionInfo.InteractionType == UIInteractionType.Click)
+                case (int)UIContainerId.OutfiterSelectView:
                 {
-                    switch (interactionInfo.ComponentId)
+                    if (interactionInfo.InteractionType == UIInteractionType.Click)
                     {
-                        case (int)OutfiterSelectView.ComponentId.CharacterSelectLeftBtn:
+                        switch (interactionInfo.ComponentId)
+                        {
+                            case (int)OutfiterSelectView.ComponentId.CharacterSelectLeftBtn:
                             {
                                 CycleCharacter(-1);
                             }
                             break;
 
-                        case (int)OutfiterSelectView.ComponentId.CharacterSelectRightBtn:
+                            case (int)OutfiterSelectView.ComponentId.CharacterSelectRightBtn:
                             {
                                 CycleCharacter(1);
                             }
                             break;
-                        case (int)OutfiterSelectView.ComponentId.ExitBtn:
+                            case (int)OutfiterSelectView.ComponentId.ExitBtn:
                             {
                                 GameModesModule.Instance.Explore();
                             }
                             break;
-                        case (int)OutfiterSelectView.ComponentId.EquipBtn:
-                        {
-                            if (mOutfiter != mEquipmentOutfiter)
+                            case (int)OutfiterSelectView.ComponentId.EquipBtn:
                             {
-                                SetOutfiter(mEquipmentOutfiter);
+                                if (mOutfiter != mEquipmentOutfiter)
+                                {
+                                    SetOutfiter(mEquipmentOutfiter);
+                                }
                             }
-                        }
-                        break;
+                            break;
 
-                        case (int)OutfiterSelectView.ComponentId.SpecBtn:
-                        {
-                            if (mOutfiter != mSpecOutfiter)
+                            case (int)OutfiterSelectView.ComponentId.SpecBtn:
                             {
-                                SetOutfiter(mSpecOutfiter);
+                                if (mOutfiter != mSpecOutfiter)
+                                {
+                                    SetOutfiter(mSpecOutfiter);
+                                }
                             }
+                            break;
                         }
-                        break;
                     }
                 }
+                break;
             }
-            break;
-        }
-    }
-
-    public string Name()
-    {
-        return "PartyOutfiterViewControl";
-    }
-
-    public IDataProvider Publish(int containerId)
-    {
-        OutfiterSelectView.DataProvider dataProvider = new OutfiterSelectView.DataProvider();
-
-        dataProvider.character = mOutfitingCharacter.CharacterInfo.Name;
-
-        return dataProvider;
-    }
-
-    private void SetOutfiter(ICharacterOutfiter outfiter)
-    {
-        if (mOutfiter != null)
-        {
-            mOutfiter.Cleanup();
         }
 
-        mOutfiter = outfiter;
-
-        mOutfiter.BeginOutfitting(mOutfitingCharacter, () => { SpawnCharacter(); });
-    }
-
-    private void CycleCharacter(int direction)
-    {
-        int newIdx = mCharacterIdx + direction;
-        if (newIdx < 0) newIdx = mCharacterIds.Count - 1;
-        if (newIdx == mCharacterIds.Count) newIdx = 0;
-
-        if (newIdx != mCharacterIdx)
+        public string Name()
         {
-            mCharacterIdx = newIdx;
-            mOutfitingCharacter = DB.DBHelper.LoadCharacter(mCharacterIds[mCharacterIdx]);
+            return "PartyOutfiterViewControl";
+        }
 
-            mOutfiter.Cleanup();
+        public IDataProvider Publish(int containerId)
+        {
+            OutfiterSelectView.DataProvider dataProvider = new OutfiterSelectView.DataProvider();
+
+            dataProvider.character = mOutfitingCharacter.Name;
+
+            return dataProvider;
+        }
+
+        private void SetOutfiter(ICharacterOutfiter outfiter)
+        {
+            if (mOutfiter != null)
+            {
+                mOutfiter.Cleanup();
+            }
+
+            mOutfiter = outfiter;
 
             mOutfiter.BeginOutfitting(mOutfitingCharacter, () => { SpawnCharacter(); });
-
-            SpawnCharacter();
         }
 
-        UIManager.Instance.Publish(UIContainerId.OutfiterSelectView);
-    }
-
-    private void SpawnCharacter()
-    {
-        if (mCharacterSpawnPoint.childCount > 0)
+        private void CycleCharacter(int direction)
         {
-            GameObject.Destroy(mCharacterSpawnPoint.GetChild(0).gameObject);
+            int newIdx = mCharacterIdx + direction;
+            if (newIdx < 0) newIdx = mCharacterIds.Count - 1;
+            if (newIdx == mCharacterIds.Count) newIdx = 0;
+
+            if (newIdx != mCharacterIdx)
+            {
+                mCharacterIdx = newIdx;
+                mOutfitingCharacter = MAGE.GameServices.CharacterService.Get().GetCharacterInfo(mCharacterIds[mCharacterIdx]);
+
+                mOutfiter.Cleanup();
+
+                mOutfiter.BeginOutfitting(mOutfitingCharacter, () => { SpawnCharacter(); });
+
+                SpawnCharacter();
+            }
+
+            UIManager.Instance.Publish(UIContainerId.OutfiterSelectView);
         }
 
-        GameModesModule.ActorLoader.CreateActor(DB.CharacterHelper.FromDB(mOutfitingCharacter.Appearance), mCharacterSpawnPoint);
-    }
-}
+        private void SpawnCharacter()
+        {
+            if (mCharacterSpawnPoint.childCount > 0)
+            {
+                GameObject.Destroy(mCharacterSpawnPoint.GetChild(0).gameObject);
+            }
 
+            GameModesModule.ActorLoader.CreateActor(GameModes.LevelManagementService.Get().GetAppearance(mOutfitingCharacter.AppearanceId), mCharacterSpawnPoint);
+        }
+    }
+
+
+}

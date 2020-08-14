@@ -4,24 +4,52 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
-enum StatusIconSpriteId
+namespace MAGE.UI
 {
-    INVALID = -1,
+    enum StatusIconSpriteId
+    {
+        INVALID = -1,
 
-    Avenger,
-    Disarm,
-    Protection,
-    BloodScent,
-    Poison,
-    RighteousGlory,
+        Avenger,
+        Disarm,
+        Protection,
+        BloodScent,
+        Poison,
+        RighteousGlory,
 
-    NUM
-}
+        NUM
+    }
 
-enum ItemIconSpriteId
-{
-    INVALID = -1,
+    enum ItemIconSpriteId
+    {
+        INVALID = -1,
 
-    NUM
+        // Equipment
+        // Armor
+        Cloth,
+        Leather,
+        Chain,
+        Plate,
+        // Held
+        // One Hand
+        Dagger,
+        Sword,
+        Axe,
+        Mace,
+        // two hand
+        Staff,
+        Bow,
+
+        // Shield
+        Shield,
+
+        // Accessory
+        Relic,
+
+        // Story
+        QuestItem,
+
+        NUM
+    }
+
 }

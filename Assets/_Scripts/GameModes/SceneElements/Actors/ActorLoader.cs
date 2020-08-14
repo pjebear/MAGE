@@ -8,9 +8,18 @@ using UnityEngine;
 class ActorLoader : MonoBehaviour
 {
     private AssetLoader<GameObject> mActorLoader;
+    public static ActorLoader Instance;
 
     private void Awake()
     {
+        if (Instance != null)
+        {
+            DestroyImmediate(this);
+            return;
+        }
+
+        Instance = this;
+
         mActorLoader = new AssetLoader<GameObject>("Props");
         mActorLoader.LoadAssets("Bodies");
         mActorLoader.LoadAssets("Apparel");

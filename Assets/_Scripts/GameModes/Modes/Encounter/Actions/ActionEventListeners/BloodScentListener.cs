@@ -1,46 +1,53 @@
-﻿using System;
+﻿
+using MAGE.GameServices;
+using MAGE.GameServices.Character;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class BloodScentListener : ActionResponderBase
+namespace MAGE.GameModes.Encounter
 {
-    public BloodScentListener(EncounterCharacter owner)
-        : base(owner, ActionResponseId.BloodScent)
+    class BloodScentListener : ActionResponderBase
     {
-
-    }
-
-    protected override void OnActionResult(ActionResult actionResult)
-    {
-        StatusEffect bloodScent = null;
-
-        if (IsListener(actionResult.Initiator))
+        public BloodScentListener(EncounterCharacter owner)
+            : base(owner, ActionResponseId.BloodScent)
         {
-            foreach (var targetResultPair in actionResult.TargetResults)
+
+        }
+
+        protected override void OnActionResult(ActionResult actionResult)
+        {
+            StatusEffect bloodScent = null;
+
+            if (IsListener(actionResult.Initiator))
             {
-                InteractionResult result = targetResultPair.Value;
-                if (result.StateChange.healthChange < 0)
+                foreach (var targetResultPair in actionResult.TargetResults)
                 {
-                    bloodScent = StatusEffectFactory.CheckoutStatusEffect(StatusEffectType.BloodScent, Listener);
+                    InteractionResult result = targetResultPair.Value;
+                    if (result.StateChange.healthChange < 0)
+                    {
+                        bloodScent = StatusEffectFactory.CheckoutStatusEffect(StatusEffectType.BloodScent, Listener);
+                    }
                 }
             }
-        }
-        else if (actionResult.TargetResults.ContainsKey(Listener)) 
-        {
-            InteractionResult result = actionResult.TargetResults[Listener];
-            if (result.StateChange.healthChange < 0)
+            else if (actionResult.TargetResults.ContainsKey(Listener))
             {
-                bloodScent = StatusEffectFactory.CheckoutStatusEffect(StatusEffectType.BloodScent, Listener, 2);
+                InteractionResult result = actionResult.TargetResults[Listener];
+                if (result.StateChange.healthChange < 0)
+                {
+                    bloodScent = StatusEffectFactory.CheckoutStatusEffect(StatusEffectType.BloodScent, Listener, 2);
+                }
+            }
+
+            if (bloodScent != null)
+            {
+                EncounterModule.CharacterDirector.CharacterActorLookup[Listener].DisplayStatusApplication(bloodScent);
+                Listener.ApplyStateChange(new StateChange(StateChangeType.StatusEffect, new List<StatusEffect>() { bloodScent }));
             }
         }
-
-        if (bloodScent != null)
-        {
-            EncounterModule.CharacterDirector.CharacterActorLookup[Listener].DisplayStatusApplication(bloodScent);
-            Listener.ApplyStateChange(new StateChange(StateChangeType.StatusEffect, new List<StatusEffect>() { bloodScent }));
-        }
     }
+
 }

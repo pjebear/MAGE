@@ -1,46 +1,51 @@
-﻿using System;
+﻿using MAGE.GameServices;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-static class AnimationUtil
+namespace MAGE.GameModes
 {
-    public static AnimationId InteractionResultTypeToAnimationId(InteractionResultType resultType)
+    static class AnimationUtil
     {
-        AnimationId animationId = AnimationId.INVALID;
-
-        switch (resultType)
+        public static AnimationId InteractionResultTypeToAnimationId(InteractionResultType resultType)
         {
-            case InteractionResultType.Block:
-                animationId = AnimationId.Block;
-                break;
+            AnimationId animationId = AnimationId.INVALID;
 
-            case InteractionResultType.Dodge:
-                animationId = AnimationId.Dodge;
-                break;
+            switch (resultType)
+            {
+                case InteractionResultType.Block:
+                    animationId = AnimationId.Block;
+                    break;
 
-            case InteractionResultType.Parry:
-                animationId = AnimationId.Parry;
-                break;
+                case InteractionResultType.Dodge:
+                    animationId = AnimationId.Dodge;
+                    break;
 
-            case InteractionResultType.Hit:
-            case InteractionResultType.Partial:
-            case InteractionResultType.Resist:
-                animationId = AnimationId.Hurt;
-                break;
+                case InteractionResultType.Parry:
+                    animationId = AnimationId.Parry;
+                    break;
 
-            case InteractionResultType.Miss:
-                animationId = AnimationId.Dodge;
-                break;
+                case InteractionResultType.Hit:
+                case InteractionResultType.Partial:
+                case InteractionResultType.Resist:
+                    animationId = AnimationId.Hurt;
+                    break;
 
-            default:
-                Debug.Assert(false);
-                break;
+                case InteractionResultType.Miss:
+                    animationId = AnimationId.Dodge;
+                    break;
+
+                default:
+                    Debug.Assert(false);
+                    break;
+            }
+
+            return animationId;
         }
-
-        return animationId;
     }
 }
+
 

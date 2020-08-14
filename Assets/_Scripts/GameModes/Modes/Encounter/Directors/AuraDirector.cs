@@ -1,82 +1,97 @@
-﻿using System;
+﻿using MAGE.GameServices.Character;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class AuraDirector : MonoBehaviour
-    , IEventHandler<EncounterEvent>
+namespace MAGE.GameModes.Encounter
 {
-    public Aura AuraPrefab;
-
-    private Dictionary<EncounterActorController, List<Aura>> mAuras = new Dictionary<EncounterActorController, List<Aura>>();
-
-    public void Init()
+    class AuraDirector 
+        : MonoBehaviour
+        , Messaging.IMessageHandler
     {
-        EncounterEventRouter.Instance.RegisterHandler(this);
-    }
+        public Aura AuraPrefab;
 
-    private void OnDestroy()
-    {
-        EncounterEventRouter.Instance.UnRegisterListener(this);
-    }
+        private Dictionary<EncounterActorController, List<Aura>> mAuras = new Dictionary<EncounterActorController, List<Aura>>();
 
-    public void RegisterAura(AuraInfo auraInfo, EncounterActorController actorController, bool activateImmediately)
-    {
-        Aura aura = Instantiate(AuraPrefab, actorController.transform);
-        aura.Initialize(auraInfo, actorController);
-
-        if (!mAuras.ContainsKey(actorController)) { mAuras.Add(actorController, new List<Aura>()); }
-
-        mAuras[actorController].Add(aura);
-
-        aura.SetActive(activateImmediately);
-    }
-
-    public void RemoveActor(EncounterActorController actor)
-    {
-        if (mAuras.ContainsKey(actor))
+        public void Init()
         {
-            foreach (Aura aura in mAuras[actor])
+            Messaging.MessageRouter.Instance.RegisterHandler(this);
+        }
+
+        private void OnDestroy()
+        {
+            Messaging.MessageRouter.Instance.UnRegisterHandler(this);
+        }
+
+        public void RegisterAura(AuraInfo auraInfo, EncounterActorController actorController, bool activateImmediately)
+        {
+            Aura aura = Instantiate(AuraPrefab, actorController.transform);
+            aura.Initialize(auraInfo, actorController);
+
+            if (!mAuras.ContainsKey(actorController)) { mAuras.Add(actorController, new List<Aura>()); }
+
+            mAuras[actorController].Add(aura);
+
+            aura.SetActive(activateImmediately);
+        }
+
+        public void RemoveActor(EncounterActorController actor)
+        {
+            if (mAuras.ContainsKey(actor))
             {
-                Destroy(aura.gameObject);
+                foreach (Aura aura in mAuras[actor])
+                {
+                    Destroy(aura.gameObject);
+                }
+                mAuras.Remove(actor);
             }
-            mAuras.Remove(actor);
         }
-    }
 
-    public void HandleEvent(EncounterEvent eventInfo)
-    {
-        switch (eventInfo.Type)
+        public void HandleMessage(Messaging.MessageInfoBase messageInfoBase)
         {
-            case EncounterEvent.EventType.UnitPlacementComplete:
+            switch (messageInfoBase.MessageId)
+            {
+                case EncounterMessage.Id:
                 {
-                    foreach (List<Aura> auras in mAuras.Values)
+                    EncounterMessage message = messageInfoBase as EncounterMessage;
+
+                    switch (message.Type)
                     {
-                        foreach (Aura aura in auras)
+                        case EncounterMessage.EventType.UnitPlacementComplete:
                         {
-                            aura.SetActive(true);
+                            foreach (List<Aura> auras in mAuras.Values)
+                            {
+                                foreach (Aura aura in auras)
+                                {
+                                    aura.SetActive(true);
+                                }
+                            }
                         }
+                        break;
+
+                        case EncounterMessage.EventType.CharacterKO:
+                        {
+                            EncounterActorController controller = EncounterModule.CharacterDirector.CharacterActorLookup[message.Arg<EncounterCharacter>()];
+                            if (mAuras.ContainsKey(controller))
+                            {
+                                foreach (Aura aura in mAuras[controller])
+                                {
+                                    aura.SetActive(false);
+                                }
+                            }
+
+                        }
+                        break;
                     }
                 }
                 break;
-
-            case EncounterEvent.EventType.CharacterKO:
-                {
-                    EncounterActorController controller = EncounterModule.CharacterDirector.CharacterActorLookup[eventInfo.Arg<EncounterCharacter>()];
-                    if (mAuras.ContainsKey(controller))
-                    {
-                        foreach (Aura aura in mAuras[controller])
-                        {
-                            aura.SetActive(false);
-                        }
-                    }
-
-                }
-                break;
+            }
         }
-    }
 
+    }
 }
+
 

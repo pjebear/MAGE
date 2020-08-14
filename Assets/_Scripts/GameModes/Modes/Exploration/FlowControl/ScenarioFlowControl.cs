@@ -1,149 +1,166 @@
-﻿using System;
+﻿using MAGE.GameModes.SceneElements;
+using MAGE.GameServices;
+using MAGE.UI;
+using MAGE.UI.Views;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class ScenarioFlowControl 
-    : MonoBehaviour,
-    IInputHandler,
-    UIContainerControl,
-    IEventHandler<ExplorationEvent>
+namespace MAGE.GameModes.FlowControl
 {
-    private string TAG = "ScenarioFlowControl";
-   
-    private ThirdPersonActorController mExplorationActor = null;
-    private Scenario mScenario;
-
-    private DB.DBConversation mConversation;
-    private int mConversationIdx = 0;
-
-    public void Init(ThirdPersonActorController exploring)
+    class ScenarioFlowControl
+        : MonoBehaviour,
+        IInputHandler,
+        UIContainerControl,
+        Messaging.IMessageHandler
     {
-        mExplorationActor = exploring;
-        InputManager.Instance.RegisterHandler(this, false);
-        ExplorationEventRouter.Instance.RegisterHandler(this);
-    }
+        private string TAG = "ScenarioFlowControl";
 
-    public void CleanUp()
-    {
-        ExplorationEventRouter.Instance.UnRegisterListener(this);
-        InputManager.Instance.ReleaseHandler(this);
-    }
+        private ThirdPersonActorController mExplorationActor = null;
+        private Scenario mScenario;
 
-    #region UIContainerControl
-    public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
-    {
-        switch ((UIContainerId)containerId)
+        private MAGE.DB.DBConversation mConversation;
+        private int mConversationIdx = 0;
+
+        public void Init(ThirdPersonActorController exploring)
         {
-            case UIContainerId.ConversationView:
+            mExplorationActor = exploring;
+            Input.InputManager.Instance.RegisterHandler(this, false);
+            Messaging.MessageRouter.Instance.RegisterHandler(this);
+        }
+
+        public void CleanUp()
+        {
+            Messaging.MessageRouter.Instance.UnRegisterHandler(this);
+            Input.InputManager.Instance.ReleaseHandler(this);
+        }
+
+        #region UIContainerControl
+        public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
+        {
+            switch ((UIContainerId)containerId)
             {
-                if (interactionInfo.InteractionType == UIInteractionType.Click)
+                case UIContainerId.ConversationView:
                 {
-                    if (interactionInfo.ComponentId == (int)ConversationView.ComponentId.ContinueBtn)
+                    if (interactionInfo.InteractionType == UIInteractionType.Click)
                     {
-                        if (mConversationIdx < mConversation.Conversation.Count - 1)
+                        if (interactionInfo.ComponentId == (int)ConversationView.ComponentId.ContinueBtn)
                         {
-                            mConversationIdx++;
-                            UIManager.Instance.Publish(UIContainerId.ConversationView);
-                        }
-                        else
-                        {
-                            UIManager.Instance.RemoveOverlay(UIContainerId.ConversationView);
-                            ScenarioComplete();
+                            if (mConversationIdx < mConversation.Conversation.Count - 1)
+                            {
+                                mConversationIdx++;
+                                UIManager.Instance.Publish(UIContainerId.ConversationView);
+                            }
+                            else
+                            {
+                                UIManager.Instance.RemoveOverlay(UIContainerId.ConversationView);
+                                ScenarioComplete();
+                            }
                         }
                     }
+
                 }
-
+                break;
             }
-            break;
         }
-    }
 
-    public string Name()
-    {
-        return TAG;
-    }
-
-    public IDataProvider Publish(int containerId)
-    {
-        IDataProvider dataProvider = null;
-
-        switch ((UIContainerId)containerId)
+        public string Name()
         {
-            case UIContainerId.ConversationView:
-            {
-                dataProvider = PublishConversation();
-            }
-            break;
+            return TAG;
         }
 
-        return dataProvider;
-    }
-
-    IDataProvider PublishConversation()
-    {
-        ConversationView.DataProvider dataProvider = new ConversationView.DataProvider();
-
-        DB.DBDialogue currentDialogue = mConversation.Conversation[mConversationIdx];
-
-        int speakerId = mConversation.Members[currentDialogue.SpeakerIdx];
-
-        CharacterInfo character = DB.CharacterHelper.FromDB(speakerId);
-
-        dataProvider.Name = character.Name;
-        dataProvider.PortraitAssetName = character.Appearance.PortraitSpriteId.ToString();
-        dataProvider.Content = currentDialogue.Content;
-
-        return dataProvider;
-    }
-
-    #endregion // UIContainerControl
-
-    //! IInputHandler
-    public void OnKeyPressed(InputSource source, int key, InputState state)
-    {
-        // empty
-    }
-
-    public void OnMouseHoverChange(GameObject mouseHover)
-    {
-        // empty
-    }
-
-    public void OnMouseScrolled(float scrollDelta)
-    {
-        // empty
-    }
-
-    public void HandleEvent(ExplorationEvent eventInfo)
-    {
-        switch (eventInfo.Type)
+        public IDataProvider Publish(int containerId)
         {
-            case (ExplorationEvent.EventType.ScenarioTriggered):
+            IDataProvider dataProvider = null;
+
+            switch ((UIContainerId)containerId)
             {
-                BeginScenario(eventInfo.Arg<Scenario>());
+                case UIContainerId.ConversationView:
+                {
+                    dataProvider = PublishConversation();
+                }
+                break;
             }
-            break;
+
+            return dataProvider;
         }
-    }
 
-    private void BeginScenario(Scenario scenario)
-    {
-        mScenario = scenario;
-        mConversation = DB.DBHelper.LoadConversation((int)ConversationId.LotharInTrouble);
-        mConversationIdx = 0;
-        UIManager.Instance.PostContainer(UIContainerId.ConversationView, this);
+        IDataProvider PublishConversation()
+        {
+            ConversationView.DataProvider dataProvider = new ConversationView.DataProvider();
 
-        mExplorationActor.Enable(false);
-    }
+            MAGE.DB.DBDialogue currentDialogue = mConversation.Conversation[mConversationIdx];
 
-    private void ScenarioComplete()
-    {
-        mExplorationActor.Enable(true);
-        GameSystemModule.Instance.PrepareEncounter(new EncounterCreateParams() { ScenarioId = EncounterScenarioId.Scenario });
-        GameModesModule.Instance.Encounter();
+            int speakerId = mConversation.Members[currentDialogue.SpeakerIdx];
+
+            MAGE.GameServices.Character.CharacterInfo character = MAGE.GameServices.CharacterService.Get().GetCharacterInfo(speakerId);
+
+            dataProvider.Name = character.Name;
+            dataProvider.PortraitAssetName = GameModes.LevelManagementService.Get().GetAppearance(character.AppearanceId).PortraitSpriteId.ToString();
+            dataProvider.Content = currentDialogue.Content;
+
+            return dataProvider;
+        }
+
+        #endregion // UIContainerControl
+
+        //! IInputHandler
+        public void OnKeyPressed(InputSource source, int key, InputState state)
+        {
+            // empty
+        }
+
+        public void OnMouseHoverChange(GameObject mouseHover)
+        {
+            // empty
+        }
+
+        public void OnMouseScrolled(float scrollDelta)
+        {
+            // empty
+        }
+
+        public void HandleMessage(Messaging.MessageInfoBase messageInfoBase)
+        {
+            switch (messageInfoBase.MessageId)
+            {
+                case Exploration.ExplorationMessage.Id:
+                {
+                    Exploration.ExplorationMessage message = messageInfoBase as Exploration.ExplorationMessage;
+
+                    switch (message.Type)
+                    {
+                        case (Exploration.ExplorationMessage.EventType.ScenarioTriggered):
+                        {
+                            BeginScenario(message.Arg<Scenario>());
+                        }
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+
+        private void BeginScenario(Scenario scenario)
+        {
+            mScenario = scenario;
+            mConversation = MAGE.GameServices.DBService.Get().LoadConversation((int)ConversationId.LotharInTrouble);
+            mConversationIdx = 0;
+            UIManager.Instance.PostContainer(UIContainerId.ConversationView, this);
+
+            mExplorationActor.Enable(false);
+        }
+
+        private void ScenarioComplete()
+        {
+            mExplorationActor.Enable(true);
+            MAGE.GameServices.WorldService.Get().PrepareEncounter(new EncounterCreateParams() { ScenarioId = EncounterScenarioId.Scenario });
+            GameModesModule.Instance.Encounter();
+        }
     }
 }
+
 

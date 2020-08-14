@@ -4,15 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-class ActionResponseInfo
+namespace MAGE.GameServices
 {
-    public static int INFINITE_RANGE = -1;
-    public int PercentChance;
-    public int Range;
-
-    public ActionResponseInfo(int percentChange, int range)
+    class ActionResponseInfo
     {
-        PercentChance = percentChange;
-        Range = range;
+        public static int INFINITE_RANGE = -1;
+        public int PercentChance;
+        public int Range;
+
+        public ActionResponseInfo(int percentChange, int range)
+        {
+            PercentChance = percentChange;
+            Range = range;
+        }
     }
 }

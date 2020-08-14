@@ -3,36 +3,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DB;
 using UnityEngine.Events;
 
-class ExplorationMenuView
-    : UIContainer
+namespace MAGE.UI.Views
 {
-    public enum ComponentId
+    class ExplorationMenuView
+       : UIContainer
     {
-        OutfiterBtn,
-        SaveBtn,
-        ExitBtn,
-        RandomEncounter,
+        public enum ComponentId
+        {
+            OutfiterBtn,
+            SaveBtn,
+            ExitBtn,
+            RandomEncounter,
+            QuestLog,
+        }
+
+        public UIButton OutfiterBtn;
+        public UIButton SaveBtn;
+        public UIButton ExitBtn;
+        public UIButton QuestLog;
+        public UIButton RandomEncounter;
+
+        public override void Publish(IDataProvider dataProvider)
+        {
+            // empty
+        }
+
+        protected override void InitChildren()
+        {
+            OutfiterBtn.Init((int)ComponentId.OutfiterBtn, this);
+            SaveBtn.Init((int)ComponentId.SaveBtn, this);
+            ExitBtn.Init((int)ComponentId.ExitBtn, this);
+            QuestLog.Init((int)ComponentId.QuestLog, this);
+            RandomEncounter.Init((int)ComponentId.RandomEncounter, this);
+        }
     }
 
-    public UIButton OutfiterBtn;
-    public UIButton SaveBtn;
-    public UIButton ExitBtn;
-    public UIButton RandomEncounter;
-
-    public override void Publish(IDataProvider dataProvider)
-    {
-        // empty
-    }
-
-    protected override void InitChildren()
-    {
-        OutfiterBtn.Init((int)ComponentId.OutfiterBtn, this);
-        SaveBtn.Init((int)ComponentId.SaveBtn, this);
-        ExitBtn.Init((int)ComponentId.ExitBtn, this);
-        RandomEncounter.Init((int)ComponentId.RandomEncounter, this);
-    }
 }
 

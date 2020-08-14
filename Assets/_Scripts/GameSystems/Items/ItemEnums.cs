@@ -4,36 +4,39 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-enum ConsumableId
+namespace MAGE.GameServices
 {
-    TODO = ItemType.Consumable,
+    enum ConsumableId
+    {
+        TODO = ItemType.Consumable,
 
-    END
-}
+        END
+    }
 
-enum StoryItemId
-{
-    Story_FirstQuestItem = ItemType.Story,
+    enum StoryItemId
+    {
+        GateKey = ItemType.Story,
 
-    END
-}
+        END
+    }
 
-enum BundleId
-{
-    TODO = ItemType.Bundle,
+    enum BundleId
+    {
+        TODO = ItemType.Bundle,
 
-    END
-}
+        END
+    }
 
-enum ItemType
-{
-    Equippable = 0,
-    Consumable = EquippableId.END + 1,
-    Story = ConsumableId.END + 1,
-    Bundle = StoryItemId.END + 1
-}
+    enum ItemType
+    {
+        Equippable = 0,
+        Consumable = EquippableId.END + 1,
+        Story = ConsumableId.END + 1,
+        Bundle = StoryItemId.END + 1
+    }
 
-enum ItemId
-{
-    NUM = BundleId.END
+    enum ItemId
+    {
+        NUM = BundleId.END
+    }
 }

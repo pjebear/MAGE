@@ -1,31 +1,36 @@
-﻿using System;
+﻿using MAGE.GameServices;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-class RiptoseListener : ActionResponderBase
+namespace MAGE.GameModes.Encounter
 {
-    public RiptoseListener(EncounterCharacter owner)
-        : base(owner, ActionResponseId.Riptose)
+    class RiptoseListener : ActionResponderBase
     {
-
-    }
-
-    protected override void OnActionResult(ActionResult actionResult)
-    {
-        if (!IsListener(actionResult.Initiator)
-            && WasTargeted(Listener, actionResult))
+        public RiptoseListener(EncounterCharacter owner)
+            : base(owner, ActionResponseId.Riptose)
         {
-            InteractionResult result = actionResult.TargetResults[Listener];
-            ActionInfo info = actionResult.ActionInfo;
-            if ( info.ActionRange == ActionRange.Meele
-                && info.ActionSource == ActionSource.Weapon
-                && result.InteractionResultType == InteractionResultType.Parry)
+
+        }
+
+        protected override void OnActionResult(ActionResult actionResult)
+        {
+            if (!IsListener(actionResult.Initiator)
+                && WasTargeted(Listener, actionResult))
             {
-                TargetSelection selection = new TargetSelection(new Target(actionResult.Initiator));
-                EncounterModule.ActionDirector.DirectAction(new ActionProposal(Listener, ActionId.WeaponAttack, selection));
+                InteractionResult result = actionResult.TargetResults[Listener];
+                ActionInfo info = actionResult.ActionInfo;
+                if (info.ActionRange == ActionRange.Meele
+                    && info.ActionSource == ActionSource.Weapon
+                    && result.InteractionResultType == InteractionResultType.Parry)
+                {
+                    TargetSelection selection = new TargetSelection(new Target(actionResult.Initiator));
+                    EncounterModule.ActionDirector.DirectAction(new ActionProposal(Listener, ActionId.WeaponAttack, selection));
+                }
             }
         }
     }
 }
+

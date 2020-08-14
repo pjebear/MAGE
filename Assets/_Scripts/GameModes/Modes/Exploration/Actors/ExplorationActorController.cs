@@ -38,12 +38,12 @@ class ExplorationActorController : MonoBehaviour, IInputHandler
 
     void Start()
     {
-        InputManager.Instance.RegisterHandler(this, false);
+        MAGE.Input.InputManager.Instance.RegisterHandler(this, false);
     }
 
     void OnDestroy()
     {
-        InputManager.Instance.ReleaseHandler(this);
+        MAGE.Input.InputManager.Instance.ReleaseHandler(this);
     }
 
     private void Update()

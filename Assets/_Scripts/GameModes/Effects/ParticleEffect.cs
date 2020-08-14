@@ -8,16 +8,12 @@ using UnityEngine;
 class ParticleEffect : MonoBehaviour
 {
     public float EffectDuration = 2f;
+    public float EffectInteractionPoint = 1.0f;
 
-    private float mLifeTime = 0f;
-
-    private void Update()
+    private void Awake()
     {
-        mLifeTime += Time.deltaTime;
-        if (mLifeTime > EffectDuration)
-        {
-            Destroy(gameObject);
-        }
+        Destroy(gameObject, EffectDuration);
     }
+  
 }
 

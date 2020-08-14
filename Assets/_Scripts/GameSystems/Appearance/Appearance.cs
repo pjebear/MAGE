@@ -9,6 +9,7 @@ class Appearance
 {
     public static int NO_ASSET = -1;
 
+    public int AppearanceId = -1;
     public PortraitSpriteId PortraitSpriteId = PortraitSpriteId.INVALID;
     public BodyType BodyType = BodyType.Body_0;
     public AppearancePrefabId ArmorId = AppearancePrefabId.prefab_none;

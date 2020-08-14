@@ -16,6 +16,9 @@ public enum LogTag
     GameSystems,
     Input,
     Level,
+    Messaging,
+    Party,
+    Story,
     UI,
     
     NUM
@@ -34,6 +37,11 @@ static class Logger
 {
     public static bool[] LogFilters = Enumerable.Repeat<bool>(true, (int)LogTag.NUM).ToArray();
     public static LogLevel LogThreshold = LogLevel.Notify;
+
+    public static void Fail(LogTag tag, string name, string message, LogLevel logLevel = LogLevel.Warning)
+    {
+        Log(tag, name, message, logLevel);
+    }
 
     public static void Assert(bool assertionValid, LogTag tag, string name, string message, LogLevel logLevel = LogLevel.Warning)
     {

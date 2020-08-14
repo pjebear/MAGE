@@ -20,11 +20,11 @@ class ThirdPersonActorController
             mEnabled = enabled;
             if (mEnabled)
             {
-                InputManager.Instance.RegisterHandler(this, false);
+                MAGE.Input.InputManager.Instance.RegisterHandler(this, false);
             }
             else
             {
-                InputManager.Instance.ReleaseHandler(this);
+                MAGE.Input.InputManager.Instance.ReleaseHandler(this);
                 mMovementInput = Vector2.zero;
             }
         }
@@ -79,7 +79,7 @@ class ThirdPersonActorController
     private void Start()
     {
         ActorController = gameObject.AddComponent<ActorController>();
-        InputManager.Instance.RegisterHandler(this, false);
+        MAGE.Input.InputManager.Instance.RegisterHandler(this, false);
     }
 
     private void Update()

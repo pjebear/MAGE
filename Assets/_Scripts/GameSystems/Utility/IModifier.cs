@@ -4,8 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-interface IModifier<T>
+namespace MAGE.GameServices
 {
-    void Modify(T t);
+    interface IModifier<T>
+    {
+        void Modify(T t);
+    }
 }
+
 

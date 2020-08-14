@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
-abstract class EquippableModifier : IModifier<Equippable>
+namespace MAGE.GameServices
 {
-    public abstract void Modify(Equippable t);
+    abstract class EquippableModifier : IModifier<Equippable>
+    {
+        public abstract void Modify(Equippable t);
+    }
 }
 

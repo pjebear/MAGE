@@ -1,57 +1,63 @@
-﻿using System;
+﻿
+using MAGE.GameServices;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class ActionComposer
+namespace MAGE.GameModes.Encounter
 {
-
-    public static void ComposeAction(ActionProposal proposal, out ActionResult result, out Timeline<ActionEvent> timeline)
+    class ActionComposer
     {
-        ActionInfo actionInfo = proposal.Owner.GetActionInfo(proposal.Action);
-        EncounterActorController ownerController = EncounterModule.CharacterDirector.CharacterActorLookup[proposal.Owner];
-        TargetSelection targetSelection = proposal.ActionTarget;
 
-        switch (proposal.Action)
+        public static void ComposeAction(ActionProposal proposal, out ActionResult result, out Timeline<ActionEvent> timeline)
         {
-            case (ActionId.WeaponAttack):
+            ActionInfo actionInfo = proposal.Owner.GetActionInfo(proposal.Action);
+            EncounterActorController ownerController = EncounterModule.CharacterDirector.CharacterActorLookup[proposal.Owner];
+            TargetSelection targetSelection = proposal.ActionTarget;
+
+            switch (proposal.Action)
             {
-                if (actionInfo.ProjectileInfo.ProjectileId == ProjectileId.INVALID)
+                case (ActionId.WeaponAttack):
                 {
+                    if (actionInfo.ProjectileInfo.ProjectileId == ProjectileId.INVALID)
+                    {
+                        MeleeActionComposer.ComposeAction(ownerController, actionInfo, targetSelection, out result, out timeline);
+                    }
+                    else
+                    {
+                        ProjectileActionComposer.ComposeAction(ownerController, actionInfo, targetSelection, out result, out timeline);
+                    }
+                }
+                break;
+                case (ActionId.Anvil):
+                case (ActionId.MightyBlow):
+                case (ActionId.Riptose):
                     MeleeActionComposer.ComposeAction(ownerController, actionInfo, targetSelection, out result, out timeline);
-                }
-                else
-                {
+                    break;
+
+                case (ActionId.Protection):
+                case (ActionId.Heal):
+                case (ActionId.HolyLight):
+                case (ActionId.Smite):
+                case (ActionId.Shackle):
+                    EffectActionComposer.ComposeAction(ownerController, actionInfo, targetSelection, out result, out timeline);
+                    break;
+
+                case (ActionId.FireBall):
                     ProjectileActionComposer.ComposeAction(ownerController, actionInfo, targetSelection, out result, out timeline);
-                }
+                    break;
+
+                default:
+                    Debug.Assert(false);
+                    result = null;
+                    timeline = null;
+                    break;
             }
-            break;
-            case (ActionId.Anvil):
-            case (ActionId.MightyBlow):
-            case (ActionId.Riptose):
-                MeleeActionComposer.ComposeAction(ownerController, actionInfo, targetSelection, out result, out timeline);
-                break;
-
-            case (ActionId.Protection):
-            case (ActionId.Heal):
-            case (ActionId.HolyLight):
-            case (ActionId.Smite):
-            case (ActionId.Shackle):
-                EffectActionComposer.ComposeAction(ownerController, actionInfo, targetSelection, out result, out timeline);
-                break;
-
-            case (ActionId.FireBall):
-                ProjectileActionComposer.ComposeAction(ownerController, actionInfo, targetSelection, out result, out timeline);
-                break;
-
-            default:
-                Debug.Assert(false);
-                result = null;
-                timeline = null;
-                break;
         }
     }
 }
+
 

@@ -1,68 +1,74 @@
-﻿using System.Collections;
+﻿using MAGE.GameModes;
+using MAGE.GameModes.Encounter;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-class DebugAnimationRig : MonoBehaviour
+namespace MAGE.GameModes.Encounter
 {
-    public EncounterActorController ActorController;
-    public Text AnimationName;
-    public RectTransform ProgressBarRect;
-    public Image ProgressBarImage;
-    
-    public Vector3 Offset;
-
-    private RuntimeAnimation Animation;
-
-    private void Awake()
+    class DebugAnimationRig : MonoBehaviour
     {
-        gameObject.SetActive(false);
-    }
+        public EncounterActorController ActorController;
+        public Text AnimationName;
+        public RectTransform ProgressBarRect;
+        public Image ProgressBarImage;
 
-    private void Update()
-    {
-        if (ActorController != null)
+        public Vector3 Offset;
+
+        private RuntimeAnimation Animation;
+
+        private void Awake()
         {
-            transform.position = Camera.main.WorldToScreenPoint(ActorController.transform.position) + Offset;
+            gameObject.SetActive(false);
+        }
 
-            if (Animation != null)
+        private void Update()
+        {
+            if (ActorController != null)
             {
-                Animation.Elapsed += Time.deltaTime;
-                float percentComplete = Animation.Elapsed / Animation.Duration;
-                if (percentComplete < 1)
+                transform.position = Camera.main.WorldToScreenPoint(ActorController.transform.position) + Offset;
+
+                if (Animation != null)
                 {
-                    ProgressBarRect.localScale = new Vector3(percentComplete, 1, 0);
-                    if(Animation.Elapsed > Animation.SyncPoint)
+                    Animation.Elapsed += Time.deltaTime;
+                    float percentComplete = Animation.Elapsed / Animation.Duration;
+                    if (percentComplete < 1)
                     {
-                        ProgressBarImage.color = Color.green;
+                        ProgressBarRect.localScale = new Vector3(percentComplete, 1, 0);
+                        if (Animation.Elapsed > Animation.SyncPoint)
+                        {
+                            ProgressBarImage.color = Color.green;
+                        }
+                    }
+                    else
+                    {
+                        gameObject.SetActive(false);
+                        Animation = null;
                     }
                 }
-                else
-                {
-                    gameObject.SetActive(false);
-                    Animation = null;
-                }
             }
+
         }
-            
+
+        public void DisplayAnimation(AnimationInfo animation)
+        {
+            gameObject.SetActive(true);
+            Animation = ConverPlaceholderToAnimation(animation);
+            ProgressBarRect.localScale = new Vector3(1, 1, 0);
+            ProgressBarImage.color = Color.yellow;
+            AnimationName.text = Animation.Name;
+        }
+
+        private RuntimeAnimation ConverPlaceholderToAnimation(AnimationInfo animationPh)
+        {
+            RuntimeAnimation animation = new RuntimeAnimation();
+            animation.Name = animationPh.TriggerName;
+            animation.Duration = (float)animationPh.NumFrames / AnimationConstants.FRAMES_PER_SECOND;
+            animation.SyncPoint = (float)animationPh.SyncedFrame / AnimationConstants.FRAMES_PER_SECOND;
+
+            return animation;
+        }
     }
 
-    public void DisplayAnimation(AnimationInfo animation)
-    {
-        gameObject.SetActive(true);
-        Animation = ConverPlaceholderToAnimation(animation);
-        ProgressBarRect.localScale = new Vector3(1, 1, 0);
-        ProgressBarImage.color = Color.yellow;
-        AnimationName.text = Animation.Name;
-    }
-
-    private RuntimeAnimation ConverPlaceholderToAnimation(AnimationInfo animationPh)
-    {
-        RuntimeAnimation animation = new RuntimeAnimation();
-        animation.Name = animationPh.TriggerName;
-        animation.Duration = (float)animationPh.NumFrames / AnimationConstants.FRAMES_PER_SECOND;
-        animation.SyncPoint = (float)animationPh.SyncedFrame / AnimationConstants.FRAMES_PER_SECOND;
-
-        return animation;
-    }
 }

@@ -22,7 +22,11 @@ static class FileUtil
         CharacterDB,
         ConversationDB,
         EquipmentDB,
+        ItemDB,
+        PropDB,
+        ScenarioDB,
         SpecializationDB,
+        StoryDB,
         TeamDB,
     }
 

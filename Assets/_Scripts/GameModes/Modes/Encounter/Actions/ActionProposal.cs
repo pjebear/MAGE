@@ -1,19 +1,24 @@
-﻿using System;
+﻿using MAGE.GameServices;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-class ActionProposal
+namespace MAGE.GameModes.Encounter
 {
-    public EncounterCharacter Owner;
-    public ActionId Action;
-    public TargetSelection ActionTarget;
-
-    public ActionProposal(EncounterCharacter owner, ActionId action, TargetSelection actionTarget)
+    class ActionProposal
     {
-        Owner = owner;
-        Action = action;
-        ActionTarget = actionTarget;
+        public EncounterCharacter Owner;
+        public ActionId Action;
+        public TargetSelection ActionTarget;
+
+        public ActionProposal(EncounterCharacter owner, ActionId action, TargetSelection actionTarget)
+        {
+            Owner = owner;
+            Action = action;
+            ActionTarget = actionTarget;
+        }
     }
+
 }

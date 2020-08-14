@@ -4,128 +4,131 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-class TileSelection
+namespace MAGE.GameModes.SceneElements
 {
-    public List<Tile> Selection;
-    public Tile.HighlightState SelectionType;
-    public static TileSelection EmptySelection
+    class TileSelection
     {
-        get
+        public List<Tile> Selection;
+        public Tile.HighlightState SelectionType;
+        public static TileSelection EmptySelection
         {
-            return new TileSelection(new List<Tile>(), Tile.HighlightState.None);
+            get
+            {
+                return new TileSelection(new List<Tile>(), Tile.HighlightState.None);
+            }
+        }
+
+        public TileSelection(List<Tile> selection, Tile.HighlightState selectionType)
+        {
+            Selection = selection;
+            SelectionType = selectionType;
+        }
+
+        public void HighlightSelection()
+        {
+            foreach (Tile tile in Selection)
+            {
+                tile.SetHighlightState(SelectionType);
+            }
+        }
+
+        public void ClearSelection()
+        {
+            foreach (Tile tile in Selection)
+            {
+                tile.SetHighlightState(Tile.HighlightState.None);
+            }
         }
     }
 
-    public TileSelection(List<Tile> selection, Tile.HighlightState selectionType)
+    class TileSelectionStack
     {
-        Selection = selection;
-        SelectionType = selectionType;
-    }
+        private List<TileSelection> mSelectionStack = new List<TileSelection>();
+        private bool mIsDisplaying = false;
 
-    public void HighlightSelection()
-    {
-        foreach (Tile tile in Selection)
+        public TileSelection this[int idx]
         {
-            tile.SetHighlightState(SelectionType);
+            get
+            {
+                return mSelectionStack[idx];
+            }
         }
-    }
 
-    public void ClearSelection()
-    {
-        foreach (Tile tile in Selection)
+        public int Count
         {
-            tile.SetHighlightState(Tile.HighlightState.None);
+            get
+            {
+                return mSelectionStack.Count;
+            }
         }
-    }
-}
 
-class TileSelectionStack
-{
-    private List<TileSelection> mSelectionStack = new List<TileSelection>();
-    private bool mIsDisplaying = false;
-
-    public TileSelection this[int idx]
-    {
-        get
+        public int AddLayer(List<Tile> tiles, Tile.HighlightState highlightState)
         {
-            return mSelectionStack[idx];
-        }
-    }
+            mSelectionStack.Add(new TileSelection(tiles, highlightState));
 
-    public int Count
-    {
-        get
+            return mSelectionStack.Count - 1;
+        }
+
+        public void RemoveLayer()
         {
-            return mSelectionStack.Count;
+            mSelectionStack.RemoveAt(mSelectionStack.Count - 1);
         }
-    }
 
-    public int AddLayer(List<Tile> tiles, Tile.HighlightState highlightState)
-    {
-        mSelectionStack.Add(new TileSelection(tiles, highlightState));
+        public void Reset()
+        {
+            if (mIsDisplaying)
+            {
+                HideTiles();
+            }
 
-        return mSelectionStack.Count - 1;
-    }
+            mSelectionStack.Clear();
 
-    public void RemoveLayer()
-    {
-        mSelectionStack.RemoveAt(mSelectionStack.Count - 1);
-    }
+            if (mIsDisplaying)
+            {
+                DisplayTiles();
+            }
+        }
 
-    public void Reset()
-    {
-        if (mIsDisplaying)
+        public void UpdateLayer(int layer, List<Tile> tiles)
+        {
+            bool isDisplaying = mIsDisplaying;
+            if (isDisplaying)
+            {
+                HideTiles();
+            }
+
+            mSelectionStack[layer].Selection = tiles;
+
+            if (isDisplaying)
+            {
+                DisplayTiles();
+            }
+
+            mIsDisplaying = isDisplaying;
+        }
+
+        public void RefreshDisplay()
         {
             HideTiles();
-        }
-
-        mSelectionStack.Clear();
-
-        if (mIsDisplaying)
-        {
-            DisplayTiles();
-        }
-    }
-
-    public void UpdateLayer(int layer, List<Tile> tiles)
-    {
-        bool isDisplaying = mIsDisplaying;
-        if (isDisplaying)
-        {
-            HideTiles();
-        }
-
-        mSelectionStack[layer].Selection = tiles;
-
-        if (isDisplaying)
-        {
             DisplayTiles();
         }
 
-        mIsDisplaying = isDisplaying;
-    }
-
-    public void RefreshDisplay()
-    {
-        HideTiles();
-        DisplayTiles();
-    }
-
-    public void HideTiles()
-    {
-        mIsDisplaying = false;
-        foreach (TileSelection selection in mSelectionStack)
+        public void HideTiles()
         {
-            selection.ClearSelection();
+            mIsDisplaying = false;
+            foreach (TileSelection selection in mSelectionStack)
+            {
+                selection.ClearSelection();
+            }
         }
-    }
 
-    public void DisplayTiles()
-    {
-        mIsDisplaying = true;
-        foreach (TileSelection selection in mSelectionStack)
+        public void DisplayTiles()
         {
-            selection.HighlightSelection();
-        }   
+            mIsDisplaying = true;
+            foreach (TileSelection selection in mSelectionStack)
+            {
+                selection.HighlightSelection();
+            }
+        }
     }
 }

@@ -1,40 +1,46 @@
-﻿using System;
+﻿using MAGE.GameServices;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class HealOnHurtListener : ActionResponderBase
+namespace MAGE.GameModes.Encounter
 {
-    public HealOnHurtListener(EncounterCharacter owner)
-        : base(owner, ActionResponseId.HealOnHurtListener)
+    class HealOnHurtListener : ActionResponderBase
     {
-
-    }
-
-    protected override void OnActionResult(ActionResult actionResult)
-    {
-        // Don't be healing people that we just hurt!
-        if (IsListener(actionResult.Initiator))
+        public HealOnHurtListener(EncounterCharacter owner)
+            : base(owner, ActionResponseId.HealOnHurtListener)
         {
-            return; 
+
         }
 
-        foreach (var targetResultPair in actionResult.TargetResults)
+        protected override void OnActionResult(ActionResult actionResult)
         {
-            EncounterCharacter actor = targetResultPair.Key;
-            InteractionResult result = targetResultPair.Value;
-            if (!IsListener(actor) 
-                && IsAlly(actor) 
-                && WasHurt(result)
-                && IsAlive(actor)
-                && InRange(actor))
+            // Don't be healing people that we just hurt!
+            if (IsListener(actionResult.Initiator))
             {
-                TargetSelection selection = new TargetSelection(new Target(actor));
-                
-                EncounterModule.ActionDirector.DirectAction(new ActionProposal(Listener, ActionId.Heal, selection));
+                return;
+            }
+
+            foreach (var targetResultPair in actionResult.TargetResults)
+            {
+                EncounterCharacter actor = targetResultPair.Key;
+                InteractionResult result = targetResultPair.Value;
+                if (!IsListener(actor)
+                    && IsAlly(actor)
+                    && WasHurt(result)
+                    && IsAlive(actor)
+                    && InRange(actor))
+                {
+                    TargetSelection selection = new TargetSelection(new Target(actor));
+
+                    EncounterModule.ActionDirector.DirectAction(new ActionProposal(Listener, ActionId.Heal, selection));
+                }
             }
         }
     }
 }
+
+

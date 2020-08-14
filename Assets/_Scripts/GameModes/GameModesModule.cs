@@ -1,172 +1,186 @@
-﻿using System;
+﻿using MAGE.GameModes.LevelManagement;
+using MAGE.GameModes.SceneElements;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class GameModesModule 
-    : MonoBehaviour
-    , IEventHandler<GameModeEvent>
+namespace MAGE.GameModes
 {
-    private string TAG = "GameModesModule";
-
-    public static GameModesModule Instance;
-
-    public static ActorLoader ActorLoader;
-    public static AudioManager AudioManager;
-    public static LevelManager LevelManager;
-
-    private GameModeType mPendingGameMode = GameModeType.INVALID;
-    private GameModeBase mLoadedGameMode = null;
-
-    private AssetLoader<GameModeBase> mGameModeLoader = null;
-
-    public void InitModule()
+    class GameModesModule
+        : MonoBehaviour
+        , Messaging.IMessageHandler
     {
-        Logger.Log(LogTag.GameModes, TAG, "::InitModule()");
-        Logger.Assert(Instance == null, LogTag.GameModes, TAG, "::InitModule() - Already initialized!");
+        private string TAG = "GameModesModule";
 
-        Logger.LogFilters[(int)LogTag.Assets] = false;
-        Logger.LogFilters[(int)LogTag.DB] = false;
+        public static GameModesModule Instance;
 
-        Instance = this;
-        ActorLoader = gameObject.AddComponent<ActorLoader>();
-        AudioManager = GetComponent<AudioManager>();
-        LevelManager = GetComponent<LevelManager>();
+        public static ActorLoader ActorLoader;
+        public static AudioManager AudioManager;
 
-        GameModeEventRouter.Instance = GetComponent<GameModeEventRouter>();
-        GameModeEventRouter.Instance.RegisterHandler(this);
+        private GameModeType mPendingGameMode = GameModeType.INVALID;
+        private GameModeBase mLoadedGameMode = null;
 
-        mGameModeLoader = new AssetLoader<GameModeBase>("GameModes");
-        mGameModeLoader.LoadAssets();
-    }
+        private AssetLoader<GameModeBase> mGameModeLoader = null;
 
-    private void OnDestroy()
-    {
-        GameModeEventRouter.Instance.UnRegisterListener(this);
-    }
-
-    // Load logic 
-    public void TransitionTo(GameModeType gameMode)
-    {
-        mPendingGameMode = gameMode;
-
-        if (mLoadedGameMode != null)
+        public void InitModule()
         {
-            Logger.Log(LogTag.GameModes, TAG, string.Format("::TransitionTo() - Current [{0}] New [{1}]", mLoadedGameMode.GetGameModeType().ToString(), mPendingGameMode.ToString()));
+            Logger.Log(LogTag.GameModes, TAG, "::InitModule()");
+            Logger.Assert(Instance == null, LogTag.GameModes, TAG, "::InitModule() - Already initialized!");
 
-            GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.ModeEnd));
-            GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.ModeTakedown_Begin));
+            Logger.LogFilters[(int)LogTag.Assets] = false;
+            Logger.LogFilters[(int)LogTag.DB] = false;
+
+            Instance = this;
+            ActorLoader = gameObject.AddComponent<ActorLoader>();
+            AudioManager = GetComponent<AudioManager>();
+
+            Messaging.MessageRouter.Instance.RegisterHandler(this);
+
+            mGameModeLoader = new AssetLoader<GameModeBase>("GameModes");
+            mGameModeLoader.LoadAssets();
         }
-        else
+
+        private void OnDestroy()
         {
-            Logger.Log(LogTag.GameModes, TAG, string.Format("::TransitionTo() - Current [NONE] New [{0}]", mPendingGameMode.ToString()));
-            GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.UITakedown_Begin));
+            Messaging.MessageRouter.Instance.UnRegisterHandler(this);
         }
-    }
 
-    public void LoadGameMode(GameModeType gameMode)
-    {
-        Instantiate(mGameModeLoader.GetAsset(gameMode.ToString()), transform);
-
-        // Continue loading on 'NotifyGameModeLoaded'
-    }
-
-    public void NotifyGameModeLoaded(GameModeBase gameMode)
-    {
-        Logger.Assert(mLoadedGameMode == null, LogTag.GameModes, TAG, "::NotifyGameModeLoaded() - GameMode already loaded", LogLevel.Warning);
-
-        mLoadedGameMode = gameMode;
-        mLoadedGameMode.Init();
-        LevelId levelId = mLoadedGameMode.GetLevelId();
-        if (levelId != LevelId.INVALID)
+        // Load logic 
+        public void TransitionTo(GameModeType gameMode)
         {
-            Level loadedLevel = LevelManager.GetLoadedLevel();
-            if (loadedLevel == null || loadedLevel.LevelId != levelId)
+            mPendingGameMode = gameMode;
+
+            if (mLoadedGameMode != null)
             {
-                LevelManager.LoadLevel(levelId);
+                Logger.Log(LogTag.GameModes, TAG, string.Format("::TransitionTo() - Current [{0}] New [{1}]", mLoadedGameMode.GetGameModeType().ToString(), mPendingGameMode.ToString()));
+
+                Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.ModeEnd));
+                Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.ModeTakedown_Begin));
+            }
+            else
+            {
+                Logger.Log(LogTag.GameModes, TAG, string.Format("::TransitionTo() - Current [NONE] New [{0}]", mPendingGameMode.ToString()));
+                Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.UITakedown_Begin));
             }
         }
-        else
+
+        public void LoadGameMode(GameModeType gameMode)
         {
-            LevelManager.UnloadLevel();
+            Instantiate(mGameModeLoader.GetAsset(gameMode.ToString()), transform);
+
+            // Continue loading on 'NotifyGameModeLoaded'
         }
 
-        GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.UISetup_Begin));
-    }
-
-    // IEventHandler<GameModeEvent>
-    public void HandleEvent(GameModeEvent eventInfo)
-    {
-        switch (eventInfo.Type)
+        public void NotifyGameModeLoaded(GameModeBase gameMode)
         {
-            case GameModeEvent.EventType.UISetup_Complete:
-                {
-                    Logger.Log(LogTag.GameModes, TAG, "::HandleEvent() - " + eventInfo.Type.ToString());
+            Logger.Assert(mLoadedGameMode == null, LogTag.GameModes, TAG, "::NotifyGameModeLoaded() - GameMode already loaded", LogLevel.Warning);
 
-                    GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.ModeSetup_Begin));
+            mLoadedGameMode = gameMode;
+            mLoadedGameMode.Init();
+            GameServices.LevelId levelId = mLoadedGameMode.GetLevelId();
+
+            MAGE.GameModes.ILevelManagerService levelManagerService = MAGE.GameModes.LevelManagementService.Get();
+            if (levelId != GameServices.LevelId.INVALID)
+            {
+                Level loadedLevel = levelManagerService.GetLoadedLevel();
+                if (loadedLevel == null || loadedLevel.LevelId != levelId)
+                {
+                    levelManagerService.LoadLevel(levelId);
                 }
-                break;
+            }
+            else
+            {
+                levelManagerService.UnloadLevel();
+            }
 
-            case GameModeEvent.EventType.ModeSetup_Complete:
+            Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.UISetup_Begin));
+        }
+
+        // IMessageHandler
+        public void HandleMessage(Messaging.MessageInfoBase messageInfo)
+        {
+            switch (messageInfo.MessageId)
+            {
+                case GameModeMessage.Id:
                 {
-                    Logger.Log(LogTag.GameModes, TAG, "::HandleEvent() - " + eventInfo.Type.ToString());
+                    GameModeMessage gameModeMessage = messageInfo as GameModeMessage;
 
-                    GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.ModeStart));
-                }
-                break;
-
-            case GameModeEvent.EventType.ModeTakedown_Complete:
-                {
-                    Logger.Log(LogTag.GameModes, TAG, "::HandleEvent() - " + eventInfo.Type.ToString());
-
-                    Destroy(mLoadedGameMode.gameObject);
-
-                    GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.UITakedown_Begin));
-                }
-
-                break;
-
-            case GameModeEvent.EventType.UITakedown_Complete:
-                {
-                    Logger.Log(LogTag.GameModes, TAG, "::HandleEvent() - " + eventInfo.Type.ToString());
-
-                    if (mPendingGameMode != GameModeType.INVALID)
+                    switch (gameModeMessage.Type)
                     {
-                        GameModeType toLoad = mPendingGameMode;
-                        mPendingGameMode = GameModeType.INVALID;
-                        LoadGameMode(toLoad);
+                        case GameModeMessage.EventType.UISetup_Complete:
+                        {
+                            Logger.Log(LogTag.GameModes, TAG, "::HandleMessage() - " + gameModeMessage.Type.ToString());
+
+                            Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.ModeSetup_Begin));
+                        }
+                        break;
+
+                        case GameModeMessage.EventType.ModeSetup_Complete:
+                        {
+                            Logger.Log(LogTag.GameModes, TAG, "::HandleMessage() - " + gameModeMessage.Type.ToString());
+
+                            Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.ModeStart));
+                        }
+                        break;
+
+                        case GameModeMessage.EventType.ModeTakedown_Complete:
+                        {
+                            Logger.Log(LogTag.GameModes, TAG, "::HandleMessage() - " + gameModeMessage.Type.ToString());
+
+                            Destroy(mLoadedGameMode.gameObject);
+
+                            Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.UITakedown_Begin));
+                        }
+
+                        break;
+
+                        case GameModeMessage.EventType.UITakedown_Complete:
+                        {
+                            Logger.Log(LogTag.GameModes, TAG, "::HandleMessage() - " + gameModeMessage.Type.ToString());
+
+                            if (mPendingGameMode != GameModeType.INVALID)
+                            {
+                                GameModeType toLoad = mPendingGameMode;
+                                mPendingGameMode = GameModeType.INVALID;
+                                LoadGameMode(toLoad);
+                            }
+                        }
+                        break;
                     }
                 }
                 break;
+            }
+        }
+
+        // Debug
+        public void MainMenu()
+        {
+            TransitionTo(GameModeType.MainMenu);
+        }
+
+        public void Explore()
+        {
+            TransitionTo(GameModeType.Exploration);
+        }
+
+        public void Encounter()
+        {
+            TransitionTo(GameModeType.Encounter);
+        }
+
+        public void Outfit()
+        {
+            TransitionTo(GameModeType.PartyOutfiter);
+        }
+
+        public void Quit()
+        {
+            TransitionTo(GameModeType.MainMenu);
         }
     }
-
-    // Debug
-    public void MainMenu()
-    {
-        TransitionTo(GameModeType.MainMenu);
-    }
-
-    public void Explore()
-    {
-        TransitionTo(GameModeType.Exploration);
-    }
-
-    public void Encounter()
-    {
-        TransitionTo(GameModeType.Encounter);
-    }
-
-    public void Outfit()
-    {
-        TransitionTo(GameModeType.PartyOutfiter);
-    }
-
-    public void Quit()
-    {
-        TransitionTo(GameModeType.MainMenu);
-    }
 }
+
 

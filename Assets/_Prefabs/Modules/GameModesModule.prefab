@@ -9,8 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4804231985301377663}
-  - component: {fileID: 2147000360117521254}
-  - component: {fileID: 964681002943818390}
   - component: {fileID: 4804231985301377660}
   - component: {fileID: -2165720648024895469}
   m_Layer: 0
@@ -35,30 +33,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2147000360117521254
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4804231985301377661}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e65662e38d712fb40bec798b6478e3b0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &964681002943818390
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4804231985301377661}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d71b958cf08bb74abe0ba9bcffcbcb9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4804231985301377660
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83,6 +57,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 101c37cfd12d28b4793c98a8ad908c86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mMuteMusic: 0
 --- !u!1001 &5721637577403097546
 PrefabInstance:
   m_ObjectHideFlags: 0

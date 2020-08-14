@@ -1,179 +1,246 @@
-﻿using System.Collections;
+﻿using MAGE.GameModes;
+using MAGE.UI.Views;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
-public enum UIContainerId
+namespace MAGE.UI
 {
-    ActorActionsView,
-    ConversationView,
-    EncounterCharacterInfoView,
-    EncounterIntroView,
-    EncounterUnitPlacementView,
-    EncounterStatusView,
-    EquipmentOutfiterView,
-    ExplorationMenuView,
-    MainMenuView,
-    NPCActionSelectView,
-    OutfiterSelectView,
-    SpecializationOutfiterView,
-
-    NUM
-}
-
-
-class UIManager : MonoBehaviour
-    , IEventHandler<GameModeEvent>
-{
-    private string TAG = "UIManager";
-
-    public static UIManager Instance;
-
-    private Dictionary<UIContainerId, KeyValuePair<UIContainer, UIContainerControl>> mContainerControlPairs;
-    private HashSet<UIContainerId> mContainersToPublish;
-    private AssetLoader<UIContainer> mViewLoader = null;
-    private AssetLoader<Sprite> mSpriteLoader = null;
-    private AudioSource mUIAudioSource = null;
-    private CursorControl mCursorControl = null;
-
-    public void Initialize()
+    public enum UIContainerId
     {
-        Logger.Log(LogTag.UI, TAG, "::Initialize()");
-        Logger.Assert(Instance == null, LogTag.UI, TAG, "::Initialize() - Already initialized!");
+        ActorActionsView,
+        ConversationView,
+        ContainerInspectView,
+        EncounterCharacterInfoView,
+        EncounterIntroView,
+        EncounterUnitPlacementView,
+        EncounterStatusView,
+        EquipmentOutfiterView,
+        ExplorationMenuView,
+        MainMenuView,
+        NPCActionSelectView,
+        OutfiterSelectView,
+        QuestLogView,
+        SpecializationOutfiterView,
+        VendorView,
 
-        Instance = this;
-
-        mContainerControlPairs = new Dictionary<UIContainerId, KeyValuePair<UIContainer, UIContainerControl>>();
-        mContainersToPublish = new HashSet<UIContainerId>();
-
-        mViewLoader = new AssetLoader<UIContainer>(Path.Combine("UI","Views"));
-        mViewLoader.LoadAssets();
-
-        mSpriteLoader = new AssetLoader<Sprite>(Path.Combine("UI","Sprites"));
-        mSpriteLoader.LoadAssets();
-
-        mCursorControl = new CursorControl();
-        mCursorControl.SetCursorState(CursorControl.CursorType.Default);
-
-        mUIAudioSource = gameObject.AddComponent<AudioSource>();
-        mUIAudioSource.spatialBlend = 0; // no fall off
-        mUIAudioSource.volume = .2f;
-
-        GameModeEventRouter.Instance.RegisterHandler(this);
+        NUM
     }
 
-    private void OnDestroy()
-    {
-        GameModeEventRouter.Instance.UnRegisterListener(this);
-    }
 
-    private void LateUpdate()
+    class UIManager : MonoBehaviour
+        , Messaging.IMessageHandler
     {
-        if (mContainersToPublish.Count > 0)
+        private string TAG = "UIManager";
+
+        public static UIManager Instance;
+
+        public Transform OverlayParent;
+        public Image FadeSkrim;
+
+        private Dictionary<UIContainerId, KeyValuePair<UIContainer, UIContainerControl>> mContainerControlPairs;
+        private HashSet<UIContainerId> mContainersToPublish;
+        private AssetLoader<UIContainer> mViewLoader = null;
+        private AssetLoader<Sprite> mSpriteLoader = null;
+        private AudioSource mUIAudioSource = null;
+        private CursorControl mCursorControl = null;
+
+        private Coroutine mFadeCoroutine;
+
+        public void Initialize()
         {
-            foreach (UIContainerId id in mContainersToPublish)
+            Logger.Log(LogTag.UI, TAG, "::Initialize()");
+            Logger.Assert(Instance == null, LogTag.UI, TAG, "::Initialize() - Already initialized!");
+
+            Instance = this;
+
+            mContainerControlPairs = new Dictionary<UIContainerId, KeyValuePair<UIContainer, UIContainerControl>>();
+            mContainersToPublish = new HashSet<UIContainerId>();
+
+            mViewLoader = new AssetLoader<UIContainer>(Path.Combine("UI", "Views"));
+            mViewLoader.LoadAssets();
+
+            mSpriteLoader = new AssetLoader<Sprite>(Path.Combine("UI", "Sprites"));
+            mSpriteLoader.LoadAssets();
+
+            mCursorControl = new CursorControl();
+            mCursorControl.SetCursorState(CursorControl.CursorType.Default);
+
+            mUIAudioSource = gameObject.AddComponent<AudioSource>();
+            mUIAudioSource.spatialBlend = 0; // no fall off
+            mUIAudioSource.volume = .2f;
+
+            Messaging.MessageRouter.Instance.RegisterHandler(this);
+        }
+
+        private void OnDestroy()
+        {
+            Messaging.MessageRouter.Instance.UnRegisterHandler(this);
+        }
+
+        private void LateUpdate()
+        {
+            if (mContainersToPublish.Count > 0)
             {
-                Debug.Assert(mContainerControlPairs.ContainsKey(id));
-                IDataProvider publish = mContainerControlPairs[id].Value.Publish((int)id);
+                foreach (UIContainerId id in mContainersToPublish)
+                {
+                    Debug.Assert(mContainerControlPairs.ContainsKey(id));
+                    IDataProvider publish = mContainerControlPairs[id].Value.Publish((int)id);
 
-                //Logger.Log(LogTag.UI, TAG, string.Format("Publishing from {0} -> {1}: {2}",
-                //    mContainerControlPairs[id].Value.Name(), mContainerControlPairs[id].Key.Name(), publish.ToString()));
+                    //Logger.Log(LogTag.UI, TAG, string.Format("Publishing from {0} -> {1}: {2}",
+                    //    mContainerControlPairs[id].Value.Name(), mContainerControlPairs[id].Key.Name(), publish.ToString()));
 
-                mContainerControlPairs[id].Key.Publish(publish);
+                    mContainerControlPairs[id].Key.Publish(publish);
+                }
+
+                mContainersToPublish.Clear();
             }
-
-            mContainersToPublish.Clear();
         }
-    }
 
-    public void PlaySFX(SFXId sFXId)
-    {
-        mUIAudioSource.PlayOneShot(GameModesModule.AudioManager.GetSFXClip(sFXId));
-    }
-
-    public void SetCursor(CursorControl.CursorType cursorType)
-    {
-        mCursorControl.SetCursorState(cursorType);
-    }
-
-    public Sprite LoadSprite(string assetName)
-    {
-        return mSpriteLoader.GetAsset(assetName);
-    }
-
-    public void PostContainer(UIContainerId containerId, UIContainerControl provider)
-    {
-        UIContainer toPost = null;
-        Debug.Assert(!mContainerControlPairs.ContainsKey(containerId));
-
-        toPost = Instantiate(mViewLoader.GetAsset(containerId.ToString()), transform).GetComponent<UIContainer>();
-        toPost.Init((int)containerId, null);
-        mContainerControlPairs.Add(containerId, new KeyValuePair<UIContainer, UIContainerControl>(toPost, provider));
-
-        //Logger.Log(LogTag.UI, TAG, string.Format("{0} Posting Container {1}",provider.Name(), toPost.Name()));
-
-        mContainersToPublish.Add(containerId);
-    }
-
-    public void RemoveOverlay(UIContainerId containerId)
-    {
-        Debug.Assert(mContainerControlPairs.ContainsKey(containerId));
-        
-        UIContainer overlay = mContainerControlPairs[containerId].Key;
-        mContainerControlPairs.Remove(containerId);
-
-        //Logger.Log(LogTag.UI, TAG, string.Format("Removing Container {0}", overlay.Name()));
-
-        overlay.gameObject.SetActive(false);
-        Destroy(overlay.gameObject);
-    }
-
-    public void Publish(UIContainerId containerId)
-    {
-        //Logger.Log(LogTag.UI, TAG, string.Format("Publish Queued for Container {0}", mContainerControlPairs[containerId].Key.Name()));
-
-        mContainersToPublish.Add(containerId);
-    }
-
-    public void ComponentInteracted(int containerId, UIInteractionInfo interactionInfo)
-    {
-        UIContainerId id = (UIContainerId)containerId;
-        Debug.Assert(mContainerControlPairs.ContainsKey(id), string.Format("UIContainer {0} interacted with but is not being managed by UIManager", id.ToString()));
-
-        Logger.Log(LogTag.UI, TAG, string.Format("Container Interacted {0}", id.ToString()));
-
-        mContainerControlPairs[id].Value.HandleComponentInteraction(containerId, interactionInfo);
-    }
-
-    public void HandleEvent(GameModeEvent eventInfo)
-    {
-        switch (eventInfo.Type)
+        public void PlaySFX(SFXId sFXId)
         {
-            case GameModeEvent.EventType.UISetup_Begin:
+            mUIAudioSource.PlayOneShot(GameModes.GameModesModule.AudioManager.GetSFXClip(sFXId));
+        }
+
+        public void SetCursor(CursorControl.CursorType cursorType)
+        {
+            mCursorControl.SetCursorState(cursorType);
+        }
+
+        public Sprite LoadSprite(string assetName)
+        {
+            return mSpriteLoader.GetAsset(assetName);
+        }
+
+        public void PostContainer(UIContainerId containerId, UIContainerControl provider)
+        {
+            UIContainer toPost = null;
+            Debug.Assert(!mContainerControlPairs.ContainsKey(containerId));
+
+            toPost = Instantiate(mViewLoader.GetAsset(containerId.ToString()), OverlayParent).GetComponent<UIContainer>();
+            toPost.Init((int)containerId, null);
+            mContainerControlPairs.Add(containerId, new KeyValuePair<UIContainer, UIContainerControl>(toPost, provider));
+
+            //Logger.Log(LogTag.UI, TAG, string.Format("{0} Posting Container {1}",provider.Name(), toPost.Name()));
+
+            mContainersToPublish.Add(containerId);
+        }
+
+        public void RemoveOverlay(UIContainerId containerId)
+        {
+            Debug.Assert(mContainerControlPairs.ContainsKey(containerId));
+
+            UIContainer overlay = mContainerControlPairs[containerId].Key;
+            mContainerControlPairs.Remove(containerId);
+
+            //Logger.Log(LogTag.UI, TAG, string.Format("Removing Container {0}", overlay.Name()));
+
+            overlay.gameObject.SetActive(false);
+            Destroy(overlay.gameObject);
+        }
+
+        public void Publish(UIContainerId containerId)
+        {
+            //Logger.Log(LogTag.UI, TAG, string.Format("Publish Queued for Container {0}", mContainerControlPairs[containerId].Key.Name()));
+
+            mContainersToPublish.Add(containerId);
+        }
+
+        public void ComponentInteracted(int containerId, UIInteractionInfo interactionInfo)
+        {
+            UIContainerId id = (UIContainerId)containerId;
+            Debug.Assert(mContainerControlPairs.ContainsKey(id), string.Format("UIContainer {0} interacted with but is not being managed by UIManager", id.ToString()));
+
+            Logger.Log(LogTag.UI, TAG, string.Format("Container Interacted {0}", id.ToString()));
+
+            mContainerControlPairs[id].Value.HandleComponentInteraction(containerId, interactionInfo);
+        }
+
+        public void HandleMessage(Messaging.MessageInfoBase messageInfoBase)
+        {
+            switch (messageInfoBase.MessageId)
+            {
+                case GameModeMessage.Id:
                 {
-                    Logger.Log(LogTag.UI, TAG, "::HandleEvent() - " + eventInfo.Type.ToString());
+                    GameModeMessage gameModeMessage = messageInfoBase as GameModeMessage;
 
-                    GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.UISetup_Complete));
-                }
-                break;
-
-            case GameModeEvent.EventType.UITakedown_Begin:
-                {
-                    Logger.Log(LogTag.UI, TAG, "::HandleEvent() - " + eventInfo.Type.ToString());
-
-                    Logger.Assert(transform.childCount == 0, LogTag.UI, TAG, "Left over UI elements on UITakedown", LogLevel.Warning);
-                    for (int i = 0; i < transform.childCount; ++i)
+                    switch (gameModeMessage.Type)
                     {
-                        Logger.Log(LogTag.UI, TAG, string.Format("    {0}. {1}", i, transform.GetChild(i).name), LogLevel.Warning);
-                        Destroy(transform.GetChild(i).gameObject);
-                    }
-                    mContainerControlPairs.Clear();
+                        case GameModeMessage.EventType.UISetup_Begin:
+                        {
+                            Logger.Log(LogTag.UI, TAG, "::HandleMessage() - " + gameModeMessage.Type.ToString());
 
-                    GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.UITakedown_Complete));
+                            Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.UISetup_Complete));
+                        }
+                        break;
+
+                        case GameModeMessage.EventType.UITakedown_Begin:
+                        {
+                            Logger.Log(LogTag.UI, TAG, "::HandleMessage() - " + gameModeMessage.Type.ToString());
+
+                            Logger.Assert(OverlayParent.childCount == 0, LogTag.UI, TAG, "Left over UI elements on UITakedown", LogLevel.Warning);
+                            for (int i = 0; i < OverlayParent.childCount; ++i)
+                            {
+                                Logger.Log(LogTag.UI, TAG, string.Format("    {0}. {1}", i, OverlayParent.GetChild(i).name), LogLevel.Warning);
+                                Destroy(OverlayParent.GetChild(i).gameObject);
+                            }
+                            mContainerControlPairs.Clear();
+
+                            Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.UITakedown_Complete));
+                        }
+                        break;
+
+                        case GameModeMessage.EventType.ModeStart:
+                        {
+                            if (mFadeCoroutine != null)
+                            {
+                                StopCoroutine(mFadeCoroutine);
+                            }
+                            mFadeCoroutine = StartCoroutine(_FadeInOut(true, .5f));
+                        }
+                        break;
+
+                        case GameModeMessage.EventType.ModeEnd:
+                        {
+                            if (mFadeCoroutine != null)
+                            {
+                                StopCoroutine(mFadeCoroutine);
+                            }
+                            mFadeCoroutine = StartCoroutine(_FadeInOut(false, .5f));
+                        }
+                        break;
+                    }
                 }
                 break;
+            }
+        }
+
+        private IEnumerator _FadeInOut(bool fadeIn, float overSeconds)
+        {
+            float duration = 0;
+
+            while (duration < overSeconds)
+            {
+                duration += Time.deltaTime;
+
+                float progress = duration / overSeconds;
+                if (fadeIn)
+                {
+                    progress = 1 - progress;
+                }
+
+                Color updatedColor = FadeSkrim.color;
+                updatedColor.a = progress;
+                FadeSkrim.color = updatedColor;
+
+                yield return new WaitForFixedUpdate();
+            }
         }
     }
+
 }
+

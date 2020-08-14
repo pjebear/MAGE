@@ -1,0 +1,1 @@
+{"List":[{"Key":200000,"Value":{"Id":200000,"Name":"FieldVendorContainer","IsActive":true,"IsInteractable":false,"Currency":0,"AppearanceId":-1,"Inventory":[],"Conversations":[]}},{"Key":220000,"Value":{"Id":220000,"Name":"FieldVendor","IsActive":true,"IsInteractable":true,"Currency":0,"AppearanceId":220000,"Inventory":[7,6,15,8,0,1,2,3],"Conversations":[]}}]}

@@ -4,19 +4,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-enum ScenarioId
+namespace MAGE.GameServices
 {
-    INVALID = -1, 
+    enum ScenarioId
+    {
+        INVALID = -1,
 
-    TheGreatHoldUp,
+        TheGreatHoldUp,
 
-    NUM
+        NUM
+    }
+
+    class ScenarioInfo
+    {
+        public ScenarioId ScenarioId = ScenarioId.INVALID;
+        public ConversationId ConversationId = ConversationId.INVALID;
+        public List<Character.CharacterInfo> ScenarioCharacters = new List<MAGE.GameServices.Character.CharacterInfo>();
+    }
 }
 
-class ScenarioInfo
-{
-    public ScenarioId ScenarioId = ScenarioId.INVALID;
-    public ConversationId ConversationId = ConversationId.INVALID;
-    public List<CharacterInfo> ScenarioCharacters = new List<CharacterInfo>();
-}
+
+
 

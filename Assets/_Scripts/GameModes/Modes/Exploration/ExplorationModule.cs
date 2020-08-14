@@ -1,116 +1,129 @@
 ﻿using Invector.vCharacterController;
+using MAGE.GameModes.FlowControl;
+using MAGE.GameModes.LevelManagement;
+using MAGE.GameModes.SceneElements;
+using MAGE.GameServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using static Cinemachine.DocumentationSortingAttribute;
 
-class ExplorationModule : GameModeBase
+namespace MAGE.GameModes
 {
-    public static ExplorationModule Instance;
-
-    GameObject mExplorationAvatar;
-    ExplorationMenuViewControl MenuControl;
-    InteractionFlowControl mInteractionFlowControl;
-    ScenarioFlowControl mScenarioFlowControl;
-    AudioSource mAmbientSoundSource;
-
-    public MovementDirector MovementDirector;
-
-    public override void Init()
+    class ExplorationModule : GameModeBase
     {
-        Instance = this;
+        public static ExplorationModule Instance;
 
-        MenuControl = new ExplorationMenuViewControl();
-        mInteractionFlowControl = GetComponent<InteractionFlowControl>();
-        mScenarioFlowControl = GetComponent<ScenarioFlowControl>();
-        MovementDirector = gameObject.AddComponent<MovementDirector>();
-    }
+        GameObject mExplorationAvatar;
+        ExplorationMenuViewControl MenuControl;
+        InteractionFlowControl mInteractionFlowControl;
+        ScenarioFlowControl mScenarioFlowControl;
+        AudioSource mAmbientSoundSource;
 
-    public override LevelId GetLevelId()
-    {
-        return GameSystemModule.Instance.GetCurrentLevel();
-    }
+        public MovementDirector MovementDirector;
 
-    protected override void SetupMode()
-    {
-        Level level = GameModesModule.LevelManager.GetLoadedLevel();
+        public override void Init()
+        {
+            Instance = this;
 
-        level.ScenarioContainer.gameObject.SetActive(true);
-        level.NPCContainer.gameObject.SetActive(true);
+            MenuControl = new ExplorationMenuViewControl();
+            mInteractionFlowControl = GetComponent<InteractionFlowControl>();
+            mScenarioFlowControl = GetComponent<ScenarioFlowControl>();
+            MovementDirector = gameObject.AddComponent<MovementDirector>();
+        }
 
-        DB.DBCharacter avatar = DB.DBHelper.LoadCharacter(GameSystemModule.Instance.GetPartyAvatarId());
+        public override GameServices.LevelId GetLevelId()
+        {
+            return MAGE.GameServices.WorldService.Get().GetCurrentLevel();
+        }
 
-        mExplorationAvatar = GameModesModule.ActorLoader.CreateActor(DB.CharacterHelper.FromDB(avatar.Appearance), level.SpawnPoint).gameObject;
-        //go.AddComponent<vThirdPersonMotor>();
-        //go.AddComponent<vThirdPersonController>();
-        //go.AddComponent<vThirdPersonInput>();
-        //mExplorationAvatar = Instantiate(ExplorationAvatarPrefab, level.transform);
-        //mExplorationAvatar.transform.SetPositionAndRotation(level.SpawnPoint.position, level.SpawnPoint.rotation);
+        protected override void SetupMode()
+        {
+            SceneElements.Level level = LevelManagementService.Get().GetLoadedLevel();
 
-        Camera.main.gameObject.AddComponent<ThirdPersonCamera>().Follow(mExplorationAvatar.transform);
+            level.ScenarioContainer.gameObject.SetActive(true);
+            level.NPCContainer.gameObject.SetActive(true);
 
-        mExplorationAvatar.AddComponent<AudioListener>();
-        mExplorationAvatar.AddComponent<ThirdPersonActorController>();
+            int partyAvatarId = MAGE.GameServices.WorldService.Get().GetPartyAvatarId();
 
-        mAmbientSoundSource = gameObject.AddComponent<AudioSource>();
-        mAmbientSoundSource.clip = GameModesModule.AudioManager.GetTrack(TrackId.Explore);
-        mAmbientSoundSource.loop = true;
-        mAmbientSoundSource.spatialBlend = 0; // global volume
-        //mAmbientSoundSource.Play();
-        GameModesModule.AudioManager.FadeInTrack(mAmbientSoundSource, 5, .5f);
+            // SSFTODO: Update this to go through levelmanagement
+            int appearanceId = GameServices.CharacterService.Get().GetCharacterAppearanceId(partyAvatarId);
+            Appearance appearance = GameModes.LevelManagementService.Get().GetAppearance(appearanceId);
 
-        mInteractionFlowControl.Init(mExplorationAvatar.GetComponent<ThirdPersonActorController>());
-        mScenarioFlowControl.Init(mExplorationAvatar.GetComponent<ThirdPersonActorController>());
+            mExplorationAvatar = GameModesModule.ActorLoader.CreateActor(appearance, level.SpawnPoint).gameObject;
+            //go.AddComponent<vThirdPersonMotor>();
+            //go.AddComponent<vThirdPersonController>();
+            //go.AddComponent<vThirdPersonInput>();
+            //mExplorationAvatar = Instantiate(ExplorationAvatarPrefab, level.transform);
+            //mExplorationAvatar.transform.SetPositionAndRotation(level.SpawnPoint.position, level.SpawnPoint.rotation);
 
-        GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.ModeSetup_Complete));
-    }
+            Camera.main.gameObject.AddComponent<ThirdPersonCamera>().Follow(mExplorationAvatar.transform);
 
-    protected override void CleanUpMode()
-    {
-        mInteractionFlowControl.CleanUp();
-        mScenarioFlowControl.CleanUp();
+            mExplorationAvatar.AddComponent<AudioListener>();
+            mExplorationAvatar.AddComponent<ThirdPersonActorController>();
 
-        Destroy(Camera.main.gameObject.GetComponent<ThirdPersonCamera>());
-        Destroy(mExplorationAvatar);
+            mAmbientSoundSource = gameObject.AddComponent<AudioSource>();
+            mAmbientSoundSource.clip = GameModesModule.AudioManager.GetTrack(TrackId.Explore);
+            mAmbientSoundSource.loop = true;
+            mAmbientSoundSource.spatialBlend = 0; // global volume
+                                                  //mAmbientSoundSource.Play();
+            GameModesModule.AudioManager.FadeInTrack(mAmbientSoundSource, 5, .5f);
 
-        GameModesModule.LevelManager.GetLoadedLevel().ScenarioContainer.gameObject.SetActive(false);
-        GameModesModule.LevelManager.GetLoadedLevel().NPCContainer.gameObject.SetActive(false);
+            mInteractionFlowControl.Init(mExplorationAvatar.GetComponent<ThirdPersonActorController>());
+            mScenarioFlowControl.Init(mExplorationAvatar.GetComponent<ThirdPersonActorController>());
 
-        GameModeEventRouter.Instance.NotifyEvent(new GameModeEvent(GameModeEvent.EventType.ModeTakedown_Complete));
+            Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.ModeSetup_Complete));
+        }
 
-        Instance = null;
-    }
+        protected override void CleanUpMode()
+        {
+            mInteractionFlowControl.CleanUp();
+            mScenarioFlowControl.CleanUp();
 
-    protected override void StartMode()
-    {
-        MenuControl.Show();
-    }
+            Destroy(Camera.main.gameObject.GetComponent<ThirdPersonCamera>());
+            Destroy(mExplorationAvatar);
 
-    protected override void EndMode()
-    {
-        MenuControl.Hide();
-    }
+            MAGE.GameModes.LevelManagementService.Get().GetLoadedLevel().ScenarioContainer.gameObject.SetActive(false);
+            MAGE.GameModes.LevelManagementService.Get().GetLoadedLevel().NPCContainer.gameObject.SetActive(false);
 
-    public override GameModeType GetGameModeType()
-    {
-        return GameModeType.Exploration;
-    }
+            Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.ModeTakedown_Complete));
 
-    public void TriggerRandomEncounter()
-    {
-        Vector3 avatarPosition = mExplorationAvatar.transform.position;
+            Instance = null;
+        }
 
-        EncounterCreateParams randomParams = new EncounterCreateParams();
-        randomParams.ScenarioId = EncounterScenarioId.Random;
-        randomParams.LevelId = GameModesModule.LevelManager.GetLoadedLevel().LevelId;
-        randomParams.BottomLeft = new TileIdx((int)mExplorationAvatar.transform.position.x, (int)mExplorationAvatar.transform.position.z);
-        randomParams.TopRight = new TileIdx(randomParams.BottomLeft.x + 5, randomParams.BottomLeft.y + 5);
+        protected override void StartMode()
+        {
+            MenuControl.Show();
+        }
+
+        protected override void EndMode()
+        {
+            MenuControl.Hide();
+        }
+
+        public override GameModeType GetGameModeType()
+        {
+            return GameModeType.Exploration;
+        }
+
+        public void TriggerRandomEncounter()
+        {
+            Vector3 avatarPosition = mExplorationAvatar.transform.position;
+
+            EncounterCreateParams randomParams = new EncounterCreateParams();
+            randomParams.ScenarioId = EncounterScenarioId.Random;
+            randomParams.LevelId = MAGE.GameModes.LevelManagementService.Get().GetLoadedLevel().LevelId;
+            randomParams.BottomLeft = new TileIdx((int)mExplorationAvatar.transform.position.x, (int)mExplorationAvatar.transform.position.z);
+            randomParams.TopRight = new TileIdx(randomParams.BottomLeft.x + 5, randomParams.BottomLeft.y + 5);
 
 
-        GameSystemModule.Instance.PrepareEncounter(randomParams);
-        GameModesModule.Instance.Encounter();
+            MAGE.GameServices.WorldService.Get().PrepareEncounter(randomParams);
+            GameModesModule.Instance.Encounter();
+        }
     }
 }
+
 

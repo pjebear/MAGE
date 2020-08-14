@@ -1,39 +1,45 @@
-﻿using System;
+﻿using MAGE.GameServices;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-static class ActionResultListenerFactory
+namespace MAGE.GameModes.Encounter
 {
-    public static ActionResponderBase CheckoutListener(EncounterCharacter listenerOwner, ActionResponseId type)
+    static class ActionResultListenerFactory
     {
-        ActionResponderBase listener = null;
-
-        switch (type)
+        public static ActionResponderBase CheckoutListener(EncounterCharacter listenerOwner, ActionResponseId type)
         {
-            case (ActionResponseId.Riptose):
-                listener = new RiptoseListener(listenerOwner);    
-            break;
+            ActionResponderBase listener = null;
 
-            case (ActionResponseId.HealOnHurtListener):
-                listener = new HealOnHurtListener(listenerOwner);
-                break;
+            switch (type)
+            {
+                case (ActionResponseId.Riptose):
+                    listener = new RiptoseListener(listenerOwner);
+                    break;
 
-            case (ActionResponseId.BloodScent):
-                listener = new BloodScentListener(listenerOwner);
-                break;
-            case (ActionResponseId.Avenger):
-                listener = new AvengerListener(listenerOwner);
-                break;
+                case (ActionResponseId.HealOnHurtListener):
+                    listener = new HealOnHurtListener(listenerOwner);
+                    break;
 
-            default:
-                Debug.Assert(false);
-                break;
+                case (ActionResponseId.BloodScent):
+                    listener = new BloodScentListener(listenerOwner);
+                    break;
+                case (ActionResponseId.Avenger):
+                    listener = new AvengerListener(listenerOwner);
+                    break;
+
+                default:
+                    Debug.Assert(false);
+                    break;
+            }
+
+            return listener;
         }
-
-        return listener;
     }
 }
+
+
 
