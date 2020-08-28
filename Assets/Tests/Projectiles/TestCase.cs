@@ -13,8 +13,8 @@ namespace Tests.Projectiles
     {
         private ProjectileDirector ProjectileDirector;
 
-        public Tile Shooter;
-        public Tile Target;
+        public TileControl Shooter;
+        public TileControl Target;
 
         public void Setup(ProjectileDirector director)
         {

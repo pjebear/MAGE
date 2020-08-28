@@ -1,24 +1,24 @@
 ﻿using MAGE.GameModes.Encounter;
-
+using MAGE.GameSystems.Actions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MAGE.GameServices.Character
+namespace MAGE.GameSystems.Characters
 {
     abstract class StatusEffect
     {
-        public StatusEffectType EffectType { get { return mStatusEffectInfo.Type; } }
-        public EncounterCharacter CreatedBy;
+        public StatusEffectId EffectType { get { return mStatusEffectInfo.Type; } }
+        public Character CreatedBy;
         public int StackCount;
         public UI.StatusIconSpriteId SpriteId { get { return mStatusEffectInfo.SpriteId; } }
         public bool Beneficial { get { return mStatusEffectInfo.Beneficial; } }
         protected int mCurrentDuration;
         protected StatusEffectInfo mStatusEffectInfo;
 
-        protected StatusEffect(EncounterCharacter createdBy, StatusEffectInfo info)
+        protected StatusEffect(Character createdBy, StatusEffectInfo info)
         {
             CreatedBy = createdBy;
             StackCount = 1;
@@ -73,7 +73,7 @@ namespace MAGE.GameServices.Character
     class ProtectionEffect : StatusEffect
     {
         float stackValue = 0.25f;
-        public ProtectionEffect(EncounterCharacter createdBy, StatusEffectInfo info)
+        public ProtectionEffect(Character createdBy, StatusEffectInfo info)
             : base(createdBy, info)
         {
 
@@ -97,7 +97,7 @@ namespace MAGE.GameServices.Character
 
     class ShackleEffect : StatusEffect
     {
-        public ShackleEffect(EncounterCharacter createdBy, StatusEffectInfo info)
+        public ShackleEffect(Character createdBy, StatusEffectInfo info)
             : base(createdBy, info)
         {
 
@@ -121,7 +121,7 @@ namespace MAGE.GameServices.Character
     class AvengerEffect : StatusEffect
     {
         public float StackCountToAttributeMultiplier = 0.01f; // 1 stack = 1 percent
-        public AvengerEffect(EncounterCharacter createdBy, StatusEffectInfo info)
+        public AvengerEffect(Character createdBy, StatusEffectInfo info)
             : base(createdBy, info)
         {
 
@@ -146,7 +146,7 @@ namespace MAGE.GameServices.Character
     class RighteousGloryEffect : StatusEffect
     {
         float StackCountToAttributeMultiplier = 0.2f;
-        public RighteousGloryEffect(EncounterCharacter createdBy, StatusEffectInfo info)
+        public RighteousGloryEffect(Character createdBy, StatusEffectInfo info)
             : base(createdBy, info)
         {
 
@@ -172,7 +172,7 @@ namespace MAGE.GameServices.Character
     class PoisonEffect : StatusEffect
     {
         float stackValue = -2;
-        public PoisonEffect(EncounterCharacter createdBy, StatusEffectInfo info)
+        public PoisonEffect(Character createdBy, StatusEffectInfo info)
             : base(createdBy, info)
         {
 
@@ -194,7 +194,7 @@ namespace MAGE.GameServices.Character
     class RegenEffect : StatusEffect
     {
         float stackValue = 3;
-        public RegenEffect(EncounterCharacter createdBy, StatusEffectInfo info)
+        public RegenEffect(Character createdBy, StatusEffectInfo info)
             : base(createdBy, info)
         {
 
@@ -215,7 +215,7 @@ namespace MAGE.GameServices.Character
 
     class BloodScentEffect : StatusEffect
     {
-        public BloodScentEffect(EncounterCharacter createdBy, StatusEffectInfo info)
+        public BloodScentEffect(Character createdBy, StatusEffectInfo info)
             : base(createdBy, info)
         {
 

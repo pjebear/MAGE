@@ -17,14 +17,14 @@ namespace MAGE.GameModes.LevelManagement.Internal
 
         public void Init()
         {
-            GameServices.DBService.Get().RegisterForAppearanceUpdates(this, OnAppearanceDBUpdated);
-            GameServices.DBService.Get().RegisterForPropUpdates(this, OnPropDBUpdated);
+            GameSystems.DBService.Get().RegisterForAppearanceUpdates(this, OnAppearanceDBUpdated);
+            GameSystems.DBService.Get().RegisterForPropUpdates(this, OnPropDBUpdated);
         }
 
         public void Takedown()
         {
-            GameServices.DBService.Get().UnRegisterForAppearanceUpdates(this);
-            GameServices.DBService.Get().UnRegisterForPropUpdates(this);
+            GameSystems.DBService.Get().UnRegisterForAppearanceUpdates(this);
+            GameSystems.DBService.Get().UnRegisterForPropUpdates(this);
         }
 
         // DB Updates
@@ -46,7 +46,7 @@ namespace MAGE.GameModes.LevelManagement.Internal
 
         public Appearance GetAppearance(int apperanceId)
         {
-            return GameServices.AppearanceUtil.FromDB(GameServices.DBService.Get().LoadAppearance(apperanceId));
+            return GameSystems.AppearanceUtil.FromDB(GameSystems.DBService.Get().LoadAppearance(apperanceId));
         }
 
         public Level GetLoadedLevel()
@@ -56,10 +56,10 @@ namespace MAGE.GameModes.LevelManagement.Internal
 
         public SceneElements.PropInfo GetPropInfo(int propId)
         {
-            return SceneElements.PropUtil.FromDB(GameServices.DBService.Get().LoadPropInfo(propId));
+            return SceneElements.PropUtil.FromDB(GameSystems.DBService.Get().LoadPropInfo(propId));
         }
 
-        public void LoadLevel(GameServices.LevelId levelId)
+        public void LoadLevel(GameSystems.LevelId levelId)
         {
             mLoadedLevel = Instantiate(mLevelLoader.GetAsset(levelId.ToString()));
         }
@@ -80,7 +80,7 @@ namespace MAGE.GameModes.LevelManagement.Internal
 
         public void UpdatePropInfo(SceneElements.PropInfo updatedInfo)
         {
-            GameServices.DBService.Get().WritePropInfo(updatedInfo.Tag.Id, PropUtil.ToDB(updatedInfo));
+            GameSystems.DBService.Get().WritePropInfo(updatedInfo.Tag.Id, PropUtil.ToDB(updatedInfo));
         }
     }
 }

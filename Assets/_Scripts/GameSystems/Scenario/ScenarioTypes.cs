@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MAGE.GameServices
+namespace MAGE.GameSystems
 {
     enum ScenarioId
     {
@@ -19,7 +19,7 @@ namespace MAGE.GameServices
     {
         public ScenarioId ScenarioId = ScenarioId.INVALID;
         public ConversationId ConversationId = ConversationId.INVALID;
-        public List<Character.CharacterInfo> ScenarioCharacters = new List<MAGE.GameServices.Character.CharacterInfo>();
+        public List<Characters.CharacterInfo> ScenarioCharacters = new List<MAGE.GameSystems.Characters.CharacterInfo>();
     }
 }
 

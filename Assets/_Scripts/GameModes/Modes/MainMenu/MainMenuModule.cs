@@ -1,5 +1,5 @@
 ﻿using MAGE.GameModes.FlowControl;
-using MAGE.GameServices;
+using MAGE.GameSystems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,7 +53,7 @@ namespace MAGE.GameModes
 
             if (AutoStart)
             {
-                MAGE.GameServices.WorldService.Get().PrepareNewGame();
+                MAGE.GameSystems.WorldService.Get().PrepareNewGame();
                 GameModesModule.Instance.Explore();
             }
         }

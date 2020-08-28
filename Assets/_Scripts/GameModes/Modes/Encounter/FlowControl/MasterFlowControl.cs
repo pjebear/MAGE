@@ -1,6 +1,6 @@
 ﻿
-using MAGE.GameServices.Character;
-using MAGE.GameServices.World;
+using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.World;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,8 +15,6 @@ namespace MAGE.GameModes.Encounter
         , Messaging.IMessageHandler
     {
         private string TAG = "MasterFlowControl";
-        // StatusEffect state
-        private Dictionary<EncounterCharacter, List<StatusEffect>> StaleStatusEffects = new Dictionary<EncounterCharacter, List<StatusEffect>>();
 
         enum FlowState
         {
@@ -120,17 +118,14 @@ namespace MAGE.GameModes.Encounter
                     break;
 
                     case (FlowState.TurnIncrement):
-                        foreach (EncounterCharacter actor in EncounterModule.Model.Characters.Values)
+                        foreach (Character character in EncounterModule.Model.Characters.Values)
                         {
-                            if (actor.IsAlive)
+                            if (character.IsAlive)
                             {
-                                actor.DEBUG_ClockGuage += (int)actor.Attributes[new AttributeIndex(TertiaryStat.Speed)];
-                                if (actor.DEBUG_ClockGuage >= 100)
+                                character.IncrementClock();
+                                if (character.IsClockGuageFull)
                                 {
-                                    actor.DEBUG_HasActed = false;
-                                    actor.DEBUG_HasMoved = false;
-                                    actor.DEBUG_IsTurnComplete = false;
-                                    EncounterModule.Model.TurnOrder.Add(actor);
+                                    EncounterModule.Model.PendingCharacterTurns.Add(character);
                                 }
                             }
                         }
@@ -139,25 +134,29 @@ namespace MAGE.GameModes.Encounter
                         break;
 
                     case (FlowState.TurnResolution):
-
-                        if (EncounterModule.Model.TurnOrder.Count > 0)
+                    {
+                        // Progress turn queue if current turn completed
+                        if (EncounterModule.Model.CurrrentTurnCharacter == null)
                         {
-                            EncounterCharacter toProgress = EncounterModule.Model.TurnOrder[0];
-                            if ((toProgress.DEBUG_HasActed && toProgress.DEBUG_HasMoved) || toProgress.DEBUG_IsTurnComplete)
+                            if (EncounterModule.Model.PendingCharacterTurns.Count > 0)
                             {
-                                EncounterCharacter turnComplete = EncounterModule.Model.TurnOrder[0];
-                                int clockDecrement = 40;
-                                if (toProgress.DEBUG_HasActed && toProgress.DEBUG_HasMoved)
-                                {
-                                    clockDecrement = 80;
-                                }
-                                else if (toProgress.DEBUG_HasActed || toProgress.DEBUG_HasMoved)
-                                {
-                                    clockDecrement = 60;
-                                }
-                                turnComplete.DEBUG_ClockGuage -= clockDecrement;
+                                EncounterModule.Model.CurrrentTurnCharacter = EncounterModule.Model.PendingCharacterTurns[0];
+                                EncounterModule.Model.PendingCharacterTurns.RemoveAt(0);
+                                EncounterModule.Model.TurnCompleted = false;
 
-                                EncounterModule.Model.TurnOrder.RemoveAt(0);
+                                EncounterModule.Model.CurrrentTurnCharacter.RolloverClock();
+                            }
+                        }
+
+                        // If current turn not assigned, turn queue is complete. Progress flow
+                        if (EncounterModule.Model.CurrrentTurnCharacter != null)
+                        {
+                            Character toProgress = EncounterModule.Model.CurrrentTurnCharacter;
+                            if ((toProgress.HasActed && toProgress.HasMoved) 
+                                || EncounterModule.Model.TurnCompleted)
+                            {
+                                toProgress.DecrementClock();
+                                EncounterModule.Model.CurrrentTurnCharacter = null;
                             }
                             else
                             {
@@ -169,7 +168,8 @@ namespace MAGE.GameModes.Encounter
                         {
                             ProgressState();
                         }
-                        break;
+                    }
+                    break;
 
                     default:
                         mIsFlowPaused = true;
@@ -266,9 +266,9 @@ namespace MAGE.GameModes.Encounter
             }
         }
 
-        private void GetInputForActor(EncounterCharacter actor)
+        private void GetInputForActor(Character character)
         {
-            Messaging.MessageRouter.Instance.NotifyMessage(new EncounterMessage(EncounterMessage.EventType.TurnBegun, actor));
+            Messaging.MessageRouter.Instance.NotifyMessage(new EncounterMessage(EncounterMessage.EventType.TurnBegun, character));
         }
 
         // EventHandler
@@ -318,18 +318,24 @@ namespace MAGE.GameModes.Encounter
 
                         case EncounterMessage.EventType.TurnFinished:
                         {
+                            EncounterModule.Model.TurnCompleted = true;
                             ProgressFlow();
                         }
                         break;
 
                         case EncounterMessage.EventType.CharacterKO:
                         {
-                            EncounterCharacter kodActor = message.Arg<EncounterCharacter>();
+                            Character kodCharacter = message.Arg<Character>();
 
-                            EncounterModule.Model.TurnOrder.Remove(kodActor);
+                            if (kodCharacter == EncounterModule.Model.CurrrentTurnCharacter)
+                            {
+                                kodCharacter.DecrementClock();
+                                EncounterModule.Model.TurnCompleted = true;
+                            }
+
+                            EncounterModule.Model.PendingCharacterTurns.Remove(kodCharacter);
                         }
                         break;
-
                     }
                 }
                 break;

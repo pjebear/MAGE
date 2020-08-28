@@ -1,19 +1,19 @@
-﻿using MAGE.GameServices.Character;
+﻿using MAGE.GameSystems.Characters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MAGE.GameServices
+namespace MAGE.GameSystems
 {
     static class EquipmentUtil
     {
-        public static bool HasProficiencyFor(MAGE.GameServices.Character.Specialization specialization, Equippable equippable)
+        public static bool HasProficiencyFor(List<ProficiencyType> proficiencies, Equippable equippable)
         {
             bool hasProficiency
-                = specialization.Proficiencies.Contains(EquipableTagToProficiency(equippable.EquipmentTag.Category, equippable.EquipmentTag.Type))
-                || specialization.Proficiencies.Contains(EquipmentCategoryToProficiency(equippable.EquipmentTag.Category));
+                = proficiencies.Contains(EquipableTagToProficiency(equippable.EquipmentTag.Category, equippable.EquipmentTag.Type))
+                || proficiencies.Contains(EquipmentCategoryToProficiency(equippable.EquipmentTag.Category));
 
             return hasProficiency;
         }

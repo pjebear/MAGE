@@ -1,5 +1,7 @@
 ﻿
-using MAGE.GameServices;
+using MAGE.GameSystems;
+using MAGE.GameSystems.Actions;
+using MAGE.GameSystems.Characters;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +39,7 @@ namespace MAGE.GameModes.Encounter
 
         public void DirectAction(ActionProposal proposal)
         {
-            int castSpeed = ActionUtil.GetTurnCountForCastSpeed(proposal.Owner.GetActionInfo(proposal.Action).CastSpeed);
+            int castSpeed = ActionUtil.GetTurnCountForCastSpeed(proposal.Proposer.GetActionInfo(proposal.Action).CastSpeed);
 
             if (castSpeed != ActionConstants.INSTANT_CAST_SPEED)
             {
@@ -79,7 +81,7 @@ namespace MAGE.GameModes.Encounter
 
         void BeginNextAction(ActionProposal nextAction)
         {
-            ActionComposer.ComposeAction(nextAction, out mActionResult, out mActionTimeline);
+            ActionComposer.ComposeAction(nextAction, EncounterModule.MapControl.Map, out mActionResult, out mActionTimeline);
 
             ProgressTimeline(0);
         }
@@ -91,9 +93,30 @@ namespace MAGE.GameModes.Encounter
             {
                 ApplyActionResults();
 
-                foreach (EncounterCharacter actor in EncounterModule.Model.Characters.Values)
+                // Check for responses
+                List<ActionResponseBase> responses = new List<ActionResponseBase>();
+                foreach (Character character in EncounterModule.Model.Characters.Values)
                 {
-                    actor.NotifyActionResults(mActionResult);
+                    if (character.IsAlive)
+                    {
+                        foreach (ActionResponseBase actionResponseBase in character.RespondToAction(mActionResult, EncounterModule.MapControl.Map))
+                        {
+                            switch (actionResponseBase.ResponseType)
+                            {
+                                case ActionResponseType.ActionProposal:
+                                {
+                                    DirectAction((actionResponseBase as ActionProposalResponse).Response);
+                                }
+                                break;
+                                case ActionResponseType.StateChange:
+                                {
+                                    StateChangeResponse stateChangeResponse = actionResponseBase as StateChangeResponse;
+                                    EncounterModule.CharacterDirector.ApplyStateChange(character, stateChangeResponse.Response);
+                                }
+                                break;
+                            }
+                        }
+                    }
                 }
 
                 mActionTimeline = null;

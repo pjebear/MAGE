@@ -1,4 +1,5 @@
-﻿using MAGE.GameServices.Character;
+﻿using MAGE.GameSystems.Actions;
+using MAGE.GameSystems.Characters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace MAGE.GameServices
+namespace MAGE.GameSystems
 { 
     static class ItemFactory
     {

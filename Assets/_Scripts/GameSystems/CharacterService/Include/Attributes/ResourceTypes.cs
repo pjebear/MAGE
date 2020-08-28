@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace MAGE.GameServices.Character
+namespace MAGE.GameSystems.Characters
 {
     class Resource
     {
@@ -47,13 +47,14 @@ namespace MAGE.GameServices.Character
     {
         private Resource[] mResources;
 
-        public Resources(int health, int mana, int endurance)
+        public Resources(int health, int mana, int endurance, int clock)
         {
             mResources = new Resource[(int)ResourceType.NUM];
 
             mResources[(int)ResourceType.Health] = new Resource(health);
             mResources[(int)ResourceType.Mana] = new Resource(mana);
             mResources[(int)ResourceType.Endurance] = new Resource(endurance);
+            mResources[(int)ResourceType.Clock] = new Resource(clock);
         }
 
         public Resource this[ResourceType idx]

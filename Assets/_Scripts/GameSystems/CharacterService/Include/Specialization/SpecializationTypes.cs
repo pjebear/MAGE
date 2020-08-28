@@ -4,12 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MAGE.GameServices.Character
+namespace MAGE.GameSystems.Characters
 {
     static class SpecializationConstants
     {
         public static readonly int LEVEL_UP_THRESHOLD = 100;
     }
+
+    class SpecializationProgress
+    {
+        public SpecializationType SpecializationType;
+        public int Level = 1;
+        public int Experience = 0;
+        public Dictionary<TalentId, TalentProgress> TalentProgress = new Dictionary<TalentId, TalentProgress>();
+    }
+
 
     enum SpecializationType
     {

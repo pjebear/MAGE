@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace MAGE.GameServices.Character
+namespace MAGE.GameSystems.Characters
 {
 
     enum AttributeCategory
@@ -35,6 +35,7 @@ namespace MAGE.GameServices.Character
         Speed = SecondaryStat.Attunement + 1,
         Movement,
         Jump,
+        MaxClockGuage,
 
         //Defensive stats
         Block,
@@ -82,6 +83,7 @@ namespace MAGE.GameServices.Character
         Health,
         Mana,
         Endurance,
+        Clock,
 
         NUM
     }
@@ -127,6 +129,8 @@ namespace MAGE.GameServices.Character
 
     enum StatusType
     {
+        ActionsAvailable,
+        MovesAvailable,
         Rooted,
         Silenced,
         Disarmed,

@@ -1,5 +1,6 @@
-﻿using MAGE.GameServices;
-using MAGE.GameServices.Character;
+﻿using MAGE.GameSystems;
+using MAGE.GameSystems.Actions;
+using MAGE.GameSystems.Characters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,11 +38,11 @@ namespace MAGE.GameModes.Encounter
 
     class AnimationEvent : ActionEvent
     {
-        public EncounterActorController BeingAnimated;
+        public CharacterActorController BeingAnimated;
         public AnimationInfo Animation;
         public Transform FocusTarget;
 
-        public AnimationEvent(EncounterActorController actor, AnimationInfo animation, int startPointOffset, Transform focusTarget)
+        public AnimationEvent(CharacterActorController actor, AnimationInfo animation, int startPointOffset, Transform focusTarget)
             : base(startPointOffset, animation.NumFrames)
         {
             BeingAnimated = actor;
@@ -81,13 +82,13 @@ namespace MAGE.GameModes.Encounter
 
     class StateChangeEvent : ActionEvent
     {
-        public EncounterCharacter HavingStateChanged;
+        public Character HavingStateChanged;
         public StateChange StateChange;
 
-        public StateChangeEvent(EncounterCharacter actor, StateChange stateChange, int startPointOffset)
+        public StateChangeEvent(Character character, StateChange stateChange, int startPointOffset)
             : base(startPointOffset, 0)
         {
-            HavingStateChanged = actor;
+            HavingStateChanged = character;
             StateChange = stateChange;
         }
 
@@ -152,12 +153,12 @@ namespace MAGE.GameModes.Encounter
 
     class ActorInteractionBlock : TimelineBlock<ActionEvent>
     {
-        private EncounterActorController owner;
+        private CharacterActorController owner;
         private AnimationId animationId;
         private Transform lookAt;
         private object empty;
 
-        public ActorInteractionBlock(EncounterActorController actorController, AnimationId animationId, Transform lookAt, StateChange stateChange)
+        public ActorInteractionBlock(CharacterActorController actorController, AnimationId animationId, Transform lookAt, StateChange stateChange)
         {
             AnimationInfo animation = AnimationFactory.CheckoutAnimation(animationId);
             NumFrames = animation.NumFrames;
@@ -170,11 +171,11 @@ namespace MAGE.GameModes.Encounter
             }
             if (stateChange.Type != StateChangeType.None)
             {
-                Events.Add(new StateChangeEvent(actorController.EncounterCharacter, stateChange, animation.SyncedFrame));
+                Events.Add(new StateChangeEvent(actorController.Character, stateChange, animation.SyncedFrame));
             }
         }
 
-        public ActorInteractionBlock(EncounterActorController owner, AnimationId animationId, Transform lookAt, object empty)
+        public ActorInteractionBlock(CharacterActorController owner, AnimationId animationId, Transform lookAt, object empty)
         {
             this.owner = owner;
             this.animationId = animationId;

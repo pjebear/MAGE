@@ -1,14 +1,39 @@
-﻿using System;
+﻿using MAGE.GameSystems.Actions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MAGE.GameServices.Character.Internal
+namespace MAGE.GameSystems.Characters.Internal
 {
     static class CharacterCreator
     {
         private static readonly string TAG = "CharacterCreator";
+
+        public static Character FromInfo(CharacterInfo characterInfo)
+        {
+            Character character = new Character(characterInfo);
+
+            // Equipment
+            for (int i = 0; i < (int)Equipment.Slot.NUM; ++i)
+            {
+                EquippableId equippableId = characterInfo.EquippedItems[i];
+                if (EquipmentUtil.IsHeld((Equipment.Slot)i) && equippableId == EquippableId.INVALID)
+                {
+                    equippableId = EquippableId.Fists_0;
+                }
+
+                if (equippableId != EquippableId.INVALID)
+                {
+                    Equippable equippable = ItemFactory.LoadEquipable((EquippableId)equippableId);
+
+                    character.Equip(equippable, (Equipment.Slot)i);
+                }
+            }
+
+            return character;
+        }
 
         public static DB.DBCharacter CreateEmptyDBCharacter()
         {
@@ -36,7 +61,8 @@ namespace MAGE.GameServices.Character.Internal
             // Specializations
             for (int i = 0; i < (int)SpecializationType.NUM; ++i)
             {
-                emptyCharacter.Specializations.Add(new DB.DBSpecializationProgress() { SpecializationType = i });
+                Specialization specialization = SpecializationFactory.CheckoutSpecialization((SpecializationType)i);
+                emptyCharacter.Specializations.Add(CharacterDBUtil.ToDB(specialization));
             }
 
             return emptyCharacter;
@@ -62,11 +88,17 @@ namespace MAGE.GameServices.Character.Internal
             dbCharacter.CharacterInfo.Experience = 0;
 
             // Appearance
-            dbCharacter.AppearanceId = dbCharacter.Id;
-            dbAppearance.Id = dbCharacter.Id;
-            dbAppearance.BodyType = (int)BodyType.Body_0;
-            dbAppearance.PortraitSpriteId = (int)createParams.portraitSpriteId;
-            // Remaining Appearance will be updated on 'RefreshCharacterAppearance()'
+            if (createParams.portraitSpriteId != PortraitSpriteId.INVALID)
+            {
+                dbCharacter.AppearanceId = dbCharacter.Id;
+                dbAppearance.Id = dbCharacter.Id;
+                dbAppearance.BodyType = (int)BodyType.Body_0;
+                dbAppearance.PortraitSpriteId = (int)createParams.portraitSpriteId;
+            }
+            else
+            {
+                dbAppearance.Id = -1;
+            }
 
             // Equipment
             for (int i = 0; i < (int)Equipment.Slot.NUM; ++i)
@@ -103,6 +135,7 @@ namespace MAGE.GameServices.Character.Internal
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)TertiaryStat.Movement] = 5;
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)TertiaryStat.Jump] = 2;
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)TertiaryStat.Speed] = 7;
+            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)TertiaryStat.MaxClockGuage] = 100;
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Resource].Attributes[(int)ResourceType.Health] = 20;
         }
 

@@ -1,12 +1,20 @@
-﻿using System;
+﻿using MAGE.GameSystems.Actions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 
-namespace MAGE.GameServices.Character
+namespace MAGE.GameSystems.Characters
 {
+    class TalentProgress
+    {
+        public TalentId TalentId;
+        public int CurrentPoints;
+        public int MaxPoints;
+    }
+
     abstract class Talent
     {
         public TalentId TalentId { get; }

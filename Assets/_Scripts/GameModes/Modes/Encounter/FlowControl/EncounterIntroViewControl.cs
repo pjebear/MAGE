@@ -1,6 +1,6 @@
 ﻿using MAGE.GameModes.Encounter;
-using MAGE.GameServices;
-using MAGE.GameServices.World;
+using MAGE.GameSystems;
+using MAGE.GameSystems.World;
 using MAGE.UI;
 using MAGE.UI.Views;
 using System;

@@ -1,8 +1,8 @@
 ﻿using MAGE.GameModes.SceneElements;
-using MAGE.GameServices;
-using MAGE.GameServices.Character;
-using MAGE.GameServices.Story;
-using MAGE.GameServices.Story.Internal;
+using MAGE.GameSystems;
+using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.Story;
+using MAGE.GameSystems.Story.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;

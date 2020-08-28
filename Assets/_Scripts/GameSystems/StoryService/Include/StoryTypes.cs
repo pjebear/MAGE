@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine.Events;
 
 
-namespace MAGE.GameServices.Story
+namespace MAGE.GameSystems.Story
 {
     enum StoryArcId
     {

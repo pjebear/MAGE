@@ -4,10 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MAGE.GameServices.Character
+namespace MAGE.GameSystems.Characters
 {
     static class CharacterConstants
     {
+        public const int DEFAULT_MOVES_A_TURN = 1;
+        public const int DEFAULT_ACTIONS_A_TURN = 1;
+        public const int CLOCK_GUAGE_THRESHOLD = 100;
         public const int LEVEL_UP_THRESHOLD = 100;
 
         public const int INVALID_ID = -1;

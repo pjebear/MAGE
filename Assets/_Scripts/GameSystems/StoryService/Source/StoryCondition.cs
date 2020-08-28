@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MAGE.GameServices.Story.Internal
+namespace MAGE.GameSystems.Story.Internal
 {
     class StoryCondition
     {

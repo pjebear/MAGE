@@ -16,6 +16,7 @@ public enum LogTag
     GameSystems,
     Input,
     Level,
+    Map,
     Messaging,
     Party,
     Story,

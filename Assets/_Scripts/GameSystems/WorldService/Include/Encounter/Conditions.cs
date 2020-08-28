@@ -1,4 +1,4 @@
-﻿using MAGE.GameServices.Character;
+﻿using MAGE.GameSystems.Characters;
 using MAGE.Utility;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace MAGE.GameServices.World
+namespace MAGE.GameSystems.World
 {
     abstract class EncounterCondition
     {
@@ -32,7 +32,7 @@ namespace MAGE.GameServices.World
         {
             Debug.Assert(model.Characters.ContainsKey(mUnitId));
 
-            float healthPercent = model.Characters[mUnitId].Resources[ResourceType.Health].Current / (float)model.Characters[mUnitId].Resources[ResourceType.Health].Max;
+            float healthPercent = model.Characters[mUnitId].CurrentResources[ResourceType.Health].Ratio;
 
             return Condition.Compare(healthPercent, mHealthPercent, Operator);
         }
@@ -59,9 +59,9 @@ namespace MAGE.GameServices.World
             bool conditionMet = true;
             if (model.Teams.ContainsKey(mTeam))
             {
-                foreach (GameModes.Encounter.EncounterCharacter actor in model.Teams[mTeam])
+                foreach (Character character in model.Teams[mTeam])
                 {
-                    float healthPercent = actor.Resources[ResourceType.Health].Ratio;
+                    float healthPercent = character.CurrentResources[ResourceType.Health].Ratio;
 
                     conditionMet &= healthPercent <= 0;
                 }

@@ -15,11 +15,11 @@ namespace MAGE.GameModes.FlowControl
         : UIContainerControl
         , ICharacterOutfiter
     {
-        private MAGE.GameServices.Character.CharacterInfo mOutfitingCharacter = null;
+        private MAGE.GameSystems.Characters.Character mOutfitingCharacter = null;
         private UnityAction mOnUpdatedCB;
         private List<int> mTalentIds;
         //! ICharacterOutfiter
-        public void BeginOutfitting(MAGE.GameServices.Character.CharacterInfo character, UnityAction characterUpdated)
+        public void BeginOutfitting(MAGE.GameSystems.Characters.Character character, UnityAction characterUpdated)
         {
             mOutfitingCharacter = character;
             mOnUpdatedCB = characterUpdated;
@@ -76,7 +76,7 @@ namespace MAGE.GameModes.FlowControl
         {
             SpecializationOutfiterView.DataProvider dataProvider = new SpecializationOutfiterView.DataProvider();
 
-            MAGE.GameServices.Character.Specialization specialization = mOutfitingCharacter.CurrentSpecialization;
+            MAGE.GameSystems.Characters.Specialization specialization = mOutfitingCharacter.CurrentSpecialization;
 
             dataProvider.AvailableTalentPts = specialization.NumUnassignedTalentPoints();
             dataProvider.SpecializationName = specialization.SpecializationType.ToString();
@@ -87,7 +87,7 @@ namespace MAGE.GameModes.FlowControl
                 SpecializationOutfiterView.TalentDP talentDP = new SpecializationOutfiterView.TalentDP();
 
                 mTalentIds.Add((int)keyValuePair.Key);
-                MAGE.GameServices.Character.Talent talent = keyValuePair.Value;
+                MAGE.GameSystems.Characters.Talent talent = keyValuePair.Value;
                 int maxPoints = talent.MaxPoints;
 
                 talentDP.TalentName = talent.TalentId.ToString();
@@ -104,14 +104,14 @@ namespace MAGE.GameModes.FlowControl
 
         private void AssignTalentPoint(int talentId)
         {
-            MAGE.GameServices.WorldService.Get().AssignTalentPoint(mOutfitingCharacter.Id, (MAGE.GameServices.Character.TalentId)talentId);
+            MAGE.GameSystems.WorldService.Get().AssignTalentPoint(mOutfitingCharacter.Id, (MAGE.GameSystems.Characters.TalentId)talentId);
 
             mOnUpdatedCB();
         }
 
         private void ResetTalentPoints()
         {
-            MAGE.GameServices.WorldService.Get().ResetTalentPoints(mOutfitingCharacter.Id);
+            MAGE.GameSystems.WorldService.Get().ResetTalentPoints(mOutfitingCharacter.Id);
 
             mOnUpdatedCB();
         }

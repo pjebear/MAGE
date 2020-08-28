@@ -1,4 +1,4 @@
-﻿using MAGE.GameServices.Character;
+﻿using MAGE.GameSystems.Characters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace MAGE.GameModes.Encounter
     {
         public Aura AuraPrefab;
 
-        private Dictionary<EncounterActorController, List<Aura>> mAuras = new Dictionary<EncounterActorController, List<Aura>>();
+        private Dictionary<CharacterActorController, List<Aura>> mAuras = new Dictionary<CharacterActorController, List<Aura>>();
 
         public void Init()
         {
@@ -26,7 +26,7 @@ namespace MAGE.GameModes.Encounter
             Messaging.MessageRouter.Instance.UnRegisterHandler(this);
         }
 
-        public void RegisterAura(AuraInfo auraInfo, EncounterActorController actorController, bool activateImmediately)
+        public void RegisterAura(AuraInfo auraInfo, CharacterActorController actorController, bool activateImmediately)
         {
             Aura aura = Instantiate(AuraPrefab, actorController.transform);
             aura.Initialize(auraInfo, actorController);
@@ -38,7 +38,7 @@ namespace MAGE.GameModes.Encounter
             aura.SetActive(activateImmediately);
         }
 
-        public void RemoveActor(EncounterActorController actor)
+        public void RemoveActor(CharacterActorController actor)
         {
             if (mAuras.ContainsKey(actor))
             {
@@ -74,7 +74,7 @@ namespace MAGE.GameModes.Encounter
 
                         case EncounterMessage.EventType.CharacterKO:
                         {
-                            EncounterActorController controller = EncounterModule.CharacterDirector.CharacterActorLookup[message.Arg<EncounterCharacter>()];
+                            CharacterActorController controller = EncounterModule.CharacterDirector.CharacterActorLookup[message.Arg<Character>()];
                             if (mAuras.ContainsKey(controller))
                             {
                                 foreach (Aura aura in mAuras[controller])

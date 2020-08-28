@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace MAGE.GameServices.Character
+namespace MAGE.GameSystems.Characters
 {
 
     struct AttributeIndex
@@ -151,13 +151,16 @@ namespace MAGE.GameServices.Character
             switch (resourceType)
             {
                 case (ResourceType.Health):
-                    resourceValue += stats[PrimaryStat.Might];
+                    resourceValue += stats[ResourceType.Health] + stats[PrimaryStat.Might] ;
                     break;
                 case (ResourceType.Mana):
-                    resourceValue += stats[PrimaryStat.Magic];
+                    resourceValue += stats[ResourceType.Mana] + stats[PrimaryStat.Magic];
                     break;
                 case (ResourceType.Endurance):
-                    resourceValue += stats[PrimaryStat.Finese];
+                    resourceValue += stats[ResourceType.Endurance] + stats[PrimaryStat.Finese];
+                    break;
+                case (ResourceType.Clock):
+                    resourceValue += stats[TertiaryStat.MaxClockGuage];
                     break;
             }
 

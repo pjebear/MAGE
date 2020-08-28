@@ -1,4 +1,4 @@
-﻿using MAGE.GameServices.Character;
+﻿using MAGE.GameSystems.Characters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,8 +38,8 @@ namespace MAGE.GameModes.SceneElements
         public bool IsInteractible = true;
         public int Currency = 0;
         public int AppearanceId = -1;
-        public List<GameServices.Item> Inventory = new List<GameServices.Item>();
-        public List<GameServices.Conversation> Conversations = new List<GameServices.Conversation>();
+        public List<GameSystems.Item> Inventory = new List<GameSystems.Item>();
+        public List<GameSystems.Conversation> Conversations = new List<GameSystems.Conversation>();
     }
 }
 

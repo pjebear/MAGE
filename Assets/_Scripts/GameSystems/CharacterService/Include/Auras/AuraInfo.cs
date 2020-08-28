@@ -4,16 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MAGE.GameServices.Character
+namespace MAGE.GameSystems.Characters
 {
     class AuraInfo
     {
         public int Range;
         public bool IsBeneficial;
         public AuraType Type;
-        public StatusEffectType AuraEffectType;
+        public StatusEffectId AuraEffectType;
 
-        public AuraInfo(int range, bool isBeneficial, AuraType type, StatusEffectType auraEffectType)
+        public AuraInfo(int range, bool isBeneficial, AuraType type, StatusEffectId auraEffectType)
         {
             Range = range;
             IsBeneficial = isBeneficial;

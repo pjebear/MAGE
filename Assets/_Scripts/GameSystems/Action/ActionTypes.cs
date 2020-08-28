@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MAGE.GameServices
+namespace MAGE.GameSystems.Actions
 {
     enum AreaType
     {

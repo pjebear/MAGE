@@ -9,7 +9,7 @@ namespace MAGE.GameModes.Encounter
 {
     class DebugAnimationRig : MonoBehaviour
     {
-        public EncounterActorController ActorController;
+        public CharacterActorController ActorController;
         public Text AnimationName;
         public RectTransform ProgressBarRect;
         public Image ProgressBarImage;

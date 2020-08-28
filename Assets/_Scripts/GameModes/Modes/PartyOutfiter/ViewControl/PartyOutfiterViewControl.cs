@@ -21,7 +21,7 @@ namespace MAGE.GameModes.FlowControl
 
         private List<int> mCharacterIds = new List<int>();
         private int mCharacterIdx = 0;
-        private MAGE.GameServices.Character.CharacterInfo mOutfitingCharacter = null;
+        private MAGE.GameSystems.Characters.Character mOutfitingCharacter = null;
 
         public void Init(Transform characterSpawnPoint)
         {
@@ -30,10 +30,10 @@ namespace MAGE.GameModes.FlowControl
 
         public void Start()
         {
-            mCharacterIds = MAGE.GameServices.WorldService.Get().GetCharactersInParty();
+            mCharacterIds = MAGE.GameSystems.WorldService.Get().GetCharactersInParty();
             mCharacterIdx = 0;
 
-            mOutfitingCharacter = MAGE.GameServices.CharacterService.Get().GetCharacterInfo(mCharacterIds[mCharacterIdx]);
+            mOutfitingCharacter = MAGE.GameSystems.CharacterService.Get().GetCharacter(mCharacterIds[mCharacterIdx]);
             SpawnCharacter();
 
             SetOutfiter(mEquipmentOutfiter);
@@ -131,7 +131,7 @@ namespace MAGE.GameModes.FlowControl
             if (newIdx != mCharacterIdx)
             {
                 mCharacterIdx = newIdx;
-                mOutfitingCharacter = MAGE.GameServices.CharacterService.Get().GetCharacterInfo(mCharacterIds[mCharacterIdx]);
+                mOutfitingCharacter = MAGE.GameSystems.CharacterService.Get().GetCharacter(mCharacterIds[mCharacterIdx]);
 
                 mOutfiter.Cleanup();
 
@@ -150,9 +150,7 @@ namespace MAGE.GameModes.FlowControl
                 GameObject.Destroy(mCharacterSpawnPoint.GetChild(0).gameObject);
             }
 
-            GameModesModule.ActorLoader.CreateActor(GameModes.LevelManagementService.Get().GetAppearance(mOutfitingCharacter.AppearanceId), mCharacterSpawnPoint);
+            GameModesModule.ActorLoader.CreateActor(mOutfitingCharacter.GetAppearance(), mCharacterSpawnPoint);
         }
     }
-
-
 }

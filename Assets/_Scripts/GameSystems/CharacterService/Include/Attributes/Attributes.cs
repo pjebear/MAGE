@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace MAGE.GameServices.Character
+namespace MAGE.GameSystems.Characters
 {
     class Attributes
     {
@@ -68,6 +68,15 @@ namespace MAGE.GameServices.Character
         public void Revert(AttributeModifier delta)
         {
             this[delta.AttributeIndex.Type][delta.AttributeIndex.Index] -= delta;
+        }
+
+        public void Clear(AttributeCategory category)
+        {
+            Attribute[] toClear = mAttributes[(int)category];
+            for (int i = 0; i < toClear.Length; ++i)
+            {
+                toClear[i].Set(0);
+            }
         }
     }
 }

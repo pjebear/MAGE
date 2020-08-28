@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MAGE.DB.Internal
 {
-    class DBServiceImpl : GameServices.IDBService
+    class DBServiceImpl : GameSystems.IDBService
     {
         private static readonly string TAG = "DBServiceImpl";
         static int sNewCharacterId = 0;
@@ -247,7 +247,7 @@ namespace MAGE.DB.Internal
         // Scenario - End
 
         // Specialization
-        public DBSpecialization LoadSpecialization(MAGE.GameServices.Character.SpecializationType specializationType)
+        public DBSpecialization LoadSpecialization(MAGE.GameSystems.Characters.SpecializationType specializationType)
         {
             return mSpecializationDB.Load((int)specializationType);
         }

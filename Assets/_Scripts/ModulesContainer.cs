@@ -1,5 +1,5 @@
 ﻿using MAGE.GameModes.SceneElements;
-using MAGE.GameServices;
+using MAGE.GameSystems;
 using MAGE.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -37,11 +37,11 @@ namespace MAGE.GameModes
 
                 if (DebugEncounter)
                 {
-                    MAGE.GameServices.WorldService.Get().PrepareNewGame();
+                    MAGE.GameSystems.WorldService.Get().PrepareNewGame();
                     EncounterCreateParams encounterCreateParams = new EncounterCreateParams();
                     encounterCreateParams.BottomLeft = new TileIdx(12, 4);
                     encounterCreateParams.TopRight = new TileIdx(24, 8);
-                    MAGE.GameServices.WorldService.Get().PrepareEncounter(encounterCreateParams);
+                    MAGE.GameSystems.WorldService.Get().PrepareEncounter(encounterCreateParams);
                     GameModesModule.Encounter();
                 }
                 else

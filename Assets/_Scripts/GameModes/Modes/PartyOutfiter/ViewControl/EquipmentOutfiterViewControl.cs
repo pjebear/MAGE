@@ -1,5 +1,5 @@
-﻿using MAGE.GameServices;
-using MAGE.GameServices.Character;
+﻿using MAGE.GameSystems;
+using MAGE.GameSystems.Characters;
 using MAGE.UI;
 using MAGE.UI.Views;
 using System;
@@ -16,7 +16,7 @@ namespace MAGE.GameModes.FlowControl
     : UIContainerControl
     , ICharacterOutfiter
     {
-        private MAGE.GameServices.Character.CharacterInfo mOutfitingCharacter = null;
+        private MAGE.GameSystems.Characters.Character mOutfitingCharacter = null;
         private UnityAction mOnUpdatedCB;
 
         private Equipment.Slot mSelectedSlot = Equipment.Slot.INVALID;
@@ -28,7 +28,7 @@ namespace MAGE.GameModes.FlowControl
         }
 
         //! ICharacterOutfiter
-        public void BeginOutfitting(MAGE.GameServices.Character.CharacterInfo character, UnityAction characterUpdated)
+        public void BeginOutfitting(MAGE.GameSystems.Characters.Character character, UnityAction characterUpdated)
         {
             mOutfitingCharacter = character;
             mOnUpdatedCB = characterUpdated;
@@ -100,14 +100,14 @@ namespace MAGE.GameModes.FlowControl
 
         private void Equip(int equipmentId)
         {
-            MAGE.GameServices.WorldService.Get().EquipCharacter(mOutfitingCharacter.Id, (EquippableId)equipmentId, mSelectedSlot);
+            MAGE.GameSystems.WorldService.Get().EquipCharacter(mOutfitingCharacter.Id, (EquippableId)equipmentId, mSelectedSlot);
 
             mOnUpdatedCB();
         }
 
         private void UnEquip()
         {
-            MAGE.GameServices.WorldService.Get().UnEquipCharacter(mOutfitingCharacter.Id, mSelectedSlot);
+            MAGE.GameSystems.WorldService.Get().UnEquipCharacter(mOutfitingCharacter.Id, mSelectedSlot);
 
             mOnUpdatedCB();
         }
@@ -116,9 +116,9 @@ namespace MAGE.GameModes.FlowControl
         {
             EquipmentOutfiterView.DataProvider dataProvider = new EquipmentOutfiterView.DataProvider();
 
-            Inventory inventory = MAGE.GameServices.WorldService.Get().GetInventory();
+            Inventory inventory = MAGE.GameSystems.WorldService.Get().GetInventory();
 
-            MAGE.GameServices.Character.Specialization specialization = mOutfitingCharacter.CurrentSpecialization;
+            MAGE.GameSystems.Characters.Specialization specialization = mOutfitingCharacter.CurrentSpecialization;
 
             { // Left Held
                 Equippable equippable = mOutfitingCharacter.Equipment[Equipment.Slot.LeftHand];
@@ -166,7 +166,7 @@ namespace MAGE.GameModes.FlowControl
                         if (EquipmentUtil.FitsInSlot(equippable.EquipmentTag.Category, mSelectedSlot))
                         {
                             EquipmentOutfiterView.EquipableDP equipableDP = new EquipmentOutfiterView.EquipableDP() { Name = equippable.EquipmentId.ToString(), Count = keyValuePair.Value };
-                            if (EquipmentUtil.HasProficiencyFor(specialization, equippable))
+                            if (EquipmentUtil.HasProficiencyFor(mOutfitingCharacter.GetProficiencies(), equippable))
                             {
                                 equipableDP.CanEquip = true;
                                 areEquipable.Add(equipableDP);

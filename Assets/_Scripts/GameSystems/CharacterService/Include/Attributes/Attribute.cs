@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace MAGE.GameServices.Character
+namespace MAGE.GameSystems.Characters
 {
     class Attribute
     {

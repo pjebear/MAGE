@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace MAGE.GameModes.SceneElements
 {
-    class Terrain : MonoBehaviour
+    class TerrainControl : MonoBehaviour
     {
         public float Width;
         public float Length;

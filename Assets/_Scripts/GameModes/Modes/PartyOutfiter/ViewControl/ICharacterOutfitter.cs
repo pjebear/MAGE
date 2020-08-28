@@ -7,7 +7,7 @@ using UnityEngine.Events;
 
 interface ICharacterOutfiter
 {
-    void BeginOutfitting(MAGE.GameServices.Character.CharacterInfo character, UnityAction characterUpdated);
+    void BeginOutfitting(MAGE.GameSystems.Characters.Character character, UnityAction characterUpdated);
     void Cleanup();
     //bool AreChangesPending();
     //void DiscardChanges();

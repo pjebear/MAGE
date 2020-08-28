@@ -80,10 +80,10 @@ namespace MAGE.GameModes
 
             mLoadedGameMode = gameMode;
             mLoadedGameMode.Init();
-            GameServices.LevelId levelId = mLoadedGameMode.GetLevelId();
+            GameSystems.LevelId levelId = mLoadedGameMode.GetLevelId();
 
             MAGE.GameModes.ILevelManagerService levelManagerService = MAGE.GameModes.LevelManagementService.Get();
-            if (levelId != GameServices.LevelId.INVALID)
+            if (levelId != GameSystems.LevelId.INVALID)
             {
                 Level loadedLevel = levelManagerService.GetLoadedLevel();
                 if (loadedLevel == null || loadedLevel.LevelId != levelId)

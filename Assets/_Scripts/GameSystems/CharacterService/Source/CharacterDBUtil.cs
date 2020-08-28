@@ -1,11 +1,12 @@
 ﻿
+using MAGE.GameSystems.Actions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MAGE.GameServices.Character.Internal
+namespace MAGE.GameSystems.Characters.Internal
 {
     static class CharacterDBUtil
     {
@@ -45,55 +46,20 @@ namespace MAGE.GameServices.Character.Internal
             character.Level = dbCharacter.CharacterInfo.Level;
             character.Experience = dbCharacter.CharacterInfo.Experience;
             character.Attributes = FromDB(dbCharacter.CharacterInfo.Attributes);
-            character.Actions.Add(ActionId.WeaponAttack);
-
+           
             character.AppearanceId = dbCharacter.AppearanceId;
 
             // Specializations
-
             for (int i = 0; i < (int)SpecializationType.NUM; ++i)
             {
-                character.Specializations[i] = SpecializationFactory.CheckoutSpecialization((SpecializationType)i, dbCharacter.Specializations[i]);
+                character.SpecializationsProgress[i] = FromDB(dbCharacter.Specializations[i]);
             }
-
-            // Apply current specialization
-            {
-                character.CurrentSpecializationType = (SpecializationType)dbCharacter.CharacterInfo.CurrentSpecialization;
-                Specialization specialization = character.CurrentSpecialization;
-
-                character.Actions.AddRange(specialization.Actions);
-                character.Auras.AddRange(specialization.Auras);
-                character.Listeners.AddRange(specialization.ActionResponses);
-
-                foreach (Talent talent in specialization.Talents.Values)
-                {
-                    foreach (AttributeModifier proficiencyModifier in talent.GetAttributeModifiers())
-                    {
-                        character.Attributes.Modify(proficiencyModifier);
-                    }
-
-                    character.Actions.AddRange(talent.GetActions());
-                    character.EquippableModifiers.AddRange(talent.GetEquippableModifiers());
-                    character.Auras.AddRange(talent.GetAuras());
-                    character.Listeners.AddRange(talent.GetActionResponses());
-                    character.ActionModifiers.AddRange(talent.GetActionModifiers());
-                }
-            }
+            character.CurrentSpecializationType = (SpecializationType)dbCharacter.CharacterInfo.CurrentSpecialization;
 
             // Equipment
             for (int i = 0; i < (int)Equipment.Slot.NUM; ++i)
             {
-                if (EquipmentUtil.IsHeld((Equipment.Slot)i) && dbCharacter.Equipment[i] == (int)EquippableId.INVALID)
-                {
-                    dbCharacter.Equipment[i] = (int)EquippableId.Fists_0;
-                }
-
-                if (dbCharacter.Equipment[i] != (int)EquippableId.INVALID)
-                {
-                    Equippable equippable = ItemFactory.LoadEquipable((EquippableId)dbCharacter.Equipment[i]);
-
-                    CharacterModifier.EquipCharacter(character, equippable, (Equipment.Slot)i);
-                }
+                character.EquippedItems[i] = (EquippableId)dbCharacter.Equipment[i];
             }
 
             return character;
@@ -117,11 +83,14 @@ namespace MAGE.GameServices.Character.Internal
             // Specializations
             for (int i = 0; i < (int)SpecializationType.NUM; ++i)
             {
-                dbCharacter.Specializations.Add(ToDB(character.Specializations[i]));
+                dbCharacter.Specializations.Add(ToDB(character.SpecializationsProgress[i]));
             }
 
             // Equipment
-            dbCharacter.Equipment = ToDB(character.Equipment);
+            foreach (EquippableId equippableId in character.EquippedItems)
+            {
+                dbCharacter.Equipment.Add((int)equippableId);
+            }
 
             return dbCharacter;
         }
@@ -162,12 +131,12 @@ namespace MAGE.GameServices.Character.Internal
             {
                 DB.DBAttributes dbAttributes = new DB.DBAttributes();
                 dbAttributes.AttributeCategory = attributeCategory;
-
+                
                 for (int attributeIdx = 0; attributeIdx < attributes[(AttributeCategory)attributeCategory].Length; ++attributeIdx)
                 {
                     DB.DBAttribute dbAttribute = new DB.DBAttribute();
-
-                    dbAttributes.Attributes.Add(attributes[(AttributeCategory)attributeCategory][attributeIdx].Base);
+                    AttributeIndex attributeIndex = new AttributeIndex((AttributeCategory)attributeCategory, attributeIdx);
+                    dbAttributes.Attributes.Add(attributes[attributeIndex]);
                 }
 
                 toDB.Add(dbAttributes);
@@ -209,6 +178,58 @@ namespace MAGE.GameServices.Character.Internal
 
                 toDB.Talents.Add(dbTalent);
             }
+
+            return toDB;
+        }
+
+        public static DB.DBSpecializationProgress ToDB(SpecializationProgress progress)
+        {
+            DB.DBSpecializationProgress toDB = new DB.DBSpecializationProgress();
+
+            toDB.SpecializationType = (int)progress.SpecializationType;
+            toDB.Experience = progress.Experience;
+            toDB.Level = progress.Level;
+            foreach (var talent in progress.TalentProgress)
+            {
+                toDB.Talents.Add(ToDB(talent.Value));
+            }
+
+            return toDB;
+        }
+
+        public static SpecializationProgress FromDB(DB.DBSpecializationProgress dbProgress)
+        {
+            SpecializationProgress fromDB = new SpecializationProgress();
+
+            fromDB.SpecializationType = (SpecializationType)dbProgress.SpecializationType;
+            fromDB.Experience = dbProgress.Experience;
+            fromDB.Level = dbProgress.Level;
+            foreach (var dbTalent in dbProgress.Talents)
+            {
+                fromDB.TalentProgress.Add((TalentId)dbTalent.TalentId, FromDB(dbTalent));
+            }
+
+            return fromDB;
+        }
+
+        public static TalentProgress FromDB(DB.DBTalentProgress dbTalentProgress)
+        {
+            TalentProgress talentProgress = new TalentProgress();
+
+            talentProgress.TalentId = (TalentId)dbTalentProgress.TalentId;
+            talentProgress.CurrentPoints = dbTalentProgress.AssignedPoints;
+            talentProgress.MaxPoints = dbTalentProgress.MaxPoints;
+
+            return talentProgress;
+        }
+
+        public static DB.DBTalentProgress ToDB(TalentProgress talentProgress)
+        {
+            DB.DBTalentProgress toDB = new DB.DBTalentProgress();
+
+            toDB.TalentId = (int)talentProgress.TalentId;
+            toDB.AssignedPoints = talentProgress.CurrentPoints;
+            toDB.MaxPoints = talentProgress.MaxPoints;
 
             return toDB;
         }

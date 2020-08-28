@@ -1,8 +1,8 @@
 ﻿using MAGE.GameModes.LevelManagement;
 using MAGE.GameModes.SceneElements;
-using MAGE.GameServices.Character;
-using MAGE.GameServices;
-using MAGE.GameServices.World;
+using MAGE.GameSystems.Characters;
+using MAGE.GameSystems;
+using MAGE.GameSystems.World;
 using MAGE.UI;
 using MAGE.UI.Views;
 using System;
@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using CharacterInfo = MAGE.GameServices.Character.CharacterInfo;
+using CharacterInfo = MAGE.GameSystems.Characters.CharacterInfo;
 using MAGE.GameModes.Exploration;
 
 namespace MAGE.GameModes.FlowControl
@@ -314,9 +314,9 @@ namespace MAGE.GameModes.FlowControl
             else if (speakerId == ConversationConstants.PARTY_AVATAR_ID)
             {
                 int partyAvatarId = WorldService.Get().GetPartyAvatarId();
-                CharacterInfo characterInfo = CharacterService.Get().GetCharacterInfo(partyAvatarId);
-                Appearance appearance = LevelManagementService.Get().GetAppearance(characterInfo.AppearanceId);
-                speakerName = characterInfo.Name;
+                Character character = CharacterService.Get().GetCharacter(partyAvatarId);
+                Appearance appearance = character.GetAppearance();
+                speakerName = character.Name;
                 assetName = appearance.PortraitSpriteId.ToString();
             }
 
@@ -434,7 +434,10 @@ namespace MAGE.GameModes.FlowControl
                 if (mouseHover != null)
                 {
                     mHoveredInteractable = mouseHover.GetComponentInParent<PropBase>();
-                    mDistanceToHovered = DistanceToHoverTarget();
+                    if (mHoveredInteractable != null)
+                    {
+                        mDistanceToHovered = DistanceToHoverTarget();
+                    }
                 }
                 else
                 {

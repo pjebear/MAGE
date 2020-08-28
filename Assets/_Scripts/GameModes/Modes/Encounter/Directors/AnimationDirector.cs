@@ -8,16 +8,16 @@ namespace MAGE.GameModes.Encounter
     {
         public DebugAnimationRig AnimationRigPrefab;
 
-        private Dictionary<EncounterActorController, DebugAnimationRig> mActorToAnimationRigLookup;
-        private HashSet<EncounterActorController> mRotatingActors;
+        private Dictionary<CharacterActorController, DebugAnimationRig> mActorToAnimationRigLookup;
+        private HashSet<CharacterActorController> mRotatingActors;
 
         void Awake()
         {
-            mActorToAnimationRigLookup = new Dictionary<EncounterActorController, DebugAnimationRig>();
-            mRotatingActors = new HashSet<EncounterActorController>();
+            mActorToAnimationRigLookup = new Dictionary<CharacterActorController, DebugAnimationRig>();
+            mRotatingActors = new HashSet<CharacterActorController>();
         }
 
-        public void RegisterActor(EncounterActorController actor)
+        public void RegisterActor(CharacterActorController actor)
         {
             GameObject canvas = GameObject.Find("Canvas");
 
@@ -26,7 +26,7 @@ namespace MAGE.GameModes.Encounter
             mActorToAnimationRigLookup.Add(actor, rig);
         }
 
-        public void UnRegisterActor(EncounterActorController actor)
+        public void UnRegisterActor(CharacterActorController actor)
         {
             if (mActorToAnimationRigLookup.ContainsKey(actor))
             {
@@ -35,13 +35,13 @@ namespace MAGE.GameModes.Encounter
             }
         }
 
-        public void AnimateActor(EncounterActorController actor, AnimationInfo animation)
+        public void AnimateActor(CharacterActorController actor, AnimationInfo animation)
         {
             mActorToAnimationRigLookup[actor].DisplayAnimation(animation);
             actor.Actor.Animator.SetTrigger(animation.TriggerName);
         }
 
-        public void RotateActorTowards(EncounterActorController actor, Transform target, float rotationDuration)
+        public void RotateActorTowards(CharacterActorController actor, Transform target, float rotationDuration)
         {
 
             EncounterModule.MovementDirector.RotateActor(actor.ActorController, target, null);
@@ -50,7 +50,7 @@ namespace MAGE.GameModes.Encounter
             //StartCoroutine(RotateActor(actor, target, rotationDuration));
         }
 
-        private IEnumerator RotateActor(EncounterActorController actor, Transform target, float rotationDuration)
+        private IEnumerator RotateActor(CharacterActorController actor, Transform target, float rotationDuration)
         {
             mRotatingActors.Add(actor);
             float dur = 0;

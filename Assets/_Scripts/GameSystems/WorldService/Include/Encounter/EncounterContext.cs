@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MAGE.GameServices.World
+namespace MAGE.GameSystems.World
 {
     class EncounterContext
     {

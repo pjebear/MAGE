@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace MAGE.GameServices.Character
+namespace MAGE.GameSystems.Characters
 {
     class Equipment
     {
@@ -39,6 +39,21 @@ namespace MAGE.GameServices.Character
         public bool IsSlotEmpty(Slot slot)
         {
             return this[slot] == NO_EQUIPMENT;
+        }
+
+        public List<AttributeModifier> GetAttributeModifiers()
+        {
+            List<AttributeModifier> modifiers = new List<AttributeModifier>();
+
+            foreach (Equippable equippable in mEquipment)
+            {
+                if (equippable != NO_EQUIPMENT)
+                {
+                    modifiers.AddRange(equippable.EquipBonuses);
+                }
+            }
+
+            return modifiers;
         }
     }
 }

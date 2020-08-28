@@ -1,4 +1,4 @@
-﻿using MAGE.GameServices;
+﻿using MAGE.GameSystems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,36 +10,54 @@ namespace MAGE.GameModes.SceneElements
 {
     class TileContainer : MonoBehaviour
     {
-        public List<List<Tile>> Tiles;
+        public List<List<TileControl>> Tiles = new List<List<TileControl>>();
 
-        private void Start()
+        private void OnDestroy()
         {
-            Tiles = new List<List<Tile>>();
+            ClearTiles();
+        }
 
-            for (int rowIdx = 0; rowIdx < transform.childCount; ++rowIdx)
+        //private void Start()
+        //{
+        //    Tiles = new List<List<TileControl>>();
+
+        //    for (int rowIdx = 0; rowIdx < transform.childCount; ++rowIdx)
+        //    {
+        //        List<TileControl> tileRow = new List<TileControl>();
+
+        //        Transform rowContainer = transform.GetChild(rowIdx);
+
+        //        for (int tileIdx = 0; tileIdx < rowContainer.childCount; ++tileIdx)
+        //        {
+        //            TileControl toAdd = rowContainer.GetChild(tileIdx).gameObject.GetComponent<TileControl>();
+        //            if (toAdd != null)
+        //            {
+        //                rowContainer.GetChild(tileIdx).gameObject.SetActive(false);
+        //                tileRow.Add(toAdd);
+        //            }
+        //            else
+        //            {
+        //                //Debug.LogWarning(rowIdx + " " + tileIdx);
+        //            }
+
+        //        }
+
+        //        Tiles.Add(tileRow);
+        //    }
+        //}
+
+
+        public void ClearTiles()
+        {
+            foreach (List<TileControl> row in Tiles)
             {
-                List<Tile> tileRow = new List<Tile>();
-
-                Transform rowContainer = transform.GetChild(rowIdx);
-
-                for (int tileIdx = 0; tileIdx < rowContainer.childCount; ++tileIdx)
+                foreach (TileControl tileControl in row)
                 {
-                    Tile toAdd = rowContainer.GetChild(tileIdx).gameObject.GetComponent<Tile>();
-                    if (toAdd != null)
-                    {
-                        toAdd.Init(new TileIdx(tileIdx, rowIdx));
-                        rowContainer.GetChild(tileIdx).gameObject.SetActive(false);
-                        tileRow.Add(toAdd);
-                    }
-                    else
-                    {
-                        //Debug.LogWarning(rowIdx + " " + tileIdx);
-                    }
-
+                    Destroy(tileControl.gameObject);
                 }
-
-                Tiles.Add(tileRow);
             }
+
+            Tiles.Clear();
         }
     }
 }

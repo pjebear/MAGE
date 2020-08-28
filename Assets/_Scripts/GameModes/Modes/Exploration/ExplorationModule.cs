@@ -2,7 +2,7 @@
 using MAGE.GameModes.FlowControl;
 using MAGE.GameModes.LevelManagement;
 using MAGE.GameModes.SceneElements;
-using MAGE.GameServices;
+using MAGE.GameSystems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,9 +35,9 @@ namespace MAGE.GameModes
             MovementDirector = gameObject.AddComponent<MovementDirector>();
         }
 
-        public override GameServices.LevelId GetLevelId()
+        public override GameSystems.LevelId GetLevelId()
         {
-            return MAGE.GameServices.WorldService.Get().GetCurrentLevel();
+            return MAGE.GameSystems.WorldService.Get().GetCurrentLevel();
         }
 
         protected override void SetupMode()
@@ -47,11 +47,10 @@ namespace MAGE.GameModes
             level.ScenarioContainer.gameObject.SetActive(true);
             level.NPCContainer.gameObject.SetActive(true);
 
-            int partyAvatarId = MAGE.GameServices.WorldService.Get().GetPartyAvatarId();
+            int partyAvatarId = MAGE.GameSystems.WorldService.Get().GetPartyAvatarId();
 
             // SSFTODO: Update this to go through levelmanagement
-            int appearanceId = GameServices.CharacterService.Get().GetCharacterAppearanceId(partyAvatarId);
-            Appearance appearance = GameModes.LevelManagementService.Get().GetAppearance(appearanceId);
+            Appearance appearance = CharacterService.Get().GetCharacter(partyAvatarId).GetAppearance();
 
             mExplorationAvatar = GameModesModule.ActorLoader.CreateActor(appearance, level.SpawnPoint).gameObject;
             //go.AddComponent<vThirdPersonMotor>();
@@ -113,14 +112,13 @@ namespace MAGE.GameModes
         {
             Vector3 avatarPosition = mExplorationAvatar.transform.position;
 
+            LevelManagementService.Get().GetLoadedLevel().GenerateTilesAtPosition(mExplorationAvatar.transform);
+
             EncounterCreateParams randomParams = new EncounterCreateParams();
             randomParams.ScenarioId = EncounterScenarioId.Random;
             randomParams.LevelId = MAGE.GameModes.LevelManagementService.Get().GetLoadedLevel().LevelId;
-            randomParams.BottomLeft = new TileIdx((int)mExplorationAvatar.transform.position.x, (int)mExplorationAvatar.transform.position.z);
-            randomParams.TopRight = new TileIdx(randomParams.BottomLeft.x + 5, randomParams.BottomLeft.y + 5);
+            MAGE.GameSystems.WorldService.Get().PrepareEncounter(randomParams);
 
-
-            MAGE.GameServices.WorldService.Get().PrepareEncounter(randomParams);
             GameModesModule.Instance.Encounter();
         }
     }

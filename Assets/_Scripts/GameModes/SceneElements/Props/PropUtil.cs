@@ -1,4 +1,4 @@
-﻿using MAGE.GameServices;
+﻿using MAGE.GameSystems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,12 +42,12 @@ namespace MAGE.GameModes.SceneElements
             
             foreach (int itemId in dbInfo.Inventory)
             {
-                fromDB.Inventory.Add(GameServices.ItemFactory.LoadItem(itemId));
+                fromDB.Inventory.Add(GameSystems.ItemFactory.LoadItem(itemId));
             }
 
             foreach (int conversationId in dbInfo.Conversations)
             {
-                fromDB.Conversations.Add(GameServices.WorldService.Get().GetConversation((GameServices.ConversationId)conversationId));
+                fromDB.Conversations.Add(GameSystems.WorldService.Get().GetConversation((GameSystems.ConversationId)conversationId));
             }
 
             return fromDB;

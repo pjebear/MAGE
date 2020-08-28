@@ -1,24 +1,25 @@
-﻿using System;
+﻿using MAGE.GameModes.SceneElements;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MAGE.GameModes.SceneElements
+namespace MAGE.GameModes.Encounter
 {
     class TileSelection
     {
-        public List<Tile> Selection;
-        public Tile.HighlightState SelectionType;
+        public List<TileControl> Selection;
+        public TileControl.HighlightState SelectionType;
         public static TileSelection EmptySelection
         {
             get
             {
-                return new TileSelection(new List<Tile>(), Tile.HighlightState.None);
+                return new TileSelection(new List<TileControl>(), TileControl.HighlightState.None);
             }
         }
 
-        public TileSelection(List<Tile> selection, Tile.HighlightState selectionType)
+        public TileSelection(List<TileControl> selection, TileControl.HighlightState selectionType)
         {
             Selection = selection;
             SelectionType = selectionType;
@@ -26,7 +27,7 @@ namespace MAGE.GameModes.SceneElements
 
         public void HighlightSelection()
         {
-            foreach (Tile tile in Selection)
+            foreach (TileControl tile in Selection)
             {
                 tile.SetHighlightState(SelectionType);
             }
@@ -34,9 +35,9 @@ namespace MAGE.GameModes.SceneElements
 
         public void ClearSelection()
         {
-            foreach (Tile tile in Selection)
+            foreach (TileControl tile in Selection)
             {
-                tile.SetHighlightState(Tile.HighlightState.None);
+                tile.SetHighlightState(TileControl.HighlightState.None);
             }
         }
     }
@@ -62,7 +63,7 @@ namespace MAGE.GameModes.SceneElements
             }
         }
 
-        public int AddLayer(List<Tile> tiles, Tile.HighlightState highlightState)
+        public int AddLayer(List<TileControl> tiles, TileControl.HighlightState highlightState)
         {
             mSelectionStack.Add(new TileSelection(tiles, highlightState));
 
@@ -89,7 +90,7 @@ namespace MAGE.GameModes.SceneElements
             }
         }
 
-        public void UpdateLayer(int layer, List<Tile> tiles)
+        public void UpdateLayer(int layer, List<TileControl> tiles)
         {
             bool isDisplaying = mIsDisplaying;
             if (isDisplaying)

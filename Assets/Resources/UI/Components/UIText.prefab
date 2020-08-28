@@ -168,8 +168,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e72ed55a1a62d1043ad46d7f2fb140ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsClickable: 0
+  ClickSFX: -1
+  IsHoverable: 0
+  HoverSFX: -1
   mId: -1
   Text: 
   FontSize: 0
-  FontColor: {r: 0, g: 0, b: 0, a: 0}
+  FontColor: {r: 1, g: 1, b: 1, a: 0}
   TMPro: {fileID: 2651440962530211039}

@@ -1,5 +1,5 @@
 ﻿using MAGE.GameModes.Encounter;
-using MAGE.GameServices.Character;
+using MAGE.GameSystems.Characters;
 using MAGE.UI;
 using MAGE.UI.Views;
 using System;
@@ -18,11 +18,14 @@ namespace MAGE.GameModes.FlowControl
     {
         private string Tag = "EncounterStatusControl";
 
-        public EncounterCharacter mCurrentTurn = null;
-
         public void Init()
         {
             Messaging.MessageRouter.Instance.RegisterHandler(this);
+        }
+
+        private void OnDestroy()
+        {
+            Messaging.MessageRouter.Instance.UnRegisterHandler(this);
         }
 
         public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
@@ -68,7 +71,6 @@ namespace MAGE.GameModes.FlowControl
                             break;
 
                         case (EncounterMessage.EventType.TurnBegun):
-                            mCurrentTurn = message.Arg<EncounterCharacter>();
                             UIManager.Instance.Publish(UIContainerId.EncounterStatusView);
                             break;
 
@@ -98,21 +100,22 @@ namespace MAGE.GameModes.FlowControl
             EncounterStatus.DataProvider dp = new EncounterStatus.DataProvider();
 
             List<string> turnOrder = new List<string>();
-            foreach (EncounterCharacter actor in EncounterModule.Model.TurnOrder)
+            foreach (Character character in EncounterModule.Model.PendingCharacterTurns)
             {
-                turnOrder.Add(actor.Name);
+                turnOrder.Add(character.Name);
             }
             dp.TurnOrder = turnOrder;
 
             dp.CurrentTurn = EncounterModule.Model.Clock;
 
-            if (mCurrentTurn != null)
+            if (EncounterModule.Model.CurrrentTurnCharacter != null)
             {
-                dp.ActorName = mCurrentTurn.Name;
-                dp.ActorHealth = mCurrentTurn.Resources[ResourceType.Health].Current.ToString() + "/" + mCurrentTurn.Resources[ResourceType.Health].Max.ToString();
-                dp.ActorOwner = mCurrentTurn.Team.ToString();
+                Character currentTurn = EncounterModule.Model.CurrrentTurnCharacter;
+                dp.ActorName = currentTurn.Name;
+                dp.ActorHealth = currentTurn.CurrentResources[ResourceType.Health].Current.ToString() + "/" + currentTurn.CurrentResources[ResourceType.Health].Max.ToString();
+                dp.ActorOwner = currentTurn.TeamSide.ToString();
                 dp.ActorStatuses = new List<string>();
-                foreach (StatusEffect effect in mCurrentTurn.StatusEffects)
+                foreach (StatusEffect effect in currentTurn.StatusEffects)
                 {
                     dp.ActorStatuses.Value.Add(effect.ToString() + " x " + effect.StackCount);
                 }

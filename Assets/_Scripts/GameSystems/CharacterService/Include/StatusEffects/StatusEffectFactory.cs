@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace MAGE.GameServices.Character
+namespace MAGE.GameSystems.Characters
 {
     static class StatusEffectFactory
     {
-        public static StatusEffect CheckoutStatusEffect(StatusEffectType type, GameModes.Encounter.EncounterCharacter owner, int initialStacks = 1)
+        public static StatusEffect CheckoutStatusEffect(StatusEffectId type, Character owner, int initialStacks = 1)
         {
             StatusEffect effect = null;
             StatusEffectInfo info = new StatusEffectInfo();
@@ -17,7 +17,7 @@ namespace MAGE.GameServices.Character
 
             switch (type)
             {
-                case StatusEffectType.Avenger:
+                case StatusEffectId.Avenger:
                     info.Duration = StatusEffectConstants.PERMANENT_DURATION;
                     info.Beneficial = true;
                     info.SpriteId = UI.StatusIconSpriteId.Avenger;
@@ -25,56 +25,56 @@ namespace MAGE.GameServices.Character
                     effect = new AvengerEffect(owner, info);
                     break;
 
-                case StatusEffectType.Poison:
+                case StatusEffectId.Poison:
                     info.Duration = StatusEffectConstants.MEDIUM_DURATION;
                     info.Beneficial = false;
                     info.SpriteId = UI.StatusIconSpriteId.Poison;
                     effect = new PoisonEffect(owner, info);
                     break;
 
-                case StatusEffectType.Protection:
+                case StatusEffectId.Protection:
                     info.Duration = StatusEffectConstants.MEDIUM_DURATION;
                     info.Beneficial = true;
                     info.SpriteId = UI.StatusIconSpriteId.Protection;
                     effect = new ProtectionEffect(owner, info);
                     break;
 
-                case StatusEffectType.Aura_Protection:
+                case StatusEffectId.Aura_Protection:
                     info.Duration = StatusEffectConstants.PERMANENT_DURATION;
                     info.Beneficial = true;
                     info.SpriteId = UI.StatusIconSpriteId.Protection;
                     effect = new ProtectionEffect(owner, info);
                     break;
 
-                case StatusEffectType.Regen:
+                case StatusEffectId.Regen:
                     info.Duration = StatusEffectConstants.MEDIUM_DURATION;
                     info.Beneficial = true;
                     info.SpriteId = UI.StatusIconSpriteId.Protection;
                     effect = new RegenEffect(owner, info);
                     break;
 
-                case StatusEffectType.Aura_Regen:
+                case StatusEffectId.Aura_Regen:
                     info.Duration = StatusEffectConstants.PERMANENT_DURATION;
                     info.Beneficial = true;
                     info.SpriteId = UI.StatusIconSpriteId.Protection;
                     effect = new RegenEffect(owner, info);
                     break;
 
-                case StatusEffectType.Shackle:
+                case StatusEffectId.Shackle:
                     info.Duration = StatusEffectConstants.SHORT_DURATION;
                     info.Beneficial = false;
                     info.SpriteId = UI.StatusIconSpriteId.Disarm;
                     effect = new ShackleEffect(owner, info);
                     break;
 
-                case StatusEffectType.Aura_RighteousGlory:
+                case StatusEffectId.Aura_RighteousGlory:
                     info.Duration = StatusEffectConstants.PERMANENT_DURATION;
                     info.Beneficial = true;
                     info.SpriteId = UI.StatusIconSpriteId.RighteousGlory;
                     effect = new RighteousGloryEffect(owner, info);
                     break;
 
-                case StatusEffectType.BloodScent:
+                case StatusEffectId.BloodScent:
                     info.Duration = StatusEffectConstants.PERMANENT_DURATION;
                     info.Beneficial = true;
                     info.SpriteId = UI.StatusIconSpriteId.BloodScent;

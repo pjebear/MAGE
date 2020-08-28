@@ -1,4 +1,4 @@
-﻿using MAGE.GameServices;
+﻿using MAGE.GameSystems;
 using System.Collections.Generic;
 
 namespace MAGE.GameModes

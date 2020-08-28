@@ -1,18 +1,18 @@
-﻿using MAGE.GameServices.Character;
+﻿using MAGE.GameSystems.Characters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MAGE.GameServices
+namespace MAGE.GameSystems.Actions
 {
     class ActionFactory
     {
         static StateChange NO_COST = new StateChange(StateChangeType.ActionCost, 0, 0);
         static StateChange SPELL_COST = new StateChange(StateChangeType.ActionCost, 0, -6);
 
-        public static ActionInfo CreateActionInfoFromId(ActionId actionId, GameModes.Encounter.EncounterCharacter character)
+        public static ActionInfo CreateActionInfoFromId(ActionId actionId, Character character)
         {
             DB.DBAction dbAction = DBService.Get().LoadAction((int)actionId);
             ActionInfo info = null;
@@ -61,8 +61,8 @@ namespace MAGE.GameServices
 
                 case (ActionId.MightyBlow):
                 {
-                    int bloodScentCount = character.GetStackCountForStatus(StatusEffectType.BloodScent, character);
-                    StatusEffect bloodScentCost = StatusEffectFactory.CheckoutStatusEffect(StatusEffectType.BloodScent, character, bloodScentCount);
+                    int bloodScentCount = character.GetStackCountForStatus(StatusEffectId.BloodScent, character);
+                    StatusEffect bloodScentCost = StatusEffectFactory.CheckoutStatusEffect(StatusEffectId.BloodScent, character, bloodScentCount);
                     StateChange cost = new StateChange(StateChangeType.ActionCost, 0, 0, new List<StatusEffect>() { bloodScentCost });
 
                     info = new MightyBlowInfo();
@@ -73,7 +73,7 @@ namespace MAGE.GameServices
 
                 case (ActionId.Shackle):
                 {
-                    info = new SpellInfoBase(StatusEffectType.Shackle);
+                    info = new SpellInfoBase(StatusEffectId.Shackle);
                     ActionUtil.FromDB(dbAction, info);
                     info.ActionCost = SPELL_COST;
                 }

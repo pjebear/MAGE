@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MAGE.GameServices.Character
+namespace MAGE.GameSystems.Characters
 {
     static class StatusEffectConstants
     {
@@ -14,7 +14,7 @@ namespace MAGE.GameServices.Character
         public static int LONG_DURATION = 24;
     }
 
-    enum StatusEffectType
+    enum StatusEffectId
     {
         INVALID = -1,
 
@@ -33,7 +33,7 @@ namespace MAGE.GameServices.Character
 
     class StatusEffectInfo
     {
-        public StatusEffectType Type;
+        public StatusEffectId Type;
         public int MaxStackCount = 5;
         public int Duration = 3;
         public bool Beneficial = true;

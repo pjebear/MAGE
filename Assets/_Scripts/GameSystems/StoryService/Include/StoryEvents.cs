@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MAGE.GameServices.Story
+namespace MAGE.GameSystems.Story
 {
     enum StoryEventType
     {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MAGE.Services;
 
-namespace MAGE.GameServices.Character.Internal
+namespace MAGE.GameSystems.Characters.Internal
 {
     class CharacterServiceImpl : ICharacterService
     {
@@ -40,15 +40,16 @@ namespace MAGE.GameServices.Character.Internal
 
             // Character experience
             characterInfo.Experience += experience;
-            if (characterInfo.Experience > CharacterConstants.LEVEL_UP_THRESHOLD)
+            if (characterInfo.Experience >= CharacterConstants.LEVEL_UP_THRESHOLD)
             {
                 characterInfo.Experience -= CharacterConstants.LEVEL_UP_THRESHOLD;
                 characterInfo.Level++;
 
-                foreach (AttributeModifier modifier in characterInfo.CurrentSpecialization.LevelUpModifiers)
+                Specialization specialization = SpecializationFactory.CheckoutSpecialization(characterInfo.CurrentSpecializationType, characterInfo.CurrentSpecializationProgress);
+                foreach (AttributeModifier modifier in specialization.LevelUpModifiers)
                 {
                     Logger.Assert(modifier.ModifierType == ModifierType.Increment, LogTag.GameSystems, TAG,
-                        string.Format("Invalid Levelup modifier for Specialization [{0}] - {1}", characterInfo.CurrentSpecialization.ToString(), modifier.ToString()), LogLevel.Warning);
+                        string.Format("Invalid Levelup modifier for Specialization [{0}] - {1}", characterInfo.CurrentSpecializationType.ToString(), modifier.ToString()), LogLevel.Warning);
 
                     characterInfo.Attributes.Modify(modifier);
                 }
@@ -56,13 +57,13 @@ namespace MAGE.GameServices.Character.Internal
 
             // Specialization experience
             // Update specialization
-            characterInfo.CurrentSpecialization.Experience += SpecializationConstants.LEVEL_UP_THRESHOLD;
-            if (characterInfo.CurrentSpecialization.Experience >= SpecializationConstants.LEVEL_UP_THRESHOLD)
+            characterInfo.CurrentSpecializationProgress.Experience += SpecializationConstants.LEVEL_UP_THRESHOLD;
+            if (characterInfo.CurrentSpecializationProgress.Experience >= SpecializationConstants.LEVEL_UP_THRESHOLD)
             {
-                characterInfo.CurrentSpecialization.Level++;
+                characterInfo.CurrentSpecializationProgress.Level++;
             }
 
-            WriteCharacter(characterInfo, false);
+            WriteCharacter(characterInfo);
         }
 
         public void AssignTalentPoint(int characterId, TalentId talentId)
@@ -72,7 +73,7 @@ namespace MAGE.GameServices.Character.Internal
             CharacterModifier.AssignTalentPoint(toAssign, talentId);
 
             // Refresh DB
-            WriteCharacter(toAssign, false);
+            WriteCharacter(toAssign);
         }
 
         public List<int> ChangeSpecialization(int characterId, SpecializationType specializationType)
@@ -86,7 +87,7 @@ namespace MAGE.GameServices.Character.Internal
             List<int> unequippedItems = CharacterModifier.RefreshCharactersEquipment(toSpecialize);
 
             // Refresh the characters appearance to reflect new specialization
-            WriteCharacter(toSpecialize, true);
+            WriteCharacter(toSpecialize);
 
             return unequippedItems;
         }
@@ -99,42 +100,35 @@ namespace MAGE.GameServices.Character.Internal
 
             CharacterInfo characterInfo = CharacterDBUtil.FromDB(dbCharacter);
 
-            Appearance appearance = AppearanceUtil.FromDB(dbAppearance);
-            CharacterModifier.RefreshCharacterAppearance(characterInfo, appearance);
-            DBService.Get().WriteAppearance(characterInfo.AppearanceId, AppearanceUtil.ToDB(appearance));
+            if (dbAppearance.Id != -1)
+            {
+                Appearance appearance = AppearanceUtil.FromDB(dbAppearance);
+                DBService.Get().WriteAppearance(characterInfo.AppearanceId, AppearanceUtil.ToDB(appearance));
+            }
 
-            // Appearance is manually set. doesn't need a refresh
-            WriteCharacter(characterInfo, false);
+            WriteCharacter(characterInfo);
 
             return characterInfo.Id;
         }
 
         public List<int> EquipCharacter(int characterId, EquippableId equippableId, Equipment.Slot inSlot)
         {
-            CharacterInfo toEquip = GetCharacterInfo(characterId);
+            Character toEquip = GetCharacter(characterId);
 
             Equippable equipable = ItemFactory.LoadEquipable(equippableId);
 
-            List<int> unequippedItems = CharacterModifier.EquipCharacter(toEquip, equipable, inSlot);
+            List<int> unequippedItems = toEquip.Equip(equipable, inSlot);
 
             // Update Appearance after changing items
-            WriteCharacter(toEquip, true);
+            WriteCharacter(toEquip.GetInfo());
 
             return unequippedItems;
         }
 
-        public int GetCharacterAppearanceId(int characterId)
+        public Character GetCharacter(int characterId)
         {
-            DB.DBCharacter dbCharacter = DBService.Get().LoadCharacter(characterId);
-
-            return dbCharacter.AppearanceId;
-        }
-
-        public CharacterInfo GetCharacterInfo(int characterId)
-        {
-            DB.DBCharacter dbCharacter = DBService.Get().LoadCharacter(characterId);
-
-            return CharacterDBUtil.FromDB(dbCharacter);
+            CharacterInfo characterInfo = GetCharacterInfo(characterId);
+            return CharacterCreator.FromInfo(characterInfo); 
         }
 
         public List<int> GetCharactersOfType(CharacterType characterType)
@@ -152,7 +146,7 @@ namespace MAGE.GameServices.Character.Internal
             List<int> unequippedItems = CharacterModifier.RefreshCharactersEquipment(toReset);
 
             // Refresh Appearance in case talents modified appearance, and to reflect any unequipped items
-            WriteCharacter(toReset, true);
+            WriteCharacter(toReset);
 
             return unequippedItems;
         }
@@ -174,16 +168,16 @@ namespace MAGE.GameServices.Character.Internal
         {
             List<int> unequippedItems = new List<int>();
 
-            CharacterInfo toUnEquip = GetCharacterInfo(characterId);
+            Character toUnEquip = GetCharacter(characterId);
 
-            Optional<int> unequipped = CharacterModifier.UnEquipCharacter(toUnEquip, inSlot);
+            Optional<int> unequipped = toUnEquip.UnEquip(inSlot);
             if (unequipped.HasValue)
             {
                 unequippedItems.Add(unequipped.Value);
             }
 
             // Refresh DB
-            WriteCharacter(toUnEquip, true);
+            WriteCharacter(toUnEquip.GetInfo());
 
             return unequippedItems;
         }
@@ -204,20 +198,20 @@ namespace MAGE.GameServices.Character.Internal
             CharacterModifier.Debug_MaxTalentPoints(toMax);
 
             // Refresh DB
-            WriteCharacter(toMax, false);
+            WriteCharacter(toMax);
         }
 
         // Private 
-        private void WriteCharacter(CharacterInfo character, bool refreshAppearance)
+        private CharacterInfo GetCharacterInfo(int characterId)
+        {
+            DB.DBCharacter dbCharacter = DBService.Get().LoadCharacter(characterId);
+
+            return CharacterDBUtil.FromDB(dbCharacter);
+        }
+
+        private void WriteCharacter(CharacterInfo character)
         {
             DBService.Get().WriteCharacter(CharacterDBUtil.ToDB(character));
-
-            if (refreshAppearance)
-            {
-                Appearance appearance = AppearanceUtil.FromDB(DBService.Get().LoadAppearance(character.AppearanceId));
-                CharacterModifier.RefreshCharacterAppearance(character, appearance);
-                DBService.Get().WriteAppearance(character.AppearanceId, AppearanceUtil.ToDB(appearance));
-            }
         }
     }
 }

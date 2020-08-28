@@ -1,6 +1,6 @@
 ﻿using MAGE.GameModes.LevelManagement;
 using MAGE.GameModes.SceneElements;
-using MAGE.GameServices.Character;
+using MAGE.GameSystems.Characters;
 
 using MAGE.Utility;
 using System;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MAGE.GameServices.World.Internal
+namespace MAGE.GameSystems.World.Internal
 {
     class EncounterSystem
     {
@@ -43,17 +43,17 @@ namespace MAGE.GameServices.World.Internal
 
                 // Allys
                 {
-                    DBService.Get().AddToTeam((int)StoryCharacterId.Lothar, TeamSide.AllyHuman); scenarioContext.CharacterPositions.Add((int)StoryCharacterId.Lothar, new TileIdx(24, 6));
+                    DBService.Get().AddToTeam((int)StoryCharacterId.Lothar, TeamSide.AllyHuman); scenarioContext.CharacterPositions.Add((int)StoryCharacterId.Lothar, new TileIdx(4, 3));
                 }
 
                 // Create enemy team
                 {
                     int enemyId = CharacterUtil.ScenarioIdToDBId(ScenarioId.TheGreatHoldUp, 0);
-                    DBService.Get().AddToTeam(enemyId, TeamSide.EnemyAI); scenarioContext.CharacterPositions.Add(enemyId, new TileIdx(26, 8));
+                    DBService.Get().AddToTeam(enemyId, TeamSide.EnemyAI); scenarioContext.CharacterPositions.Add(enemyId, new TileIdx(6, 5));
                     enemyId = CharacterUtil.ScenarioIdToDBId(ScenarioId.TheGreatHoldUp, 1);
-                    DBService.Get().AddToTeam(enemyId, TeamSide.EnemyAI); scenarioContext.CharacterPositions.Add(enemyId, new TileIdx(23, 9));
+                    DBService.Get().AddToTeam(enemyId, TeamSide.EnemyAI); scenarioContext.CharacterPositions.Add(enemyId, new TileIdx(3, 6));
                     enemyId = CharacterUtil.ScenarioIdToDBId(ScenarioId.TheGreatHoldUp, 2);
-                    DBService.Get().AddToTeam(enemyId, TeamSide.EnemyAI); scenarioContext.CharacterPositions.Add(enemyId, new TileIdx(27, 3));
+                    DBService.Get().AddToTeam(enemyId, TeamSide.EnemyAI); scenarioContext.CharacterPositions.Add(enemyId, new TileIdx(7, 0));
                 }
 
                 // Rewards

@@ -1,5 +1,5 @@
 ﻿using MAGE.GameModes.SceneElements;
-using MAGE.GameServices;
+using MAGE.GameSystems;
 using MAGE.UI;
 using MAGE.UI.Views;
 using System;
@@ -96,10 +96,10 @@ namespace MAGE.GameModes.FlowControl
 
             int speakerId = mConversation.Members[currentDialogue.SpeakerIdx];
 
-            MAGE.GameServices.Character.CharacterInfo character = MAGE.GameServices.CharacterService.Get().GetCharacterInfo(speakerId);
+            MAGE.GameSystems.Characters.Character character = MAGE.GameSystems.CharacterService.Get().GetCharacter(speakerId);
 
             dataProvider.Name = character.Name;
-            dataProvider.PortraitAssetName = GameModes.LevelManagementService.Get().GetAppearance(character.AppearanceId).PortraitSpriteId.ToString();
+            dataProvider.PortraitAssetName = character.GetAppearance().PortraitSpriteId.ToString();
             dataProvider.Content = currentDialogue.Content;
 
             return dataProvider;
@@ -147,7 +147,7 @@ namespace MAGE.GameModes.FlowControl
         private void BeginScenario(Scenario scenario)
         {
             mScenario = scenario;
-            mConversation = MAGE.GameServices.DBService.Get().LoadConversation((int)ConversationId.LotharInTrouble);
+            mConversation = MAGE.GameSystems.DBService.Get().LoadConversation((int)ConversationId.LotharInTrouble);
             mConversationIdx = 0;
             UIManager.Instance.PostContainer(UIContainerId.ConversationView, this);
 
@@ -157,7 +157,7 @@ namespace MAGE.GameModes.FlowControl
         private void ScenarioComplete()
         {
             mExplorationActor.Enable(true);
-            MAGE.GameServices.WorldService.Get().PrepareEncounter(new EncounterCreateParams() { ScenarioId = EncounterScenarioId.Scenario });
+            MAGE.GameSystems.WorldService.Get().PrepareEncounter(new EncounterCreateParams() { ScenarioId = EncounterScenarioId.Scenario });
             GameModesModule.Instance.Encounter();
         }
     }

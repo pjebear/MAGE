@@ -1,6 +1,7 @@
 ﻿using MAGE.GameModes.Encounter;
 using MAGE.GameModes.SceneElements;
-using MAGE.GameServices;
+using MAGE.GameSystems;
+using MAGE.GameSystems.Characters;
 using MAGE.UI;
 using MAGE.UI.Views;
 using System;
@@ -18,40 +19,41 @@ namespace MAGE.GameModes.FlowControl
     {
         private string TAG = "EncounterUnitPlacementViewControl";
 
-        private List<EncounterCharacter> mCharactersToPlace = new List<EncounterCharacter>();
+        private List<Character> mCharactersToPlace = new List<Character>();
         private int mCharacterIdx = 0;
-        private List<Tile> mPlacementTiles = new List<Tile>();
+        private List<TileControl> mPlacementTiles = new List<TileControl>();
         private Dictionary<int, TileIdx> mPlacedCharacterLookup = new Dictionary<int, TileIdx>();
 
         private TileSelectionStack mTileSelectionStack = new TileSelectionStack();
         private int mAvailableTileLayer = 0;
         private int mHoveredTileLayer = 1;
 
-        private Tile mHoveredTile = null;
+        private TileControl mHoveredTile = null;
 
         public void Init()
         {
-            mAvailableTileLayer = mTileSelectionStack.AddLayer(new List<Tile>(), Tile.HighlightState.MovementSelect);
-            mHoveredTileLayer = mTileSelectionStack.AddLayer(new List<Tile>(), Tile.HighlightState.AOESelect);
+            mAvailableTileLayer = mTileSelectionStack.AddLayer(new List<TileControl>(), TileControl.HighlightState.MovementSelect);
+            mHoveredTileLayer = mTileSelectionStack.AddLayer(new List<TileControl>(), TileControl.HighlightState.AOESelect);
         }
 
         public void Start()
         {
-            foreach (int characterId in MAGE.GameServices.DBService.Get().LoadTeam(TeamSide.AllyHuman))
+            foreach (int characterId in MAGE.GameSystems.DBService.Get().LoadTeam(TeamSide.AllyHuman))
             {
-                MAGE.GameServices.Character.CharacterInfo characterInfo = MAGE.GameServices.CharacterService.Get().GetCharacterInfo(characterId);
-                EncounterCharacter encounterCharacter = new EncounterCharacter(TeamSide.AllyHuman, characterInfo);
+                
+                Character character = MAGE.GameSystems.CharacterService.Get().GetCharacter(characterId);
+                character.TeamSide = TeamSide.AllyHuman;
 
-                if (EncounterModule.Model.EncounterContext.CharacterPositions.ContainsKey(encounterCharacter.Id))
+                if (EncounterModule.Model.EncounterContext.CharacterPositions.ContainsKey(character.Id))
                 {
-                    TileIdx atTile = EncounterModule.Model.EncounterContext.CharacterPositions[encounterCharacter.Id];
-
-                    EncounterModule.CharacterDirector.AddCharacter(encounterCharacter, atTile);
+                    TileIdx atTile = EncounterModule.Model.EncounterContext.CharacterPositions[character.Id];
+                    CharacterPosition characterPosition = new CharacterPosition(atTile, Orientation.Forward);
+                    EncounterModule.CharacterDirector.AddCharacter(character, characterPosition);
                     mPlacedCharacterLookup.Add(characterId, atTile);
                 }
                 else
                 {
-                    mCharactersToPlace.Add(encounterCharacter);
+                    mCharactersToPlace.Add(character);
                 }
             }
 
@@ -59,7 +61,7 @@ namespace MAGE.GameModes.FlowControl
             {
                 foreach (TileIdx tileIdx in EncounterModule.Model.AllySpawnPoints)
                 {
-                    mPlacementTiles.Add(EncounterModule.Map[tileIdx]);
+                    mPlacementTiles.Add(EncounterModule.MapControl[tileIdx]);
                 }
 
                 mTileSelectionStack.UpdateLayer(mAvailableTileLayer, mPlacementTiles);
@@ -140,9 +142,9 @@ namespace MAGE.GameModes.FlowControl
         // IInputHandler
         public void OnMouseHoverChange(GameObject mouseHover)
         {
-            Tile tile = GetTileFromObj(mouseHover);
+            TileControl tile = GetTileFromObj(mouseHover);
 
-            List<Tile> hoverSelection = new List<Tile>();
+            List<TileControl> hoverSelection = new List<TileControl>();
             if (tile != null && mPlacementTiles.Contains(tile))
             {
                 mHoveredTile = tile;
@@ -192,12 +194,12 @@ namespace MAGE.GameModes.FlowControl
 
         private void UpdateSelectableTiles()
         {
-            List<Tile> availableTiles = new List<Tile>();
+            List<TileControl> availableTiles = new List<TileControl>();
             foreach (TileIdx tileIdx in EncounterModule.Model.AllySpawnPoints)
             {
                 if (!mPlacedCharacterLookup.Values.Contains(tileIdx))
                 {
-                    availableTiles.Add(EncounterModule.Map[tileIdx]);
+                    availableTiles.Add(EncounterModule.MapControl[tileIdx]);
                 }
             }
 
@@ -212,9 +214,9 @@ namespace MAGE.GameModes.FlowControl
         private void AutoFillCharacters()
         {
             // Reset everything first
-            foreach (Tile tile in mPlacementTiles)
+            foreach (TileControl tile in mPlacementTiles)
             {
-                tile.OnTile = null;
+                tile.ClearOnTile();
             }
 
             for (; mCharacterIdx < mCharactersToPlace.Count; ++mCharacterIdx)
@@ -223,7 +225,7 @@ namespace MAGE.GameModes.FlowControl
             }
         }
 
-        private void PlaceSelectedCharacterAtTile(Tile tile)
+        private void PlaceSelectedCharacterAtTile(TileControl tile)
         {
             Logger.Assert(tile != null, LogTag.UI, TAG, "Attempting to place character when hovered tile is null", LogLevel.Warning);
             if (tile == null)
@@ -242,9 +244,10 @@ namespace MAGE.GameModes.FlowControl
                 }
                 else // update the tile the character is on
                 {
-                    EncounterActorController controller = EncounterModule.Map[mPlacedCharacterLookup[selectedCharacterId]].OnTile;
+                    
+                    CharacterActorController controller = EncounterModule.CharacterDirector.CharacterActorLookup[EncounterModule.Model.Characters[selectedCharacterId]];
 
-                    EncounterModule.Map.PlaceAtTile(tile.Idx, controller);
+                    EncounterModule.MapControl.UpdateCharacterPosition(controller, new CharacterPosition(tile.Idx, Orientation.Forward));
 
                     mPlacedCharacterLookup[selectedCharacterId] = tile.Idx;
                 }
@@ -253,17 +256,17 @@ namespace MAGE.GameModes.FlowControl
             {
                 mPlacedCharacterLookup.Add(selectedCharacterId, tile.Idx);
 
-                EncounterModule.CharacterDirector.AddCharacter(mCharactersToPlace[mCharacterIdx], tile.Idx);
+                EncounterModule.CharacterDirector.AddCharacter(mCharactersToPlace[mCharacterIdx], new CharacterPosition(tile.Idx, Orientation.Forward));
             }
         }
 
-        private Tile GetTileFromObj(GameObject obj)
+        private TileControl GetTileFromObj(GameObject obj)
         {
-            Tile tile = null;
+            TileControl tile = null;
 
             if (obj != null)
             {
-                tile = obj.GetComponentInParent<Tile>();
+                tile = obj.GetComponentInParent<TileControl>();
             }
 
             return tile;

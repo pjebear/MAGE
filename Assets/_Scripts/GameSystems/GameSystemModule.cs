@@ -1,4 +1,4 @@
-﻿using MAGE.GameServices;
+﻿using MAGE.GameSystems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,9 +21,9 @@ class GameSystemModule : MonoBehaviour
         {
             Instance = this;
 
-            WorldService.Register(new MAGE.GameServices.World.Internal.WorldServiceImpl());
-            CharacterService.Register(new MAGE.GameServices.Character.Internal.CharacterServiceImpl());
-            StoryService.Register(new MAGE.GameServices.Story.Internal.StoryServiceImpl());
+            WorldService.Register(new MAGE.GameSystems.World.Internal.WorldServiceImpl());
+            CharacterService.Register(new MAGE.GameSystems.Characters.Internal.CharacterServiceImpl());
+            StoryService.Register(new MAGE.GameSystems.Story.Internal.StoryServiceImpl());
             DBService.Register(new MAGE.DB.Internal.DBServiceImpl());
             MAGE.GameModes.LevelManagementService.Register(gameObject.AddComponent<MAGE.GameModes.LevelManagement.Internal.LevelManagerServiceImpl>());
 

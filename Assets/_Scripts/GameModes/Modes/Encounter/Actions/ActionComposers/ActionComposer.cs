@@ -1,5 +1,7 @@
 ﻿
-using MAGE.GameServices;
+using MAGE.GameSystems;
+using MAGE.GameSystems.Actions;
+using MAGE.GameSystems.Characters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +14,10 @@ namespace MAGE.GameModes.Encounter
     class ActionComposer
     {
 
-        public static void ComposeAction(ActionProposal proposal, out ActionResult result, out Timeline<ActionEvent> timeline)
+        public static void ComposeAction(ActionProposal proposal, Map map, out ActionResult result, out Timeline<ActionEvent> timeline)
         {
-            ActionInfo actionInfo = proposal.Owner.GetActionInfo(proposal.Action);
-            EncounterActorController ownerController = EncounterModule.CharacterDirector.CharacterActorLookup[proposal.Owner];
+            CharacterActorController proposerController = EncounterModule.CharacterDirector.CharacterActorLookup[proposal.Proposer];
+            ActionInfo actionInfo = proposal.Proposer.GetActionInfo(proposal.Action);
             TargetSelection targetSelection = proposal.ActionTarget;
 
             switch (proposal.Action)
@@ -24,18 +26,18 @@ namespace MAGE.GameModes.Encounter
                 {
                     if (actionInfo.ProjectileInfo.ProjectileId == ProjectileId.INVALID)
                     {
-                        MeleeActionComposer.ComposeAction(ownerController, actionInfo, targetSelection, out result, out timeline);
+                        MeleeActionComposer.ComposeAction(proposerController, actionInfo, targetSelection, map, out result, out timeline);
                     }
                     else
                     {
-                        ProjectileActionComposer.ComposeAction(ownerController, actionInfo, targetSelection, out result, out timeline);
+                        ProjectileActionComposer.ComposeAction(proposerController, actionInfo, targetSelection, map, out result, out timeline);
                     }
                 }
                 break;
                 case (ActionId.Anvil):
                 case (ActionId.MightyBlow):
                 case (ActionId.Riptose):
-                    MeleeActionComposer.ComposeAction(ownerController, actionInfo, targetSelection, out result, out timeline);
+                    MeleeActionComposer.ComposeAction(proposerController, actionInfo, targetSelection, map, out result, out timeline);
                     break;
 
                 case (ActionId.Protection):
@@ -43,11 +45,11 @@ namespace MAGE.GameModes.Encounter
                 case (ActionId.HolyLight):
                 case (ActionId.Smite):
                 case (ActionId.Shackle):
-                    EffectActionComposer.ComposeAction(ownerController, actionInfo, targetSelection, out result, out timeline);
+                    EffectActionComposer.ComposeAction(proposerController, actionInfo, targetSelection, map, out result, out timeline);
                     break;
 
                 case (ActionId.FireBall):
-                    ProjectileActionComposer.ComposeAction(ownerController, actionInfo, targetSelection, out result, out timeline);
+                    ProjectileActionComposer.ComposeAction(proposerController, actionInfo, targetSelection, map, out result, out timeline);
                     break;
 
                 default:

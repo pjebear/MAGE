@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MAGE.GameServices.World.Internal
+namespace MAGE.GameSystems.World.Internal
 {
     class PartyInfo
     {

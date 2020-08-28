@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MAGE.GameServices.World.Internal
+namespace MAGE.GameSystems.World.Internal
 {
     class WorldServiceImpl : IWorldService
     {
@@ -92,19 +92,19 @@ namespace MAGE.GameServices.World.Internal
             StoryService.Get().NotifyStoryEvent(new Story.StoryEventBase((ItemId)itemId));
         }
 
-        public void AssignTalentPoint(int characterId, Character.TalentId talentId)
+        public void AssignTalentPoint(int characterId, Characters.TalentId talentId)
         {
             CharacterService.Get().AssignTalentPoint(characterId, talentId);
         }
 
-        public void ChangeSpecialization(int characterId, Character.SpecializationType specializationType)
+        public void ChangeSpecialization(int characterId, Characters.SpecializationType specializationType)
         {
             List<int> unequippedItems = CharacterService.Get().ChangeSpecialization(characterId, specializationType);
 
             mPartySystem.AddToInventory(unequippedItems);
         }
 
-        public void EquipCharacter(int characterId, EquippableId equippableId, Character.Equipment.Slot inSlot)
+        public void EquipCharacter(int characterId, EquippableId equippableId, Characters.Equipment.Slot inSlot)
         {
             mPartySystem.EquipCharacter(characterId, equippableId, inSlot);
         }
@@ -158,7 +158,7 @@ namespace MAGE.GameServices.World.Internal
             mPartySystem.RemoveFromInventory(itemId);
         }
 
-        public void UnEquipCharacter(int characterId, Character.Equipment.Slot inSlot)
+        public void UnEquipCharacter(int characterId, Characters.Equipment.Slot inSlot)
         {
             mPartySystem.UnEquipCharacter(characterId, inSlot);
         }

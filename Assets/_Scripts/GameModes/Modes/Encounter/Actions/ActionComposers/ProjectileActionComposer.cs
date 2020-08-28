@@ -1,4 +1,6 @@
-﻿using MAGE.GameServices;
+﻿using MAGE.GameSystems;
+using MAGE.GameSystems.Actions;
+using MAGE.GameSystems.Characters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +12,7 @@ namespace MAGE.GameModes.Encounter
 {
     class ProjectileActionComposer
     {
-        public static void ComposeAction(EncounterActorController ownerController, ActionInfo actionInfo, TargetSelection targetSelection, out ActionResult result, out Timeline<ActionEvent> timeline)
+        public static void ComposeAction(CharacterActorController ownerController, ActionInfo actionInfo, TargetSelection targetSelection, Map map, out ActionResult result, out Timeline<ActionEvent> timeline)
         {
             List<ActionEvent> timelineEvents = new List<ActionEvent>();
 
@@ -20,8 +22,9 @@ namespace MAGE.GameModes.Encounter
             Logger.Assert(actionInfo.ProjectileInfo.ProjectileId != ProjectileId.INVALID, LogTag.GameModes,
                 "ProjectileActionComposer", string.Format("No projectile information provided for action {0}", actionInfo.ActionId.ToString()));
 
+            CharacterPosition ownerPosition = map.GetCharacterPosition(ownerController.Character);
             ProjectileSpawnParams projectileSpawnParams = ProjectileUtil.GenerateSpawnParams(
-                EncounterModule.Map.ActorPositionLookup[ownerController],
+                EncounterModule.MapControl[ownerPosition.Location],
                 targetSelection.FocalTarget,
                 actionInfo.CastRange.AreaType == AreaType.Expanding ? ProjectilePathType.Arc : ProjectilePathType.Linear,
                 actionInfo.ProjectileInfo.ProjectileId);
@@ -30,18 +33,18 @@ namespace MAGE.GameModes.Encounter
             projectileSpawnBlock.SyncronizeTo(AllignmentPosition.Start, 0, casterAnimationBlock, AllignmentPosition.Interaction);
             timelineEvents.AddRange(projectileSpawnBlock.Events);
 
-            List<EncounterCharacter> targets = new List<EncounterCharacter>();
+            List<Character> targets = new List<Character>();
             if (projectileSpawnParams.CollisionWith != null)
             {
-                EncounterActorController encounterActorController = projectileSpawnParams.CollisionWith.GetComponent<EncounterActorController>();
-                if (encounterActorController != null)
+                CharacterActorController actorController = projectileSpawnParams.CollisionWith.GetComponent<CharacterActorController>();
+                if (actorController != null)
                 {
-                    targets.Add(encounterActorController.EncounterCharacter);
+                    targets.Add(actorController.Character);
                 }
             }
 
-            List<InteractionResult> interactionResults = InteractionResolver.ResolveInteraction(ownerController.EncounterCharacter, actionInfo, targets);
-            Dictionary<EncounterCharacter, InteractionResult> targetResults = new Dictionary<EncounterCharacter, InteractionResult>();
+            List<InteractionResult> interactionResults = InteractionResolver.ResolveInteraction(ownerController.Character, actionInfo, targets, map);
+            Dictionary<Character, InteractionResult> targetResults = new Dictionary<Character, InteractionResult>();
 
             for (int i = 0; i < targets.Count; ++i)
             {
@@ -52,12 +55,12 @@ namespace MAGE.GameModes.Encounter
                     ownerController
                     , EncounterModule.CharacterDirector.CharacterActorLookup[targets[i]]
                     , interactionResult
-                    , casterAnimationBlock);
+                    , projectileSpawnBlock);
 
                 timelineEvents.AddRange(targetInteractionBlock.Events);
             }
 
-            result = new ActionResult(ownerController.EncounterCharacter, actionInfo,
+            result = new ActionResult(ownerController.Character, actionInfo,
                 new InteractionResult(InteractionUtil.GetOwnerResultTypeFromResults(interactionResults), actionInfo.ActionCost),
                 targetResults);
 

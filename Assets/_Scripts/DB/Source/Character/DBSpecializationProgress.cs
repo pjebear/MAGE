@@ -11,6 +11,7 @@ namespace MAGE.DB
     {
         public int TalentId;
         public int AssignedPoints;
+        public int MaxPoints;
     }
 
     [System.Serializable]
@@ -33,7 +34,7 @@ namespace MAGE.DB
             to.Talents.Clear();
             foreach (DBTalentProgress talent in from.Talents)
             {
-                to.Talents.Add(new DBTalentProgress() { AssignedPoints = talent.AssignedPoints, TalentId = talent.TalentId });
+                to.Talents.Add(new DBTalentProgress() { AssignedPoints = talent.AssignedPoints, MaxPoints = talent.MaxPoints, TalentId = talent.TalentId });
             }
         }
     }

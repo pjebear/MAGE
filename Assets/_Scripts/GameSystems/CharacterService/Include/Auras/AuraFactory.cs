@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace MAGE.GameServices.Character
+namespace MAGE.GameSystems.Characters
 {
     static class AuraFactory
     {
@@ -13,17 +13,17 @@ namespace MAGE.GameServices.Character
         {
             int range = 2;
             bool isBeneficial = true;
-            StatusEffectType auraEffectType = StatusEffectType.NUM;
+            StatusEffectId auraEffectType = StatusEffectId.NUM;
             switch (type)
             {
                 case AuraType.Protection:
-                    auraEffectType = StatusEffectType.Aura_Protection;
+                    auraEffectType = StatusEffectId.Aura_Protection;
                     break;
                 case AuraType.Regen:
-                    auraEffectType = StatusEffectType.Aura_Regen;
+                    auraEffectType = StatusEffectId.Aura_Regen;
                     break;
                 case AuraType.RighteousGlory:
-                    auraEffectType = StatusEffectType.Aura_RighteousGlory;
+                    auraEffectType = StatusEffectId.Aura_RighteousGlory;
                     break;
 
                 default:

@@ -9,6 +9,8 @@ public enum RayCastLayer
 {
     Tile = 8,
     Interactible = 9,
+    Terrain = 10,
+    Trees = 14,
 
     NUM
 }

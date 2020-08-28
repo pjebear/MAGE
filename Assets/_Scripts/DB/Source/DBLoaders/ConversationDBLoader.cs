@@ -1,4 +1,4 @@
-﻿using MAGE.GameServices;
+﻿using MAGE.GameSystems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,9 +56,9 @@ namespace MAGE.DB.Internal
                 DB.DBConversation conversation = new DB.DBConversation();
                 conversation.Id = (int)conversationId;
                 conversation.Name = conversationId.ToString();
-                conversation.Members = new List<int>() { ConversationConstants.PARTY_AVATAR_ID, (int)MAGE.GameServices.Character.StoryCharacterId.Lothar,
-                MAGE.GameServices.Character.CharacterUtil.ScenarioIdToDBId(ScenarioId.TheGreatHoldUp, 0),
-                MAGE.GameServices.Character.CharacterUtil.ScenarioIdToDBId(ScenarioId.TheGreatHoldUp, 1) };
+                conversation.Members = new List<int>() { ConversationConstants.PARTY_AVATAR_ID, (int)MAGE.GameSystems.Characters.StoryCharacterId.Lothar,
+                MAGE.GameSystems.Characters.CharacterUtil.ScenarioIdToDBId(ScenarioId.TheGreatHoldUp, 0),
+                MAGE.GameSystems.Characters.CharacterUtil.ScenarioIdToDBId(ScenarioId.TheGreatHoldUp, 1) };
                 int lotharIdx = 1;
                 int banditLeader = 2;
                 int banditLackey = 3;

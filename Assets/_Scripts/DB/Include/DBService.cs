@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MAGE.GameServices
+namespace MAGE.GameSystems
 {
     interface IDBService : Services.IService
     {
@@ -65,7 +65,7 @@ namespace MAGE.GameServices
         // Scenario - End
 
         // Specialization
-        DB.DBSpecialization LoadSpecialization(MAGE.GameServices.Character.SpecializationType specializationType);
+        DB.DBSpecialization LoadSpecialization(MAGE.GameSystems.Characters.SpecializationType specializationType);
         void UpdateSpecializationDB();
         void WriteSpecialization(DB.DBSpecialization dBSpecialization);
         // Specialization - End

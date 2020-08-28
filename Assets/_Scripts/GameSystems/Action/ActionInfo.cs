@@ -1,13 +1,11 @@
-﻿using MAGE.GameModes.Encounter;
-
-using MAGE.GameServices.Character;
+﻿using MAGE.GameSystems.Characters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MAGE.GameServices
+namespace MAGE.GameSystems.Actions
 {
     abstract class ActionInfo
     {
@@ -25,14 +23,14 @@ namespace MAGE.GameServices
         public ActionChainInfo ChainInfo = new ActionChainInfo();
         public bool IsSelfCast = false;
 
-        public abstract StateChange GetTargetStateChange(EncounterCharacter caster, EncounterCharacter target);
+        public abstract StateChange GetTargetStateChange(Character caster, Character target);
     }
 
     class WeaponActionInfoBase : ActionInfo
     {
-        public override StateChange GetTargetStateChange(EncounterCharacter caster, EncounterCharacter target)
+        public override StateChange GetTargetStateChange(Character caster, Character target)
         {
-            float baseEffectiveness = EquipmentUtil.GetHeldEquippableEffectiveness(caster.Attributes, caster.Equipment[Equipment.Slot.RightHand] as HeldEquippable);
+            float baseEffectiveness = EquipmentUtil.GetHeldEquippableEffectiveness(caster.CurrentAttributes, caster.Equipment[Equipment.Slot.RightHand] as HeldEquippable);
             int damage = -(int)(baseEffectiveness * Effectiveness);
             return new StateChange(StateChangeType.ActionTarget, damage, 0);
         }
@@ -41,9 +39,9 @@ namespace MAGE.GameServices
 
     class ProtectionInfo : ActionInfo
     {
-        public override StateChange GetTargetStateChange(EncounterCharacter caster, EncounterCharacter target)
+        public override StateChange GetTargetStateChange(Character caster, Character target)
         {
-            ProtectionEffect effect = StatusEffectFactory.CheckoutStatusEffect(StatusEffectType.Protection, caster) as ProtectionEffect;
+            ProtectionEffect effect = StatusEffectFactory.CheckoutStatusEffect(StatusEffectId.Protection, caster) as ProtectionEffect;
 
             return new StateChange(StateChangeType.ActionTarget, 0, 0, new List<StatusEffect>() { effect });
         }
@@ -52,9 +50,9 @@ namespace MAGE.GameServices
     class SpellInfoBase : ActionInfo
     {
         bool mIsBeneficial = false;
-        StatusEffectType mStatusEffectType = StatusEffectType.INVALID;
+        StatusEffectId mStatusEffectType = StatusEffectId.INVALID;
 
-        public SpellInfoBase(StatusEffectType effectType)
+        public SpellInfoBase(StatusEffectId effectType)
         {
             Effectiveness = 0;
             mStatusEffectType = effectType;
@@ -66,17 +64,17 @@ namespace MAGE.GameServices
             mIsBeneficial = isBeneficial;
         }
 
-        public override StateChange GetTargetStateChange(EncounterCharacter caster, EncounterCharacter target)
+        public override StateChange GetTargetStateChange(Character caster, Character target)
         {
             float healthChange = 0;
-            healthChange += caster.Attributes[PrimaryStat.Magic];
-            healthChange *= 1 + (caster.Attributes[SecondaryStat.Attunement] / 100);
+            healthChange += caster.CurrentAttributes[PrimaryStat.Magic];
+            healthChange *= 1 + (caster.CurrentAttributes[SecondaryStat.Attunement] / 100);
 
             healthChange *= Effectiveness;
             healthChange *= mIsBeneficial ? 1 : -1;
 
             List<StatusEffect> statusEffects = new List<StatusEffect>();
-            if (mStatusEffectType != StatusEffectType.INVALID)
+            if (mStatusEffectType != StatusEffectId.INVALID)
             {
                 statusEffects.Add(StatusEffectFactory.CheckoutStatusEffect(mStatusEffectType, caster));
             }
@@ -89,10 +87,10 @@ namespace MAGE.GameServices
     {
         float DamagePercentPerStack = .2f;
 
-        public override StateChange GetTargetStateChange(EncounterCharacter caster, EncounterCharacter target)
+        public override StateChange GetTargetStateChange(Character caster, Character target)
         {
-            float baseEffectiveness = EquipmentUtil.GetHeldEquippableEffectiveness(caster.Attributes, caster.Equipment[Equipment.Slot.RightHand] as HeldEquippable);
-            baseEffectiveness *= 1 + (DamagePercentPerStack * caster.GetStackCountForStatus(StatusEffectType.BloodScent, caster));
+            float baseEffectiveness = EquipmentUtil.GetHeldEquippableEffectiveness(caster.CurrentAttributes, caster.Equipment[Equipment.Slot.RightHand] as HeldEquippable);
+            baseEffectiveness *= 1 + (DamagePercentPerStack * caster.GetStackCountForStatus(StatusEffectId.BloodScent, caster));
 
             return new StateChange(StateChangeType.ActionTarget, -(int)baseEffectiveness, 0);
         }

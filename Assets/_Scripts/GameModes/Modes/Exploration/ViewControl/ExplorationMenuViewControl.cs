@@ -54,7 +54,7 @@ namespace MAGE.GameModes.FlowControl
                 {
                     case (int)ExplorationMenuView.ComponentId.SaveBtn:
                     {
-                        MAGE.GameServices.WorldService.Get().Save();
+                        MAGE.GameSystems.WorldService.Get().Save();
                     }
                     break;
 
@@ -118,8 +118,8 @@ namespace MAGE.GameModes.FlowControl
                     QuestLogView.DataProvider questLogDP = new QuestLogView.DataProvider();
                     questLogDP.SelectedQuest = mSelectedQuestIdx;
 
-                    List<GameServices.Story.StoryArcInfo> activeQuests = GameServices.StoryService.Get().GetActiveStoryArcs();
-                    foreach (GameServices.Story.StoryArcInfo activeQuest in activeQuests)
+                    List<GameSystems.Story.StoryArcInfo> activeQuests = GameSystems.StoryService.Get().GetActiveStoryArcs();
+                    foreach (GameSystems.Story.StoryArcInfo activeQuest in activeQuests)
                     {
                         questLogDP.IsQuestUpdated.Add(false);
                         questLogDP.QuestNames.Add(activeQuest.StoryArcName);

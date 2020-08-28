@@ -1,6 +1,7 @@
 ﻿using MAGE.GameModes.SceneElements;
-using MAGE.GameServices;
-using MAGE.GameServices.World;
+using MAGE.GameSystems;
+using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.World;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,9 +16,11 @@ namespace MAGE.GameModes.Encounter
         public List<TileIdx> AllySpawnPoints = new List<TileIdx>();
         public List<TileIdx> EnemySpawnPoints = new List<TileIdx>();
 
-        public Dictionary<TeamSide, List<EncounterCharacter>> Teams = new Dictionary<TeamSide, List<EncounterCharacter>>();
-        public Dictionary<int, EncounterCharacter> Characters = new Dictionary<int, EncounterCharacter>();
-        public List<EncounterCharacter> TurnOrder = new List<EncounterCharacter>();
+        public Dictionary<TeamSide, List<Character>> Teams = new Dictionary<TeamSide, List<Character>>();
+        public Dictionary<int, Character> Characters = new Dictionary<int, Character>();
+        public List<Character> PendingCharacterTurns = new List<Character>();
+        public Character CurrrentTurnCharacter = null;
+        public bool TurnCompleted = false;
         public int Clock;
         public EncounterState EncounterState = EncounterState.InProgress;
     }

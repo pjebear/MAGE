@@ -14,7 +14,7 @@ namespace MAGE.GameModes.FlowControl
 
         public void Start()
         {
-            SaveFiles = MAGE.GameServices.WorldService.Get().GetSaveFiles();
+            SaveFiles = MAGE.GameSystems.WorldService.Get().GetSaveFiles();
 
             UIManager.Instance.PostContainer(UIContainerId.MainMenuView, this);
         }
@@ -36,7 +36,7 @@ namespace MAGE.GameModes.FlowControl
                         {
                             case (int)MainMenuView.ComponentId.NewGameBtn:
                             {
-                                MAGE.GameServices.WorldService.Get().PrepareNewGame();
+                                MAGE.GameSystems.WorldService.Get().PrepareNewGame();
                                 GameModesModule.Instance.Explore();
                             }
                             break;
@@ -46,7 +46,7 @@ namespace MAGE.GameModes.FlowControl
                                 ListInteractionInfo buttonListInteractionInfo = interactionInfo as ListInteractionInfo;
                                 string saveFileName = SaveFiles[buttonListInteractionInfo.ListIdx];
 
-                                MAGE.GameServices.WorldService.Get().Load(saveFileName);
+                                MAGE.GameSystems.WorldService.Get().Load(saveFileName);
                                 GameModesModule.Instance.Explore();
                             }
                             break;

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace MAGE.GameServices.World.Internal
+namespace MAGE.GameSystems.World.Internal
 {
 
     static class SaveLoadUtil

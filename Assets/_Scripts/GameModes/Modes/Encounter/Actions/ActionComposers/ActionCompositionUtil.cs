@@ -1,5 +1,6 @@
-﻿using MAGE.GameServices;
-using MAGE.GameServices.Character;
+﻿using MAGE.GameSystems;
+using MAGE.GameSystems.Actions;
+using MAGE.GameSystems.Characters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +12,13 @@ namespace MAGE.GameModes.Encounter
 {
     static class ActionCompositionUtil
     {
-        public static ActorInteractionBlock CreateOwnerInteractionBlock(EncounterActorController owner, Target target, AnimationId animationId)
+        public static ActorInteractionBlock CreateOwnerInteractionBlock(CharacterActorController owner, Target target, AnimationId animationId)
         {
             Transform lookAt = null;
-            if ((target.TargetType == TargetSelectionType.Actor && target.ActorTarget != owner.EncounterCharacter) // Not targeting yourself
-                || (target.TileTarget != EncounterModule.CharacterDirector.GetActorPosition(owner.EncounterCharacter))) // Not targeting your feet
+            if ((target.TargetType == TargetSelectionType.Character && target.CharacterTarget != owner.Character) // Not targeting yourself
+                || (target.TileTarget != EncounterModule.CharacterDirector.GetCharacterPosition(owner.Character))) // Not targeting your feet
             {
-                lookAt = target.GetTargetTransform();
+                lookAt = EncounterModule.MapControl.GetTargetTransform(target);
             }
 
             ActorInteractionBlock casterAnimationBlock = new ActorInteractionBlock(
@@ -29,7 +30,7 @@ namespace MAGE.GameModes.Encounter
             return casterAnimationBlock;
         }
 
-        public static ActorInteractionBlock CreateTargetInteractionBlock(EncounterActorController owner, EncounterActorController target, InteractionResult result, ISynchronizable interactionPoint)
+        public static ActorInteractionBlock CreateTargetInteractionBlock(CharacterActorController owner, CharacterActorController target, InteractionResult result, ISynchronizable interactionPoint)
         {
             Transform lookAt = null;
             if (owner != target // don't look at yourself

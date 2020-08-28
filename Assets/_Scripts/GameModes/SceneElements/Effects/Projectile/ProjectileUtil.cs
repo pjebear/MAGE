@@ -1,5 +1,6 @@
 ﻿using MAGE.GameModes.SceneElements;
-using MAGE.GameServices;
+using MAGE.GameSystems;
+using MAGE.GameSystems.Actions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,24 +16,24 @@ namespace MAGE.GameModes.Encounter
         public const float ARC_VELOCITY_START = 9;
         public static Vector3 VertOffset = Vector3.up * 1.3f;
 
-        public static ProjectileSpawnParams GenerateSpawnParams(Tile spawnPoint, Target target, ProjectilePathType pathType, ProjectileId projectileId)
+        public static ProjectileSpawnParams GenerateSpawnParams(TileControl spawnPoint, Target target, ProjectilePathType pathType, ProjectileId projectileId)
         {
-            Tile projectileEndPoint = null;
-            if (target.TargetType == TargetSelectionType.Actor)
+            TileControl projectileEndPoint = null;
+            if (target.TargetType == TargetSelectionType.Character)
             {
-                TileIdx location = EncounterModule.CharacterDirector.GetActorPosition(target.ActorTarget);
-                projectileEndPoint = EncounterModule.Map[location];
+                TileIdx location = EncounterModule.CharacterDirector.GetCharacterPosition(target.CharacterTarget);
+                projectileEndPoint = EncounterModule.MapControl[location];
             }
             else
             {
                 TileIdx location = target.TileTarget;
-                projectileEndPoint = EncounterModule.Map[location];
+                projectileEndPoint = EncounterModule.MapControl[location];
             }
 
             return GenerateSpawnParams(spawnPoint, projectileEndPoint, pathType, projectileId);
         }
 
-        public static ProjectileSpawnParams GenerateSpawnParams(Tile start, Tile end, ProjectilePathType pathType, ProjectileId projectileId)
+        public static ProjectileSpawnParams GenerateSpawnParams(TileControl start, TileControl end, ProjectilePathType pathType, ProjectileId projectileId)
         {
             ProjectileSpawnParams spawnParams = null;
             if (pathType == ProjectilePathType.Linear)
@@ -49,7 +50,7 @@ namespace MAGE.GameModes.Encounter
             return spawnParams;
         }
 
-        private static ProjectileSpawnParams GenerateLinearProjectileParams(Tile start, Tile end)
+        private static ProjectileSpawnParams GenerateLinearProjectileParams(TileControl start, TileControl end)
         {
             ProjectileSpawnParams linearParams = new ProjectileSpawnParams();
 
@@ -74,7 +75,7 @@ namespace MAGE.GameModes.Encounter
             return linearParams;
         }
 
-        private static ProjectileSpawnParams GenerateArcProjectileParams(Tile start, Tile end)
+        private static ProjectileSpawnParams GenerateArcProjectileParams(TileControl start, TileControl end)
         {
             ProjectileSpawnParams arcParams = new ProjectileSpawnParams();
 
@@ -110,8 +111,13 @@ namespace MAGE.GameModes.Encounter
                     float lobDuration = horzDistance / horzLobSpeed;
                     collisionAlongArc = ArcMarch(spawnPosition, endPosition, lobTrajectory, lobDuration);
 
-                    bool emptyTileAndNoCollisions = (end.OnTile == null && collisionAlongArc == null);
-                    bool filledTileAndCorrectCollision = (end.OnTile != null && collisionAlongArc != null && collisionAlongArc.GetComponent<EncounterActorController>() == end.OnTile);
+                    bool emptyTileAndNoCollisions = (end == null && collisionAlongArc == null);
+                    bool filledTileAndCorrectCollision 
+                        = end != null 
+                        && collisionAlongArc != null
+                        && EncounterModule.MapControl.GetOnTile(end) != null
+                        && collisionAlongArc.GetComponent<CharacterActorController>() == EncounterModule.MapControl.GetOnTile(end);
+
                     if (emptyTileAndNoCollisions || filledTileAndCorrectCollision)
                     {
                         Logger.Log(LogTag.GameModes, "ProjectileDirector", string.Format("Found solution for Lob arc. Angle[{0}] Speed[{1}]", shootAngle, speed));

@@ -1,6 +1,6 @@
-﻿using MAGE.GameServices;
-using MAGE.GameServices.Character;
-using MAGE.GameServices.Character.Internal;
+﻿using MAGE.GameSystems;
+using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.Characters.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;

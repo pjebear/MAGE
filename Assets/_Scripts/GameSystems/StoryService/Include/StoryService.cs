@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace MAGE.GameServices
+namespace MAGE.GameSystems
 {
     interface IStoryService : Services.IService
     {

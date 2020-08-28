@@ -1,4 +1,5 @@
-﻿using MAGE.GameServices.Character;
+﻿using MAGE.GameSystems.Actions;
+using MAGE.GameSystems.Characters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +13,11 @@ namespace MAGE.GameModes.Encounter
     {
         public Collider TriggerVolume;
 
-        private Dictionary<EncounterActorController, StatusEffect> mInAura = new Dictionary<EncounterActorController, StatusEffect>();
+        private Dictionary<CharacterActorController, StatusEffect> mInAura = new Dictionary<CharacterActorController, StatusEffect>();
         private Vector3 UnitRangeAuraScale;
 
         private AuraInfo mAuraInfo;
-        private EncounterActorController mOwner;
+        private CharacterActorController mOwner;
 
         private void Awake()
         {
@@ -25,7 +26,7 @@ namespace MAGE.GameModes.Encounter
             SetActive(false);
         }
 
-        public void Initialize(AuraInfo info, EncounterActorController owner)
+        public void Initialize(AuraInfo info, CharacterActorController owner)
         {
             mAuraInfo = info;
             mOwner = owner;
@@ -43,7 +44,7 @@ namespace MAGE.GameModes.Encounter
             {
                 foreach (var actorStatusPair in mInAura)
                 {
-                    actorStatusPair.Key.EncounterCharacter.OnAuraExited(actorStatusPair.Value);
+                    EncounterModule.CharacterDirector.RemoveAura(actorStatusPair.Key.Character, actorStatusPair.Value);
                 }
 
                 mInAura.Clear();
@@ -58,47 +59,41 @@ namespace MAGE.GameModes.Encounter
 
         private void OnTriggerEnter(Collider other)
         {
-            EncounterActorController entered = other.gameObject.GetComponentInParent<EncounterActorController>();
+            CharacterActorController entered = other.gameObject.GetComponentInParent<CharacterActorController>();
             if (entered != null && entered != mOwner)
             {
                 OnAuraEntered(entered);
             }
         }
 
-        private void OnAuraEntered(EncounterActorController controller)
+        private void OnAuraEntered(CharacterActorController controller)
         {
             if (!mInAura.ContainsKey(controller))
             {
-                if ((controller.EncounterCharacter.Team != mOwner.EncounterCharacter.Team) ^ mAuraInfo.IsBeneficial)
+                if ((controller.Character.TeamSide != mOwner.Character.TeamSide) ^ mAuraInfo.IsBeneficial)
                 {
-                    StatusEffect auraEffect = StatusEffectFactory.CheckoutStatusEffect(mAuraInfo.AuraEffectType, mOwner.EncounterCharacter);
+                    StatusEffect auraEffect = StatusEffectFactory.CheckoutStatusEffect(mAuraInfo.AuraEffectType, mOwner.Character);
                     mInAura.Add(controller, auraEffect);
-                    controller.DisplayStatusApplication(auraEffect);
-                    controller.EncounterCharacter.OnAuraEntered(auraEffect);
+                    EncounterModule.CharacterDirector.ApplyAura(controller.Character, auraEffect);
                 }
             }
         }
 
         private void OnTriggerExit(Collider other)
         {
-            EncounterActorController exited = other.gameObject.GetComponentInParent<EncounterActorController>();
+            CharacterActorController exited = other.gameObject.GetComponentInParent<CharacterActorController>();
             if (exited != null && exited != mOwner)
             {
                 OnAuraExited(exited);
             }
         }
 
-        private void OnAuraExited(EncounterActorController controller)
+        private void OnAuraExited(CharacterActorController controller)
         {
             if (mInAura.ContainsKey(controller))
-            {
-                if ((controller.EncounterCharacter.Team != mOwner.EncounterCharacter.Team) ^ mAuraInfo.IsBeneficial)
-                {
-                    StatusEffect auraEffect = mInAura[controller];
-                    mInAura.Remove(controller);
-                    controller.DisplayStatusRemoval(auraEffect);
-                    controller.EncounterCharacter.OnAuraExited(auraEffect);
-                }
+            { 
+                EncounterModule.CharacterDirector.RemoveAura(controller.Character, mInAura[controller]);
+                mInAura.Remove(controller);
             }
         }
     }

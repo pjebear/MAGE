@@ -1,7 +1,8 @@
 ﻿using MAGE.GameModes.FlowControl;
 using MAGE.GameModes.LevelManagement;
 using MAGE.GameModes.SceneElements;
-using MAGE.GameServices;
+using MAGE.GameSystems;
+using MAGE.GameSystems.Characters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +33,7 @@ namespace MAGE.GameModes.Encounter
         public static CameraDirector CameraDirector;
         public static ProjectileDirector ProjectileDirector;
         public static EffectSpawner EffectSpawner;
-        public static Map Map;
+        public static MapControl MapControl;
 
         public static EncounterIntroViewControl IntroViewControl;
         public static EncounterUnitPlacementViewControl UnitPlacementViewControl;
@@ -44,7 +45,7 @@ namespace MAGE.GameModes.Encounter
         {
             Model = new EncounterModel();
 
-            Model.EncounterContext = MAGE.GameServices.WorldService.Get().GetEncounterContext();
+            Model.EncounterContext = MAGE.GameSystems.WorldService.Get().GetEncounterContext();
 
             CharacterDirector = GetComponent<CharacterDirector>();
             AnimationDirector = GetComponent<AnimationDirector>();
@@ -62,7 +63,7 @@ namespace MAGE.GameModes.Encounter
             MasterFlowControl = GetComponent<MasterFlowControl>();
         }
 
-        public override GameServices.LevelId GetLevelId()
+        public override GameSystems.LevelId GetLevelId()
         {
             return Model.EncounterContext.LevelId;
         }
@@ -82,8 +83,8 @@ namespace MAGE.GameModes.Encounter
                 level = levelManagerService.GetLoadedLevel();
             }
 
-            Map = new Map();
-            Map.Initialize(level.Tiles, Model.EncounterContext.BottomLeft, Model.EncounterContext.TopRight);
+            MapControl = new MapControl();
+            MapControl.Initialize(level.TemporaryTiles);
 
             CalculateSpawnPoints();
 
@@ -108,7 +109,7 @@ namespace MAGE.GameModes.Encounter
             // Load players
             int count = 0;
             TeamSide team = TeamSide.AllyHuman;
-            Model.Teams.Add(team, new List<EncounterCharacter>());
+            Model.Teams.Add(team, new List<Character>());
 
             //foreach (DB.DBCharacter dBCharacter in DBService.Get().LoadCharactersOnTeam(team))
             //{
@@ -124,19 +125,19 @@ namespace MAGE.GameModes.Encounter
             //}
 
             team = TeamSide.EnemyAI;
-            Model.Teams.Add(team, new List<EncounterCharacter>());
-            foreach (int characterId in MAGE.GameServices.DBService.Get().LoadTeam(team))
+            Model.Teams.Add(team, new List<Character>());
+            foreach (int characterId in DBService.Get().LoadTeam(team))
             {
-                MAGE.GameServices.Character.CharacterInfo characterInfo = MAGE.GameServices.CharacterService.Get().GetCharacterInfo(characterId);
-                EncounterCharacter encounterCharacter = new EncounterCharacter(team, characterInfo);
+                Character character = MAGE.GameSystems.CharacterService.Get().GetCharacter(characterId);
+                character.TeamSide = TeamSide.EnemyAI;
 
-                TileIdx spawnPoint = Model.EnemySpawnPoints.Find((x) => Map[x].OnTile == null);
+                TileIdx spawnPoint = Model.EnemySpawnPoints.Find((x) => MapControl.Map.TileAt(x).OnTile == null);
                 if (Model.EncounterContext.CharacterPositions.ContainsKey(characterId))
                 {
-                    spawnPoint = Map[Model.EncounterContext.CharacterPositions[characterId]].Idx;
+                    spawnPoint = MapControl[Model.EncounterContext.CharacterPositions[characterId]].Idx;
                 }
 
-                CharacterDirector.AddCharacter(encounterCharacter, spawnPoint);
+                CharacterDirector.AddCharacter(character, new CharacterPosition(spawnPoint, Orientation.Back));
             }
 
             Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.ModeSetup_Complete));
@@ -144,7 +145,10 @@ namespace MAGE.GameModes.Encounter
 
         protected override void CleanUpMode()
         {
-            Map.Cleanup();
+            MAGE.GameModes.ILevelManagerService levelManagerService = MAGE.GameModes.LevelManagementService.Get();
+            Level level = levelManagerService.GetLoadedLevel();
+            Destroy(level.TemporaryTiles.gameObject);
+            //MapControl.Cleanup();
             Destroy(CameraDirector);
             Destroy(Camera.main.GetComponent<AudioListener>());
             CharacterDirector.CleanupCharacters();
@@ -171,13 +175,13 @@ namespace MAGE.GameModes.Encounter
             resultInfo.PlayersInEncounter = new Teams();
             foreach (var teamList in Model.Teams)
             {
-                foreach (EncounterCharacter character in teamList.Value)
+                foreach (Character character in teamList.Value)
                 {
                     resultInfo.PlayersInEncounter[teamList.Key].Add(character.Id);
                 }
             }
 
-            MAGE.GameServices.WorldService.Get().UpdateOnEncounterEnd(resultInfo);
+            MAGE.GameSystems.WorldService.Get().UpdateOnEncounterEnd(resultInfo);
         }
 
         public override GameModeType GetGameModeType()
@@ -190,18 +194,18 @@ namespace MAGE.GameModes.Encounter
             Model.AllySpawnPoints = new List<TileIdx>();
             for (int y = 0; y < 2; ++y)
             {
-                for (int x = 0; x < Map.Width; ++x)
+                for (int x = 0; x < MapControl.Map.Width; ++x)
                 {
-                    Model.AllySpawnPoints.Add(new TileIdx(x + Map.TileIdxOffset.x, y + Map.TileIdxOffset.y));
+                    Model.AllySpawnPoints.Add(new TileIdx(x, y));
                 }
             }
 
             Model.EnemySpawnPoints = new List<TileIdx>();
             for (int y = 0; y < 2; ++y)
             {
-                for (int x = 0; x < Map.Width; ++x)
+                for (int x = 0; x < MapControl.Map.Width; ++x)
                 {
-                    Model.EnemySpawnPoints.Add(new TileIdx(x + Map.TileIdxOffset.x, Map.Length - 1 - y + Map.TileIdxOffset.y));
+                    Model.EnemySpawnPoints.Add(new TileIdx(x, MapControl.Map.Length - 1 - y));
                 }
             }
         }

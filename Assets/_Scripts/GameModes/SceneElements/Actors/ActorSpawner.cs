@@ -1,5 +1,5 @@
-﻿using MAGE.GameServices;
-using MAGE.GameServices.Character;
+﻿using MAGE.GameSystems;
+using MAGE.GameSystems.Characters;
 
 using System;
 using System.Collections.Generic;
@@ -58,32 +58,37 @@ namespace MAGE.GameModes.SceneElements
             }
         }
 
-        public virtual int GetAppearanceId()
+        public virtual Appearance GetAppearance()
         {
-            int appearanceId = -1;
+            Appearance appearace = null;
 
             if (CharacterType != CharacterType.INVALID)
             {
+                int characterId = -1;
                 if (StoryCharacterId != StoryCharacterId.INVALID)
                 {
-                    appearanceId = GameServices.CharacterService.Get().GetCharacterAppearanceId((int)StoryCharacterId);
+                    characterId = (int)StoryCharacterId;
                 }
                 else if (ScenarioId != ScenarioId.INVALID)
                 {
-                    int characterId = CharacterUtil.ScenarioIdToDBId(ScenarioId, ScenarioCharacterOffset);
-                    appearanceId = GameServices.CharacterService.Get().GetCharacterAppearanceId(characterId);
+                    characterId = CharacterUtil.ScenarioIdToDBId(ScenarioId, ScenarioCharacterOffset);
                 }
                 else if (CreateCharacterId != CharacterConstants.INVALID_ID)
                 {
-                    appearanceId = GameServices.CharacterService.Get().GetCharacterAppearanceId(CreateCharacterId);
+                    characterId = CreateCharacterId;
+                }
+
+                if (characterId != -1)
+                {
+                    appearace = GameSystems.CharacterService.Get().GetCharacter(characterId).GetAppearance();
                 }
             }
             else if (NPCId != NPCPropId.None)
             {
-                appearanceId = LevelManagementService.Get().GetPropInfo((int)NPCId).AppearanceId;
+                appearace = LevelManagementService.Get().GetAppearance((int)NPCId);
             }
 
-            return appearanceId;
+            return appearace;
         }
 
         public virtual int GetActorId()
@@ -115,8 +120,8 @@ namespace MAGE.GameModes.SceneElements
 
         public void Refresh()
         {
-            int appearanceId = GetAppearanceId();
-            if (appearanceId != -1)
+            Appearance appearance = GetAppearance();
+            if (appearance != null)
             {
                 SpawnerPlaceHolder.gameObject.SetActive(false);
 
@@ -124,8 +129,6 @@ namespace MAGE.GameModes.SceneElements
                 {
                     Destroy(Actor.gameObject);
                 }
-
-                Appearance appearance = LevelManagementService.Get().GetAppearance(appearanceId);
 
                 Actor = ActorLoader.Instance.CreateActor(appearance, transform);
 
@@ -149,7 +152,7 @@ namespace MAGE.GameModes.SceneElements
                     {
                         case LevelManagement.MessageType.AppearanceUpdated:
                         {
-                            if (message.Arg<int>() == GetAppearanceId())
+                            if (message.Arg<int>() == GetActorId())
                             {
                                 Refresh();
                             }

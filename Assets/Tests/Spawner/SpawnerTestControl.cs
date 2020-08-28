@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
-using MAGE.GameServices.Character;
-using MAGE.GameServices;
-using MAGE.GameServices.World.Internal;
+using MAGE.GameSystems.Characters;
+using MAGE.GameSystems;
+using MAGE.GameSystems.World.Internal;
 
 namespace MAGE.GameModes.Tests
 {
@@ -28,7 +28,7 @@ namespace MAGE.GameModes.Tests
 
         private void Awake()
         {
-            CharacterService.Register(new MAGE.GameServices.Character.Internal.CharacterServiceImpl());
+            CharacterService.Register(new MAGE.GameSystems.Characters.Internal.CharacterServiceImpl());
             DBService.Register(new MAGE.DB.Internal.DBServiceImpl());
             CharacterService.Get().Init();
             DBService.Get().Init();
@@ -40,7 +40,7 @@ namespace MAGE.GameModes.Tests
 
             RefreshSpawnerBtn.onClick.AddListener(() =>
             {
-                MAGE.GameServices.CharacterService.Get().ChangeSpecialization(mActorId, SpecializationType.Archer);
+                MAGE.GameSystems.CharacterService.Get().ChangeSpecialization(mActorId, SpecializationType.Archer);
             });
         }
 

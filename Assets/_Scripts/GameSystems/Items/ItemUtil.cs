@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace MAGE.GameServices
+namespace MAGE.GameSystems
 {
     static class ItemUtil
     {
