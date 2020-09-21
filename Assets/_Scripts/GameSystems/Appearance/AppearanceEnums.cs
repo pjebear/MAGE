@@ -8,17 +8,23 @@ enum PortraitSpriteId
     // Custom Heads
     Rheinhardt,
     Asmund,
+    Balgrid,
     Lothar,
     Maric,
 
     // Professions
     Archer,
+    Bear,
     Footman,
     Monk,
 
     // NPCs
     BanditLeader,
     Bandit_0,
+    Guard_0,
+    Guard_1,
+    GuildLeader,
+    Magistrate,
     Vendor,
 
     NUM

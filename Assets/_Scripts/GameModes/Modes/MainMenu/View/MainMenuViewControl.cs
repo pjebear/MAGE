@@ -37,7 +37,7 @@ namespace MAGE.GameModes.FlowControl
                             case (int)MainMenuView.ComponentId.NewGameBtn:
                             {
                                 MAGE.GameSystems.WorldService.Get().PrepareNewGame();
-                                GameModesModule.Instance.Explore();
+                                GameModesModule.Instance.Map();
                             }
                             break;
 

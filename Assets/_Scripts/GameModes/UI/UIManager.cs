@@ -22,6 +22,7 @@ namespace MAGE.UI
         EquipmentOutfiterView,
         ExplorationMenuView,
         MainMenuView,
+        MapView,
         NPCActionSelectView,
         OutfiterSelectView,
         QuestLogView,
@@ -133,14 +134,16 @@ namespace MAGE.UI
         public void RemoveOverlay(UIContainerId containerId)
         {
             Debug.Assert(mContainerControlPairs.ContainsKey(containerId));
+            if (mContainerControlPairs.ContainsKey(containerId))
+            {
+                UIContainer overlay = mContainerControlPairs[containerId].Key;
+                mContainerControlPairs.Remove(containerId);
 
-            UIContainer overlay = mContainerControlPairs[containerId].Key;
-            mContainerControlPairs.Remove(containerId);
+                //Logger.Log(LogTag.UI, TAG, string.Format("Removing Container {0}", overlay.Name()));
 
-            //Logger.Log(LogTag.UI, TAG, string.Format("Removing Container {0}", overlay.Name()));
-
-            overlay.gameObject.SetActive(false);
-            Destroy(overlay.gameObject);
+                overlay.gameObject.SetActive(false);
+                Destroy(overlay.gameObject);
+            }
         }
 
         public void Publish(UIContainerId containerId)

@@ -117,6 +117,9 @@ namespace MAGE.GameSystems.Actions
         HolyLight,
         Raise,
 
+        // Ranger
+        SummonBear,
+
         // spells
         FireBall,
 

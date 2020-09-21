@@ -15,9 +15,12 @@ namespace MAGE.GameSystems.World.Internal
     {
         private string TAG = "EncounterSystem";
         private EncounterContext mPreparedContext;
+        private EncounterCreateParams mEncounterParams;
 
         public void PrepareEncounter(EncounterCreateParams encounterParams)
         {
+            mEncounterParams = encounterParams;
+
             Logger.Assert(mPreparedContext == null, LogTag.GameSystems, TAG, "EncounterContext already prepared", LogLevel.Warning);
 
             if (encounterParams.ScenarioId == EncounterScenarioId.Random)
@@ -110,6 +113,11 @@ namespace MAGE.GameSystems.World.Internal
             }
 
             return mPreparedContext;
+        }
+
+        public EncounterCreateParams GetParams()
+        {
+            return mEncounterParams;
         }
 
         public void CleanupEncounter()

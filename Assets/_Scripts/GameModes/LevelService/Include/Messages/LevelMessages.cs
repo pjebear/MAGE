@@ -9,6 +9,12 @@ namespace MAGE.GameModes.LevelManagement
     enum MessageType
     {
         AppearanceUpdated,
+        CinematicUpdated,
+        CinematicAvailable,
+        CinematicComplete,
+        EncounterAvailable,
+        EncounterComplete,
+        EncounterUpdated,
         PropUpdated,
 
         NUM

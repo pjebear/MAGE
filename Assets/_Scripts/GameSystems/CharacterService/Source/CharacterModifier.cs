@@ -84,7 +84,7 @@ namespace MAGE.GameSystems.Characters.Internal
 
         public static void ResetTalentPoints(CharacterInfo toReset)
         {
-            foreach (SpecializationProgress specializationProgress in toReset.SpecializationsProgress)
+            foreach (SpecializationProgress specializationProgress in toReset.SpecializationsProgress.Values)
             {
                 foreach (TalentProgress talent in specializationProgress.TalentProgress.Values)
                 {
@@ -96,7 +96,7 @@ namespace MAGE.GameSystems.Characters.Internal
 
         public static void Debug_MaxTalentPoints(CharacterInfo toMax)
         {
-            foreach (SpecializationProgress specializationProgress in toMax.SpecializationsProgress)
+            foreach (SpecializationProgress specializationProgress in toMax.SpecializationsProgress.Values)
             {
                 foreach (TalentProgress talent in specializationProgress.TalentProgress.Values)
                 {

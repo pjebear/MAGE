@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using static Cinemachine.DocumentationSortingAttribute;
 
 namespace MAGE.GameModes
 {
@@ -19,7 +18,7 @@ namespace MAGE.GameModes
 
         GameObject mExplorationAvatar;
         ExplorationMenuViewControl MenuControl;
-        InteractionFlowControl mInteractionFlowControl;
+        ExplorationFlowControl FlowControl;
         ScenarioFlowControl mScenarioFlowControl;
         AudioSource mAmbientSoundSource;
 
@@ -30,14 +29,14 @@ namespace MAGE.GameModes
             Instance = this;
 
             MenuControl = new ExplorationMenuViewControl();
-            mInteractionFlowControl = GetComponent<InteractionFlowControl>();
+            FlowControl = GetComponent<ExplorationFlowControl>();
             mScenarioFlowControl = GetComponent<ScenarioFlowControl>();
             MovementDirector = gameObject.AddComponent<MovementDirector>();
         }
 
         public override GameSystems.LevelId GetLevelId()
         {
-            return MAGE.GameSystems.WorldService.Get().GetCurrentLevel();
+            return MAGE.GameSystems.WorldService.Get().GetPartyLocation().Level;
         }
 
         protected override void SetupMode()
@@ -71,7 +70,7 @@ namespace MAGE.GameModes
                                                   //mAmbientSoundSource.Play();
             GameModesModule.AudioManager.FadeInTrack(mAmbientSoundSource, 5, .5f);
 
-            mInteractionFlowControl.Init(mExplorationAvatar.GetComponent<ThirdPersonActorController>());
+            FlowControl.Init(mExplorationAvatar.GetComponent<ThirdPersonActorController>());
             mScenarioFlowControl.Init(mExplorationAvatar.GetComponent<ThirdPersonActorController>());
 
             Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.ModeSetup_Complete));
@@ -79,7 +78,7 @@ namespace MAGE.GameModes
 
         protected override void CleanUpMode()
         {
-            mInteractionFlowControl.CleanUp();
+            FlowControl.CleanUp();
             mScenarioFlowControl.CleanUp();
 
             Destroy(Camera.main.gameObject.GetComponent<ThirdPersonCamera>());
@@ -96,6 +95,7 @@ namespace MAGE.GameModes
         protected override void StartMode()
         {
             MenuControl.Show();
+            FlowControl.BeginFlow();
         }
 
         protected override void EndMode()

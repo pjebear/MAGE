@@ -16,6 +16,7 @@ namespace MAGE.GameModes
         public UIManager UIManager;
 
         public bool DebugEncounter = false;
+        public bool DebugExplore = false;
 
         private void Awake()
         {
@@ -44,7 +45,12 @@ namespace MAGE.GameModes
                     MAGE.GameSystems.WorldService.Get().PrepareEncounter(encounterCreateParams);
                     GameModesModule.Encounter();
                 }
-                else
+                else if (DebugExplore)
+                {
+                    MAGE.GameSystems.WorldService.Get().PrepareNewGame();
+                    GameModesModule.Explore();
+                }
+                else 
                 {
                     GameModesModule.MainMenu();
                 }

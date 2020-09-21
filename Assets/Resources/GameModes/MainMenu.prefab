@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2641365262356914005}
   - component: {fileID: 2641365262356913994}
   m_Layer: 0
-  m_Name: MainMenuModule
+  m_Name: MainMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -43,3 +43,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a92400b734292e48abbfc431ae9a449, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AutoStart: 0

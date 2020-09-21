@@ -13,6 +13,7 @@ namespace MAGE.GameSystems.Story
 
         Main,
         Test,
+        DebugLevel,
 
         NUM
     }

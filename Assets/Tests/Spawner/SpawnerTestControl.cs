@@ -34,9 +34,18 @@ namespace MAGE.GameModes.Tests
             DBService.Get().Init();
             //CharacterDBLoader.LoadDB();
 
-            mActorId = CharacterService.Get().CreateCharacter(new CharacterCreateParams("TEST", SpecializationType.Footman, OutfitRotations[0]));
-            Spawner.CharacterType = CharacterType.Create;
-            Spawner.CreateCharacterId = mActorId;
+            CharacterCreateParams createParams = new CharacterCreateParams();
+
+            createParams.characterType = CharacterType.Create;
+            createParams.characterClass = CharacterClass.MultiSpecialization;
+            createParams.id = -1;
+            createParams.name = "TEST";
+            createParams.currentSpecialization = SpecializationType.Footman;
+            createParams.currentEquipment = OutfitRotations[0];
+
+            mActorId = CharacterService.Get().CreateCharacter(createParams);
+            //Spawner.CharacterType = CharacterType.Create;
+            //Spawner.CreateCharacterId = mActorId;
 
             RefreshSpawnerBtn.onClick.AddListener(() =>
             {

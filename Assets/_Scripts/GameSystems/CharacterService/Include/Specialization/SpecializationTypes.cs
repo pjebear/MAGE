@@ -51,6 +51,13 @@ namespace MAGE.GameSystems.Characters
         ////Custom
         //Chaplain,
 
-        NUM
+        // Summons
+        Bear,
+
+        NUM,
+
+        MULTI_SPECIALIZATION_FIRST = Archer,
+        MULTI_SPECIALIZATION_LAST = Monk,
+        MULTI_SEPCIALIZATION_NUM = MULTI_SPECIALIZATION_LAST - MULTI_SPECIALIZATION_FIRST + 1,
     }
 }

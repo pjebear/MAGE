@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MAGE.GameSystems;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,12 +9,16 @@ namespace MAGE.GameModes
 {
     interface ILevelManagerService : Services.IService
     {
-        GameModes.SceneElements.Level GetLoadedLevel();
-        SceneElements.PropInfo GetPropInfo(int propId);
         Appearance GetAppearance(int appearanceId);
+        CinematicInfo GetCinematicInfo(int cinematicId);
+        EncounterInfo GetEncounterInfo(int encounterId);
+        GameModes.SceneElements.Level GetLoadedLevel();
+        Appearance GetNPCAppearance(SceneElements.NPCPropId npcId);
+        SceneElements.PropInfo GetPropInfo(int propId);
         void LoadLevel(GameSystems.LevelId levelId);
         void NotifyLevelLoaded(GameModes.SceneElements.Level level);
         void UnloadLevel();
+        void UpdateEncounterInfo(EncounterInfo encounterInfo);
         void UpdatePropInfo(SceneElements.PropInfo updatedInfo);
     }
 

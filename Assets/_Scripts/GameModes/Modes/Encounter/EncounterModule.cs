@@ -23,6 +23,7 @@ namespace MAGE.GameModes.Encounter
 
         private GameObject View;
         private AudioSource mAmbientSoundSource;
+        private EncounterContainer mEncounterContainer;
 
         public static EncounterModel Model;
         public static CharacterDirector CharacterDirector;
@@ -45,7 +46,7 @@ namespace MAGE.GameModes.Encounter
         {
             Model = new EncounterModel();
 
-            Model.EncounterContext = MAGE.GameSystems.WorldService.Get().GetEncounterContext();
+            Model.EncounterContext = new GameSystems.World.EncounterContext();
 
             CharacterDirector = GetComponent<CharacterDirector>();
             AnimationDirector = GetComponent<AnimationDirector>();
@@ -65,7 +66,10 @@ namespace MAGE.GameModes.Encounter
 
         public override GameSystems.LevelId GetLevelId()
         {
-            return Model.EncounterContext.LevelId;
+            EncounterScenarioId encounterId = WorldService.Get().GetEncounterParams().ScenarioId;
+            LevelId levelId = LevelManagementService.Get().GetEncounterInfo((int)encounterId).LevelId;
+
+            return levelId;
         }
 
         protected override void SetupMode()
@@ -77,16 +81,56 @@ namespace MAGE.GameModes.Encounter
 
             MAGE.GameModes.ILevelManagerService levelManagerService = MAGE.GameModes.LevelManagementService.Get();
             Level level = levelManagerService.GetLoadedLevel();
-            if (level == null || level.LevelId != Model.EncounterContext.LevelId)
+            level.ToggleTreeColliders(false);
+
+            List<EncounterContainer> activeEncounters = level.EncounterContainer.GetComponentsInChildren<EncounterContainer>().Where(x => x.IsEncounterPending).ToList();
+            if (activeEncounters.Count > 0)
             {
-                levelManagerService.LoadLevel(Model.EncounterContext.LevelId);
-                level = levelManagerService.GetLoadedLevel();
+                mEncounterContainer = activeEncounters[0];
+                mEncounterContainer.StartEncounter();
+                MapControl = new MapControl();
+                MapControl.Initialize(level.TileContainerGenerator.InitializeContainer(mEncounterContainer.Tiles));
+
+                { // Allies
+                    TeamSide teamSide = TeamSide.AllyHuman;
+                    Model.Teams.Add(teamSide, new List<Character>());
+                    foreach (ActorSpawner actorSpawner in mEncounterContainer.AlliesContainer.GetComponentsInChildren<ActorSpawner>())
+                    {
+                        int characterId = actorSpawner.CharacterPicker.GetActorId();
+                        Character character = MAGE.GameSystems.CharacterService.Get().GetCharacter(characterId);
+                        character.TeamSide = teamSide;
+
+                        TileControl closestTile = MapControl.GetClosestTileTo(actorSpawner.transform.position);
+                        Orientation startingOrientation = OrientationUtil.FromVector(actorSpawner.transform.forward);
+
+                        CharacterDirector.AddCharacter(character, new CharacterPosition(closestTile.Idx, startingOrientation));
+                        actorSpawner.gameObject.SetActive(false);
+                    }
+
+                    Model.EncounterContext.MaxAllyUnits = mEncounterContainer.MaxUserPlayers;
+                }
+
+                { // Enemies
+                    TeamSide teamSide = TeamSide.EnemyAI;
+                    Model.Teams.Add(teamSide, new List<Character>());
+                    foreach (ActorSpawner actorSpawner in mEncounterContainer.EnemiesContainer.GetComponentsInChildren<ActorSpawner>())
+                    {
+                        int characterId = actorSpawner.CharacterPicker.GetActorId();
+                        Character character = MAGE.GameSystems.CharacterService.Get().GetCharacter(characterId);
+                        character.TeamSide = teamSide;
+
+                        TileControl closestTile = MapControl.GetClosestTileTo(actorSpawner.transform.position);
+                        Orientation startingOrientation = OrientationUtil.FromVector(actorSpawner.transform.forward);
+
+                        CharacterDirector.AddCharacter(character, new CharacterPosition(closestTile.Idx, startingOrientation));
+                        actorSpawner.gameObject.SetActive(false);
+                    }
+                }
             }
-
-            MapControl = new MapControl();
-            MapControl.Initialize(level.TemporaryTiles);
-
-            CalculateSpawnPoints();
+            else
+            {
+                Debug.Assert(false);
+            }
 
             if (Camera.main.GetComponent<CameraDirector>() == null)
             {
@@ -106,48 +150,24 @@ namespace MAGE.GameModes.Encounter
             IntroViewControl.Init();
             UnitPlacementViewControl.Init();
 
-            // Load players
-            int count = 0;
-            TeamSide team = TeamSide.AllyHuman;
-            Model.Teams.Add(team, new List<Character>());
-
-            //foreach (DB.DBCharacter dBCharacter in DBService.Get().LoadCharactersOnTeam(team))
-            //{
-            //    TileIdx atPostition = new TileIdx((int)spawnPoints[count].x + context.BottomLeft.x, (int)spawnPoints[count].y + context.BottomLeft.y);
-
-            //    EncounterCharacter character = new EncounterCharacter(team, CharacterLoader.LoadCharacter(dBCharacter));
-            //    Model.Characters.Add(character.Id, character);
-            //    Model.Teams[team].Add(character);
-
-            //    CharacterDirector.AddCharacter(character, CharacterUtil.ActorParamsForCharacter(dBCharacter), atPostition);
-
-            //    count++;
-            //}
-
-            team = TeamSide.EnemyAI;
-            Model.Teams.Add(team, new List<Character>());
-            foreach (int characterId in DBService.Get().LoadTeam(team))
-            {
-                Character character = MAGE.GameSystems.CharacterService.Get().GetCharacter(characterId);
-                character.TeamSide = TeamSide.EnemyAI;
-
-                TileIdx spawnPoint = Model.EnemySpawnPoints.Find((x) => MapControl.Map.TileAt(x).OnTile == null);
-                if (Model.EncounterContext.CharacterPositions.ContainsKey(characterId))
-                {
-                    spawnPoint = MapControl[Model.EncounterContext.CharacterPositions[characterId]].Idx;
-                }
-
-                CharacterDirector.AddCharacter(character, new CharacterPosition(spawnPoint, Orientation.Back));
-            }
-
             Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.ModeSetup_Complete));
         }
 
         protected override void CleanUpMode()
         {
             MAGE.GameModes.ILevelManagerService levelManagerService = MAGE.GameModes.LevelManagementService.Get();
+            if (mEncounterContainer.EncounterScenarioId == EncounterScenarioId.Random)
+            {
+                Destroy(mEncounterContainer.gameObject);
+            }
+            else
+            {
+                EncounterInfo info = levelManagerService.GetEncounterInfo((int)mEncounterContainer.EncounterScenarioId);
+                info.IsActive = false;
+                levelManagerService.UpdateEncounterInfo(info);
+            }
             Level level = levelManagerService.GetLoadedLevel();
-            Destroy(level.TemporaryTiles.gameObject);
+            level.ToggleTreeColliders(true);
             //MapControl.Cleanup();
             Destroy(CameraDirector);
             Destroy(Camera.main.GetComponent<AudioListener>());
@@ -162,8 +182,8 @@ namespace MAGE.GameModes.Encounter
             mAmbientSoundSource.clip = GameModesModule.AudioManager.GetTrack(TrackId.Encounter);
             mAmbientSoundSource.loop = true;
             mAmbientSoundSource.spatialBlend = 0; // global volume
-            mAmbientSoundSource.Play();
-            GameModesModule.AudioManager.FadeInTrack(mAmbientSoundSource, 10, .5f);
+            //mAmbientSoundSource.Play();
+            //GameModesModule.AudioManager.FadeInTrack(mAmbientSoundSource, 10, .5f);
 
             Messaging.MessageRouter.Instance.NotifyMessage(new EncounterMessage(EncounterMessage.EventType.EncounterBegun));
         }

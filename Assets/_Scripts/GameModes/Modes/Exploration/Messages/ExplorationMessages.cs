@@ -11,6 +11,7 @@ namespace MAGE.GameModes.Exploration
         public const int Id = Messaging.MessagingConstants.MESSAGING_ID_OFFSET + (int)Messaging.MessageType.Exploration;
         public enum EventType
         {
+            CinematicMomentTriggered,
             InteractionStart,
             InteractionEnd,
             ScenarioTriggered,

@@ -47,6 +47,22 @@ namespace MAGE.GameSystems.Actions
         }
     }
 
+    class SummonInfoBase : ActionInfo
+    {
+        public SpecializationType SummonType = SpecializationType.Bear;
+
+        public SummonInfoBase(SpecializationType summonType)
+            : base()
+        {
+            SummonType = summonType;
+        }
+
+        public override StateChange GetTargetStateChange(Character caster, Character target)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     class SpellInfoBase : ActionInfo
     {
         bool mIsBeneficial = false;

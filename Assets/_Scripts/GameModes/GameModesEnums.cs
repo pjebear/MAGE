@@ -9,6 +9,7 @@ enum GameModeType
     INVALID = -1,
 
     MainMenu,
+    Map,
     Exploration,
     Encounter,
     PartyOutfiter,

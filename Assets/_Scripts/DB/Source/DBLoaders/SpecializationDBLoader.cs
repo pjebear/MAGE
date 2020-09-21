@@ -53,6 +53,52 @@ namespace MAGE.DB.Internal
                 // Actions
                 dbSpecialization.ActionIds = new List<int>()
                 {
+                    (int)ActionId.SummonBear
+                };
+                // none
+
+                DBService.Get().WriteSpecialization(dbSpecialization);
+            }
+
+            // Bear
+            {
+                DB.DBSpecialization dbSpecialization = new DB.DBSpecialization();
+
+                // Type
+                dbSpecialization.SpecializationType = (int)SpecializationType.Bear;
+
+                // Proficiencies
+                dbSpecialization.Proficiencies = new List<int>()
+                {
+                    (int)ProficiencyType.Fists
+                };
+
+                // Level up modifiers
+                dbSpecialization.LevelUpModifiers = new List<DB.DBAttribute>()
+                {
+                    new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Might, Value = 4},
+                    new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Finese, Value = 3},
+                    new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Magic, Value = 2},
+                    new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)SecondaryStat.Fortitude, Value = 5},
+                    new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)SecondaryStat.Attunement, Value = 1}
+                };
+
+                // talents
+                dbSpecialization.TalentIds = new List<int>()
+                {
+                    
+                };
+
+                // Listeners
+                dbSpecialization.ResponseListenerIds = new List<int>()
+                {
+                    
+                };
+
+                // Actions
+                dbSpecialization.ActionIds = new List<int>()
+                {
+                    
                 };
                 // none
 

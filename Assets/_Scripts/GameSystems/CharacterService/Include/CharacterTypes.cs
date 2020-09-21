@@ -33,6 +33,7 @@ namespace MAGE.GameSystems.Characters
 
         Rheinhardt = CharacterConstants.STORY_CHARACTER_ID_OFFSET,
         Asmund,
+        Balgrid,
         Lothar,
 
         Maric,
@@ -52,42 +53,33 @@ namespace MAGE.GameSystems.Characters
         NUM
     }
 
+    enum CharacterClass
+    {
+        INVALID = -1,
+
+        MultiSpecialization,
+        MonoSpecialization,
+
+        NUM
+    }
+
     class CharacterCreateParams
     {
+        public static List<EquippableId> EMPTY_EQUIPMENT
+        {
+            get
+            {
+                return new List<EquippableId>() { EquippableId.INVALID, EquippableId.INVALID, EquippableId.INVALID, EquippableId.INVALID };
+            }
+        }
+    
         public CharacterType characterType = CharacterType.NUM;
+        public CharacterClass characterClass = CharacterClass.MonoSpecialization;
         public int id = -1;
         public string name = "EMPTY";
-        public PortraitSpriteId portraitSpriteId = PortraitSpriteId.INVALID;
+        public Appearance appearanceOverrides = null;
         public SpecializationType currentSpecialization = SpecializationType.NONE;
-        public List<EquippableId> currentEquipment = new List<EquippableId>();
-
-        public CharacterCreateParams(StoryCharacterId storyCharacterId, PortraitSpriteId portraitSpriteId, SpecializationType specializationType, List<EquippableId> equippableIds)
-            : this(CharacterType.Story, (int)storyCharacterId, storyCharacterId.ToString(), portraitSpriteId, specializationType, equippableIds)
-        {
-            // empty
-        }
-
-        public CharacterCreateParams(string name, SpecializationType specializationType, List<EquippableId> equippableIds)
-            : this(CharacterType.Create, -1, name, PortraitSpriteId.INVALID, specializationType, equippableIds)
-        {
-            // empty
-        }
-
-        public CharacterCreateParams(int scenarioId, string name, SpecializationType specializationType, List<EquippableId> equippableIds)
-            : this(CharacterType.Scenario, scenarioId, name, PortraitSpriteId.INVALID, specializationType, equippableIds)
-        {
-            // empty
-        }
-
-        public CharacterCreateParams(CharacterType characterType, int id, string name, PortraitSpriteId portraitSpriteId, SpecializationType currentSpecialization, List<EquippableId> currentEquipment)
-        {
-            this.characterType = characterType;
-            this.id = id;
-            this.name = name;
-            this.portraitSpriteId = portraitSpriteId;
-            this.currentSpecialization = currentSpecialization;
-            this.currentEquipment = currentEquipment;
-        }
+        public List<EquippableId> currentEquipment = EMPTY_EQUIPMENT;
     }
 
 }

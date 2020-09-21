@@ -15,6 +15,7 @@ namespace MAGE.GameModes.Encounter
         private Dictionary<CharacterActorController, TileIdx> mActorPositions = null;
 
         public Dictionary<Character, CharacterActorController> CharacterActorLookup;
+        public Dictionary<Character, Character> CharacterToParentLookup;
 
         public Transform CharacterControlParent;
 
@@ -22,6 +23,7 @@ namespace MAGE.GameModes.Encounter
         {
 
             CharacterActorLookup = new Dictionary<Character, CharacterActorController>();
+            CharacterToParentLookup = new Dictionary<Character, Character>();
             mActorPositions = new Dictionary<CharacterActorController, TileIdx>();
             CharacterControlParent = new GameObject("CharacterControllers").transform;
             CharacterControlParent.transform.SetParent(transform);
@@ -44,12 +46,13 @@ namespace MAGE.GameModes.Encounter
             }
         }
 
-        public CharacterActorController AddCharacter(Character character, CharacterPosition characterPosition)
+        public CharacterActorController AddCharacter(Character character, CharacterPosition characterPosition, Character parent = null)
         {
+            Actor actor = GameModesModule.ActorLoader.CreateActor(character.GetAppearance(), CharacterControlParent);
+
             EncounterModule.Model.Characters.Add(character.Id, character);
             EncounterModule.Model.Teams[character.TeamSide].Add(character);
 
-            Actor actor = GameModesModule.ActorLoader.CreateActor(character.GetAppearance(), CharacterControlParent);
             CharacterActorController actorController = actor.gameObject.AddComponent<CharacterActorController>();
             actorController.Actor = actor;
 
@@ -68,12 +71,32 @@ namespace MAGE.GameModes.Encounter
             mActorPositions.Add(actorController, characterPosition.Location);
             EncounterModule.AnimationDirector.RegisterActor(actorController);
 
+            if (parent != null)
+            {
+                CharacterToParentLookup.Add(character, parent);
+            }
+
             return actorController;
         }
 
         public void RemoveCharacter()
         {
 
+        }
+
+        public Character GetCharacterParent(Character character)
+        {
+            Character parent = null;
+            if (CharacterToParentLookup.ContainsKey(character))
+            {
+                parent = CharacterToParentLookup[character];
+            }
+            return parent;
+        }
+
+        public bool HasParent(Character character)
+        {
+            return CharacterToParentLookup.ContainsKey(character);
         }
 
         public CharacterActorController GetController(Character character)

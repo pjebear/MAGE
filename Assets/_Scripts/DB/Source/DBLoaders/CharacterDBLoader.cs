@@ -17,86 +17,131 @@ namespace MAGE.DB.Internal
             // Story Characters
 
             { // Rheinhardt
-                CharacterCreateParams characterCreateParams = new CharacterCreateParams(
-                    StoryCharacterId.Rheinhardt
-                    , PortraitSpriteId.Rheinhardt
-                    , SpecializationType.Paladin
-                    , new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Mace_0, EquippableId.Relic });
+                CharacterCreateParams createParams = new CharacterCreateParams();
 
-                int characterId = characterService.CreateCharacter(characterCreateParams);
+                createParams.characterType = CharacterType.Story;
+                createParams.characterClass = CharacterClass.MonoSpecialization;
+                createParams.id = (int)StoryCharacterId.Rheinhardt;
+                createParams.name = StoryCharacterId.Rheinhardt.ToString();
+                createParams.currentSpecialization = SpecializationType.Paladin;
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Mace_0, EquippableId.Relic };
+                createParams.appearanceOverrides = new Appearance() { PortraitSpriteId = PortraitSpriteId.Rheinhardt };
+
+                int characterId = characterService.CreateCharacter(createParams);
                 characterService.Debug_MaxOutTalents(characterId);
             }
 
             { // Asmund
-                CharacterCreateParams characterCreateParams = new CharacterCreateParams(
-                    StoryCharacterId.Asmund
-                    , PortraitSpriteId.Asmund
-                    , SpecializationType.Monk
-                    , new List<EquippableId>() { EquippableId.ClothArmor_0, EquippableId.INVALID, EquippableId.Staff_0, EquippableId.INVALID });
+                CharacterCreateParams createParams = new CharacterCreateParams();
 
-                characterService.CreateCharacter(characterCreateParams);
+                createParams.characterType = CharacterType.Story;
+                createParams.characterClass = CharacterClass.MultiSpecialization;
+                createParams.id = (int)StoryCharacterId.Asmund;
+                createParams.name = StoryCharacterId.Asmund.ToString();
+                createParams.currentSpecialization = SpecializationType.Monk;
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.ClothArmor_0, EquippableId.INVALID, EquippableId.Staff_0, EquippableId.INVALID };
+                createParams.appearanceOverrides = new Appearance() { PortraitSpriteId = PortraitSpriteId.Asmund };
+
+                characterService.CreateCharacter(createParams);
             }
 
             { // Lothar
-                CharacterCreateParams characterCreateParams = new CharacterCreateParams(
-                    StoryCharacterId.Lothar
-                    , PortraitSpriteId.Lothar
-                    , SpecializationType.Archer
-                    , new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.INVALID, EquippableId.Bow_0, EquippableId.INVALID });
+                CharacterCreateParams createParams = new CharacterCreateParams();
 
-                characterService.CreateCharacter(characterCreateParams);
+                createParams.characterType = CharacterType.Story;
+                createParams.characterClass = CharacterClass.MultiSpecialization;
+                createParams.id = (int)StoryCharacterId.Lothar;
+                createParams.name = StoryCharacterId.Lothar.ToString();
+                createParams.currentSpecialization = SpecializationType.Archer;
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.INVALID, EquippableId.Bow_0, EquippableId.INVALID };
+                createParams.appearanceOverrides = new Appearance() { PortraitSpriteId = PortraitSpriteId.Lothar };
+
+                characterService.CreateCharacter(createParams);
+            }
+
+            { // Balgrid
+                CharacterCreateParams createParams = new CharacterCreateParams();
+
+                createParams.characterType = CharacterType.Story;
+                createParams.characterClass = CharacterClass.MultiSpecialization;
+                createParams.id = (int)StoryCharacterId.Balgrid;
+                createParams.name = StoryCharacterId.Balgrid.ToString();
+                createParams.currentSpecialization = SpecializationType.Footman;
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
+                createParams.appearanceOverrides = new Appearance() { PortraitSpriteId = PortraitSpriteId.Balgrid };
+
+                characterService.CreateCharacter(createParams);
             }
 
             { // Maric
-                CharacterCreateParams characterCreateParams = new CharacterCreateParams(
-                    StoryCharacterId.Maric
-                    , PortraitSpriteId.Maric
-                    , SpecializationType.Footman
-                    , new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID });
+                CharacterCreateParams createParams = new CharacterCreateParams();
 
-                characterService.CreateCharacter(characterCreateParams);
+                createParams.characterType = CharacterType.Story;
+                createParams.characterClass = CharacterClass.MultiSpecialization;
+                createParams.id = (int)StoryCharacterId.Maric;
+                createParams.name = StoryCharacterId.Maric.ToString();
+                createParams.currentSpecialization = SpecializationType.Footman;
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
+                createParams.appearanceOverrides = new Appearance() { PortraitSpriteId = PortraitSpriteId.Maric };
+
+                characterService.CreateCharacter(createParams);
             }
 
             // Party Characters
             { // Francious
-                CharacterCreateParams characterCreateParams = new CharacterCreateParams(
-                    "Francious"
-                    , SpecializationType.Archer
-                    , new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.INVALID, EquippableId.Bow_0, EquippableId.INVALID });
+                CharacterCreateParams createParams = new CharacterCreateParams();
 
-                characterService.CreateCharacter(characterCreateParams);
+                createParams.characterType = CharacterType.Create;
+                createParams.characterClass = CharacterClass.MultiSpecialization;
+                createParams.name = "Francious";
+                createParams.currentSpecialization = SpecializationType.Archer;
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.INVALID, EquippableId.Bow_0, EquippableId.INVALID };
+
+                characterService.CreateCharacter(createParams);
             }
 
             // Scenario Characters
             int scenarioCharacterId = 0;
             { // Bandit Leader
-                CharacterCreateParams characterCreateParams = new CharacterCreateParams(
-                    CharacterUtil.ScenarioIdToDBId(ScenarioId.TheGreatHoldUp, scenarioCharacterId++)
-                    , "BanditLeader"
-                    , SpecializationType.Footman
-                    , new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID });
+                CharacterCreateParams createParams = new CharacterCreateParams();
 
-                characterService.CreateCharacter(characterCreateParams);
+                createParams.characterType = CharacterType.Scenario;
+                createParams.characterClass = CharacterClass.MultiSpecialization;
+                createParams.id = CharacterUtil.ScenarioIdToDBId(ScenarioId.TheGreatHoldUp, scenarioCharacterId++);
+                createParams.name = "BanditLeader";
+                createParams.currentSpecialization = SpecializationType.Footman;
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
+                createParams.appearanceOverrides = new Appearance() { PortraitSpriteId = PortraitSpriteId.BanditLeader };
+
+                characterService.CreateCharacter(createParams);
             }
 
             { // Lacky 1
-                CharacterCreateParams characterCreateParams = new CharacterCreateParams(
-                    CharacterUtil.ScenarioIdToDBId(ScenarioId.TheGreatHoldUp, scenarioCharacterId++)
-                    , "Bandit"
-                    , SpecializationType.Footman
-                    , new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.INVALID, EquippableId.Sword_0, EquippableId.INVALID });
+                CharacterCreateParams createParams = new CharacterCreateParams();
 
-                characterService.CreateCharacter(characterCreateParams);
+                createParams.characterType = CharacterType.Scenario;
+                createParams.characterClass = CharacterClass.MultiSpecialization;
+                createParams.id = CharacterUtil.ScenarioIdToDBId(ScenarioId.TheGreatHoldUp, scenarioCharacterId++);
+                createParams.name = "Bandit";
+                createParams.currentSpecialization = SpecializationType.Footman;
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
+                createParams.appearanceOverrides = new Appearance() { PortraitSpriteId = PortraitSpriteId.Bandit_0 };
+
+                characterService.CreateCharacter(createParams);
             }
 
             { // Lacky 2
-                CharacterCreateParams characterCreateParams = new CharacterCreateParams(
-                    CharacterUtil.ScenarioIdToDBId(ScenarioId.TheGreatHoldUp, scenarioCharacterId++)
-                    , "Bandit"
-                    , SpecializationType.Footman
-                    , new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.INVALID, EquippableId.Sword_0, EquippableId.INVALID });
+                CharacterCreateParams createParams = new CharacterCreateParams();
 
-                characterService.CreateCharacter(characterCreateParams);
+                createParams.characterType = CharacterType.Scenario;
+                createParams.characterClass = CharacterClass.MultiSpecialization;
+                createParams.id = CharacterUtil.ScenarioIdToDBId(ScenarioId.TheGreatHoldUp, scenarioCharacterId++);
+                createParams.name = "Bandit";
+                createParams.currentSpecialization = SpecializationType.Footman;
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
+                createParams.appearanceOverrides = new Appearance() { PortraitSpriteId = PortraitSpriteId.Bandit_0 };
+
+                characterService.CreateCharacter(createParams);
             }
         }
     }

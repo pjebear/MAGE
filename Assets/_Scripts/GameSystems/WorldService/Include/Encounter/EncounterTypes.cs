@@ -20,6 +20,9 @@ enum EncounterScenarioId
     Random,
     Scenario,
 
+    // Demo Level
+    Demo_TrainingGrounds,
+
     NUM
 }
 
@@ -76,6 +79,13 @@ class EncounterResultInfo
     public bool DidUserWin = false;
     public int CurrencyReward = 0;
     public List<int> ItemRewards = new List<int>();
+}
+
+class EncounterInfo
+{
+    public EncounterScenarioId EncounterScenarioId = EncounterScenarioId.Random;
+    public bool IsActive = false;
+    public LevelId LevelId;
 }
 
 

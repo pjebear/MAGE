@@ -13,6 +13,7 @@ namespace MAGE.DB
         public string Name = "INVALID";
         public bool IsActive = false;
         public bool IsInteractable = false;
+        public int State = 0;
         public int Currency = 0;
         public int AppearanceId = -1;
         public List<int> Inventory = new List<int>();
@@ -27,6 +28,7 @@ namespace MAGE.DB
             to.Name = from.Name;
             to.IsActive = from.IsActive;
             to.IsInteractable = from.IsInteractable;
+            to.State = from.State;
             to.Currency = from.Currency;
             to.AppearanceId = from.AppearanceId;
 

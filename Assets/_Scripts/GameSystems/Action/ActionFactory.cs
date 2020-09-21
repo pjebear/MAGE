@@ -87,6 +87,14 @@ namespace MAGE.GameSystems.Actions
                 }
                 break;
 
+                case (ActionId.SummonBear):
+                {
+                    info = new SummonInfoBase(SpecializationType.Bear);
+                    ActionUtil.FromDB(dbAction, info);
+                    info.ActionCost = SPELL_COST;
+                }
+                break;
+
                 case (ActionId.WeaponAttack):
                 {
                     WeaponEquippable weapon = (WeaponEquippable)character.Equipment[Equipment.Slot.RightHand];

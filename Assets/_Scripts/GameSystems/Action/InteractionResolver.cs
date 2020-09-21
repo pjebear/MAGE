@@ -118,16 +118,13 @@ namespace MAGE.GameSystems.Actions
             }
             else
             {
+                interactionResultType = InteractionResultType.Hit;
                 stateChange = info.GetTargetStateChange(caster, target);
 
-                if (info.ActionSource == ActionSource.Weapon)
-                {
-                    float physicalReductionMultiplier = 1 - target.CurrentAttributes[TertiaryStat.PhysicalResistance];
-                    float modifiedHealthChange = stateChange.healthChange * physicalReductionMultiplier;
-                    stateChange.healthChange = (int)modifiedHealthChange;
-                }
+                float physicalReductionMultiplier = 1 - target.CurrentAttributes[TertiaryStat.PhysicalResistance];
+                float modifiedHealthChange = stateChange.healthChange * physicalReductionMultiplier;
+                stateChange.healthChange = (int)modifiedHealthChange;
 
-                interactionResultType = InteractionResultType.Hit;
             }
 
             return new InteractionResult(interactionResultType, stateChange);

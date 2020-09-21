@@ -172,6 +172,24 @@ namespace MAGE.DB.Internal
                 DBService.Get().WriteAction((int)actionId, entry);
             }
 
+            { // Summon Bear
+                DB.DBAction entry = new DB.DBAction();
+
+                ActionId actionId = ActionId.SummonBear;
+
+                entry.Id = (int)actionId;
+                entry.Name = actionId.ToString();
+                entry.ActionRange = (int)ActionRange.Meele;
+                entry.ActionSource = (int)ActionSource.Cast;
+                entry.CastSpeed = (int)CastSpeed.Instant;
+                entry.AnimationId = (int)AnimationId.Cast;
+
+                entry.CastRange = MeleeCastRange;
+                entry.EffectRange = UnitEffectRage;
+
+                DBService.Get().WriteAction((int)actionId, entry);
+            }
+
             { // Weapon Attack
                 DB.DBAction entry = new DB.DBAction();
 

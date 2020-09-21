@@ -21,6 +21,11 @@ namespace MAGE.GameSystems
         UnlockTheGate,
         LotharInTrouble,
 
+        // Demo Level
+        Demo_LayDownTheLaw,
+        Demo_TrainingTime,
+        Demo_TrainingComplete,
+
         NUM
     }
 

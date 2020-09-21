@@ -13,8 +13,6 @@ namespace MAGE.GameModes.SceneElements
     {
         public NPCPropId NPCId = NPCPropId.None;
 
-        private Actor mNPCActor;
-
         public override void Start()
         {
             base.Start();

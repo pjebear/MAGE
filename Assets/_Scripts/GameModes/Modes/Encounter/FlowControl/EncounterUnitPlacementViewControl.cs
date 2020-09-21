@@ -38,25 +38,29 @@ namespace MAGE.GameModes.FlowControl
 
         public void Start()
         {
-            foreach (int characterId in MAGE.GameSystems.DBService.Get().LoadTeam(TeamSide.AllyHuman))
+            int numPlacedAllies = EncounterModule.Model.Teams[TeamSide.AllyHuman].Count;
+            int maxAllies = EncounterModule.Model.EncounterContext.MaxAllyUnits;
+            if (numPlacedAllies < maxAllies)
             {
-                
-                Character character = MAGE.GameSystems.CharacterService.Get().GetCharacter(characterId);
-                character.TeamSide = TeamSide.AllyHuman;
+                foreach (int characterId in MAGE.GameSystems.DBService.Get().LoadTeam(TeamSide.AllyHuman))
+                {
+                    Character character = MAGE.GameSystems.CharacterService.Get().GetCharacter(characterId);
+                    character.TeamSide = TeamSide.AllyHuman;
 
-                if (EncounterModule.Model.EncounterContext.CharacterPositions.ContainsKey(character.Id))
-                {
-                    TileIdx atTile = EncounterModule.Model.EncounterContext.CharacterPositions[character.Id];
-                    CharacterPosition characterPosition = new CharacterPosition(atTile, Orientation.Forward);
-                    EncounterModule.CharacterDirector.AddCharacter(character, characterPosition);
-                    mPlacedCharacterLookup.Add(characterId, atTile);
-                }
-                else
-                {
-                    mCharactersToPlace.Add(character);
+                    if (EncounterModule.Model.EncounterContext.CharacterPositions.ContainsKey(character.Id))
+                    {
+                        TileIdx atTile = EncounterModule.Model.EncounterContext.CharacterPositions[character.Id];
+                        CharacterPosition characterPosition = new CharacterPosition(atTile, Orientation.Forward);
+                        EncounterModule.CharacterDirector.AddCharacter(character, characterPosition);
+                        mPlacedCharacterLookup.Add(characterId, atTile);
+                    }
+                    else
+                    {
+                        mCharactersToPlace.Add(character);
+                    }
                 }
             }
-
+            
             if (mCharactersToPlace.Count > 0)
             {
                 foreach (TileIdx tileIdx in EncounterModule.Model.AllySpawnPoints)

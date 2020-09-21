@@ -15,25 +15,15 @@ namespace MAGE.GameModes.SceneElements
         : MonoBehaviour
         , Messaging.IMessageHandler
     {
-        public CharacterType CharacterType = CharacterType.INVALID;
-
-        // Create Character
-        public int CreateCharacterId = CharacterConstants.INVALID_ID;
-
-        // Story Character
-        public StoryCharacterId StoryCharacterId = StoryCharacterId.INVALID;
-
-        // Scenario Character
-        public ScenarioId ScenarioId = ScenarioId.INVALID;
-        public int ScenarioCharacterOffset = 0;
-
-        // PropId
-        public NPCPropId NPCId = NPCPropId.None;
+        public CharacterPicker CharacterPicker;
 
         public Actor Actor = null;
         public Actor SpawnerPlaceHolder = null;
         public bool RefreshOnStart = true;
         public bool RefreshOnUpdate = true;
+
+        public Appearance Appearance;
+        public string Name;
 
         private void Awake()
         {
@@ -58,70 +48,13 @@ namespace MAGE.GameModes.SceneElements
             }
         }
 
-        public virtual Appearance GetAppearance()
-        {
-            Appearance appearace = null;
-
-            if (CharacterType != CharacterType.INVALID)
-            {
-                int characterId = -1;
-                if (StoryCharacterId != StoryCharacterId.INVALID)
-                {
-                    characterId = (int)StoryCharacterId;
-                }
-                else if (ScenarioId != ScenarioId.INVALID)
-                {
-                    characterId = CharacterUtil.ScenarioIdToDBId(ScenarioId, ScenarioCharacterOffset);
-                }
-                else if (CreateCharacterId != CharacterConstants.INVALID_ID)
-                {
-                    characterId = CreateCharacterId;
-                }
-
-                if (characterId != -1)
-                {
-                    appearace = GameSystems.CharacterService.Get().GetCharacter(characterId).GetAppearance();
-                }
-            }
-            else if (NPCId != NPCPropId.None)
-            {
-                appearace = LevelManagementService.Get().GetAppearance((int)NPCId);
-            }
-
-            return appearace;
-        }
-
-        public virtual int GetActorId()
-        {
-            int actorId = -1;
-
-            if (CharacterType != CharacterType.INVALID)
-            {
-                if (StoryCharacterId != StoryCharacterId.INVALID)
-                {
-                    actorId = (int)StoryCharacterId;
-                }
-                else if (ScenarioId != ScenarioId.INVALID)
-                {
-                    actorId = CharacterUtil.ScenarioIdToDBId(ScenarioId, ScenarioCharacterOffset);
-                }
-                else if (CreateCharacterId != CharacterConstants.INVALID_ID)
-                {
-                    actorId = CreateCharacterId;
-                }
-            }
-            else if (NPCId != NPCPropId.None)
-            {
-                actorId = (int)NPCId;
-            }
-
-            return actorId;
-        }
+        
 
         public void Refresh()
         {
-            Appearance appearance = GetAppearance();
-            if (appearance != null)
+            Appearance = CharacterPicker.GetAppearance();
+            
+            if (Appearance != null)
             {
                 SpawnerPlaceHolder.gameObject.SetActive(false);
 
@@ -130,7 +63,7 @@ namespace MAGE.GameModes.SceneElements
                     Destroy(Actor.gameObject);
                 }
 
-                Actor = ActorLoader.Instance.CreateActor(appearance, transform);
+                Actor = ActorLoader.Instance.CreateActor(Appearance, transform);
 
             }
             else
@@ -138,6 +71,9 @@ namespace MAGE.GameModes.SceneElements
                 SpawnerPlaceHolder.gameObject.SetActive(true);
                 Actor = SpawnerPlaceHolder;
             }
+
+            Name = CharacterPicker.GetActorName();
+            gameObject.name = Name;
         }
 
         // IMessageHandler
@@ -152,7 +88,7 @@ namespace MAGE.GameModes.SceneElements
                     {
                         case LevelManagement.MessageType.AppearanceUpdated:
                         {
-                            if (message.Arg<int>() == GetActorId())
+                            if (message.Arg<int>() == CharacterPicker.GetActorId())
                             {
                                 Refresh();
                             }

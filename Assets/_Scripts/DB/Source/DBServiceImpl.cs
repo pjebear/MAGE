@@ -14,7 +14,9 @@ namespace MAGE.DB.Internal
         ActionDB mActionDB = new ActionDB();
         AppearnaceDB mAppearanceDB = new AppearnaceDB();
         CharacterDB mCharacterDB = new CharacterDB();
+        CinematicDB mCinematicDB = new CinematicDB();
         ConversationDB mConversationDB = new ConversationDB();
+        EncounterDB mEncounterDB = new EncounterDB();
         EquipmentDB mEquipmentDB = new EquipmentDB();
         ItemDB mItemDB = new ItemDB();
         PropDB mPropDB = new PropDB();
@@ -33,7 +35,9 @@ namespace MAGE.DB.Internal
         public void Init()
         {
             ActionDBLoader.LoadDB();
+            CinematicDBLoader.LoadDB();
             ConversationDBLoader.LoadDB();
+            EncounterDBLoader.LoadDB();
             EquipmentDBLoader.LoadDB();
             ItemDBLoader.LoadDB();
             PropDBLoader.LoadDB();
@@ -151,6 +155,33 @@ namespace MAGE.DB.Internal
         }
         // Character - End
 
+        // Cinematic
+        public DBCinematicInfo LoadCinematicInfo(int cinematicId)
+        {
+            return mCinematicDB.Load(cinematicId);
+        }
+
+        public void RegisterForCinematicUpdates(object listener, DB.DBUpdateCB<int> cb)
+        {
+            mCinematicDB.RegisterUpdateListener(listener, cb);
+        }
+
+        public void UnRegisterForCinematicUpdates(object listener)
+        {
+            mCinematicDB.UnRegisterUpdateListener(listener);
+        }
+
+        public void UpdateCinematicDB()
+        {
+            mCinematicDB.Save(FileUtil.FolderName.DB.ToString());
+        }
+
+        public void WriteCinematicInfo(int cinematicId, DB.DBCinematicInfo cinematicInfo)
+        {
+            mCinematicDB.Write(cinematicId, cinematicInfo);
+        }
+        // Cinematic - End
+
         // Conversation
         public DBConversation LoadConversation(int conversationId)
         {
@@ -167,6 +198,33 @@ namespace MAGE.DB.Internal
             mConversationDB.Write(conversationId, conversation);
         }
         // Conversation - End
+
+        // Cinematic
+        public DBEncounterInfo LoadEncounterInfo(int encounterId)
+        {
+            return mEncounterDB.Load(encounterId);
+        }
+
+        public void RegisterForEncounterUpdates(object listener, DB.DBUpdateCB<int> cb)
+        {
+            mEncounterDB.RegisterUpdateListener(listener, cb);
+        }
+
+        public void UnRegisterForEncounterUpdates(object listener)
+        {
+            mEncounterDB.UnRegisterUpdateListener(listener);
+        }
+
+        public void UpdateEncounterDB()
+        {
+            mEncounterDB.Save(FileUtil.FolderName.DB.ToString());
+        }
+
+        public void WriteEncounterInfo(int encounterId, DB.DBEncounterInfo encounterInfo)
+        {
+            mEncounterDB.Write(encounterId, encounterInfo);
+        }
+        // Encounter - End
 
         // Equipment
         public DB.DBEquipment LoadEquipment(int equipmentId)

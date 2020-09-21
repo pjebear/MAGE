@@ -13,8 +13,8 @@ namespace MAGE.GameSystems.Characters
         public string Name;
         public int Experience;
         public int Level;
-        public SpecializationProgress[] SpecializationsProgress = new SpecializationProgress[(int)SpecializationType.NUM];
-        public SpecializationProgress CurrentSpecializationProgress { get { return SpecializationsProgress[(int)CurrentSpecializationType]; } }
+        public Dictionary<SpecializationType, SpecializationProgress> SpecializationsProgress = new Dictionary<SpecializationType, SpecializationProgress>();
+        public SpecializationProgress CurrentSpecializationProgress { get { return SpecializationsProgress[CurrentSpecializationType]; } }
         public SpecializationType CurrentSpecializationType;
         public Attributes Attributes = null;
         public int AppearanceId = -1;
@@ -37,9 +37,9 @@ namespace MAGE.GameSystems.Characters
         public string Name;
         public int Experience;
         public int Level;
-        public Specialization[] Specializations = new Specialization[(int)SpecializationType.NUM];
+        public Dictionary<SpecializationType, Specialization> Specializations = new Dictionary<SpecializationType, Specialization>();
         public SpecializationType CurrentSpecializationType;
-        public Specialization CurrentSpecialization { get { return Specializations[(int)CurrentSpecializationType]; } }
+        public Specialization CurrentSpecialization { get { return Specializations[CurrentSpecializationType]; } }
 
         protected List<ActionResponderBase> ActionResponders = new List<ActionResponderBase>();
         public Equipment Equipment = new Equipment();
@@ -65,9 +65,9 @@ namespace MAGE.GameSystems.Characters
 
             // Specializations
             characterInfo.CurrentSpecializationType = CurrentSpecializationType;
-            for (int i = 0; i < (int)SpecializationType.NUM; ++i)
+            foreach (var specializationPair in Specializations)
             {
-                characterInfo.SpecializationsProgress[i] = Specializations[i].GetProgress();
+                characterInfo.SpecializationsProgress.Add(specializationPair.Key, specializationPair.Value.GetProgress());
             }
 
             // Appearance Overrides
@@ -97,11 +97,13 @@ namespace MAGE.GameSystems.Characters
             Level = characterInfo.Level;
 
             // Specializations
-            for (int i = 0; i < (int)SpecializationType.NUM; ++i)
-            {
-                Specializations[i] = Internal.SpecializationFactory.CheckoutSpecialization((SpecializationType)i, characterInfo.SpecializationsProgress[i]);
-            }
             CurrentSpecializationType = characterInfo.CurrentSpecializationType;
+            foreach (var specializationPair in characterInfo.SpecializationsProgress)
+            {
+                Specializations.Add(specializationPair.Key,
+                    Internal.SpecializationFactory.CheckoutSpecialization(specializationPair.Key, specializationPair.Value));
+            }
+            
 
             // Appearance Overrides
             if (characterInfo.AppearanceId != -1)
@@ -552,7 +554,14 @@ namespace MAGE.GameSystems.Characters
             }
 
             // Update Body Type
-            appearance.BodyType = BodyType.Body_0;
+            if (mBaseAppearance.BodyType != BodyType.NUM)
+            {
+                appearance.BodyType = mBaseAppearance.BodyType;
+            }
+            else
+            {
+                appearance.BodyType = BodyType.Body_0;
+            }
 
             // Update Equipment
             for (int equipmentSlotIdx = 0; equipmentSlotIdx < (int)Equipment.Slot.NUM; ++equipmentSlotIdx)

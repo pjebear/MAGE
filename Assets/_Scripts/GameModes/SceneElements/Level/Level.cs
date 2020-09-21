@@ -2,6 +2,7 @@
 using MAGE.GameSystems;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace MAGE.GameModes.SceneElements
@@ -10,26 +11,22 @@ namespace MAGE.GameModes.SceneElements
     {
         public LevelId LevelId;
 
-        public Terrain Terrain;
-        public TileContainer Tiles;
+        public Terrain Terrain = null;
         public Transform SpawnPoint;
         public Transform ScenarioContainer;
+        public Transform CinematicContainer;
+        public Transform EncounterContainer;
         public Transform NPCContainer;
         public Dictionary<ScenarioId, Scenario> Scenarios = new Dictionary<ScenarioId, Scenario>();
 
         public TileContainerGenerator TileContainerGenerator;
-        public TileContainer TemporaryTiles = null;
         public GameObject TreeColliderPrefab;
+        public List<CapsuleCollider> TreeColliders = new List<CapsuleCollider>();
         //public Dictionary<NPCId, GameO> Scenarios = new Dictionary<ScenarioId, Scenario>();
 
         private void Awake()
         {
-            if (!Tiles.gameObject.activeSelf)
-            {
-                Tiles.gameObject.SetActive(true);
-            }
 
-            
         }
 
         // Start is called before the first frame update
@@ -48,43 +45,55 @@ namespace MAGE.GameModes.SceneElements
                         if (!Scenarios.ContainsKey(scenario.ScenarioId))
                         {
                             Scenarios.Add(scenario.ScenarioId, scenario);
+                            scenario.Init();
                         }
                     }
                 }
             }
 
-            foreach (TreeInstance tree in Terrain.terrainData.treeInstances)
+            if (Terrain != null)
             {
-                int protypeIndex = tree.prototypeIndex;
-                TreePrototype prototype = Terrain.terrainData.treePrototypes[protypeIndex];
-                float baseTreeRadius = prototype.prefab.GetComponent<CapsuleCollider>().radius;
-                float scaledTreeRadius = tree.widthScale * baseTreeRadius;
-                float xzScale = scaledTreeRadius / 0.5f;
+                foreach (TreeInstance tree in Terrain.terrainData.treeInstances)
+                {
+                    int protypeIndex = tree.prototypeIndex;
+                    TreePrototype prototype = Terrain.terrainData.treePrototypes[protypeIndex];
+                    float baseTreeRadius = prototype.prefab.GetComponent<CapsuleCollider>().radius;
+                    float scaledTreeRadius = tree.widthScale * baseTreeRadius;
+                    float xzScale = scaledTreeRadius / 0.5f;
 
-                GameObject capsule = Instantiate(TreeColliderPrefab, Terrain.transform);
-                capsule.transform.localPosition = Vector3.Scale(tree.position, Terrain.terrainData.size);
-                capsule.transform.localScale = new Vector3(xzScale, 1, xzScale);
+                    GameObject capsule = Instantiate(TreeColliderPrefab, Terrain.transform);
+                    capsule.transform.localPosition = Vector3.Scale(tree.position, Terrain.terrainData.size);
+                    capsule.transform.localScale = new Vector3(xzScale, 1, xzScale);
+                    TreeColliders.Add(capsule.GetComponentInChildren<CapsuleCollider>());
+                }
             }
+            
 
             LevelManagementService.Get().NotifyLevelLoaded(this);
         }
 
         public void GenerateTilesAtPosition(Transform position)
         {
-            if (TemporaryTiles != null)
+             TileContainerGenerator.GenerateTiles(position, 15, 15, transform);
+        }
+
+        public void ToggleTreeColliders(bool on)
+        {
+            foreach (CapsuleCollider collider in TreeColliders)
             {
-                Destroy(TemporaryTiles.gameObject);
-
-                
+                collider.isTrigger = !on;
             }
-
-            TemporaryTiles = TileContainerGenerator.GenerateTiles(position, 15, 15, transform);
         }
 
         // Update is called once per frame
         void Update()
         {
 
+        }
+
+        public List<CinematicMoment> GetActiveCinematics()
+        {
+            return transform.GetComponentsInChildren<CinematicMoment>().Where(x => x.gameObject.activeSelf).ToList();
         }
     }
 }

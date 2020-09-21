@@ -1,4 +1,5 @@
-﻿using MAGE.GameSystems;
+﻿using MAGE.GameModes.SceneElements;
+using MAGE.GameSystems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,6 +74,64 @@ namespace MAGE.DB.Internal
                 conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = lotharIdx, Content = "Stranger! Lend me a hand why don't you? My employer will surely reward you" });
 
                 DBService.Get().WriteConversation((int)conversationId, conversation);
+            }
+
+            { // Demo Story Line
+                {  // Lay down the law
+                    ConversationId conversationId = ConversationId.Demo_LayDownTheLaw;
+
+                    DB.DBConversation conversation = new DB.DBConversation();
+                    conversation.Id = (int)conversationId;
+                    conversation.Name = conversationId.ToString();
+                    conversation.Members = defaultMembers;
+
+                    conversation.Header = "Trouble with the guilds";
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = ownerIdx, Content = "Do you see what I have to deal with here? I can't be held responsible for this fiasco" });
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = partyAvatarIdx, Content = "Everything that happens in this town is your reponsibility as a Magistrate of the curch" });
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = ownerIdx, Content = "Now see here..." });
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = partyAvatarIdx, Content = "No you see, your people are your flock and your arrogance has lead them to suffer. By the Saint I should strip you of your title now." });
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = ownerIdx, Content = "You wouldn't..!" });
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = partyAvatarIdx, Content = "Oh I would. The only thing staying my hand right now is the faith that as a man of the Saint you can come to reconciliation and make ammends to your flock." });
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = partyAvatarIdx, Content = "I'll be leaving shortly to deal with this bandit issue, I expect a change of heart by my return" });
+
+                    DBService.Get().WriteConversation((int)conversationId, conversation);
+                }
+
+                {  // Training Time
+                    ConversationId conversationId = ConversationId.Demo_TrainingTime;
+
+                    DB.DBConversation conversation = new DB.DBConversation();
+                    conversation.Id = (int)conversationId;
+                    conversation.Name = conversationId.ToString();
+                    conversation.Members = defaultMembers;
+
+                    conversation.Header = "Traing the recruits";
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = ownerIdx, Content = "The look on your face says that went as well as I could hope." });
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = partyAvatarIdx, Content = "If the Saint doesn't help him get head out of his ass, you can be sure I will." });
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = ownerIdx, Content = "Ever the diplomat" });
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = partyAvatarIdx, Content = "One of my many charming qualities. How are the recruits looking?" });
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = ownerIdx, Content = "You can still see the chalk marks on their armor, but they seem sharp enough. Ready to give them hell?" });
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = partyAvatarIdx, Content = "Nothing would please me more" });
+
+                    DBService.Get().WriteConversation((int)conversationId, conversation);
+                }
+
+                {  // Training Complete
+                    ConversationId conversationId = ConversationId.Demo_TrainingComplete;
+
+                    DB.DBConversation conversation = new DB.DBConversation();
+                    conversation.Id = (int)conversationId;
+                    conversation.Name = conversationId.ToString();
+                    conversation.Members = defaultMembers;
+
+                    conversation.Header = "Better than I thought";
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = partyAvatarIdx, Content = "Not bad for the bottom of the barrel. They may prove to be worthy of the Saint yet" });
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = ownerIdx, Content = "Let's just hope they can march after the beating you put them through" });
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = partyAvatarIdx, Content = "Get them packed up Balgrid, it's time we go test the enemies metal" });
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = ownerIdx, Content = "Yes sir!" });
+
+                    DBService.Get().WriteConversation((int)conversationId, conversation);
+                }
             }
 
             DBService.Get().UpdateConversationDB();

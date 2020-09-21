@@ -18,14 +18,21 @@ namespace MAGE.GameModes.SceneElements
         {
             Messaging.MessageRouter.Instance.RegisterHandler(this);
 
+            List<Collider> colliders = new List<Collider>();
             Collider collider = GetComponent<Collider>();
-            if (collider == null)
-            {
-                collider = GetComponentInChildren<Collider>();
-            }
             if (collider != null)
             {
-                collider.gameObject.layer = LayerMask.NameToLayer("Interactible");
+                colliders.Add(collider);
+            }
+            else 
+            {
+                colliders.AddRange(GetComponentsInChildren<Collider>());
+            }
+
+            Debug.Assert(colliders.Count > 0);
+            foreach (Collider propCollider in colliders)
+            {
+                propCollider.gameObject.layer = LayerMask.NameToLayer("Interactible");
             }
             
             Refresh();

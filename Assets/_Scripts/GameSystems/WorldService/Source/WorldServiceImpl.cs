@@ -50,6 +50,11 @@ namespace MAGE.GameSystems.World.Internal
             return mEncounterSystem.GetEncounterContext();
         }
 
+        public EncounterCreateParams GetEncounterParams()
+        {
+            return mEncounterSystem.GetParams();
+        }
+
         public void PrepareEncounter(EncounterCreateParams encounterParams)
         {
             mPartySystem.PrepareForEncounter(encounterParams);
@@ -73,9 +78,14 @@ namespace MAGE.GameSystems.World.Internal
         // Flow - End
 
         // Location
-        public LevelId GetCurrentLevel()
+        public PartyLocation GetPartyLocation()
         {
             return mLocationSystem.PartyLocation;
+        }
+
+        public void UpdatePartyLocation(World.PartyLocation updatedLocation)
+        {
+            mLocationSystem.PartyLocation = updatedLocation;
         }
         // Location - End
 

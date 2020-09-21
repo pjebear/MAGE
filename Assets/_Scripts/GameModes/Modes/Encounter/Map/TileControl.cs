@@ -24,7 +24,7 @@ namespace MAGE.GameModes.SceneElements
         public TextMesh OnTileName;
         public Material[] Materials;
         public MeshRenderer Highlight;
-
+        public List<GameObject> BorderHighlights = new List<GameObject>();
         public TileIdx Idx { get { return mTile.TileIdx; } }
 
         private Tile mTile;
@@ -63,20 +63,6 @@ namespace MAGE.GameModes.SceneElements
             int matIdx = (int)state;
 
             Highlight.material = Materials[matIdx];
-        }
-
-        public bool GetIsObstructed()
-        {
-            Vector3 halfExtents = Vector3.one * .5f;
-            Collider[] overlappedWith = Physics.OverlapBox(transform.position + Vector3.up * .6f, halfExtents, Quaternion.identity);
-            foreach (Collider collider in overlappedWith)
-            {
-                if (collider.gameObject.GetComponent<CharacterActorController>() == null)
-                {
-                    return true;
-                }
-            }
-            return false;
         }
 
         // private

@@ -92,6 +92,10 @@ namespace MAGE.GameSystems.Story.Internal
                     PropMutatorType.Conversation_Add,
                     conversationOwner,
                     conversationId)));
+                node.OnActivateChanges.Add(ToDB(new StoryMutatorParams(
+                    PropMutatorType.Interactible,
+                    conversationOwner,
+                    MutatorConstants.TRUE)));
             }
 
             {// OnComplete
@@ -99,6 +103,60 @@ namespace MAGE.GameSystems.Story.Internal
                     PropMutatorType.Conversation_Remove,
                     conversationOwner,
                     conversationId)));
+            }
+
+            return node;
+        }
+
+        public static DB.DBStoryNodeInfo CreateCompleteEncounterStoryNode(string name, string description, int encounterId)
+        {
+            DB.DBStoryNodeInfo node = new DB.DBStoryNodeInfo();
+            node.Name = name;
+            node.Description = description;
+
+            { // Condition
+                node.CompletionCondition = ToDB(new StoryCondition(StoryEventType.EncounterComplete, encounterId));
+            }
+
+            {// OnActivate
+                node.OnActivateChanges.Add(ToDB(new StoryMutatorParams(
+                    EncounterMutatorType.Activate,
+                    encounterId,
+                    MutatorConstants.TRUE)));
+            }
+
+            {// OnComplete
+                node.OnCompleteChanges.Add(ToDB(new StoryMutatorParams(
+                    EncounterMutatorType.Activate,
+                    encounterId,
+                    MutatorConstants.FALSE)));
+            }
+
+            return node;
+        }
+
+        public static DB.DBStoryNodeInfo CreateViewCinematicStoryNode(string name, string description, int cinematicId)
+        {
+            DB.DBStoryNodeInfo node = new DB.DBStoryNodeInfo();
+            node.Name = name;
+            node.Description = description;
+
+            { // Condition
+                node.CompletionCondition = ToDB(new StoryCondition(StoryEventType.CinematicComplete, cinematicId));
+            }
+
+            {// OnActivate
+                node.OnActivateChanges.Add(ToDB(new StoryMutatorParams(
+                    CinematicMutatorType.Activate,
+                    cinematicId,
+                    MutatorConstants.TRUE)));
+            }
+
+            {// OnComplete
+                node.OnCompleteChanges.Add(ToDB(new StoryMutatorParams(
+                    CinematicMutatorType.Activate,
+                    cinematicId,
+                    MutatorConstants.FALSE)));
             }
 
             return node;
@@ -118,7 +176,7 @@ namespace MAGE.GameSystems.Story.Internal
                 node.OnActivateChanges.Add(ToDB(new StoryMutatorParams(
                     PropMutatorType.Interactible,
                     containerId,
-                    (int)MutatorConstants.TRUE)));
+                    MutatorConstants.TRUE)));
                 node.OnActivateChanges.Add(ToDB(new StoryMutatorParams(
                     PropMutatorType.Item_Add,
                     containerId,

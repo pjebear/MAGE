@@ -37,8 +37,7 @@ namespace MAGE.GameModes.SceneElements
                 {
                     TileControl tileControl = tileContainer.Tiles[z][x];
 
-                    Tile tile = new Tile(new TileIdx(x,z), tileControl.gameObject.transform.position.y, tileControl.GetIsObstructed());
-
+                    Tile tile = new Tile(new TileIdx(x,z), tileControl.gameObject.transform.position.y, tileContainer.Obstructions[z][x]);
                     tileControl.Init(tile);
                     tileControl.gameObject.SetActive(true);
                     TileControlLookup.Add(tile, tileControl);
@@ -50,7 +49,7 @@ namespace MAGE.GameModes.SceneElements
             }
 
             Map = new Map();
-            Map.InitTiles(tileGrid);
+            Map.Init(tileGrid, tileContainer.Connections);
         }
 
         public void Cleanup()
@@ -81,10 +80,20 @@ namespace MAGE.GameModes.SceneElements
             
         }
 
-        public List<TileControl> GetTileControls(List<Tile> tiles)
+        public List<TileControl> GetTiles(List<Tile> tiles)
         {
             List<TileControl> tileControls = new List<TileControl>();
             foreach (Tile tile in tiles)
+            {
+                tileControls.Add(TileControlLookup[tile]);
+            }
+            return tileControls;
+        }
+
+        public List<TileControl> GetTiles(List<TileIdx> indices)
+        {
+            List<TileControl> tileControls = new List<TileControl>();
+            foreach (Tile tile in Map.GetTiles(indices))
             {
                 tileControls.Add(TileControlLookup[tile]);
             }
@@ -117,6 +126,28 @@ namespace MAGE.GameModes.SceneElements
             }
 
             return transform;
+        }
+
+        public TileControl GetClosestTileTo(Vector3 position)
+        {
+            TileControl closestTile = null;
+            float closestDistance = float.MaxValue;
+            foreach (TileControl tileControl in TileControlLookup.Values)
+            {
+                float distanceTo = Vector3.Magnitude(tileControl.transform.position - position);
+                if (distanceTo < closestDistance)
+                {
+                    closestDistance = distanceTo;
+                    closestTile = tileControl;
+                }
+            }
+
+            if (closestDistance > 1)
+            {
+                Debug.Assert(false);
+            }
+
+            return closestTile;
         }
     }
 }

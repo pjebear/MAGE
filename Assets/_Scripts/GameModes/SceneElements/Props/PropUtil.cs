@@ -13,7 +13,11 @@ namespace MAGE.GameModes.SceneElements
         {
             PropType propType = PropType.Environment;
 
-            if (id >= PropConstants.NPC_ID_OFFSET)
+            if (id >= PropConstants.DOOR_ID_OFFSET)
+            {
+                propType = PropType.Door;
+            }
+            else if (id >= PropConstants.NPC_ID_OFFSET)
             {
                 propType = PropType.NPC;
             }
@@ -39,6 +43,7 @@ namespace MAGE.GameModes.SceneElements
             fromDB.IsActive = dbInfo.IsActive;
             fromDB.IsInteractible = dbInfo.IsInteractable;
             fromDB.Currency = dbInfo.Currency;
+            fromDB.State = dbInfo.State;
             
             foreach (int itemId in dbInfo.Inventory)
             {

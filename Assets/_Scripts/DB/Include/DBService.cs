@@ -32,11 +32,27 @@ namespace MAGE.GameSystems
         DB.DBCharacter WriteNewCharacter(DB.DBCharacter character, TeamSide teamSide = TeamSide.INVALID);
         // Character - End
 
+        // Cinematic
+        DB.DBCinematicInfo LoadCinematicInfo(int cinematicId);
+        void RegisterForCinematicUpdates(object listener, DB.DBUpdateCB<int> cb);
+        void UnRegisterForCinematicUpdates(object listener);
+        void UpdateCinematicDB();
+        void WriteCinematicInfo(int cinematicId, DB.DBCinematicInfo cinematicInfo);
+        // Cinematic - End
+
         // Conversation
         DB.DBConversation LoadConversation(int conversationId);
         void UpdateConversationDB();
         void WriteConversation(int conversationId, DB.DBConversation conversation);
         // Conversation - End
+
+        // Encounter
+        DB.DBEncounterInfo LoadEncounterInfo(int encounterId);
+        void RegisterForEncounterUpdates(object listener, DB.DBUpdateCB<int> cb);
+        void UnRegisterForEncounterUpdates(object listener);
+        void UpdateEncounterDB();
+        void WriteEncounterInfo(int encounterId, DB.DBEncounterInfo encounterInfo);
+        // Encounter - End
 
         // Equipment
         DB.DBEquipment LoadEquipment(int equipmentId);
@@ -53,8 +69,8 @@ namespace MAGE.GameSystems
         // Props
         DB.DBPropInfo LoadPropInfo(int propId);
         void RegisterForPropUpdates(object listener, DB.DBUpdateCB<int> cb);
-        void UpdatePropDB();
         void UnRegisterForPropUpdates(object listener);
+        void UpdatePropDB();
         void WritePropInfo(int propId, DB.DBPropInfo propInfo);
         // Props - End
 

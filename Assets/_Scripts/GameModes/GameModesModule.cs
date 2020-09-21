@@ -161,6 +161,11 @@ namespace MAGE.GameModes
             TransitionTo(GameModeType.MainMenu);
         }
 
+        public void Map()
+        {
+            TransitionTo(GameModeType.Map);
+        }
+
         public void Explore()
         {
             TransitionTo(GameModeType.Exploration);

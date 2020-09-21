@@ -50,12 +50,13 @@ namespace MAGE.GameSystems.Characters.Internal
             character.AppearanceId = dbCharacter.AppearanceId;
 
             // Specializations
-            for (int i = 0; i < (int)SpecializationType.NUM; ++i)
-            {
-                character.SpecializationsProgress[i] = FromDB(dbCharacter.Specializations[i]);
-            }
             character.CurrentSpecializationType = (SpecializationType)dbCharacter.CharacterInfo.CurrentSpecialization;
-
+            for (int i = 0; i < dbCharacter.Specializations.Count; ++i)
+            {
+                DB.DBSpecializationProgress progress = dbCharacter.Specializations[i];
+                character.SpecializationsProgress.Add((SpecializationType)progress.SpecializationType, FromDB(progress));
+            }
+            
             // Equipment
             for (int i = 0; i < (int)Equipment.Slot.NUM; ++i)
             {
@@ -81,9 +82,9 @@ namespace MAGE.GameSystems.Characters.Internal
             dbCharacter.AppearanceId = character.AppearanceId;
 
             // Specializations
-            for (int i = 0; i < (int)SpecializationType.NUM; ++i)
+            foreach (SpecializationProgress progress in character.SpecializationsProgress.Values)
             {
-                dbCharacter.Specializations.Add(ToDB(character.SpecializationsProgress[i]));
+                dbCharacter.Specializations.Add(ToDB(progress));
             }
 
             // Equipment

@@ -17,12 +17,7 @@ namespace MAGE.GameModes.SceneElements
         public Transform NPCContainer;
         public Dictionary<int, Actor> NPCs = new Dictionary<int, Actor>();
 
-        private void Start()
-        {
-            Init();
-        }
-
-        public void Init()
+        public virtual void Init()
         {
             for (int i = 0; i < NPCContainer.childCount; ++i)
             {
@@ -30,7 +25,7 @@ namespace MAGE.GameModes.SceneElements
                 if (spawner != null)
                 {
                     spawner.Refresh();
-                    NPCs.Add(spawner.GetActorId(), spawner.Actor);
+                    NPCs.Add(spawner.CharacterPicker.GetActorId(), spawner.Actor);
                 }
             }
         }

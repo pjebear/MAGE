@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace MAGE.GameSystems.Story.Internal
 {
@@ -27,6 +28,22 @@ namespace MAGE.GameSystems.Story.Internal
                 case StoryMutatorType.Scenario:
                 {
                     MutateScenario((ScenarioMutatorType)storyMutatorParams.Param1, storyMutatorParams.Param2, storyMutatorParams.Param3);
+                }
+                break;
+                case StoryMutatorType.Cinematic:
+                {
+                    MutateCinematic((CinematicMutatorType)storyMutatorParams.Param1, storyMutatorParams.Param2, storyMutatorParams.Param3);
+                }
+                break;
+                case StoryMutatorType.Encounter:
+                {
+                    MutateEncounter((EncounterMutatorType)storyMutatorParams.Param1, storyMutatorParams.Param2, storyMutatorParams.Param3);
+                }
+                break;
+
+                default:
+                {
+                    Debug.Assert(false);
                 }
                 break;
             }
@@ -101,9 +118,67 @@ namespace MAGE.GameSystems.Story.Internal
                     propInfo.IsActive = param == MutatorConstants.TRUE;
                 }
                 break;
+                case PropMutatorType.StateChange:
+                {
+                    propInfo.State = param;
+                }
+                break;
+                default:
+                {
+                    Debug.Assert(false);
+                }
+                break;
             }
 
             DBService.Get().WritePropInfo(propId, propInfo);
+        }
+
+        private static void MutateCinematic(CinematicMutatorType mutateType, int cinematicId, int param)
+        {
+            DB.DBCinematicInfo cinematicInfo = DBService.Get().LoadCinematicInfo(cinematicId);
+
+            Logger.Log(LogTag.Story, TAG, string.Format("::MutateCinematic() - MutateType [{0}] CinematicId [{1}] CinematicName [{2}] Param [{3}]",
+                mutateType.ToString(), cinematicId, cinematicInfo.Name, param));
+
+            switch (mutateType)
+            {
+                case CinematicMutatorType.Activate:
+                {
+                    cinematicInfo.IsActive = param == MutatorConstants.TRUE;
+                }
+                break;
+                default:
+                {
+                    Debug.Assert(false);
+                }
+                break;
+            }
+
+            DBService.Get().WriteCinematicInfo(cinematicId, cinematicInfo);
+        }
+
+        private static void MutateEncounter(EncounterMutatorType mutateType, int encounterId, int param)
+        {
+            DB.DBEncounterInfo encounterInfo = DBService.Get().LoadEncounterInfo(encounterId);
+
+            Logger.Log(LogTag.Story, TAG, string.Format("::MutateEncounter() - MutateType [{0}] EncounterId [{1}] EncounterName [{2}] Param [{3}]",
+                mutateType.ToString(), encounterId, encounterInfo.Name, param));
+
+            switch (mutateType)
+            {
+                case EncounterMutatorType.Activate:
+                {
+                    encounterInfo.IsActive = param == MutatorConstants.TRUE;
+                }
+                break;
+                default:
+                {
+                    Debug.Assert(false);
+                }
+                break;
+            }
+
+            DBService.Get().WriteEncounterInfo(encounterId, encounterInfo);
         }
 
         private static void MutateScenario(ScenarioMutatorType mutatorType, int param1, int param2)

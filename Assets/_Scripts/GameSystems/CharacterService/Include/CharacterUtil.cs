@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace MAGE.GameSystems.Characters
 {
@@ -18,30 +19,48 @@ namespace MAGE.GameSystems.Characters
                 + characterId;
         }
 
+        public static int CreateIdToDBId(int createCharacterId)
+        {
+            return
+                CharacterConstants.CREATE_CHARACTER_ID_OFFSET
+                + createCharacterId;
+        }
+
         public static int DBIdToScenarioId(int dbId)
         {
             return dbId % CharacterConstants.SUB_CATEGORY_RANGE;
+        }
+
+        public static int GetIdOffsetFromType(CharacterType characterType)
+        {
+            int offset = 0;
+
+            switch (characterType)
+            {
+                case CharacterType.Temporary: offset = CharacterConstants.TEMPORARY_CHARACTER_ID_OFFSET; break;
+                case CharacterType.Create: offset = CharacterConstants.CREATE_CHARACTER_ID_OFFSET; break;
+                case CharacterType.Story: offset = CharacterConstants.STORY_CHARACTER_ID_OFFSET; break;
+                case CharacterType.Scenario: offset = CharacterConstants.SCENARIO_CHARACTER_ID_OFFSET; break;
+                default:
+                    Debug.Assert(false);
+                    break;
+            }
+
+            return offset;
         }
 
         public static CharacterType GetCharacterTypeFromId(int id)
         {
             CharacterType characterType = CharacterType.Temporary;
 
-            if (id >= CharacterConstants.SCENARIO_CHARACTER_ID_OFFSET)
+            for (int i = (int)CharacterType.NUM - 1; i >= 0; --i)
             {
-                characterType = CharacterType.Scenario;
-            }
-            else if (id >= CharacterConstants.STORY_CHARACTER_ID_OFFSET)
-            {
-                characterType = CharacterType.Story;
-            }
-            else if (id >= CharacterConstants.CREATE_CHARACTER_ID_OFFSET)
-            {
-                characterType = CharacterType.Create;
-            }
-            else
-            {
-                characterType = CharacterType.Temporary;
+                CharacterType type = (CharacterType)i;
+                if (id >= GetIdOffsetFromType(type))
+                {
+                    characterType = type;
+                    break;
+                }
             }
 
             return characterType;

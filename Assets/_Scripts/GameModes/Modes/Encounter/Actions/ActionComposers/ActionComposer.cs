@@ -34,6 +34,11 @@ namespace MAGE.GameModes.Encounter
                     }
                 }
                 break;
+                case ActionId.SummonBear:
+                {
+                    SummonActionComposer.ComposeAction(proposerController, actionInfo, targetSelection, map, out result, out timeline);
+                }
+                break;
                 case (ActionId.Anvil):
                 case (ActionId.MightyBlow):
                 case (ActionId.Riptose):

@@ -14,6 +14,7 @@ namespace MAGE.GameSystems
         public Dictionary<Character, CharacterPosition> CharacterPositionLookup;
         public HashSet<Character> CharactersInMap;
         public List<List<Tile>> mTiles;
+        public List<List<TileConnections>> mTileConnections;
         public int Width = 0;
         public int Length = 0;
 
@@ -28,9 +29,10 @@ namespace MAGE.GameSystems
             mActionCalculator = new ActionTileCalculator(this);
         }
 
-        public void InitTiles(List<List<Tile>> tiles)
+        public void Init(List<List<Tile>> tiles, List<List<TileConnections>> connections)
         {
             mTiles = tiles;
+            mTileConnections = connections;
             Length = mTiles.Count;
             Width = Length > 0 ? mTiles[0].Count : 0;
         }
@@ -95,6 +97,21 @@ namespace MAGE.GameSystems
             return TileAt(lhs).Elevation - TileAt(rhs).Elevation;
         }
 
+        public List<Tile> GetTargetedTiles(CharacterPosition casterPosition, TargetSelection targetSelection)
+        {
+            TileIdx centralTile = new TileIdx();
+            if (targetSelection.FocalTarget.TargetType == TargetSelectionType.Character)
+            {
+                centralTile = GetCharacterPosition(targetSelection.FocalTarget.CharacterTarget).Location;
+            }
+            else if (targetSelection.FocalTarget.TargetType == TargetSelectionType.Tile)
+            {
+                centralTile = targetSelection.FocalTarget.TileTarget;
+            }
+
+            return mActionCalculator.CalculateTilesInRange(casterPosition.Location, centralTile, targetSelection.SelectionRange);
+        }
+
         public List<Character> GetTargetedCharacters(CharacterPosition casterPosition, TargetSelection targetSelection)
         {
             List<Character> onTiles = new List<Character>();
@@ -133,6 +150,17 @@ namespace MAGE.GameSystems
             return mMovementCalculator.GetValidMovementTiles();
         }
 
+        public List<Tile> GetTiles(List<TileIdx> indices)
+        {
+            List<Tile> tiles = new List<Tile>();
+            foreach (TileIdx idx in indices)
+            {
+                tiles.Add(TileAt(idx));
+            }
+
+            return tiles;
+        }
+
         public Tile TileAt(TileIdx tileIdx)
         {
             return mTiles[tileIdx.y][tileIdx.x];
@@ -141,6 +169,11 @@ namespace MAGE.GameSystems
         public bool IsValidIdx(TileIdx idx)
         {
             return !(idx.x < 0 || idx.x >= Width || idx.y < 0 || idx.y >= Length);
+        }
+
+        public bool IsPathObstructed(TileIdx idx, Orientation toSide)
+        {
+            return !mTileConnections[idx.y][idx.x].Connections[(int)toSide];
         }
     }
 }

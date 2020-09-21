@@ -13,7 +13,8 @@ namespace MAGE.GameSystems.Story
         ConversationComplete,
         ItemAddedToInventory,
         NewGame,
-        PropInteractedWith
+        PropInteractedWith,
+        CinematicComplete,
     }
 
     class StoryEventBase
@@ -22,6 +23,7 @@ namespace MAGE.GameSystems.Story
         public int Param;
 
         public StoryEventBase(EncounterScenarioId encounterCompleteId) : this (StoryEventType.EncounterComplete, (int)encounterCompleteId) { }
+        public StoryEventBase(CinematicId cinematicId) : this(StoryEventType.CinematicComplete, (int)cinematicId) { }
         public StoryEventBase(ConversationId conversationId) : this(StoryEventType.ConversationComplete, (int)conversationId) { }
         public StoryEventBase(ItemId itemAddedId) : this(StoryEventType.ItemAddedToInventory, (int)itemAddedId) { }
         public StoryEventBase(PropTag propInteractedWith) : this(StoryEventType.PropInteractedWith, propInteractedWith.Id) { }

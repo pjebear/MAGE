@@ -58,13 +58,6 @@ namespace MAGE.GameSystems.Characters.Internal
                 Logger.Assert(attributes.Attributes.Count > 0, LogTag.Character, TAG, "Missing Attributes", LogLevel.Warning);
             }
 
-            // Specializations
-            for (int i = 0; i < (int)SpecializationType.NUM; ++i)
-            {
-                Specialization specialization = SpecializationFactory.CheckoutSpecialization((SpecializationType)i);
-                emptyCharacter.Specializations.Add(CharacterDBUtil.ToDB(specialization));
-            }
-
             return emptyCharacter;
         }
 
@@ -74,9 +67,9 @@ namespace MAGE.GameSystems.Characters.Internal
             dbAppearance = new DB.DBAppearance();
 
             // Info
-            if (createParams.characterType == CharacterType.Create)
+            if (createParams.id == -1)
             {
-                dbCharacter.Id = GetNextAvailableCreateCharacterId();
+                dbCharacter.Id = GetNextAvailableCharacterId(createParams.characterType);
             }
             else
             {
@@ -88,12 +81,12 @@ namespace MAGE.GameSystems.Characters.Internal
             dbCharacter.CharacterInfo.Experience = 0;
 
             // Appearance
-            if (createParams.portraitSpriteId != PortraitSpriteId.INVALID)
+            if (createParams.appearanceOverrides != null)
             {
                 dbCharacter.AppearanceId = dbCharacter.Id;
                 dbAppearance.Id = dbCharacter.Id;
-                dbAppearance.BodyType = (int)BodyType.Body_0;
-                dbAppearance.PortraitSpriteId = (int)createParams.portraitSpriteId;
+                dbAppearance.BodyType = createParams.appearanceOverrides.BodyType != BodyType.NUM ? (int)createParams.appearanceOverrides.BodyType : (int)BodyType.Body_0;
+                dbAppearance.PortraitSpriteId = createParams.appearanceOverrides.PortraitSpriteId != PortraitSpriteId.INVALID ? (int)createParams.appearanceOverrides.PortraitSpriteId : (int)PortraitSpriteId.INVALID;
             }
             else
             {
@@ -106,6 +99,15 @@ namespace MAGE.GameSystems.Characters.Internal
                 dbCharacter.Equipment[i] = (int)createParams.currentEquipment[i];
             }
 
+            // Specializations
+            // Specializations
+            List<SpecializationType> specializations = SpecializationUtil.GetSpecializationsForCharacter(createParams.characterClass, createParams.currentSpecialization);
+            for (int i = 0; i < specializations.Count; ++i)
+            {
+                Specialization specialization = SpecializationFactory.CheckoutSpecialization(specializations[i]);
+                dbCharacter.Specializations.Add(CharacterDBUtil.ToDB(specialization));
+            }
+
             // Attributes
             PrimaryStat primaryStat = PrimaryStat.Might;
             switch (createParams.currentSpecialization)
@@ -115,6 +117,7 @@ namespace MAGE.GameSystems.Characters.Internal
                     primaryStat = PrimaryStat.Finese;
                 }
                 break;
+                case SpecializationType.Bear:
                 case SpecializationType.Footman:
                 {
                     primaryStat = PrimaryStat.Might;
@@ -132,32 +135,32 @@ namespace MAGE.GameSystems.Characters.Internal
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)PrimaryStat.Magic] = primaryStat == PrimaryStat.Magic ? 20 : 10;
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)SecondaryStat.Fortitude] = 60;
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)SecondaryStat.Attunement] = 40;
-            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)TertiaryStat.Movement] = 5;
+            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)TertiaryStat.Movement] = 4;
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)TertiaryStat.Jump] = 2;
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)TertiaryStat.Speed] = 7;
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)TertiaryStat.MaxClockGuage] = 100;
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Resource].Attributes[(int)ResourceType.Health] = 20;
         }
 
-        public static int GetNextAvailableCreateCharacterId()
+        public static int GetNextAvailableCharacterId(CharacterType characterType)
         {
-            int nextCreateCharacterId = CharacterConstants.CREATE_CHARACTER_ID_OFFSET;
+            int nextId = CharacterUtil.GetIdOffsetFromType(characterType);
 
-            IEnumerable<int> createCharacterIds = DBService.Get().GetAllCharacterIds().Where(x => CharacterUtil.GetCharacterTypeFromId(x) == CharacterType.Create);
+            IEnumerable<int> existingIds = DBService.Get().GetAllCharacterIds().Where(x => CharacterUtil.GetCharacterTypeFromId(x) == characterType);
 
             for (int i = 0; i < 1000; ++i)
             {
-                if (!createCharacterIds.Contains(nextCreateCharacterId))
+                if (!existingIds.Contains(nextId))
                 {
                     break;
                 }
                 else
                 {
-                    nextCreateCharacterId++;
+                    nextId++;
                 }
             }
 
-            return nextCreateCharacterId;
+            return nextId;
         }
     }
 }

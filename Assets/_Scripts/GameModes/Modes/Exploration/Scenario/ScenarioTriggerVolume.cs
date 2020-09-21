@@ -7,13 +7,27 @@ using UnityEngine;
 
 namespace MAGE.GameModes.SceneElements
 {
-    class ScenarioTriggerVolume : MonoBehaviour
+    abstract class PartyAvatarTriggerVolumeBase : MonoBehaviour
     {
+        protected virtual void HandleTriggerEntered() { }
+        protected virtual void HandleTriggerExited() { }
+
+        protected virtual void HandleCollisionEntered() { }
+        protected virtual void HandleCollisionExited() { }
+
         void OnTriggerEnter(Collider collider)
         {
             if (collider.gameObject.GetComponent<ThirdPersonActorController>() != null)
             {
-                GetComponentInParent<Scenario>().ScenarioTriggered();
+                HandleTriggerEntered();
+            }
+        }
+
+        void OnTriggerExit(Collider collider)
+        {
+            if (collider.gameObject.GetComponent<ThirdPersonActorController>() != null)
+            {
+                HandleTriggerExited();
             }
         }
 
@@ -21,10 +35,28 @@ namespace MAGE.GameModes.SceneElements
         {
             if (collision.collider.gameObject.GetComponent<ThirdPersonActorController>() != null)
             {
-                GetComponentInParent<Scenario>().ScenarioTriggered();
+                HandleCollisionEntered();
+            }
+        }
+
+        private void OnCollisionExit(Collision collision)
+        {
+            if (collision.collider.gameObject.GetComponent<ThirdPersonActorController>() != null)
+            {
+                HandleCollisionExited();
             }
         }
     }
+
+    class ScenarioTriggerVolume : PartyAvatarTriggerVolumeBase
+    {
+        protected override void HandleTriggerEntered()
+        {
+            GetComponentInParent<Scenario>().ScenarioTriggered();
+        }
+    }
+
+   
 }
 
 

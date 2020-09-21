@@ -11,6 +11,7 @@ namespace MAGE.GameModes.SceneElements
         Environment,
         Container,
         NPC,
+        Door,
 
         NUM
     }
@@ -32,11 +33,30 @@ namespace MAGE.GameModes.SceneElements
         NUM
     }
 
+    enum DoorPropId
+    {
+        None = -1,
+
+        DemoLevel_TownGateFront = PropConstants.DOOR_ID_OFFSET,
+
+
+        NUM
+    }
+
     enum NPCPropId
     {
         None = -1,
 
         FieldVendor = PropConstants.NPC_ID_OFFSET,
+
+        // Demo Level
+        DemoLevel_GateGuard0,
+        DemoLevel_GateGuard1,
+        DemoLevel_Vendor,
+        DemoLevel_Magistrate,
+        DemoLevel_GuildLeader,
+        DemoLevel_Captain,
+
 
         NUM
     }

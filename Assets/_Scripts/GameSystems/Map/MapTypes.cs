@@ -8,12 +8,22 @@ using UnityEngine;
 
 namespace MAGE.GameSystems
 {
+    static class OrientationConstants
+    {
+        public static Vector3 FORWARD = Vector3.forward;
+        public static Vector3 RIGHT = Vector3.right;
+        public static Vector3 LEFT = Vector3.left;
+        public static Vector3 BACK = Vector3.back;
+    }
+
+
     enum RelativeOrientation
     {
         Front,
         Left,
         Right,
-        Behind
+        Behind,
+        OnTopOf
     }
 
     enum Orientation
@@ -21,8 +31,62 @@ namespace MAGE.GameSystems
         Forward,
         Right,
         Left,
-        Back
+        Back,
+        NUM
     }
+
+    static class OrientationUtil
+    {
+        public static Vector3 ToVector(Orientation orientation)
+        {
+            Vector3 vector = OrientationConstants.FORWARD;
+            switch (orientation)
+            {
+                case Orientation.Forward: vector = OrientationConstants.FORWARD; break;
+                case Orientation.Right: vector = OrientationConstants.RIGHT; break;
+                case Orientation.Back: vector = OrientationConstants.BACK; break;
+                case Orientation.Left: vector = OrientationConstants.LEFT; break;
+                default: Debug.Assert(false); break;
+            }
+
+            return vector;
+        }
+
+        public static Orientation FromVector(Vector3 vector)
+        {
+            Orientation closestOrientation = Orientation.Forward;
+            float closestAngle = float.MaxValue;
+
+            vector.y = 0;
+            vector.Normalize();
+
+            for (int i = 0; i < (int)Orientation.NUM; ++i)
+            {
+                float angle = Mathf.Abs(Vector3.Angle(vector, ToVector((Orientation)i)));
+                if (angle < closestAngle)
+                {
+                    closestOrientation = (Orientation)i;
+                    closestAngle = angle;
+                }
+            }
+
+            return closestOrientation;
+        }
+
+        public static Orientation Flip(Orientation toFlip)
+        {
+            Orientation flipped = Orientation.NUM;
+            switch (toFlip)
+            {
+                case Orientation.Forward: flipped = Orientation.Back; break;
+                case Orientation.Back: flipped = Orientation.Forward; break;
+                case Orientation.Right: flipped = Orientation.Left; break;
+                case Orientation.Left: flipped = Orientation.Right; break;
+            }
+            return flipped;
+        }
+    }
+
 
     struct TileIdx
     {
@@ -33,6 +97,20 @@ namespace MAGE.GameSystems
         {
             x = _x;
             y = _y;
+        }
+
+        public TileIdx GetTileToThe(Orientation orientation)
+        {
+            TileIdx toThe = default;
+            switch (orientation)
+            {
+                case Orientation.Forward:   toThe = new TileIdx(x, y + 1); break;
+                case Orientation.Right:     toThe = new TileIdx(x + 1, y); break;
+                case Orientation.Back:      toThe = new TileIdx(x, y - 1); break;
+                case Orientation.Left:      toThe = new TileIdx(x - 1, y); break;
+            }
+
+            return toThe;
         }
 
         public static int ManhattanDistance(TileIdx lhs, TileIdx rhs)
@@ -99,5 +177,12 @@ namespace MAGE.GameSystems
             Elevation = elevation;
             IsObstructed = isObstructed;
         }
+    }
+
+    class TileConnections
+    {
+        public bool[] Connections = new bool[(int)Orientation.NUM];
+
+        public bool this[Orientation orientation] { get { return Connections[(int)orientation]; } }
     }
 }

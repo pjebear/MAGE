@@ -14,6 +14,7 @@ namespace MAGE.GameSystems.World.Internal
         private string mSaveFileName = "";
 
         private PartyInfo mPartyInfo = new PartyInfo();
+        private PartyLocation mPartyLocation;
 
         public void AddCharacterToParty(int characterId)
         {
@@ -168,6 +169,7 @@ namespace MAGE.GameSystems.World.Internal
             mPartyInfo.CharacterIds.AddRange(CharacterService.Get().GetCharactersOfType(CharacterType.Create)); 
             mPartyInfo.CharacterIds.Add((int)StoryCharacterId.Rheinhardt);
             mPartyInfo.CharacterIds.Add((int)StoryCharacterId.Asmund);
+            mPartyInfo.CharacterIds.Add((int)StoryCharacterId.Balgrid);
 
             List<int> defaultInventory = new List<int>()
             {

@@ -10,6 +10,7 @@ namespace MAGE.GameSystems.World
 {
     class EncounterContext
     {
+        public int MaxAllyUnits;
         public EncounterType EncounterType;
         public int CurrencyReward;
         public List<ItemId> ItemRewards = new List<ItemId>();

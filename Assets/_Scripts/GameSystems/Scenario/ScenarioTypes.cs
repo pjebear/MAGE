@@ -11,6 +11,7 @@ namespace MAGE.GameSystems
         INVALID = -1,
 
         TheGreatHoldUp,
+        DemoScenario,
 
         NUM
     }

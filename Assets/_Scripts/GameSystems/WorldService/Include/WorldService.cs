@@ -15,6 +15,7 @@ namespace MAGE.GameSystems
 
         // Encounter
         World.EncounterContext GetEncounterContext();
+        EncounterCreateParams GetEncounterParams();
         void PrepareEncounter(EncounterCreateParams encounterParams);
         void UpdateOnEncounterEnd(EncounterResultInfo resultInfo);
         // Encounter - End
@@ -24,7 +25,8 @@ namespace MAGE.GameSystems
         // Flow - End
 
         // Location
-        LevelId GetCurrentLevel();
+        World.PartyLocation GetPartyLocation();
+        void UpdatePartyLocation(World.PartyLocation updatedLocation);
         // Location - End
 
         // Party

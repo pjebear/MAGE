@@ -73,6 +73,11 @@ namespace MAGE.GameModes.FlowControl
                         ExplorationModule.Instance.TriggerRandomEncounter();
                     }
                     break;
+                    case (int)ExplorationMenuView.ComponentId.MapBtn:
+                    {
+                        GameModesModule.Instance.Map();
+                    }
+                    break;
                     case (int)ExplorationMenuView.ComponentId.QuestLog:
                     {
                         UIManager.Instance.PostContainer(UIContainerId.QuestLogView, this);

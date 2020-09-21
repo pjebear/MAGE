@@ -8,6 +8,8 @@ namespace MAGE.GameSystems.Story.Internal
 {
     static class MutatorConstants
     {
+        public const int OPEN = 1;
+        public const int CLOSE = 0;
         public const int TRUE = 1;
         public const int FALSE = 0;
         public const int ADD = 1;
@@ -17,6 +19,8 @@ namespace MAGE.GameSystems.Story.Internal
 
     enum StoryMutatorType
     {
+        Cinematic,
+        Encounter,
         Prop,
         Scenario,
         Party
@@ -29,7 +33,18 @@ namespace MAGE.GameSystems.Story.Internal
         Conversation_Add,
         Conversation_Remove,
         Activate,
-        Interactible
+        Interactible,
+        StateChange,
+    }
+
+    enum CinematicMutatorType
+    {
+        Activate
+    }
+
+    enum EncounterMutatorType
+    {
+        Activate
     }
 
     enum ScenarioMutatorType
@@ -52,6 +67,8 @@ namespace MAGE.GameSystems.Story.Internal
         public int Param2;
         public int Param3;
 
+        public StoryMutatorParams(EncounterMutatorType mutatorType, int encounterId, int param) : this(StoryMutatorType.Encounter, (int)mutatorType, encounterId, param) { }
+        public StoryMutatorParams(CinematicMutatorType mutatorType, int cinematicId, int param) : this(StoryMutatorType.Cinematic, (int)mutatorType, cinematicId, param) { }
         public StoryMutatorParams(PropMutatorType mutatorType, int propId, int param) : this(StoryMutatorType.Prop, (int)mutatorType, propId, param) { }
         public StoryMutatorParams(ScenarioMutatorType mutatorType, int scenarioId, int param) : this(StoryMutatorType.Scenario, (int)mutatorType, scenarioId, param) { }
         public StoryMutatorParams(PartyMutatorType mutatorType, int param) : this(StoryMutatorType.Party, (int)mutatorType, param, -1) { }

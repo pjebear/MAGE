@@ -55,7 +55,6 @@ class ActorLoader : MonoBehaviour
 
     private void UpdateBoneMapping(SkinnedMeshRenderer actorMeshRenderer, SkinnedMeshRenderer skinnedMeshRenderer)
     {
-
         Debug.Assert(skinnedMeshRenderer.bones.Length == actorMeshRenderer.bones.Length);
 
         Dictionary<string, Transform> boneLookup = new Dictionary<string, Transform>();
@@ -78,5 +77,34 @@ class ActorLoader : MonoBehaviour
 
         skinnedMeshRenderer.rootBone = actorMeshRenderer.rootBone;
     }
+
+    //private void UpdateBoneMapping(Transform actorTransforms, SkinnedMeshRenderer skinnedMeshRenderer)
+    //{
+
+    //    Dictionary<string, Transform> boneLookup = new Dictionary<string, Transform>();
+    //    foreach (Transform bone in actorMeshRenderer.bones)
+    //    {
+    //        boneLookup.Add(bone.name, bone);
+    //    }
+
+    //    Transform[] newBoneArray = new Transform[skinnedMeshRenderer.bones.Length];
+    //    for (int i = 0; i < skinnedMeshRenderer.bones.Length; ++i)
+    //    {
+    //        string boneName = skinnedMeshRenderer.bones[i].name;
+    //        Debug.Assert(boneLookup.ContainsKey(boneName));
+    //        if (boneLookup.ContainsKey(boneName))
+    //        {
+    //            newBoneArray[i] = boneLookup[boneName];
+    //        }
+    //    }
+    //    skinnedMeshRenderer.bones = newBoneArray;
+
+    //    skinnedMeshRenderer.rootBone = actorMeshRenderer.rootBone;
+    //}
+
+    //void GetBones(Transform rootBone, ref Dictionary<string, Transform> boneMap)
+    //{
+
+    //}
 }
 
