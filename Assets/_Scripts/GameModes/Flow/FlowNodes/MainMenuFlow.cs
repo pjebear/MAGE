@@ -4,15 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-enum GameModeType
+namespace MAGE.GameModes.FlowControl
 {
-    INVALID = -1,
-
-    MainMenu,
-    Map,
-    Exploration,
-    Encounter,
-    PartyOutfiter,
-
-    NUM
+    class MainMenuFlow
+    {
+    }
 }

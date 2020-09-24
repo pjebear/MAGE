@@ -41,7 +41,7 @@ namespace MAGE.GameModes.Encounter
 
         private void IncrementClock()
         {
-            EncounterModule.Model.Clock++;
+            EncounterFlowControl.Model.Clock++;
             Messaging.MessageRouter.Instance.NotifyMessage(new EncounterMessage(EncounterMessage.EventType.ClockProgressed));
         }
 
@@ -87,27 +87,27 @@ namespace MAGE.GameModes.Encounter
                 switch (mState)
                 {
                     case (FlowState.StatusIncrement):
-                        EncounterModule.CharacterDirector.IncrementStatusEffects();
+                        EncounterFlowControl.CharacterDirector.IncrementStatusEffects();
 
                         ProgressState();
                         break;
 
                     case (FlowState.StatusCheck):
-                        EncounterModule.CharacterDirector.ApplyStatusEffects();
+                        EncounterFlowControl.CharacterDirector.ApplyStatusEffects();
                         ProgressState();
 
                         break;
 
                     case (FlowState.ActionIncrement):
-                        EncounterModule.ActionDirector.IncrementDelayedActions();
+                        EncounterFlowControl.ActionDirector.IncrementDelayedActions();
                         ProgressState();
                         break;
 
                     case (FlowState.ActionResolution):
                     {
-                        if (EncounterModule.ActionDirector.HasReadyActions())
+                        if (EncounterFlowControl.ActionDirector.HasReadyActions())
                         {
-                            EncounterModule.ActionDirector.ProgressDelayedActions();
+                            EncounterFlowControl.ActionDirector.ProgressDelayedActions();
                             mIsFlowPaused = true;
                         }
                         else
@@ -118,14 +118,14 @@ namespace MAGE.GameModes.Encounter
                     break;
 
                     case (FlowState.TurnIncrement):
-                        foreach (Character character in EncounterModule.Model.Characters.Values)
+                        foreach (Character character in EncounterFlowControl.Model.Characters.Values)
                         {
                             if (character.IsAlive)
                             {
                                 character.IncrementClock();
                                 if (character.IsClockGuageFull)
                                 {
-                                    EncounterModule.Model.PendingCharacterTurns.Add(character);
+                                    EncounterFlowControl.Model.PendingCharacterTurns.Add(character);
                                 }
                             }
                         }
@@ -136,27 +136,27 @@ namespace MAGE.GameModes.Encounter
                     case (FlowState.TurnResolution):
                     {
                         // Progress turn queue if current turn completed
-                        if (EncounterModule.Model.CurrrentTurnCharacter == null)
+                        if (EncounterFlowControl.Model.CurrrentTurnCharacter == null)
                         {
-                            if (EncounterModule.Model.PendingCharacterTurns.Count > 0)
+                            if (EncounterFlowControl.Model.PendingCharacterTurns.Count > 0)
                             {
-                                EncounterModule.Model.CurrrentTurnCharacter = EncounterModule.Model.PendingCharacterTurns[0];
-                                EncounterModule.Model.PendingCharacterTurns.RemoveAt(0);
-                                EncounterModule.Model.TurnCompleted = false;
+                                EncounterFlowControl.Model.CurrrentTurnCharacter = EncounterFlowControl.Model.PendingCharacterTurns[0];
+                                EncounterFlowControl.Model.PendingCharacterTurns.RemoveAt(0);
+                                EncounterFlowControl.Model.TurnCompleted = false;
 
-                                EncounterModule.Model.CurrrentTurnCharacter.RolloverClock();
+                                EncounterFlowControl.Model.CurrrentTurnCharacter.RolloverClock();
                             }
                         }
 
                         // If current turn not assigned, turn queue is complete. Progress flow
-                        if (EncounterModule.Model.CurrrentTurnCharacter != null)
+                        if (EncounterFlowControl.Model.CurrrentTurnCharacter != null)
                         {
-                            Character toProgress = EncounterModule.Model.CurrrentTurnCharacter;
+                            Character toProgress = EncounterFlowControl.Model.CurrrentTurnCharacter;
                             if ((toProgress.HasActed && toProgress.HasMoved) 
-                                || EncounterModule.Model.TurnCompleted)
+                                || EncounterFlowControl.Model.TurnCompleted)
                             {
                                 toProgress.DecrementClock();
-                                EncounterModule.Model.CurrrentTurnCharacter = null;
+                                EncounterFlowControl.Model.CurrrentTurnCharacter = null;
                             }
                             else
                             {
@@ -202,12 +202,12 @@ namespace MAGE.GameModes.Encounter
             if (IsEncounterLost())
             {
                 encounterOver = true;
-                EncounterModule.Model.EncounterState = EncounterState.Defeat;
+                EncounterFlowControl.Model.EncounterState = EncounterState.Defeat;
             }
             else if (IsEncounterWon())
             {
                 encounterOver = true;
-                EncounterModule.Model.EncounterState = EncounterState.Win;
+                EncounterFlowControl.Model.EncounterState = EncounterState.Win;
             }
 
             return encounterOver;
@@ -217,9 +217,9 @@ namespace MAGE.GameModes.Encounter
         {
             bool encounterLost = false;
 
-            foreach (EncounterCondition loseCondition in EncounterModule.Model.EncounterContext.LoseConditions)
+            foreach (EncounterCondition loseCondition in EncounterFlowControl.Model.EncounterContext.LoseConditions)
             {
-                bool isConditionMet = loseCondition.IsConditionMet(EncounterModule.Model);
+                bool isConditionMet = loseCondition.IsConditionMet(EncounterFlowControl.Model);
 
                 if (isConditionMet)
                 {
@@ -236,9 +236,9 @@ namespace MAGE.GameModes.Encounter
         {
             bool encounterWon = false;
 
-            foreach (EncounterCondition winCondition in EncounterModule.Model.EncounterContext.WinConditions)
+            foreach (EncounterCondition winCondition in EncounterFlowControl.Model.EncounterContext.WinConditions)
             {
-                bool isConditionMet = winCondition.IsConditionMet(EncounterModule.Model);
+                bool isConditionMet = winCondition.IsConditionMet(EncounterFlowControl.Model);
 
                 if (isConditionMet)
                 {
@@ -288,23 +288,23 @@ namespace MAGE.GameModes.Encounter
                             if (ModulesContainer.Container.DebugEncounter)
                             {
                                 ProgressState();
-                                EncounterModule.UnitPlacementViewControl.Start();
+                                EncounterFlowControl.UnitPlacementViewControl.Start();
                             }
                             else
                             {
-                                EncounterModule.IntroViewControl.Show();
+                                EncounterFlowControl.IntroViewControl.Show();
                             }
                             break;
 
                         case EncounterMessage.EventType.IntroComplete:
-                            EncounterModule.IntroViewControl.Hide();
+                            EncounterFlowControl.IntroViewControl.Hide();
                             ProgressState();
-                            EncounterModule.UnitPlacementViewControl.Start();
+                            EncounterFlowControl.UnitPlacementViewControl.Start();
                             break;
 
                         case EncounterMessage.EventType.UnitPlacementComplete:
 
-                            EncounterModule.UnitPlacementViewControl.Cleanup();
+                            EncounterFlowControl.UnitPlacementViewControl.Cleanup();
                             ProgressState();
 
                             break;
@@ -318,7 +318,7 @@ namespace MAGE.GameModes.Encounter
 
                         case EncounterMessage.EventType.TurnFinished:
                         {
-                            EncounterModule.Model.TurnCompleted = true;
+                            EncounterFlowControl.Model.TurnCompleted = true;
                             ProgressFlow();
                         }
                         break;
@@ -327,13 +327,13 @@ namespace MAGE.GameModes.Encounter
                         {
                             Character kodCharacter = message.Arg<Character>();
 
-                            if (kodCharacter == EncounterModule.Model.CurrrentTurnCharacter)
+                            if (kodCharacter == EncounterFlowControl.Model.CurrrentTurnCharacter)
                             {
                                 kodCharacter.DecrementClock();
-                                EncounterModule.Model.TurnCompleted = true;
+                                EncounterFlowControl.Model.TurnCompleted = true;
                             }
 
-                            EncounterModule.Model.PendingCharacterTurns.Remove(kodCharacter);
+                            EncounterFlowControl.Model.PendingCharacterTurns.Remove(kodCharacter);
                         }
                         break;
                     }

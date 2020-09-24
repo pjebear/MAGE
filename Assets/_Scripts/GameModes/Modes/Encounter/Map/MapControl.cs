@@ -106,7 +106,7 @@ namespace MAGE.GameModes.SceneElements
             Character character = Map.TileAt(tile.Idx).OnTile;
             if (character != null)
             {
-                onTile = EncounterModule.CharacterDirector.CharacterActorLookup[character];
+                onTile = EncounterFlowControl.CharacterDirector.CharacterActorLookup[character];
             }
             return onTile;
         }
@@ -118,7 +118,7 @@ namespace MAGE.GameModes.SceneElements
             if (target.TargetType == TargetSelectionType.Character)
             {
                 Character character = target.CharacterTarget;
-                transform = EncounterModule.CharacterDirector.CharacterActorLookup[character].transform;
+                transform = EncounterFlowControl.CharacterDirector.CharacterActorLookup[character].transform;
             }
             else
             {

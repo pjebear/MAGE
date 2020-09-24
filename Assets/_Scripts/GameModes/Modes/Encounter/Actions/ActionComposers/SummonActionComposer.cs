@@ -20,7 +20,7 @@ namespace MAGE.GameModes.Encounter
             timelineEvents.AddRange(casterAnimationBlock.Events);
 
             CharacterPosition ownerPosition = map.GetCharacterPosition(ownerController.Character);
-            List<Tile> tiles = EncounterModule.MapControl.Map.GetTargetedTiles(ownerPosition, targetSelection);
+            List<Tile> tiles = map.GetTargetedTiles(ownerPosition, targetSelection);
 
             SummonInfoBase summonInfo = actionInfo as SummonInfoBase;
             Debug.Assert(summonInfo != null);
@@ -37,7 +37,7 @@ namespace MAGE.GameModes.Encounter
                 Character summon = CharacterService.Get().GetCharacter(characterId);
                 summon.TeamSide = ownerController.Character.TeamSide;
 
-                EncounterModule.CharacterDirector.AddCharacter(
+                EncounterFlowControl.CharacterDirector.AddCharacter(
                     summon, 
                     new CharacterPosition(tile.TileIdx, OrientationUtil.Flip(ownerPosition.Orientation)), 
                     ownerController.Character);

@@ -9,14 +9,21 @@ using System.Threading.Tasks;
 
 namespace MAGE.GameModes.FlowControl
 {
-    class MapViewControl : UIContainerControl
+    class MapViewControl 
+        : FlowControlBase
+        , UIContainerControl
     {
-        public void Start()
+        public override FlowControlId GetFlowControlId()
+        {
+            return FlowControlId.Map;
+        }
+
+        protected override void Setup()
         {
             UIManager.Instance.PostContainer(UIContainerId.MapView, this);
         }
 
-        public void Cleanup()
+        protected override void Cleanup()
         {
             UIManager.Instance.RemoveOverlay(UIContainerId.MapView);
         }
@@ -34,14 +41,14 @@ namespace MAGE.GameModes.FlowControl
                             case (int)MapView.ComponentId.ForestLevelBtn:
                             {
                                 MAGE.GameSystems.WorldService.Get().UpdatePartyLocation(new PartyLocation() { Level = GameSystems.LevelId.Forest, SpawnPoint = 0 });
-                                GameModesModule.Instance.Explore();
+                                SendFlowMessage("back");
                             }
                             break;
 
                             case (int)MapView.ComponentId.DemoLevelBtn:
                             {
                                 MAGE.GameSystems.WorldService.Get().UpdatePartyLocation(new PartyLocation() { Level = GameSystems.LevelId.DemoLevel, SpawnPoint = 0 });
-                                GameModesModule.Instance.Explore();
+                                SendFlowMessage("back");
                             }
                             break;
                         }

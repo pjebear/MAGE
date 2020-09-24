@@ -10,23 +10,25 @@ using UnityEngine;
 namespace MAGE.GameModes.FlowControl
 {
     class ExplorationMenuViewControl
-        : UIContainerControl
+        : FlowControlBase
+        , UIContainerControl
     {
         private Optional<int> mSelectedQuestIdx = Optional<int>.Empty;
 
-        public string Name()
+        public override FlowControlId GetFlowControlId()
         {
-            return "ExplorationMenuViewControl";
+            return FlowControlId.ExplorationMenuFlowControl;
         }
 
-        public void Show()
+        protected override void Setup()
         {
             UIManager.Instance.PostContainer(UIContainerId.ExplorationMenuView, this);
         }
 
-        public void Hide()
+        protected override void Cleanup()
         {
             UIManager.Instance.RemoveOverlay(UIContainerId.ExplorationMenuView);
+            UIManager.Instance.RemoveOverlay(UIContainerId.QuestLogView);
         }
 
         public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
@@ -60,22 +62,22 @@ namespace MAGE.GameModes.FlowControl
 
                     case (int)ExplorationMenuView.ComponentId.ExitBtn:
                     {
-                        GameModesModule.Instance.Quit();
+                        //GameModesModule.Instance.Quit();
                     }
                     break;
                     case (int)ExplorationMenuView.ComponentId.OutfiterBtn:
                     {
-                        GameModesModule.Instance.Outfit();
+                        //GameModesModule.Instance.Outfit();
                     }
                     break;
                     case (int)ExplorationMenuView.ComponentId.RandomEncounter:
                     {
-                        ExplorationModule.Instance.TriggerRandomEncounter();
+                        //ExplorationModule.Instance.TriggerRandomEncounter();
                     }
                     break;
                     case (int)ExplorationMenuView.ComponentId.MapBtn:
                     {
-                        GameModesModule.Instance.Map();
+                        //GameModesModule.Instance.Map();
                     }
                     break;
                     case (int)ExplorationMenuView.ComponentId.QuestLog:
@@ -138,6 +140,11 @@ namespace MAGE.GameModes.FlowControl
             }
 
             return dp;
+        }
+
+        public string Name()
+        {
+            return GetFlowControlId().ToString();
         }
     }
 

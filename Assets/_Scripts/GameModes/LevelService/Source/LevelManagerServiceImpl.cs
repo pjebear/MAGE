@@ -1,4 +1,5 @@
-﻿using MAGE.GameModes.SceneElements;
+﻿using MAGE.GameModes.FlowControl;
+using MAGE.GameModes.SceneElements;
 using MAGE.GameSystems;
 using MAGE.GameSystems.World;
 using MAGE.Messaging;
@@ -12,35 +13,138 @@ using UnityEngine;
 namespace MAGE.GameModes.LevelManagement.Internal
 {
     class LevelManagerServiceImpl 
-        : MonoBehaviour
+        : FlowControl.FlowControlBase
         , ILevelManagerService
-        , IMessageHandler
+        
     {
         private readonly string TAG = "LevelManagerServiceImpl";
 
         private Level mLoadedLevel = null;
         private AssetLoader<Level> mLevelLoader = null;
 
-        public void Init()
+        // Flow Control
+        public override FlowControlId GetFlowControlId()
         {
+            return FlowControlId.Level;
+        }
+
+        protected override void Setup()
+        {
+            LevelManagementService.Register(this);
+
             DBService.Get().RegisterForAppearanceUpdates(this, OnAppearanceDBUpdated);
             DBService.Get().RegisterForCinematicUpdates(this, OnCinematicDBUpdated);
             DBService.Get().RegisterForEncounterUpdates(this, OnEncounterDBUpdated);
             DBService.Get().RegisterForPropUpdates(this, OnPropDBUpdated);
-            
-
-            MessageRouter.Instance.RegisterHandler(this);
         }
 
-        public void Takedown()
+        protected override void Cleanup()
         {
-            MessageRouter.Instance.UnRegisterHandler(this);
-
             DBService.Get().UnRegisterForAppearanceUpdates(this);
             DBService.Get().UnRegisterForCinematicUpdates(this);
             DBService.Get().UnRegisterForEncounterUpdates(this);
             DBService.Get().UnRegisterForPropUpdates(this);
-            
+
+            LevelManagementService.UnRegister();
+        }
+
+        public override bool Notify(string notifyEvent)
+        {
+            bool handled = false;
+            switch (notifyEvent)
+            {
+                case "loadLevel":
+                {
+                    PartyLocation location = WorldService.Get().GetPartyLocation();
+                    LoadLevel(location.Level);
+
+                    handled = true;
+                }
+                break;
+            }
+
+            return handled;
+        }
+
+        public override string Query(string queryEvent)
+        { 
+            string queryResult = "";
+
+            switch (queryEvent)
+            {
+                case "levelFlowType":
+                {
+                    if (mLoadedLevel.GetActiveCinematics().Count > 0)
+                    {
+                        queryResult = "cinematic";
+                    }
+                    else if (mLoadedLevel.GetActiveEncounters().Count > 0)
+                    {
+                        queryResult = "encounter";
+                    }
+                    else
+                    {
+                        queryResult = "explore";
+                    }
+                }
+                break;
+            }
+
+            return queryResult;
+        }
+
+
+        // IMessageHandler
+        public override void HandleMessage(MessageInfoBase eventInfoBase)
+        {
+            switch (eventInfoBase.MessageId)
+            {
+                case (LevelMessage.Id):
+                {
+                    LevelMessage levelMessage = eventInfoBase as LevelMessage;
+                    switch (levelMessage.Type)
+                    {
+                        case (MessageType.CinematicAvailable):
+                        {
+                            SendFlowMessage("cinematicAvailable");
+                        }
+                        break;
+
+                        case (MessageType.EncounterAvailable):
+                        {
+                            SendFlowMessage("encounterAvailable");
+                        }
+                        break;
+
+                        case (MessageType.CinematicComplete):
+                        {
+                            CinematicId completedCinematic = levelMessage.Arg<CinematicMoment>().CinematicId;
+
+                            DB.DBCinematicInfo info = DBService.Get().LoadCinematicInfo((int)completedCinematic);
+                            info.IsActive = false;
+                            DBService.Get().WriteCinematicInfo((int)completedCinematic, info);
+
+                            StoryService.Get().NotifyStoryEvent(new GameSystems.Story.StoryEventBase(completedCinematic));
+                        }
+                        break;
+
+                        case (MessageType.EncounterComplete):
+                        {
+                            EncounterScenarioId completedEncounter = levelMessage.Arg<EncounterContainer>().EncounterScenarioId;
+
+                            DB.DBEncounterInfo info = DBService.Get().LoadEncounterInfo((int)completedEncounter);
+                            info.IsActive = false;
+                            DBService.Get().WriteEncounterInfo((int)completedEncounter, info);
+
+                            StoryService.Get().NotifyStoryEvent(new GameSystems.Story.StoryEventBase(completedEncounter));
+                        }
+                        break;
+                    }
+
+                }
+                break;
+            }
+
         }
 
         // DB Updates
@@ -109,6 +213,8 @@ namespace MAGE.GameModes.LevelManagement.Internal
         public void NotifyLevelLoaded(Level level)
         {
             mLoadedLevel = level;
+
+            SendFlowMessage("levelLoaded");
         }
 
         public void UnloadLevel()
@@ -130,44 +236,6 @@ namespace MAGE.GameModes.LevelManagement.Internal
             DBService.Get().WritePropInfo(updatedInfo.Tag.Id, PropUtil.ToDB(updatedInfo));
         }
 
-        public void HandleMessage(MessageInfoBase eventInfoBase)
-        {
-            switch (eventInfoBase.MessageId)
-            {
-                case (LevelMessage.Id):
-                {
-                    LevelMessage levelMessage = eventInfoBase as LevelMessage;
-                    switch (levelMessage.Type)
-                    {
-                        case (MessageType.CinematicComplete):
-                        {
-                            CinematicId completedCinematic = levelMessage.Arg<CinematicMoment>().CinematicId;
-
-                            DB.DBCinematicInfo info = DBService.Get().LoadCinematicInfo((int)completedCinematic);
-                            info.IsActive = false;
-                            DBService.Get().WriteCinematicInfo((int)completedCinematic, info);
-
-                            StoryService.Get().NotifyStoryEvent(new GameSystems.Story.StoryEventBase(completedCinematic));
-                        }
-                        break;
-
-                        case (MessageType.EncounterComplete):
-                        {
-                            //EncounterScenarioId completedEncounter = levelMessage.Arg<CinematicMoment>().CinematicId;
-
-                            //DB.DBCinematicInfo info = DBService.Get().LoadCinematicInfo((int)completedCinematic);
-                            //info.IsActive = false;
-                            //DBService.Get().WriteCinematicInfo((int)completedCinematic, info);
-
-                            //StoryService.Get().NotifyStoryEvent(new GameSystems.Story.StoryEventBase(completedCinematic));
-                        }
-                        break;
-                    }
-
-                }
-                break;
-            }
-
-        }
+        
     }
 }

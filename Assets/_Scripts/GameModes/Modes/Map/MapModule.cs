@@ -9,48 +9,43 @@ using UnityEngine;
 
 namespace MAGE.GameModes
 {
-    class MapModule : GameModeBase
+    class MapModule : MonoBehaviour
     {
-        public bool AutoStart = true;
+        //public bool AutoStart = true;
 
-        MapViewControl ViewControl;
+        //MapViewControl ViewControl;
 
-        public override GameModeType GetGameModeType()
-        {
-            return GameModeType.Map;
-        }
+        //public override GameModeType GetGameModeType()
+        //{
+        //    return GameModeType.Map;
+        //}
 
-        public override LevelId GetLevelId()
-        {
-            return LevelId.INVALID;
-        }
+        //public override void Init()
+        //{
 
-        public override void Init()
-        {
+        //}
 
-        }
+        //protected override void CleanUpFlow()
+        //{
+        //    // nothing to cleanup
+        //    Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.ModeTakedown_Complete));
+        //}
 
-        protected override void CleanUpMode()
-        {
-            // nothing to cleanup
-            Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.ModeTakedown_Complete));
-        }
+        //protected override void EndFlow()
+        //{
+        //    ViewControl.Cleanup();
+        //}
 
-        protected override void EndMode()
-        {
-            ViewControl.Cleanup();
-        }
+        //protected override void SetupFlow()
+        //{
+        //    ViewControl = new MapViewControl();
+        //    Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.ModeSetup_Complete));
+        //}
 
-        protected override void SetupMode()
-        {
-            ViewControl = new MapViewControl();
-            Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.ModeSetup_Complete));
-        }
-
-        protected override void StartMode()
-        {
-            ViewControl.Start();
-        }
+        //protected override void StartFlow()
+        //{
+        //    ViewControl.Start();
+        //}
     }
 }
 

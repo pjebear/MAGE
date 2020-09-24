@@ -1,25 +1,18 @@
 ﻿using MAGE.GameModes.FlowControl;
-using MAGE.GameModes.LevelManagement;
 using MAGE.GameModes.SceneElements;
 using MAGE.GameSystems;
 using MAGE.GameSystems.Characters;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace MAGE.GameModes.Encounter
 {
-    class EncounterModule : GameModeBase
+    class EncounterFlowControl : FlowControlBase
     {
-        private string TAG = "EncounterModule";
+        private string TAG = "EncounterFlowControl";
 
         public bool RunDebug = false;
-
-        public GameObject MapPrefab;
 
         private GameObject View;
         private AudioSource mAmbientSoundSource;
@@ -42,42 +35,52 @@ namespace MAGE.GameModes.Encounter
         public static MasterFlowControl MasterFlowControl;
         public static TurnFlowControl TurnFlowControl;
 
-        public override void Init()
+        protected void CalculateSpawnPoints()
+        {
+            Model.AllySpawnPoints = new List<TileIdx>();
+            for (int y = 0; y < 2; ++y)
+            {
+                for (int x = 0; x < MapControl.Map.Width; ++x)
+                {
+                    Model.AllySpawnPoints.Add(new TileIdx(x, y));
+                }
+            }
+
+            Model.EnemySpawnPoints = new List<TileIdx>();
+            for (int y = 0; y < 2; ++y)
+            {
+                for (int x = 0; x < MapControl.Map.Width; ++x)
+                {
+                    Model.EnemySpawnPoints.Add(new TileIdx(x, MapControl.Map.Length - 1 - y));
+                }
+            }
+        }
+
+        public override FlowControlId GetFlowControlId()
+        {
+            return FlowControlId.Encounter;
+        }
+
+        protected override void Setup()
         {
             Model = new EncounterModel();
 
             Model.EncounterContext = new GameSystems.World.EncounterContext();
 
-            CharacterDirector = GetComponent<CharacterDirector>();
-            AnimationDirector = GetComponent<AnimationDirector>();
-            ActionDirector = GetComponent<ActionDirector>();
-            MovementDirector = GetComponent<MovementDirector>();
-            AnimationDirector = GetComponent<AnimationDirector>();
-            AuraDirector = GetComponent<AuraDirector>();
-            ProjectileDirector = GetComponent<ProjectileDirector>();
-            EffectSpawner = GetComponentInChildren<EffectSpawner>();
+            CharacterDirector = gameObject.AddComponent<CharacterDirector>();
+            AnimationDirector = gameObject.AddComponent<AnimationDirector>();
+            ActionDirector = gameObject.AddComponent<ActionDirector>();
+            MovementDirector = gameObject.AddComponent<MovementDirector>();
+            AnimationDirector = gameObject.AddComponent<AnimationDirector>();
+            AuraDirector = gameObject.AddComponent<AuraDirector>();
+            ProjectileDirector = gameObject.AddComponent<ProjectileDirector>();
+            EffectSpawner = gameObject.AddComponent<EffectSpawner>();
 
-            IntroViewControl = GetComponent<EncounterIntroViewControl>();
+            IntroViewControl = gameObject.AddComponent<EncounterIntroViewControl>();
             UnitPlacementViewControl = new EncounterUnitPlacementViewControl();
-            StatusViewControl = GetComponent<EncounterStatusControl>();
-            TurnFlowControl = GetComponent<TurnFlowControl>();
-            MasterFlowControl = GetComponent<MasterFlowControl>();
-        }
-
-        public override GameSystems.LevelId GetLevelId()
-        {
-            EncounterScenarioId encounterId = WorldService.Get().GetEncounterParams().ScenarioId;
-            LevelId levelId = LevelManagementService.Get().GetEncounterInfo((int)encounterId).LevelId;
-
-            return levelId;
-        }
-
-        protected override void SetupMode()
-        {
-            Logger.Log(LogTag.GameModes, TAG, "::SetupMode()");
-
-            // Level Manager:
-            //TODO: Load level if needed
+            StatusViewControl = gameObject.AddComponent<EncounterStatusControl>();
+            TurnFlowControl = gameObject.AddComponent<TurnFlowControl>();
+            MasterFlowControl = gameObject.AddComponent<MasterFlowControl>();
 
             MAGE.GameModes.ILevelManagerService levelManagerService = MAGE.GameModes.LevelManagementService.Get();
             Level level = levelManagerService.GetLoadedLevel();
@@ -150,46 +153,20 @@ namespace MAGE.GameModes.Encounter
             IntroViewControl.Init();
             UnitPlacementViewControl.Init();
 
-            Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.ModeSetup_Complete));
-        }
-
-        protected override void CleanUpMode()
-        {
-            MAGE.GameModes.ILevelManagerService levelManagerService = MAGE.GameModes.LevelManagementService.Get();
-            if (mEncounterContainer.EncounterScenarioId == EncounterScenarioId.Random)
-            {
-                Destroy(mEncounterContainer.gameObject);
-            }
-            else
-            {
-                EncounterInfo info = levelManagerService.GetEncounterInfo((int)mEncounterContainer.EncounterScenarioId);
-                info.IsActive = false;
-                levelManagerService.UpdateEncounterInfo(info);
-            }
-            Level level = levelManagerService.GetLoadedLevel();
-            level.ToggleTreeColliders(true);
-            //MapControl.Cleanup();
-            Destroy(CameraDirector);
-            Destroy(Camera.main.GetComponent<AudioListener>());
-            CharacterDirector.CleanupCharacters();
-
-            Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.ModeTakedown_Complete));
-        }
-
-        protected override void StartMode()
-        {
             mAmbientSoundSource = gameObject.AddComponent<AudioSource>();
-            mAmbientSoundSource.clip = GameModesModule.AudioManager.GetTrack(TrackId.Encounter);
+            mAmbientSoundSource.clip = AudioManager.Instance.GetTrack(TrackId.Encounter);
             mAmbientSoundSource.loop = true;
             mAmbientSoundSource.spatialBlend = 0; // global volume
             //mAmbientSoundSource.Play();
-            //GameModesModule.AudioManager.FadeInTrack(mAmbientSoundSource, 10, .5f);
+            //AudioManager.Instance.FadeInTrack(mAmbientSoundSource, 10, .5f);
 
             Messaging.MessageRouter.Instance.NotifyMessage(new EncounterMessage(EncounterMessage.EventType.EncounterBegun));
         }
 
-        protected override void EndMode()
+        protected override void Cleanup()
         {
+            UnitPlacementViewControl.Cleanup();
+
             EncounterResultInfo resultInfo = new EncounterResultInfo();
             resultInfo.DidUserWin = Model.EncounterState == EncounterState.Win;
             resultInfo.PlayersInEncounter = new Teams();
@@ -202,32 +179,28 @@ namespace MAGE.GameModes.Encounter
             }
 
             MAGE.GameSystems.WorldService.Get().UpdateOnEncounterEnd(resultInfo);
-        }
 
-        public override GameModeType GetGameModeType()
-        {
-            return GameModeType.Encounter;
-        }
-
-        protected void CalculateSpawnPoints()
-        {
-            Model.AllySpawnPoints = new List<TileIdx>();
-            for (int y = 0; y < 2; ++y)
+            MAGE.GameModes.ILevelManagerService levelManagerService = MAGE.GameModes.LevelManagementService.Get();
+            if (mEncounterContainer.EncounterScenarioId == EncounterScenarioId.Random)
             {
-                for (int x = 0; x < MapControl.Map.Width; ++x)
-                {
-                    Model.AllySpawnPoints.Add(new TileIdx(x, y));
-                }
+                Destroy(mEncounterContainer.gameObject);
+            }
+            else
+            {
+                EncounterInfo info = levelManagerService.GetEncounterInfo((int)mEncounterContainer.EncounterScenarioId);
+                info.IsActive = false;
+                levelManagerService.UpdateEncounterInfo(info);
             }
 
-            Model.EnemySpawnPoints = new List<TileIdx>();
-            for (int y = 0; y < 2; ++y)
-            {
-                for (int x = 0; x < MapControl.Map.Width; ++x)
-                {
-                    Model.EnemySpawnPoints.Add(new TileIdx(x, MapControl.Map.Length - 1 - y));
-                }
-            }
+
+            Level level = levelManagerService.GetLoadedLevel();
+            level.ToggleTreeColliders(true);
+            //MapControl.Cleanup();
+            Destroy(CameraDirector);
+            Destroy(Camera.main.GetComponent<AudioListener>());
+            CharacterDirector.CleanupCharacters();
+
+            Messaging.MessageRouter.Instance.NotifyMessage(new LevelManagement.LevelMessage(LevelManagement.MessageType.EncounterComplete, mEncounterContainer));
         }
     }
 }

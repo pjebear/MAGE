@@ -63,7 +63,7 @@ namespace MAGE.GameModes.FlowControl
         public void Init()
         {
             mSelectionStack = new TileSelectionStack();
-            mActionCalculator = new ActionTileCalculator(EncounterModule.MapControl.Map);
+            mActionCalculator = new ActionTileCalculator(EncounterFlowControl.MapControl.Map);
             Messaging.MessageRouter.Instance.RegisterHandler(this);
         }
 
@@ -71,17 +71,20 @@ namespace MAGE.GameModes.FlowControl
         {
             Messaging.MessageRouter.Instance.UnRegisterHandler(this);
             Input.InputManager.Instance.RegisterHandler(this, false);
+
+            UIManager.Instance.RemoveOverlay(UIContainerId.ActorActionsView);
+            UIManager.Instance.RemoveOverlay(UIContainerId.EncounterCharacterInfoView);
         }
 
         public void ProgressTurn(Character character)
         {
             mCharacter = character;
-            Transform actorTransform = EncounterModule.CharacterDirector.GetController(character).transform;
-            EncounterModule.CameraDirector.FocusTarget(actorTransform);
+            Transform actorTransform = EncounterFlowControl.CharacterDirector.GetController(character).transform;
+            EncounterFlowControl.CameraDirector.FocusTarget(actorTransform);
             mState = TurnState.SelectAction;
 
-            mMovementPathFinder.CalculatePaths(EncounterModule.MapControl.Map
-                , EncounterModule.MapControl.Map.GetCharacterPosition(mCharacter).Location
+            mMovementPathFinder.CalculatePaths(EncounterFlowControl.MapControl.Map
+                , EncounterFlowControl.MapControl.Map.GetCharacterPosition(mCharacter).Location
                 , mCharacter.TeamSide
                 , mCharacter.CurrentAttributes[TertiaryStat.Movement]
                 , mCharacter.CurrentAttributes[TertiaryStat.Jump]);
@@ -182,7 +185,7 @@ namespace MAGE.GameModes.FlowControl
                     mState = TurnState.SelectMovementLocation;
                     
                     mValidHoverSelections = 
-                        EncounterModule.MapControl.GetTiles(mMovementPathFinder.GetPossibleTiles());
+                        EncounterFlowControl.MapControl.GetTiles(mMovementPathFinder.GetPossibleTiles());
                     AddTileSelection(mValidHoverSelections, TileControl.HighlightState.MovementSelect);
 
                     AddTileSelection(new List<TileControl>(), TileControl.HighlightState.AOESelect);
@@ -215,25 +218,25 @@ namespace MAGE.GameModes.FlowControl
                 if (mSelectedAction.IsSelfCast)
                 {
                     mState = TurnState.ConfirmAbilityTarget;
-                    mHoveredTile = EncounterModule.MapControl[EncounterModule.CharacterDirector.GetCharacterPosition(mCharacter)];
+                    mHoveredTile = EncounterFlowControl.MapControl[EncounterFlowControl.CharacterDirector.GetCharacterPosition(mCharacter)];
                     mValidHoverSelections = new List<TileControl>() { mHoveredTile };
 
                     List<Tile> autoSelection = mActionCalculator.CalculateTilesInRange(
-                        EncounterModule.CharacterDirector.GetCharacterPosition(mCharacter),
-                        EncounterModule.CharacterDirector.GetCharacterPosition(mCharacter),
+                        EncounterFlowControl.CharacterDirector.GetCharacterPosition(mCharacter),
+                        EncounterFlowControl.CharacterDirector.GetCharacterPosition(mCharacter),
                         mSelectedAction.EffectRange);
 
-                    AddTileSelection(EncounterModule.MapControl.GetTiles(autoSelection), TileControl.HighlightState.AOESelect);
+                    AddTileSelection(EncounterFlowControl.MapControl.GetTiles(autoSelection), TileControl.HighlightState.AOESelect);
                 }
                 else
                 {
                     mState = TurnState.SelectAbilityTarget;
                     mHoverRangeInfo = mSelectedAction.EffectRange;
 
-                    mValidHoverSelections = EncounterModule.MapControl.GetTiles(
+                    mValidHoverSelections = EncounterFlowControl.MapControl.GetTiles(
                         mActionCalculator.CalculateTilesInRange(
-                        EncounterModule.CharacterDirector.GetCharacterPosition(mCharacter),
-                        EncounterModule.CharacterDirector.GetCharacterPosition(mCharacter),
+                        EncounterFlowControl.CharacterDirector.GetCharacterPosition(mCharacter),
+                        EncounterFlowControl.CharacterDirector.GetCharacterPosition(mCharacter),
                         mSelectedAction.CastRange));
 
                     AddTileSelection(mValidHoverSelections, TileControl.HighlightState.TargetSelect);
@@ -263,20 +266,20 @@ namespace MAGE.GameModes.FlowControl
                 mCharacter.UpdateOnMoved();
 
 
-                List<TileControl> tilePath = EncounterModule.MapControl.GetTiles(mMovementPathFinder.GetPathTo(mSelectedTile.Idx));
+                List<TileControl> tilePath = EncounterFlowControl.MapControl.GetTiles(mMovementPathFinder.GetPathTo(mSelectedTile.Idx));
                 List<Transform> route = new List<Transform>();
                 foreach (TileControl tile in tilePath) { route.Add(tile.transform); }
 
-                EncounterModule.MovementDirector.DirectMovement(
-                    EncounterModule.CharacterDirector.GetController(mCharacter).ActorController,
+                EncounterFlowControl.MovementDirector.DirectMovement(
+                    EncounterFlowControl.CharacterDirector.GetController(mCharacter).ActorController,
                     route, () =>
                     {
                         Messaging.MessageRouter.Instance.NotifyMessage(new EncounterMessage(EncounterMessage.EventType.MoveResolved));
                         // TODO: figure out orrientation
                         CharacterPosition newPos = new CharacterPosition();
                         newPos.Location = mSelectedTile.Idx;
-                        newPos.Orientation = EncounterModule.CharacterDirector.GetController(mCharacter).GetOrientation();
-                        EncounterModule.CharacterDirector.UpdateCharacterPosition(mCharacter, newPos);
+                        newPos.Orientation = EncounterFlowControl.CharacterDirector.GetController(mCharacter).GetOrientation();
+                        EncounterFlowControl.CharacterDirector.UpdateCharacterPosition(mCharacter, newPos);
                     });
 
                 OnActionSelected();
@@ -303,7 +306,7 @@ namespace MAGE.GameModes.FlowControl
 
                 OnActionSelected();
 
-                EncounterModule.ActionDirector.DirectAction(actionProposal);
+                EncounterFlowControl.ActionDirector.DirectAction(actionProposal);
             }
             else
             {
@@ -520,8 +523,8 @@ namespace MAGE.GameModes.FlowControl
             List<TileControl> hoverSelection = new List<TileControl>();
             if (mHoveredTile != null)
             {
-                hoverSelection = EncounterModule.MapControl.GetTiles(mActionCalculator.CalculateTilesInRange(
-                    EncounterModule.CharacterDirector.GetCharacterPosition(mCharacter),
+                hoverSelection = EncounterFlowControl.MapControl.GetTiles(mActionCalculator.CalculateTilesInRange(
+                    EncounterFlowControl.CharacterDirector.GetCharacterPosition(mCharacter),
                      hoveredTile.Idx,
                     mHoverRangeInfo));
             }

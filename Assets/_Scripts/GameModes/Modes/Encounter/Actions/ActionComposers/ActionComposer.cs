@@ -16,7 +16,7 @@ namespace MAGE.GameModes.Encounter
 
         public static void ComposeAction(ActionProposal proposal, Map map, out ActionResult result, out Timeline<ActionEvent> timeline)
         {
-            CharacterActorController proposerController = EncounterModule.CharacterDirector.CharacterActorLookup[proposal.Proposer];
+            CharacterActorController proposerController = EncounterFlowControl.CharacterDirector.CharacterActorLookup[proposal.Proposer];
             ActionInfo actionInfo = proposal.Proposer.GetActionInfo(proposal.Action);
             TargetSelection targetSelection = proposal.ActionTarget;
 

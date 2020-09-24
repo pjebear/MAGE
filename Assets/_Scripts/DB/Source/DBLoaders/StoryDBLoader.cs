@@ -77,6 +77,13 @@ namespace MAGE.DB.Internal
 
                 // Nodes
                 {
+                    { // Training Battles
+                        storyArcInfo.StoryArc.Add(StoryDBUtil.CreateCompleteEncounterStoryNode(
+                            ""
+                            , ""
+                            , (int)EncounterScenarioId.Demo_TrainingGrounds));
+                    }
+
                     { // Opening Cinematic
                         DBStoryNodeInfo storyNode = StoryDBUtil.CreateViewCinematicStoryNode(
                             ""
@@ -121,7 +128,7 @@ namespace MAGE.DB.Internal
                             , (int)EncounterScenarioId.Demo_TrainingGrounds));
                     }
 
-                    { // Talk with captain to trigger tutorial battle
+                    { // Talk with captain to review what happens next
                         storyArcInfo.StoryArc.Add(StoryDBUtil.CreateConversationStoryNode(
                             "Training complete"
                             , "See Balgrid now that the training is complete"

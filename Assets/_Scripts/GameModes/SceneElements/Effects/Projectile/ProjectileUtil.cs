@@ -21,13 +21,13 @@ namespace MAGE.GameModes.Encounter
             TileControl projectileEndPoint = null;
             if (target.TargetType == TargetSelectionType.Character)
             {
-                TileIdx location = EncounterModule.CharacterDirector.GetCharacterPosition(target.CharacterTarget);
-                projectileEndPoint = EncounterModule.MapControl[location];
+                TileIdx location = EncounterFlowControl.CharacterDirector.GetCharacterPosition(target.CharacterTarget);
+                projectileEndPoint = EncounterFlowControl.MapControl[location];
             }
             else
             {
                 TileIdx location = target.TileTarget;
-                projectileEndPoint = EncounterModule.MapControl[location];
+                projectileEndPoint = EncounterFlowControl.MapControl[location];
             }
 
             return GenerateSpawnParams(spawnPoint, projectileEndPoint, pathType, projectileId);
@@ -115,8 +115,8 @@ namespace MAGE.GameModes.Encounter
                     bool filledTileAndCorrectCollision 
                         = end != null 
                         && collisionAlongArc != null
-                        && EncounterModule.MapControl.GetOnTile(end) != null
-                        && collisionAlongArc.GetComponent<CharacterActorController>() == EncounterModule.MapControl.GetOnTile(end);
+                        && EncounterFlowControl.MapControl.GetOnTile(end) != null
+                        && collisionAlongArc.GetComponent<CharacterActorController>() == EncounterFlowControl.MapControl.GetOnTile(end);
 
                     if (emptyTileAndNoCollisions || filledTileAndCorrectCollision)
                     {

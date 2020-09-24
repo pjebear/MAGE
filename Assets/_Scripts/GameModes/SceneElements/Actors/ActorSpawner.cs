@@ -58,13 +58,18 @@ namespace MAGE.GameModes.SceneElements
             {
                 SpawnerPlaceHolder.gameObject.SetActive(false);
 
-                if (Actor != null && Actor != SpawnerPlaceHolder)
-                {
-                    Destroy(Actor.gameObject);
-                }
+                Actor oldActor = Actor;
 
                 Actor = ActorLoader.Instance.CreateActor(Appearance, transform);
 
+                if (oldActor != null)
+                {
+                    Actor.gameObject.layer = oldActor.gameObject.layer;
+                    if (oldActor != SpawnerPlaceHolder)
+                    {
+                        Destroy(oldActor.gameObject);
+                    }
+                }
             }
             else
             {

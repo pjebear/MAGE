@@ -69,7 +69,7 @@ namespace MAGE.GameModes.FlowControl
                             break;
                             case (int)OutfiterSelectView.ComponentId.ExitBtn:
                             {
-                                GameModesModule.Instance.Explore();
+                                //GameModesModule.Instance.Explore();
                             }
                             break;
                             case (int)OutfiterSelectView.ComponentId.EquipBtn:
@@ -150,7 +150,7 @@ namespace MAGE.GameModes.FlowControl
                 GameObject.Destroy(mCharacterSpawnPoint.GetChild(0).gameObject);
             }
 
-            GameModesModule.ActorLoader.CreateActor(mOutfitingCharacter.GetAppearance(), mCharacterSpawnPoint);
+            ActorLoader.Instance.CreateActor(mOutfitingCharacter.GetAppearance(), mCharacterSpawnPoint);
         }
     }
 }

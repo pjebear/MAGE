@@ -85,7 +85,13 @@ namespace MAGE.GameModes.SceneElements
                         if (go.tag == "Model")
                         {
                             ActorSpawner actorSpawner = go.GetComponentInParent<ActorSpawner>();
-                            mCinematic.SetGenericBinding(animationTrack, actorSpawner.Actor.GetComponentInChildren<Animator>());
+                            actorSpawner.Refresh();
+                            actorSpawner.RefreshOnStart = false;
+                            actorSpawner.RefreshOnUpdate = false;
+                            Animator actorAnimator = actorSpawner.Actor.GetComponentInChildren<Animator>(true);
+                            mCinematic.SetGenericBinding(animationTrack, actorAnimator);
+
+                            Animator hopefulAnimator = (mCinematic.GetGenericBinding(animationTrack) as Animator);
 
                             if (actorSpawner.CharacterPicker.GetActorId() == GameSystems.WorldService.Get().GetPartyAvatarId())
                             {

@@ -9,14 +9,21 @@ namespace MAGE.GameModes
 {
     class ModulesContainer : MonoBehaviour
     {
+        
+
         public static ModulesContainer Container = null;
 
-        public GameModesModule GameModesModule;
-        public GameSystemModule GameSystemModule;
+        
         public UIManager UIManager;
 
         public bool DebugEncounter = false;
         public bool DebugExplore = false;
+
+
+        private ActorLoader mActorLoader;
+        private AudioManager mAudioManager;
+        private FlowControl.FlowManager mFlowManager;
+        public GameSystemModule mGameSystemModule;
 
         private void Awake()
         {
@@ -31,30 +38,43 @@ namespace MAGE.GameModes
                 DontDestroyOnLoad(gameObject);
 
                 Messaging.MessageRouter.Instance = gameObject.AddComponent<Messaging.MessageRouter>();
+                GameObject flowControlContainer = new GameObject("FlowControls");
+                flowControlContainer.transform.SetParent(transform);
+                mFlowManager = flowControlContainer.AddComponent<FlowControl.FlowManager>();
+                mActorLoader = gameObject.AddComponent<ActorLoader>();
+                mAudioManager = gameObject.AddComponent<AudioManager>();
+                mGameSystemModule = gameObject.AddComponent<GameSystemModule>();
 
-                GameSystemModule.InitModule();
-                GameModesModule.InitModule();
+                mGameSystemModule.InitModule();
                 UIManager.Initialize();
+                mFlowManager.Init();
 
-                if (DebugEncounter)
-                {
-                    MAGE.GameSystems.WorldService.Get().PrepareNewGame();
-                    EncounterCreateParams encounterCreateParams = new EncounterCreateParams();
-                    encounterCreateParams.BottomLeft = new TileIdx(12, 4);
-                    encounterCreateParams.TopRight = new TileIdx(24, 8);
-                    MAGE.GameSystems.WorldService.Get().PrepareEncounter(encounterCreateParams);
-                    GameModesModule.Encounter();
-                }
-                else if (DebugExplore)
-                {
-                    MAGE.GameSystems.WorldService.Get().PrepareNewGame();
-                    GameModesModule.Explore();
-                }
-                else 
-                {
-                    GameModesModule.MainMenu();
-                }
+                //if (DebugEncounter)
+                //{
+                //    MAGE.GameSystems.WorldService.Get().PrepareNewGame();
+                //    EncounterCreateParams encounterCreateParams = new EncounterCreateParams();
+                //    encounterCreateParams.BottomLeft = new TileIdx(12, 4);
+                //    encounterCreateParams.TopRight = new TileIdx(24, 8);
+                //    MAGE.GameSystems.WorldService.Get().PrepareEncounter(encounterCreateParams);
+                //    GameModesModule.Encounter();
+                //}
+                //else if (DebugExplore)
+                //{
+                //    MAGE.GameSystems.WorldService.Get().PrepareNewGame();
+                //    GameModesModule.Explore();
+                //}
+                //else 
+                //{
+                //    GameModesModule.MainMenu();
+                //}
             }
+
+           
+        }
+
+        private void Start()
+        {
+            mFlowManager.BeginFlow(new FlowControl.MainFlow());
         }
     }
 }

@@ -27,6 +27,7 @@ namespace MAGE.GameModes
 
             FadeOut,
             FadeIn,
+            FadeComplete,
 
             SetupBegin = UISetup_Begin,
             SetupEnd = ModeSetup_Complete,

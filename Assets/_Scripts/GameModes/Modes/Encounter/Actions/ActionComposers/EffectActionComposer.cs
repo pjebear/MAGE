@@ -20,7 +20,7 @@ namespace MAGE.GameModes.Encounter
             timelineEvents.AddRange(casterAnimationBlock.Events);
 
             CharacterPosition ownerPosition = map.GetCharacterPosition(ownerController.Character);
-            List<Character> targets = EncounterModule.MapControl.Map.GetTargetedCharacters(ownerPosition, targetSelection);
+            List<Character> targets = EncounterFlowControl.MapControl.Map.GetTargetedCharacters(ownerPosition, targetSelection);
             List<InteractionResult> interactionResults = InteractionResolver.ResolveInteraction(ownerController.Character, actionInfo, targets, map);
             Dictionary<Character, InteractionResult> targetResults = new Dictionary<Character, InteractionResult>();
 
@@ -28,7 +28,7 @@ namespace MAGE.GameModes.Encounter
             {
                 InteractionResult interactionResult = interactionResults[i];
                 targetResults.Add(targets[i], interactionResult);
-                CharacterActorController targetController = EncounterModule.CharacterDirector.CharacterActorLookup[targets[i]];
+                CharacterActorController targetController = EncounterFlowControl.CharacterDirector.CharacterActorLookup[targets[i]];
 
                 // Effect Spawn
                 Logger.Assert(actionInfo.EffectInfo.EffectId != EffectType.INVALID, LogTag.GameModes,

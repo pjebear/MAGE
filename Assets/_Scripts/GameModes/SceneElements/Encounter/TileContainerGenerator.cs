@@ -86,6 +86,11 @@ namespace MAGE.GameModes.SceneElements
             {
                 container.gameObject.AddComponent<TileContainer>();
             }
+            else
+            {
+                Logger.Log(LogTag.GameModes, "TileContainerGenerator", "You still need to remove tile containers at end of encounter!", LogLevel.Warning);
+                container.gameObject.GetComponent<TileContainer>().ClearTiles();
+            }
 
             TileContainer tileContainer = container.GetComponent<TileContainer>();
 

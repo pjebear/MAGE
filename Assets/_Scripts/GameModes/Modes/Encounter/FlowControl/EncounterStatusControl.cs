@@ -26,6 +26,7 @@ namespace MAGE.GameModes.FlowControl
         private void OnDestroy()
         {
             Messaging.MessageRouter.Instance.UnRegisterHandler(this);
+            UIManager.Instance.RemoveOverlay(UIContainerId.EncounterStatusView);
         }
 
         public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
@@ -37,19 +38,19 @@ namespace MAGE.GameModes.FlowControl
                     if (interactionInfo.ComponentId == (int)EncounterStatus.ComponentId.ContinueBtn
                         && interactionInfo.InteractionType == UIInteractionType.Click)
                     {
-                        GameModesModule.Instance.Explore();
+                        Messaging.MessageRouter.Instance.NotifyMessage(new FlowMessage(FlowMessage.EventType.FlowEvent, FlowAction.advance.ToString()));
                     }
                     else if (interactionInfo.ComponentId == (int)EncounterStatus.ComponentId.WinBtn
                         && interactionInfo.InteractionType == UIInteractionType.Click)
                     {
-                        EncounterModule.Model.EncounterState = EncounterState.Win;
-                        GameModesModule.Instance.Explore();
+                        EncounterFlowControl.Model.EncounterState = EncounterState.Win;
+                        Messaging.MessageRouter.Instance.NotifyMessage(new FlowMessage(FlowMessage.EventType.FlowEvent, FlowAction.advance.ToString()));
                     }
                     if (interactionInfo.ComponentId == (int)EncounterStatus.ComponentId.LoseBtn
                         && interactionInfo.InteractionType == UIInteractionType.Click)
                     {
-                        EncounterModule.Model.EncounterState = EncounterState.Defeat;
-                        GameModesModule.Instance.Explore();
+                        EncounterFlowControl.Model.EncounterState = EncounterState.Defeat;
+                        Messaging.MessageRouter.Instance.NotifyMessage(new FlowMessage(FlowMessage.EventType.FlowEvent, FlowAction.advance.ToString()));
                     }
                 }
                 break;
@@ -100,17 +101,17 @@ namespace MAGE.GameModes.FlowControl
             EncounterStatus.DataProvider dp = new EncounterStatus.DataProvider();
 
             List<string> turnOrder = new List<string>();
-            foreach (Character character in EncounterModule.Model.PendingCharacterTurns)
+            foreach (Character character in EncounterFlowControl.Model.PendingCharacterTurns)
             {
                 turnOrder.Add(character.Name);
             }
             dp.TurnOrder = turnOrder;
 
-            dp.CurrentTurn = EncounterModule.Model.Clock;
+            dp.CurrentTurn = EncounterFlowControl.Model.Clock;
 
-            if (EncounterModule.Model.CurrrentTurnCharacter != null)
+            if (EncounterFlowControl.Model.CurrrentTurnCharacter != null)
             {
-                Character currentTurn = EncounterModule.Model.CurrrentTurnCharacter;
+                Character currentTurn = EncounterFlowControl.Model.CurrrentTurnCharacter;
                 dp.ActorName = currentTurn.Name;
                 dp.ActorHealth = currentTurn.CurrentResources[ResourceType.Health].Current.ToString() + "/" + currentTurn.CurrentResources[ResourceType.Health].Max.ToString();
                 dp.ActorOwner = currentTurn.TeamSide.ToString();
@@ -121,7 +122,7 @@ namespace MAGE.GameModes.FlowControl
                 }
             }
 
-            dp.CurrentState = EncounterModule.Model.EncounterState;
+            dp.CurrentState = EncounterFlowControl.Model.EncounterState;
 
             return dp;
         }

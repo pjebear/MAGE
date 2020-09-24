@@ -6,8 +6,6 @@ namespace MAGE.GameModes.Encounter
 {
     class AnimationDirector : MonoBehaviour
     {
-        public DebugAnimationRig AnimationRigPrefab;
-
         private Dictionary<CharacterActorController, DebugAnimationRig> mActorToAnimationRigLookup;
         private HashSet<CharacterActorController> mRotatingActors;
 
@@ -21,7 +19,7 @@ namespace MAGE.GameModes.Encounter
         {
             GameObject canvas = GameObject.Find("Canvas");
 
-            DebugAnimationRig rig = Instantiate(AnimationRigPrefab, canvas.transform);
+            DebugAnimationRig rig = Instantiate(EncounterPrefabLoader.LoadAnimationRig(), canvas.transform);
             rig.ActorController = actor;
             mActorToAnimationRigLookup.Add(actor, rig);
         }
@@ -44,7 +42,7 @@ namespace MAGE.GameModes.Encounter
         public void RotateActorTowards(CharacterActorController actor, Transform target, float rotationDuration)
         {
 
-            EncounterModule.MovementDirector.RotateActor(actor.ActorController, target, null);
+            EncounterFlowControl.MovementDirector.RotateActor(actor.ActorController, target, null);
 
             //mRotatingActors.Add(actor);
             //StartCoroutine(RotateActor(actor, target, rotationDuration));

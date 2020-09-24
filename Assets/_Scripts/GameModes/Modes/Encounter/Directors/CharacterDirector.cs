@@ -10,8 +10,6 @@ namespace MAGE.GameModes.Encounter
 {
     class CharacterDirector : MonoBehaviour
     {
-        public BillboardEmitter BillboardEmitterPrefab;
-
         private Dictionary<CharacterActorController, TileIdx> mActorPositions = null;
 
         public Dictionary<Character, CharacterActorController> CharacterActorLookup;
@@ -21,7 +19,6 @@ namespace MAGE.GameModes.Encounter
 
         protected void Awake()
         {
-
             CharacterActorLookup = new Dictionary<Character, CharacterActorController>();
             CharacterToParentLookup = new Dictionary<Character, Character>();
             mActorPositions = new Dictionary<CharacterActorController, TileIdx>();
@@ -39,8 +36,8 @@ namespace MAGE.GameModes.Encounter
         {
             foreach (Character character in CharacterActorLookup.Keys)
             {
-                EncounterModule.AuraDirector.RemoveActor(CharacterActorLookup[character]);
-                EncounterModule.AnimationDirector.UnRegisterActor(CharacterActorLookup[character]);
+                EncounterFlowControl.AuraDirector.RemoveActor(CharacterActorLookup[character]);
+                EncounterFlowControl.AnimationDirector.UnRegisterActor(CharacterActorLookup[character]);
 
                 Destroy(CharacterActorLookup[character].gameObject);
             }
@@ -48,15 +45,15 @@ namespace MAGE.GameModes.Encounter
 
         public CharacterActorController AddCharacter(Character character, CharacterPosition characterPosition, Character parent = null)
         {
-            Actor actor = GameModesModule.ActorLoader.CreateActor(character.GetAppearance(), CharacterControlParent);
+            Actor actor = ActorLoader.Instance.CreateActor(character.GetAppearance(), CharacterControlParent);
 
-            EncounterModule.Model.Characters.Add(character.Id, character);
-            EncounterModule.Model.Teams[character.TeamSide].Add(character);
+            EncounterFlowControl.Model.Characters.Add(character.Id, character);
+            EncounterFlowControl.Model.Teams[character.TeamSide].Add(character);
 
             CharacterActorController actorController = actor.gameObject.AddComponent<CharacterActorController>();
             actorController.Actor = actor;
-
-            actorController.BillboardEmitter = Instantiate(BillboardEmitterPrefab, actorController.transform);
+            BillboardEmitter emitter = EncounterPrefabLoader.LoadBillBoardEmitterPrefab();
+            actorController.BillboardEmitter = Instantiate(emitter, actorController.transform);
             actorController.ActorController = actorController.gameObject.AddComponent<ActorController>();
             actorController.ActorController.MoveSpeed = 3;
             CharacterActorLookup.Add(character, actorController);
@@ -64,12 +61,12 @@ namespace MAGE.GameModes.Encounter
 
             foreach (AuraType type in actorController.Character.GetAuras())
             {
-                EncounterModule.AuraDirector.RegisterAura(actorController.Character.GetAuraInfo(type), actorController, false);
+                EncounterFlowControl.AuraDirector.RegisterAura(actorController.Character.GetAuraInfo(type), actorController, false);
             }
 
-            EncounterModule.MapControl.AddCharacterToMap(actorController, characterPosition);
+            EncounterFlowControl.MapControl.AddCharacterToMap(actorController, characterPosition);
             mActorPositions.Add(actorController, characterPosition.Location);
-            EncounterModule.AnimationDirector.RegisterActor(actorController);
+            EncounterFlowControl.AnimationDirector.RegisterActor(actorController);
 
             if (parent != null)
             {
@@ -112,7 +109,7 @@ namespace MAGE.GameModes.Encounter
         public void UpdateCharacterPosition(Character character, CharacterPosition characterPosition)
         {
             mActorPositions[CharacterActorLookup[character]] = characterPosition.Location;
-            EncounterModule.MapControl.UpdateCharacterPosition(CharacterActorLookup[character], characterPosition);
+            EncounterFlowControl.MapControl.UpdateCharacterPosition(CharacterActorLookup[character], characterPosition);
         }
 
         public void ApplyStateChange(Character character, StateChange stateChange)
@@ -121,8 +118,8 @@ namespace MAGE.GameModes.Encounter
             if (!character.IsAlive)
             {
                 CharacterActorController controller = CharacterActorLookup[character];
-                EncounterModule.AnimationDirector.AnimateActor(controller, AnimationFactory.CheckoutAnimation(AnimationId.Faint));
-                controller.GetComponent<AudioSource>().PlayOneShot(GameModesModule.AudioManager.GetSFXClip(SFXId.MaleDeath));
+                EncounterFlowControl.AnimationDirector.AnimateActor(controller, AnimationFactory.CheckoutAnimation(AnimationId.Faint));
+                controller.GetComponent<AudioSource>().PlayOneShot(AudioManager.Instance.GetSFXClip(SFXId.MaleDeath));
 
                 Messaging.MessageRouter.Instance.NotifyMessage(new EncounterMessage(EncounterMessage.EventType.CharacterKO, character));
             }
@@ -142,7 +139,7 @@ namespace MAGE.GameModes.Encounter
 
         public void IncrementStatusEffects()
         {
-            foreach (Character character in EncounterModule.Model.Characters.Values)
+            foreach (Character character in EncounterFlowControl.Model.Characters.Values)
             {
                 if (character.IsAlive)
                 {
@@ -156,7 +153,7 @@ namespace MAGE.GameModes.Encounter
 
         public void ApplyStatusEffects()
         {
-            foreach (Character character in EncounterModule.Model.Characters.Values)
+            foreach (Character character in EncounterFlowControl.Model.Characters.Values)
             {
                 if (character.IsAlive)
                 {

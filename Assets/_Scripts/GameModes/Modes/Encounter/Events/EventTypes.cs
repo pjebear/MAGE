@@ -52,12 +52,12 @@ namespace MAGE.GameModes.Encounter
 
         public override void Trigger()
         {
-            EncounterModule.AnimationDirector.AnimateActor(BeingAnimated, Animation);
+            EncounterFlowControl.AnimationDirector.AnimateActor(BeingAnimated, Animation);
 
             if (FocusTarget != null)
             {
                 float rotationDuration = AnimationConstants.SECONDS_PER_FRAME * Animation.SyncedFrame;
-                EncounterModule.AnimationDirector.RotateActorTowards(BeingAnimated, FocusTarget, rotationDuration);
+                EncounterFlowControl.AnimationDirector.RotateActorTowards(BeingAnimated, FocusTarget, rotationDuration);
             }
         }
     }
@@ -76,7 +76,7 @@ namespace MAGE.GameModes.Encounter
 
         public override void Trigger()
         {
-            AudioSource.PlayOneShot(GameModesModule.AudioManager.GetSFXClip(Audio));
+            AudioSource.PlayOneShot(AudioManager.Instance.GetSFXClip(Audio));
         }
     }
 
@@ -94,7 +94,7 @@ namespace MAGE.GameModes.Encounter
 
         public override void Trigger()
         {
-            EncounterModule.CharacterDirector.CharacterActorLookup[HavingStateChanged].DisplayStateChange(StateChange);
+            EncounterFlowControl.CharacterDirector.CharacterActorLookup[HavingStateChanged].DisplayStateChange(StateChange);
         }
     }
 
@@ -110,7 +110,7 @@ namespace MAGE.GameModes.Encounter
 
         public override void Trigger()
         {
-            EncounterModule.ProjectileDirector.SpawnProjectile(SpawnParams);
+            EncounterFlowControl.ProjectileDirector.SpawnProjectile(SpawnParams);
         }
     }
 
@@ -126,7 +126,7 @@ namespace MAGE.GameModes.Encounter
 
         public override void Trigger()
         {
-            EncounterModule.EffectSpawner.SpawnEffect(Info);
+            EncounterFlowControl.EffectSpawner.SpawnEffect(Info);
         }
     }
 

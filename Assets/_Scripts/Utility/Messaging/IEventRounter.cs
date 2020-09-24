@@ -12,6 +12,7 @@ namespace MAGE.Messaging
         GameModes,
         Encounter,
         Exploration,
+        Flow,
         Level,
         Story,
         Appearance

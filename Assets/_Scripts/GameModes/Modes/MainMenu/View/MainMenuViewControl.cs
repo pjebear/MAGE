@@ -8,22 +8,31 @@ using System.Threading.Tasks;
 
 namespace MAGE.GameModes.FlowControl
 {
-    class MainMenuViewControl : UIContainerControl
+    class MainMenuViewControl 
+        : FlowControlBase
+        , UIContainerControl
     {
         private List<string> SaveFiles = new List<string>();
 
-        public void Start()
+        // FlowControl
+        public override FlowControlId GetFlowControlId()
+        {
+            return FlowControlId.MainMenu;
+        }
+
+        protected override void Setup()
         {
             SaveFiles = MAGE.GameSystems.WorldService.Get().GetSaveFiles();
 
             UIManager.Instance.PostContainer(UIContainerId.MainMenuView, this);
         }
 
-        public void Cleanup()
+        protected override void Cleanup()
         {
             UIManager.Instance.RemoveOverlay(UIContainerId.MainMenuView);
         }
 
+        // UIContainerControl
         public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
         {
             switch (containerId)
@@ -37,7 +46,7 @@ namespace MAGE.GameModes.FlowControl
                             case (int)MainMenuView.ComponentId.NewGameBtn:
                             {
                                 MAGE.GameSystems.WorldService.Get().PrepareNewGame();
-                                GameModesModule.Instance.Map();
+                                SendFlowMessage(FlowAction.advance.ToString());
                             }
                             break;
 
@@ -47,7 +56,8 @@ namespace MAGE.GameModes.FlowControl
                                 string saveFileName = SaveFiles[buttonListInteractionInfo.ListIdx];
 
                                 MAGE.GameSystems.WorldService.Get().Load(saveFileName);
-                                GameModesModule.Instance.Explore();
+
+                                SendFlowMessage(FlowAction.advance.ToString());
                             }
                             break;
                         }
@@ -57,11 +67,6 @@ namespace MAGE.GameModes.FlowControl
             }
         }
 
-        public string Name()
-        {
-            return "MainMenuControl";
-        }
-
         public IDataProvider Publish(int containerId)
         {
             MainMenuView.DataProvider dataProvider = new MainMenuView.DataProvider();
@@ -69,6 +74,11 @@ namespace MAGE.GameModes.FlowControl
             dataProvider.SaveFiles = SaveFiles;
 
             return dataProvider;
+        }
+
+        public string Name()
+        {
+            return "MainMenuViewControl";
         }
     }
 }

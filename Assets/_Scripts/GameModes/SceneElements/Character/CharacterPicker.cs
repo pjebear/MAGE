@@ -12,6 +12,8 @@ namespace MAGE.GameModes.SceneElements
     [Serializable]
     class CharacterPicker
     {
+        public int RootCharacterId = -1;
+
         public CharacterType CharacterType = CharacterType.INVALID;
 
         // Create Character
@@ -56,6 +58,10 @@ namespace MAGE.GameModes.SceneElements
             {
                 appearace = LevelManagementService.Get().GetNPCAppearance(NPCId);
             }
+            else if (RootCharacterId != -1)
+            {
+                appearace = GameSystems.CharacterService.Get().GetCharacter(RootCharacterId).GetAppearance();
+            }
 
             return appearace;
         }
@@ -82,6 +88,10 @@ namespace MAGE.GameModes.SceneElements
             else if (NPCId != NPCPropId.None)
             {
                 actorId = (int)NPCId;
+            }
+            else if (RootCharacterId != -1)
+            {
+                actorId = RootCharacterId;
             }
 
             return actorId;

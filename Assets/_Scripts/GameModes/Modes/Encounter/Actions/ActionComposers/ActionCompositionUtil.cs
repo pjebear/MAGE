@@ -16,9 +16,9 @@ namespace MAGE.GameModes.Encounter
         {
             Transform lookAt = null;
             if ((target.TargetType == TargetSelectionType.Character && target.CharacterTarget != owner.Character) // Not targeting yourself
-                || (target.TileTarget != EncounterModule.CharacterDirector.GetCharacterPosition(owner.Character))) // Not targeting your feet
+                || (target.TileTarget != EncounterFlowControl.CharacterDirector.GetCharacterPosition(owner.Character))) // Not targeting your feet
             {
-                lookAt = EncounterModule.MapControl.GetTargetTransform(target);
+                lookAt = EncounterFlowControl.MapControl.GetTargetTransform(target);
             }
 
             ActorInteractionBlock casterAnimationBlock = new ActorInteractionBlock(

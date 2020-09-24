@@ -58,7 +58,7 @@ namespace MAGE.GameModes.FlowControl
         {
             EncounterIntroView.DataProvider dp = new EncounterIntroView.DataProvider();
 
-            EncounterContext context = Encounter.EncounterModule.Model.EncounterContext;
+            EncounterContext context = Encounter.EncounterFlowControl.Model.EncounterContext;
 
             dp.EncounterType = context.EncounterType.ToString();
             dp.EncounterInfo = "";

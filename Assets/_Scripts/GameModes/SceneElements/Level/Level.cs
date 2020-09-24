@@ -12,7 +12,7 @@ namespace MAGE.GameModes.SceneElements
         public LevelId LevelId;
 
         public Terrain Terrain = null;
-        public Transform SpawnPoint;
+        public Transform SpawnPointContainer;
         public Transform ScenarioContainer;
         public Transform CinematicContainer;
         public Transform EncounterContainer;
@@ -22,11 +22,13 @@ namespace MAGE.GameModes.SceneElements
         public TileContainerGenerator TileContainerGenerator;
         public GameObject TreeColliderPrefab;
         public List<CapsuleCollider> TreeColliders = new List<CapsuleCollider>();
+
+        public ActorLoader ActorLoader;
         //public Dictionary<NPCId, GameO> Scenarios = new Dictionary<ScenarioId, Scenario>();
 
         private void Awake()
         {
-
+            ActorLoader = gameObject.AddComponent<ActorLoader>();
         }
 
         // Start is called before the first frame update
@@ -67,7 +69,6 @@ namespace MAGE.GameModes.SceneElements
                     TreeColliders.Add(capsule.GetComponentInChildren<CapsuleCollider>());
                 }
             }
-            
 
             LevelManagementService.Get().NotifyLevelLoaded(this);
         }
@@ -91,9 +92,27 @@ namespace MAGE.GameModes.SceneElements
 
         }
 
+        public List<EncounterContainer> GetActiveEncounters()
+        {
+            return EncounterContainer.GetComponentsInChildren<EncounterContainer>().Where(x => x.IsEncounterPending).ToList();
+        }
+
         public List<CinematicMoment> GetActiveCinematics()
         {
-            return transform.GetComponentsInChildren<CinematicMoment>().Where(x => x.gameObject.activeSelf).ToList();
+            return CinematicContainer.GetComponentsInChildren<CinematicMoment>().Where(x => x.CinematicReady).ToList();
+        }
+
+        public Transform GetSpawnPoint(int spawnPointIdx)
+        {
+            Transform spawnPoint = null;
+
+            Debug.Assert(SpawnPointContainer.childCount > spawnPointIdx);
+            if (spawnPointIdx < SpawnPointContainer.childCount)
+            {
+                spawnPoint = SpawnPointContainer.GetChild(spawnPointIdx);
+            }
+
+            return spawnPoint;
         }
     }
 }

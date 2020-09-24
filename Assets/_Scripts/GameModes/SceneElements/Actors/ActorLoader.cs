@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MAGE.GameModes.SceneElements;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +8,7 @@ using UnityEngine;
 
 class ActorLoader : MonoBehaviour
 {
+    private AssetLoader<ActorSpawner> mSpawnerLoader;
     private AssetLoader<GameObject> mActorLoader;
     public static ActorLoader Instance;
 

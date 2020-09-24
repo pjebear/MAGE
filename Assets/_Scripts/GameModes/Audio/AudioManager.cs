@@ -33,6 +33,8 @@ enum TrackId
 
 class AudioManager : MonoBehaviour
 {
+    public static AudioManager Instance;
+
     [SerializeField]
     private bool mMuteMusic = false;
 
@@ -40,9 +42,18 @@ class AudioManager : MonoBehaviour
 
     private void Awake()
     {
-        mAudioLoader = new AssetLoader<AudioClip>("Audio");
-        mAudioLoader.LoadAssets("SFX");
-        mAudioLoader.LoadAssets("Tracks");
+        if (Instance == null)
+        {
+            mAudioLoader = new AssetLoader<AudioClip>("Audio");
+            mAudioLoader.LoadAssets("SFX");
+            mAudioLoader.LoadAssets("Tracks");
+
+            Instance = this;
+        }
+        else
+        {
+            DestroyImmediate(this);
+        }
     }
 
     public AudioClip GetSFXClip(SFXId sFXId)

@@ -16,8 +16,9 @@ using MAGE.GameModes.Exploration;
 
 namespace MAGE.GameModes.FlowControl
 {
-    class InteractionViewControl
-        : UIContainerControl
+    class InteractionFlowControl
+        : FlowControlBase 
+        , UIContainerControl
     {
         enum InteractionState
         {
@@ -30,7 +31,6 @@ namespace MAGE.GameModes.FlowControl
 
             NUM
         }
-
 
         enum NPCAction
         {
@@ -67,9 +67,28 @@ namespace MAGE.GameModes.FlowControl
         // Vendor
         private VendorState mVendorState = VendorState.Buy;
 
-        public void Init(ThirdPersonActorController exploring)
+        public override FlowControlId GetFlowControlId()
         {
-            mExplorationActor = exploring;
+            return FlowControlId.ExplorationInteractionFlowControl;
+        }
+
+        protected override void Setup()
+        {
+            mExplorationActor = ExplorationModel.Instance.PartyAvatar;
+            BeginInteraction(ExplorationModel.Instance.InteractionTarget);
+        }
+
+        protected override void Cleanup()
+        {
+            UIManager.Instance.RemoveOverlay(UIContainerId.NPCActionSelectView);
+            UIManager.Instance.RemoveOverlay(UIContainerId.ContainerInspectView);
+            UIManager.Instance.RemoveOverlay(UIContainerId.ConversationView);
+            UIManager.Instance.RemoveOverlay(UIContainerId.VendorView);
+
+            mInteractingWith.OnInteractionEnd();
+            mInteractingWith = null;
+            mExplorationActor.Enable(true);
+            Camera.main.gameObject.GetComponent<ThirdPersonCamera>().Follow(mExplorationActor.transform);
         }
 
         public void BeginInteraction(PropBase propBase)
@@ -83,11 +102,9 @@ namespace MAGE.GameModes.FlowControl
                 {
                     mInteractionState = InteractionState.NPCActionSelect;
 
-                    Messaging.MessageRouter.Instance.NotifyMessage(new ExplorationMessage(ExplorationMessage.EventType.InteractionStart, mInteractingWith));
-                    ExplorationModule.Instance.MovementDirector.RotateActor(mExplorationActor.ActorController, mInteractingWith.transform, null);
+                    ExplorationModel.Instance.MovementDirector.RotateActor(mExplorationActor.ActorController, mInteractingWith.transform, null);
                     mExplorationActor.Enable(false);
                     Camera.main.gameObject.GetComponent<ThirdPersonCamera>().Interact(mExplorationActor.transform, mInteractingWith.transform);
-                    UIManager.Instance.SetCursor(CursorControl.CursorType.Default);
                     UIManager.Instance.PostContainer(UIContainerId.NPCActionSelectView, this);
                 }
                 break;
@@ -112,13 +129,7 @@ namespace MAGE.GameModes.FlowControl
 
         private void InteractionComplete()
         {
-            mInteractionState = InteractionState.INVALID;
-
-            mInteractingWith.OnInteractionEnd();
-            mInteractingWith = null;
-            mExplorationActor.Enable(true);
-            Camera.main.gameObject.GetComponent<ThirdPersonCamera>().Follow(mExplorationActor.transform);
-            Messaging.MessageRouter.Instance.NotifyMessage(new ExplorationMessage(ExplorationMessage.EventType.InteractionEnd));
+            SendFlowMessage("back");
         }
 
         #region UIContainerControl
@@ -429,12 +440,11 @@ namespace MAGE.GameModes.FlowControl
         private void InteractWithContainer(PropBase propBase)
         {
             Messaging.MessageRouter.Instance.NotifyMessage(new ExplorationMessage(ExplorationMessage.EventType.InteractionStart, mInteractingWith));
-            ExplorationModule.Instance.MovementDirector.RotateActor(mExplorationActor.ActorController, mInteractingWith.transform, null);
+            ExplorationModel.Instance.MovementDirector.RotateActor(mExplorationActor.ActorController, mInteractingWith.transform, null);
             mExplorationActor.Enable(false);
             Camera.main.gameObject.GetComponent<ThirdPersonCamera>().Interact(mExplorationActor.transform, mInteractingWith.transform);
-            UIManager.Instance.SetCursor(CursorControl.CursorType.Default);
             UIManager.Instance.PostContainer(UIContainerId.ContainerInspectView, this);
-        }            
+        }
     }
 }
 

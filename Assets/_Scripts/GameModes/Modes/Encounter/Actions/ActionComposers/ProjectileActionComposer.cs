@@ -24,7 +24,7 @@ namespace MAGE.GameModes.Encounter
 
             CharacterPosition ownerPosition = map.GetCharacterPosition(ownerController.Character);
             ProjectileSpawnParams projectileSpawnParams = ProjectileUtil.GenerateSpawnParams(
-                EncounterModule.MapControl[ownerPosition.Location],
+                EncounterFlowControl.MapControl[ownerPosition.Location],
                 targetSelection.FocalTarget,
                 actionInfo.CastRange.AreaType == AreaType.Expanding ? ProjectilePathType.Arc : ProjectilePathType.Linear,
                 actionInfo.ProjectileInfo.ProjectileId);
@@ -53,7 +53,7 @@ namespace MAGE.GameModes.Encounter
 
                 ActorInteractionBlock targetInteractionBlock = ActionCompositionUtil.CreateTargetInteractionBlock(
                     ownerController
-                    , EncounterModule.CharacterDirector.CharacterActorLookup[targets[i]]
+                    , EncounterFlowControl.CharacterDirector.CharacterActorLookup[targets[i]]
                     , interactionResult
                     , projectileSpawnBlock);
 

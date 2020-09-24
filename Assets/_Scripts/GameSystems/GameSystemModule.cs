@@ -25,11 +25,9 @@ class GameSystemModule : MonoBehaviour
             CharacterService.Register(new MAGE.GameSystems.Characters.Internal.CharacterServiceImpl());
             StoryService.Register(new MAGE.GameSystems.Story.Internal.StoryServiceImpl());
             DBService.Register(new MAGE.DB.Internal.DBServiceImpl());
-            MAGE.GameModes.LevelManagementService.Register(gameObject.AddComponent<MAGE.GameModes.LevelManagement.Internal.LevelManagerServiceImpl>());
 
             DBService.Get().Init();
 
-            MAGE.GameModes.LevelManagementService.Get().Init();
             WorldService.Get().Init();
             StoryService.Get().Init();
             CharacterService.Get().Init();

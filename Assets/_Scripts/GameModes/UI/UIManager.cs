@@ -1,4 +1,5 @@
 ﻿using MAGE.GameModes;
+using MAGE.GameModes.FlowControl;
 using MAGE.UI.Views;
 using System.Collections;
 using System.Collections.Generic;
@@ -104,7 +105,7 @@ namespace MAGE.UI
 
         public void PlaySFX(SFXId sFXId)
         {
-            mUIAudioSource.PlayOneShot(GameModes.GameModesModule.AudioManager.GetSFXClip(sFXId));
+            mUIAudioSource.PlayOneShot(AudioManager.Instance.GetSFXClip(sFXId));
         }
 
         public void SetCursor(CursorControl.CursorType cursorType)
@@ -120,20 +121,22 @@ namespace MAGE.UI
         public void PostContainer(UIContainerId containerId, UIContainerControl provider)
         {
             UIContainer toPost = null;
-            Debug.Assert(!mContainerControlPairs.ContainsKey(containerId));
+            Logger.Assert(!mContainerControlPairs.ContainsKey(containerId), LogTag.UI, TAG, string.Format("PostContainer() - Container [{0}] already active!", containerId.ToString()));
+            if (!mContainerControlPairs.ContainsKey(containerId))
+            {
+                toPost = Instantiate(mViewLoader.GetAsset(containerId.ToString()), OverlayParent).GetComponent<UIContainer>();
+                toPost.Init((int)containerId, null);
+                mContainerControlPairs.Add(containerId, new KeyValuePair<UIContainer, UIContainerControl>(toPost, provider));
 
-            toPost = Instantiate(mViewLoader.GetAsset(containerId.ToString()), OverlayParent).GetComponent<UIContainer>();
-            toPost.Init((int)containerId, null);
-            mContainerControlPairs.Add(containerId, new KeyValuePair<UIContainer, UIContainerControl>(toPost, provider));
+                //Logger.Log(LogTag.UI, TAG, string.Format("{0} Posting Container {1}",provider.Name(), toPost.Name()));
 
-            //Logger.Log(LogTag.UI, TAG, string.Format("{0} Posting Container {1}",provider.Name(), toPost.Name()));
-
-            mContainersToPublish.Add(containerId);
+                mContainersToPublish.Add(containerId);
+            }
         }
 
         public void RemoveOverlay(UIContainerId containerId)
         {
-            Debug.Assert(mContainerControlPairs.ContainsKey(containerId));
+            Logger.Assert(mContainerControlPairs.ContainsKey(containerId), LogTag.UI, TAG, string.Format("RemoveOverlay() - Overlay [{0}] wasn't active", containerId.ToString()));
             if (mContainerControlPairs.ContainsKey(containerId))
             {
                 UIContainer overlay = mContainerControlPairs[containerId].Key;
@@ -173,6 +176,18 @@ namespace MAGE.UI
 
                     switch (gameModeMessage.Type)
                     {
+                        case GameModeMessage.EventType.FadeIn:
+                        {
+                            Fade(true);
+                        }
+                        break;
+
+                        case GameModeMessage.EventType.FadeOut:
+                        {
+                            Fade(false);
+                        }
+                        break;
+
                         case GameModeMessage.EventType.UISetup_Begin:
                         {
                             Logger.Log(LogTag.UI, TAG, "::HandleMessage() - " + gameModeMessage.Type.ToString());
@@ -219,7 +234,47 @@ namespace MAGE.UI
                     }
                 }
                 break;
+                case FlowMessage.Id:
+                {
+                    FlowMessage flowMessage = messageInfoBase as FlowMessage;
+
+                    switch (flowMessage.Type)
+                    {
+                        case FlowMessage.EventType.Notify:
+                        {
+                            string notifyArg = flowMessage.Arg<string>();
+                            switch (notifyArg)
+                            {
+                                case "fadeIn":
+                                {
+                                    Fade(true);
+                                }
+                                break;
+                                case "fadeOut":
+                                {
+                                    Fade(false);
+                                }
+                                break;
+                            }
+                            
+                        }
+                        break;
+                    }
+                }
+                break;
             }
+        }
+
+        public void Fade(bool fadeIn, float overSeconds = 0.5f)
+        {
+            Logger.Log(LogTag.UI, TAG, string.Format("Fade() - [{0}]", fadeIn ? "In" : "Out"));
+            Logger.Assert(mFadeCoroutine != null, LogTag.UI, TAG, "FadeIn() - Fade coroutine was already active");
+            if (mFadeCoroutine != null)
+            {
+                StopCoroutine(mFadeCoroutine);
+            }
+
+            mFadeCoroutine = StartCoroutine(_FadeInOut(fadeIn, overSeconds));
         }
 
         private IEnumerator _FadeInOut(bool fadeIn, float overSeconds)
@@ -242,6 +297,9 @@ namespace MAGE.UI
 
                 yield return new WaitForFixedUpdate();
             }
+
+            Messaging.MessageRouter.Instance.NotifyMessage(new GameModeMessage(GameModeMessage.EventType.FadeComplete));
+            Messaging.MessageRouter.Instance.NotifyMessage(new FlowMessage(FlowMessage.EventType.FlowEvent, "fadeComplete"));
         }
     }
 

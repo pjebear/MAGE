@@ -81,7 +81,7 @@ namespace MAGE.GameModes.Encounter
 
         void BeginNextAction(ActionProposal nextAction)
         {
-            ActionComposer.ComposeAction(nextAction, EncounterModule.MapControl.Map, out mActionResult, out mActionTimeline);
+            ActionComposer.ComposeAction(nextAction, EncounterFlowControl.MapControl.Map, out mActionResult, out mActionTimeline);
 
             ProgressTimeline(0);
         }
@@ -95,11 +95,11 @@ namespace MAGE.GameModes.Encounter
 
                 // Check for responses
                 List<ActionResponseBase> responses = new List<ActionResponseBase>();
-                foreach (Character character in EncounterModule.Model.Characters.Values)
+                foreach (Character character in EncounterFlowControl.Model.Characters.Values)
                 {
                     if (character.IsAlive)
                     {
-                        foreach (ActionResponseBase actionResponseBase in character.RespondToAction(mActionResult, EncounterModule.MapControl.Map))
+                        foreach (ActionResponseBase actionResponseBase in character.RespondToAction(mActionResult, EncounterFlowControl.MapControl.Map))
                         {
                             switch (actionResponseBase.ResponseType)
                             {
@@ -111,7 +111,7 @@ namespace MAGE.GameModes.Encounter
                                 case ActionResponseType.StateChange:
                                 {
                                     StateChangeResponse stateChangeResponse = actionResponseBase as StateChangeResponse;
-                                    EncounterModule.CharacterDirector.ApplyStateChange(character, stateChangeResponse.Response);
+                                    EncounterFlowControl.CharacterDirector.ApplyStateChange(character, stateChangeResponse.Response);
                                 }
                                 break;
                             }
@@ -139,7 +139,7 @@ namespace MAGE.GameModes.Encounter
 
             foreach (var actorResultPair in mActionResult.TargetResults)
             {
-                EncounterModule.CharacterDirector.ApplyStateChange(actorResultPair.Key, actorResultPair.Value.StateChange);
+                EncounterFlowControl.CharacterDirector.ApplyStateChange(actorResultPair.Key, actorResultPair.Value.StateChange);
             }
         }
 

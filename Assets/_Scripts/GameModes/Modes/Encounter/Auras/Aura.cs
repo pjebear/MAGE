@@ -44,7 +44,7 @@ namespace MAGE.GameModes.Encounter
             {
                 foreach (var actorStatusPair in mInAura)
                 {
-                    EncounterModule.CharacterDirector.RemoveAura(actorStatusPair.Key.Character, actorStatusPair.Value);
+                    EncounterFlowControl.CharacterDirector.RemoveAura(actorStatusPair.Key.Character, actorStatusPair.Value);
                 }
 
                 mInAura.Clear();
@@ -74,7 +74,7 @@ namespace MAGE.GameModes.Encounter
                 {
                     StatusEffect auraEffect = StatusEffectFactory.CheckoutStatusEffect(mAuraInfo.AuraEffectType, mOwner.Character);
                     mInAura.Add(controller, auraEffect);
-                    EncounterModule.CharacterDirector.ApplyAura(controller.Character, auraEffect);
+                    EncounterFlowControl.CharacterDirector.ApplyAura(controller.Character, auraEffect);
                 }
             }
         }
@@ -92,7 +92,7 @@ namespace MAGE.GameModes.Encounter
         {
             if (mInAura.ContainsKey(controller))
             { 
-                EncounterModule.CharacterDirector.RemoveAura(controller.Character, mInAura[controller]);
+                EncounterFlowControl.CharacterDirector.RemoveAura(controller.Character, mInAura[controller]);
                 mInAura.Remove(controller);
             }
         }

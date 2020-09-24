@@ -20,7 +20,7 @@ namespace MAGE.GameModes.Encounter
             timelineEvents.AddRange(casterAnimationBlock.Events);
 
             CharacterPosition ownerPosition = map.GetCharacterPosition(ownerController.Character);
-            List<Character> targets = EncounterModule.MapControl.Map.GetTargetedCharacters(ownerPosition, targetSelection);
+            List<Character> targets = EncounterFlowControl.MapControl.Map.GetTargetedCharacters(ownerPosition, targetSelection);
             List<InteractionResult> interactionResults = InteractionResolver.ResolveInteraction(ownerController.Character, actionInfo, targets, map);
             Dictionary<Character, InteractionResult> targetResults = new Dictionary<Character, InteractionResult>();
 
@@ -31,7 +31,7 @@ namespace MAGE.GameModes.Encounter
 
                 ActorInteractionBlock targetInteractionBlock = ActionCompositionUtil.CreateTargetInteractionBlock(
                     ownerController
-                    , EncounterModule.CharacterDirector.CharacterActorLookup[targets[i]]
+                    , EncounterFlowControl.CharacterDirector.CharacterActorLookup[targets[i]]
                     , interactionResult
                     , casterAnimationBlock);
 

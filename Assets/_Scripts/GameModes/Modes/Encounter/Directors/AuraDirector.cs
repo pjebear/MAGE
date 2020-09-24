@@ -12,8 +12,6 @@ namespace MAGE.GameModes.Encounter
         : MonoBehaviour
         , Messaging.IMessageHandler
     {
-        public Aura AuraPrefab;
-
         private Dictionary<CharacterActorController, List<Aura>> mAuras = new Dictionary<CharacterActorController, List<Aura>>();
 
         public void Init()
@@ -28,7 +26,7 @@ namespace MAGE.GameModes.Encounter
 
         public void RegisterAura(AuraInfo auraInfo, CharacterActorController actorController, bool activateImmediately)
         {
-            Aura aura = Instantiate(AuraPrefab, actorController.transform);
+            Aura aura = Instantiate(EncounterPrefabLoader.LoadAuraPrefab(), actorController.transform);
             aura.Initialize(auraInfo, actorController);
 
             if (!mAuras.ContainsKey(actorController)) { mAuras.Add(actorController, new List<Aura>()); }
@@ -74,7 +72,7 @@ namespace MAGE.GameModes.Encounter
 
                         case EncounterMessage.EventType.CharacterKO:
                         {
-                            CharacterActorController controller = EncounterModule.CharacterDirector.CharacterActorLookup[message.Arg<Character>()];
+                            CharacterActorController controller = EncounterFlowControl.CharacterDirector.CharacterActorLookup[message.Arg<Character>()];
                             if (mAuras.ContainsKey(controller))
                             {
                                 foreach (Aura aura in mAuras[controller])
