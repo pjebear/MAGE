@@ -131,6 +131,11 @@ namespace MAGE.GameSystems.Characters.Internal
             return CharacterCreator.FromInfo(characterInfo); 
         }
 
+        public void DeleteCharacter(int characterId)
+        {
+            DBService.Get().ClearCharacter(characterId);
+        }
+
         public List<int> GetCharactersOfType(CharacterType characterType)
         {
             return DBService.Get().GetAllCharacterIds().Where(x => CharacterUtil.GetCharacterTypeFromId(x) == characterType).ToList();

@@ -73,11 +73,15 @@ namespace MAGE.GameModes.SceneElements
 
         public void UpdateCharacterPosition(CharacterActorController characterActorController, CharacterPosition atPosition)
         {
+            CharacterPosition currentPosition = Map.CharacterPositionLookup[characterActorController.Character];
+            this[currentPosition.Location].ClearOnTile();
+
             Map.UpdatePosition(characterActorController.Character, atPosition);
 
             this[atPosition.Location].PlaceAtCenter(characterActorController);
             this[atPosition.Location].Refresh();
-            
+
+            characterActorController.transform.forward = OrientationUtil.ToVector(atPosition.Orientation);
         }
 
         public List<TileControl> GetTiles(List<Tile> tiles)

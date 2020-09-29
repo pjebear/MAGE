@@ -12,6 +12,7 @@ namespace MAGE.GameSystems
         void AssignTalentPoint(int characterId, Characters.TalentId talentId);
         List<int> ChangeSpecialization(int characterId, Characters.SpecializationType specializationType);
         int CreateCharacter(Characters.CharacterCreateParams createParams);
+        void DeleteCharacter(int characterId);
         List<int> EquipCharacter(int characterId, EquippableId equippableId, Characters.Equipment.Slot inSlot);
         Characters.Character GetCharacter(int characterId);
         List<int> GetCharactersOfType(Characters.CharacterType characterType);

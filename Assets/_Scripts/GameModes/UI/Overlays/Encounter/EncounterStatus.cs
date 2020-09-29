@@ -42,6 +42,8 @@ namespace MAGE.UI.Views
 
             public Optional<List<string>> TurnOrder;
             public Optional<EncounterState> CurrentState;
+
+            public Optional<string> CurrentAction;
         }
 
         public UIText EncounterStatusText;
@@ -50,6 +52,9 @@ namespace MAGE.UI.Views
         public GameObject EncounterOverObj;
         public GameObject ActorStatusObj;
         public GameObject EncounterStatusObj;
+
+        public GameObject CurrentActionParent;
+        public UIText CurrentActionTxt;
 
         public UIButton ContinueButton;
         public UIButton WinButton;
@@ -93,6 +98,12 @@ namespace MAGE.UI.Views
             {
                 EncounterOverObj.gameObject.SetActive(true);
                 EncounterOverText.Publish(new UIText.DataProvider(dp.CurrentState.Value.ToString()));
+            }
+
+            CurrentActionParent.SetActive(dp.CurrentAction.HasValue);
+            if (dp.CurrentAction.HasValue)
+            {
+                CurrentActionTxt.Publish(dp.CurrentAction.Value);
             }
         }
 

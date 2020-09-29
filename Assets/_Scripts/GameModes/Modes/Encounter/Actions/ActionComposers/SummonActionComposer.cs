@@ -20,11 +20,11 @@ namespace MAGE.GameModes.Encounter
             timelineEvents.AddRange(casterAnimationBlock.Events);
 
             CharacterPosition ownerPosition = map.GetCharacterPosition(ownerController.Character);
-            List<Tile> tiles = map.GetTargetedTiles(ownerPosition, targetSelection);
+            List<TileIdx> tiles = map.GetTargetedTiles(ownerPosition.Location, targetSelection);
 
             SummonInfoBase summonInfo = actionInfo as SummonInfoBase;
             Debug.Assert(summonInfo != null);
-            foreach (Tile tile in tiles)
+            foreach (TileIdx tile in tiles)
             {
                 CharacterCreateParams summonParams = new CharacterCreateParams();
                 summonParams.characterType = CharacterType.Temporary;
@@ -39,7 +39,7 @@ namespace MAGE.GameModes.Encounter
 
                 EncounterFlowControl.CharacterDirector.AddCharacter(
                     summon, 
-                    new CharacterPosition(tile.TileIdx, OrientationUtil.Flip(ownerPosition.Orientation)), 
+                    new CharacterPosition(tile, OrientationUtil.Flip(ownerPosition.Orientation)), 
                     ownerController.Character);
             }
 

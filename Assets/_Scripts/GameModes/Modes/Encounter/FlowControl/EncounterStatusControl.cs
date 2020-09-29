@@ -1,4 +1,5 @@
 ﻿using MAGE.GameModes.Encounter;
+using MAGE.GameSystems.Actions;
 using MAGE.GameSystems.Characters;
 using MAGE.UI;
 using MAGE.UI.Views;
@@ -17,6 +18,8 @@ namespace MAGE.GameModes.FlowControl
         Messaging.IMessageHandler
     {
         private string Tag = "EncounterStatusControl";
+
+        private ActionProposal mCurrentAction = null;
 
         public void Init()
         {
@@ -85,6 +88,14 @@ namespace MAGE.GameModes.FlowControl
                         case (EncounterMessage.EventType.EncounterOver):
                             UIManager.Instance.Publish(UIContainerId.EncounterStatusView);
                             break;
+                        case (EncounterMessage.EventType.ActionResolutionBegin):
+                            mCurrentAction = message.Arg<ActionProposal>();
+                            UIManager.Instance.Publish(UIContainerId.EncounterStatusView);
+                            break;
+                        case (EncounterMessage.EventType.ActionResolved):
+                            mCurrentAction = null;
+                            UIManager.Instance.Publish(UIContainerId.EncounterStatusView);
+                            break;
                     }
                 }
                 break;
@@ -123,6 +134,11 @@ namespace MAGE.GameModes.FlowControl
             }
 
             dp.CurrentState = EncounterFlowControl.Model.EncounterState;
+
+            if (mCurrentAction != null)
+            {
+                dp.CurrentAction = mCurrentAction.Action.ToString();
+            }
 
             return dp;
         }

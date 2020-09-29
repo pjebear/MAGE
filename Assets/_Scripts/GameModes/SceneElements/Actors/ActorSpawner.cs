@@ -15,6 +15,11 @@ namespace MAGE.GameModes.SceneElements
         : MonoBehaviour
         , Messaging.IMessageHandler
     {
+        public interface IRefreshListener
+        {
+            void OnActorRefresh();
+        }
+
         public CharacterPicker CharacterPicker;
 
         public Actor Actor = null;
@@ -24,6 +29,8 @@ namespace MAGE.GameModes.SceneElements
 
         public Appearance Appearance;
         public string Name;
+
+        private HashSet<IRefreshListener> mRefreshListeners = new HashSet<IRefreshListener>();
 
         private void Awake()
         {
@@ -47,8 +54,6 @@ namespace MAGE.GameModes.SceneElements
                 Refresh();
             }
         }
-
-        
 
         public void Refresh()
         {
@@ -79,6 +84,8 @@ namespace MAGE.GameModes.SceneElements
 
             Name = CharacterPicker.GetActorName();
             gameObject.name = Name;
+
+            NotifyRefresh();
         }
 
         // IMessageHandler
@@ -103,6 +110,25 @@ namespace MAGE.GameModes.SceneElements
                 }
                 break;
             }
+        }
+
+        private void NotifyRefresh()
+        {
+            HashSet<IRefreshListener> copy = new HashSet<IRefreshListener>(mRefreshListeners);
+            foreach (IRefreshListener listener in copy)
+            {
+                listener.OnActorRefresh();
+            }
+        }
+
+        public void RegisterListener(IRefreshListener refreshListener)
+        {
+            mRefreshListeners.Add(refreshListener);
+        }
+
+        public void UnRegisterListener(IRefreshListener refreshListener)
+        {
+            mRefreshListeners.Remove(refreshListener);
         }
     }
 }

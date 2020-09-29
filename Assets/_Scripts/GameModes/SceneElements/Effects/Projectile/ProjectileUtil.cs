@@ -21,7 +21,7 @@ namespace MAGE.GameModes.Encounter
             TileControl projectileEndPoint = null;
             if (target.TargetType == TargetSelectionType.Character)
             {
-                TileIdx location = EncounterFlowControl.CharacterDirector.GetCharacterPosition(target.CharacterTarget);
+                TileIdx location = EncounterFlowControl.MapControl.Map.GetCharacterPosition(target.CharacterTarget).Location;
                 projectileEndPoint = EncounterFlowControl.MapControl[location];
             }
             else
@@ -42,7 +42,7 @@ namespace MAGE.GameModes.Encounter
             }
             else
             {
-                spawnParams = GenerateArcProjectileParams(start, end);
+                spawnParams = GenerateLinearProjectileParams(start, end);
             }
 
             spawnParams.ProjectileId = projectileId;

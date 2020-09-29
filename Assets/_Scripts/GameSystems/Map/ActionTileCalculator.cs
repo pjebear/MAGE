@@ -14,9 +14,9 @@ namespace MAGE.GameSystems
             mMap = map;
         }
 
-        public List<Tile> CalculateTilesInRange(TileIdx casterTile, TileIdx centerTile, RangeInfo rangeInfo)
+        public List<TileIdx> CalculateTilesInRange(TileIdx casterTile, TileIdx centerTile, RangeInfo rangeInfo)
         {
-            List<Tile> tilesInRange = new List<Tile>();
+            List<TileIdx> tilesInRange = new List<TileIdx>();
             switch (rangeInfo.AreaType)
             {
                 case AreaType.Circle:
@@ -46,11 +46,9 @@ namespace MAGE.GameSystems
             return tilesInRange;
         }
 
-        private List<Tile> CalculateCircleTiles(TileIdx centerIdx, int minRange, int maxRange, int maxElevation)
+        private List<TileIdx> CalculateCircleTiles(TileIdx centerIdx, int minRange, int maxRange, int maxElevation)
         {
-            List<Tile> tiles = new List<Tile>();
-
-            Tile centerTile = mMap.TileAt(centerIdx);
+            List<TileIdx> tiles = new List<TileIdx>();
 
             for (int z = 0; z < mMap.Length; z++)
             {
@@ -64,8 +62,7 @@ namespace MAGE.GameSystems
                         && distanceToTile <= maxRange
                         && Mathf.Abs(elevationDifference) <= maxElevation)
                     {
-                        Tile tile = mMap.TileAt(tileIdx);
-                        tiles.Add(tile);
+                        tiles.Add(tileIdx);
                     }
                 }
 
@@ -73,11 +70,9 @@ namespace MAGE.GameSystems
             return tiles;
         }
 
-        private List<Tile> CalculateExpandingTiles(TileIdx centerIdx, int minRange, int maxRange, int maxElevation)
+        private List<TileIdx> CalculateExpandingTiles(TileIdx centerIdx, int minRange, int maxRange, int maxElevation)
         {
-            List<Tile> tiles = new List<Tile>();
-
-            Tile centerTile = mMap.TileAt(centerIdx);
+            List<TileIdx> tiles = new List<TileIdx>();
 
             for (int z = 0; z < mMap.Length; z++)
             {
@@ -103,8 +98,7 @@ namespace MAGE.GameSystems
                         && distanceToTile <= relativeMaxRange
                         && Mathf.Abs(elevationDifference) <= relativeMaxElevation)
                     {
-                        Tile tile = mMap.TileAt(tileIdx);
-                        tiles.Add(tile);
+                        tiles.Add(tileIdx);
                     }
                 }
 
@@ -113,11 +107,10 @@ namespace MAGE.GameSystems
         }
 
         //// Cone Origin indicates the tile the user selected for the cone AOE to be spawned. the tip of the cone may start behind the cone origin but only tiles in the direction of the cone will be added. 
-        private List<Tile> CalculateConeTiles(TileIdx casterTile, TileIdx coneOrigin, int maxRange, int maxElevation)
+        private List<TileIdx> CalculateConeTiles(TileIdx casterTile, TileIdx coneOrigin, int maxRange, int maxElevation)
         {
-            List<Tile> tiles = new List<Tile>();
+            List<TileIdx> tiles = new List<TileIdx>();
 
-            Tile originTile = mMap.TileAt(coneOrigin);
             Vector2 coneDirection = TileIdx.Displacement(casterTile, coneOrigin);
 
             coneDirection.Normalize();
@@ -146,12 +139,10 @@ namespace MAGE.GameSystems
                         Vector2 tileOffset = spine + rib;
                         TileIdx potentialTile = new TileIdx(Mathf.RoundToInt(coneOrigin.x + tileOffset.x), Mathf.RoundToInt(coneOrigin.y + tileOffset.y));
                         if (mMap.IsValidIdx(potentialTile))
-                        {
-                            
+                        {   
                             if (Mathf.Abs(mMap.ElevationDifference(coneOrigin, potentialTile)) < maxElevation)
                             {
-                                Tile tile = mMap.TileAt(potentialTile);
-                                tiles.Add(tile);
+                                tiles.Add(potentialTile);
                             }
                         }
                     }
@@ -161,9 +152,9 @@ namespace MAGE.GameSystems
             return tiles;
         }
 
-        private List<Tile> CalculateCrossTiles(TileIdx centerIdx, int minRange, int maxRange, int maxElevation)
+        private List<TileIdx> CalculateCrossTiles(TileIdx centerIdx, int minRange, int maxRange, int maxElevation)
         {
-            List<Tile> tiles = new List<Tile>();
+            List<TileIdx> tiles = new List<TileIdx>();
 
             for (int z = 0; z < mMap.Length; z++)
             {
@@ -178,8 +169,7 @@ namespace MAGE.GameSystems
                         && distanceToTile <= maxRange
                         && Mathf.Abs(elevationDifference) <= maxElevation)
                     {
-                        Tile tile = mMap.TileAt(tileIdx);
-                        tiles.Add(tile);
+                        tiles.Add(tileIdx);
                     }
                 }
             }

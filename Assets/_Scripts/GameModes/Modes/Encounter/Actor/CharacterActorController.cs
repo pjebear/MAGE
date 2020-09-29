@@ -60,31 +60,7 @@ namespace MAGE.GameModes.Encounter
 
         public Orientation GetOrientation()
         {
-            Orientation orientation = Orientation.Forward;
-
-            Vector3 forward = transform.forward;
-            if (forward == Vector3.forward)
-            {
-                orientation = Orientation.Forward;
-            }
-            else if (forward == Vector3.back)
-            {
-                orientation = Orientation.Back;
-            }
-            else if (forward == Vector3.right)
-            {
-                orientation = Orientation.Right;
-            }
-            else if (forward == Vector3.left)
-            {
-                orientation = Orientation.Left;
-            }
-            else
-            {
-                Logger.Assert(false, LogTag.Character, "CharacterController", "Failed to calculate Orientation");
-            }
-
-            return orientation;
+            return OrientationUtil.FromVector(transform.forward);
         }
     }
 }

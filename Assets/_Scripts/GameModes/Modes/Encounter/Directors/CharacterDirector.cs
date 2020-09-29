@@ -10,8 +10,6 @@ namespace MAGE.GameModes.Encounter
 {
     class CharacterDirector : MonoBehaviour
     {
-        private Dictionary<CharacterActorController, TileIdx> mActorPositions = null;
-
         public Dictionary<Character, CharacterActorController> CharacterActorLookup;
         public Dictionary<Character, Character> CharacterToParentLookup;
 
@@ -21,7 +19,6 @@ namespace MAGE.GameModes.Encounter
         {
             CharacterActorLookup = new Dictionary<Character, CharacterActorController>();
             CharacterToParentLookup = new Dictionary<Character, Character>();
-            mActorPositions = new Dictionary<CharacterActorController, TileIdx>();
             CharacterControlParent = new GameObject("CharacterControllers").transform;
             CharacterControlParent.transform.SetParent(transform);
         }
@@ -65,7 +62,6 @@ namespace MAGE.GameModes.Encounter
             }
 
             EncounterFlowControl.MapControl.AddCharacterToMap(actorController, characterPosition);
-            mActorPositions.Add(actorController, characterPosition.Location);
             EncounterFlowControl.AnimationDirector.RegisterActor(actorController);
 
             if (parent != null)
@@ -101,14 +97,8 @@ namespace MAGE.GameModes.Encounter
             return CharacterActorLookup[character];
         }
 
-        public TileIdx GetCharacterPosition(Character character)
-        {
-            return mActorPositions[GetController(character)];
-        }
-
         public void UpdateCharacterPosition(Character character, CharacterPosition characterPosition)
         {
-            mActorPositions[CharacterActorLookup[character]] = characterPosition.Location;
             EncounterFlowControl.MapControl.UpdateCharacterPosition(CharacterActorLookup[character], characterPosition);
         }
 

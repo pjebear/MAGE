@@ -81,6 +81,7 @@ namespace MAGE.GameModes.Encounter
 
         void BeginNextAction(ActionProposal nextAction)
         {
+            Messaging.MessageRouter.Instance.NotifyMessage(new EncounterMessage(EncounterMessage.EventType.ActionResolutionBegin, nextAction));
             ActionComposer.ComposeAction(nextAction, EncounterFlowControl.MapControl.Map, out mActionResult, out mActionTimeline);
 
             ProgressTimeline(0);
@@ -93,6 +94,9 @@ namespace MAGE.GameModes.Encounter
             {
                 ApplyActionResults();
 
+                // Update Orientations
+                UpdateOrientations();
+                
                 // Check for responses
                 List<ActionResponseBase> responses = new List<ActionResponseBase>();
                 foreach (Character character in EncounterFlowControl.Model.Characters.Values)
@@ -141,6 +145,25 @@ namespace MAGE.GameModes.Encounter
             {
                 EncounterFlowControl.CharacterDirector.ApplyStateChange(actorResultPair.Key, actorResultPair.Value.StateChange);
             }
+        }
+
+        void UpdateOrientations()
+        {
+            HashSet<Character> toUpdate = new HashSet<Character>();
+            toUpdate.Add(mActionResult.Initiator);
+            foreach (Character character in mActionResult.TargetResults.Keys)
+            {
+                toUpdate.Add(character);
+            }
+
+            foreach (Character character in toUpdate)
+            {
+                CharacterPosition characterPosition = EncounterFlowControl.MapControl.Map.GetCharacterPosition(character);
+
+                CharacterActorController controller = EncounterFlowControl.CharacterDirector.CharacterActorLookup[character];
+                characterPosition.Orientation = OrientationUtil.FromVector(controller.transform.forward);
+                EncounterFlowControl.MapControl.UpdateCharacterPosition(controller, characterPosition);
+            }            
         }
 
         public void IncrementDelayedActions()

@@ -97,7 +97,7 @@ namespace MAGE.GameSystems
             return TileAt(lhs).Elevation - TileAt(rhs).Elevation;
         }
 
-        public List<Tile> GetTargetedTiles(CharacterPosition casterPosition, TargetSelection targetSelection)
+        public List<TileIdx> GetTargetedTiles(TileIdx casterLocation, TargetSelection targetSelection)
         {
             TileIdx centralTile = new TileIdx();
             if (targetSelection.FocalTarget.TargetType == TargetSelectionType.Character)
@@ -109,13 +109,11 @@ namespace MAGE.GameSystems
                 centralTile = targetSelection.FocalTarget.TileTarget;
             }
 
-            return mActionCalculator.CalculateTilesInRange(casterPosition.Location, centralTile, targetSelection.SelectionRange);
+            return mActionCalculator.CalculateTilesInRange(casterLocation, centralTile, targetSelection.SelectionRange);
         }
 
         public List<Character> GetTargetedCharacters(CharacterPosition casterPosition, TargetSelection targetSelection)
         {
-            List<Character> onTiles = new List<Character>();
-
             TileIdx centralTile = new TileIdx();
             if (targetSelection.FocalTarget.TargetType == TargetSelectionType.Character)
             {
@@ -126,15 +124,22 @@ namespace MAGE.GameSystems
                 centralTile = targetSelection.FocalTarget.TileTarget;
             }
 
-            List<Tile> tiles = mActionCalculator.CalculateTilesInRange(casterPosition.Location, centralTile, targetSelection.SelectionRange);
-            foreach (Tile tile in tiles)
+            List<TileIdx> tiles = mActionCalculator.CalculateTilesInRange(casterPosition.Location, centralTile, targetSelection.SelectionRange);
+
+            return GetCharactersOnTiles(tiles);
+        }
+
+        public List<Character> GetCharactersOnTiles(List<TileIdx> tiles)
+        {
+            List<Character> onTiles = new List<Character>();
+            foreach (TileIdx tile in tiles)
             {
-                if (tile.OnTile != null)
+                Character onTile = TileAt(tile).OnTile;
+                if (onTile != null)
                 {
-                    onTiles.Add(tile.OnTile);
+                    onTiles.Add(onTile);
                 }
             }
-
             return onTiles;
         }
 

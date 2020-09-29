@@ -23,6 +23,7 @@ namespace MAGE.GameSystems
         // Appearance - End
 
         // Character
+        void ClearCharacter(int characterId);
         List<int> GetAllCharacterIds();
         DB.DBCharacter LoadCharacter(int characterId);
         void RegisterForCharacterUpdates(object listener, DB.DBUpdateCB<int> cb);

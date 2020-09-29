@@ -8,9 +8,9 @@ using UnityEngine.UI;
 
 namespace MAGE.UI.Views
 {
-    class EncounterCharacterInfoView : UIContainer
+    class CharacterInspector : UIContainer
     {
-        private string TAG = "EncounterCharacterInfoView";
+        private string TAG = "CharacterInspector";
 
         public enum ComponentId
         {

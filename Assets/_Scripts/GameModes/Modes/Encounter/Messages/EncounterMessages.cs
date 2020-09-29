@@ -17,6 +17,7 @@ namespace MAGE.GameModes.Encounter
             UnitPlacementComplete,
             ClockProgressed,
             TurnBegun,
+            ActionResolutionBegin,
             ActionResolved,
             MoveResolved,
             TurnFinished,

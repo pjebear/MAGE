@@ -16,10 +16,8 @@ using UnityEngine.Events;
 namespace MAGE.GameModes.FlowControl
 {
     class TurnFlowControl
-    : MonoBehaviour
-    , UIContainerControl
+    : TurnFlowControlBase
     , IInputHandler
-    , Messaging.IMessageHandler
     {
         const int CONFIRM_BUTTON_IDX = 0;
         const int CANCEL_BUTTON_IDX = 1;
@@ -30,9 +28,7 @@ namespace MAGE.GameModes.FlowControl
 
         string Tag = "TurnFlowControl";
 
-        TileSelectionStack mSelectionStack;
-
-        bool mDisplaySelections = false;
+        
         TileControl mHoveredTile = null;
         List<TileControl> mValidHoverSelections = null;
         RangeInfo mHoverRangeInfo = RangeInfo.Unit;
@@ -40,12 +36,11 @@ namespace MAGE.GameModes.FlowControl
         TileControl mSelectedTile = null;
         ActionInfo mSelectedAction = null;
 
-        // movement
-        //MovementTileCalculator mMovementCalculator;
-        MAGE.GameSystems.MapPathFinder mMovementPathFinder = new MapPathFinder();
-        ActionTileCalculator mActionCalculator;
+        Character mTargetedCharacter = null;
 
-        private Character mCharacter;
+        // movement
+        MapPathFinder mMovementPathFinder = new MapPathFinder();
+        ActionTileCalculator mActionCalculator;
 
         enum TurnState
         {
@@ -60,27 +55,22 @@ namespace MAGE.GameModes.FlowControl
         }
         TurnState mState;
 
-        public void Init()
+        protected override void OnInit()
         {
-            mSelectionStack = new TileSelectionStack();
             mActionCalculator = new ActionTileCalculator(EncounterFlowControl.MapControl.Map);
-            Messaging.MessageRouter.Instance.RegisterHandler(this);
+            mTeam = TeamSide.AllyHuman;
         }
 
-        void OnDestroy()
+        protected override void Cleanup()
         {
-            Messaging.MessageRouter.Instance.UnRegisterHandler(this);
             Input.InputManager.Instance.RegisterHandler(this, false);
-
             UIManager.Instance.RemoveOverlay(UIContainerId.ActorActionsView);
-            UIManager.Instance.RemoveOverlay(UIContainerId.EncounterCharacterInfoView);
         }
 
-        public void ProgressTurn(Character character)
+        protected override void ProgressTurn(Character character)
         {
             mCharacter = character;
-            Transform actorTransform = EncounterFlowControl.CharacterDirector.GetController(character).transform;
-            EncounterFlowControl.CameraDirector.FocusTarget(actorTransform);
+            FocusCharacter(character);
             mState = TurnState.SelectAction;
 
             mMovementPathFinder.CalculatePaths(EncounterFlowControl.MapControl.Map
@@ -91,13 +81,16 @@ namespace MAGE.GameModes.FlowControl
 
             Input.InputManager.Instance.RegisterHandler(this, false);
             UIManager.Instance.PostContainer(UIContainerId.ActorActionsView, this);
-            UIManager.Instance.PostContainer(UIContainerId.EncounterCharacterInfoView, this);
+
+            ShowCharacterPanel(InfoPanelSide.LEFT, mCharacter);
         }
 
 
         // UIContainerControl
-        public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
+        public override void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
         {
+            base.HandleComponentInteraction(containerId, interactionInfo);
+
             switch ((UIContainerId)containerId)
             {
                 case (UIContainerId.ActorActionsView):
@@ -218,12 +211,12 @@ namespace MAGE.GameModes.FlowControl
                 if (mSelectedAction.IsSelfCast)
                 {
                     mState = TurnState.ConfirmAbilityTarget;
-                    mHoveredTile = EncounterFlowControl.MapControl[EncounterFlowControl.CharacterDirector.GetCharacterPosition(mCharacter)];
+                    mHoveredTile = EncounterFlowControl.MapControl[EncounterFlowControl.MapControl.Map.GetCharacterPosition(mCharacter).Location];
                     mValidHoverSelections = new List<TileControl>() { mHoveredTile };
 
-                    List<Tile> autoSelection = mActionCalculator.CalculateTilesInRange(
-                        EncounterFlowControl.CharacterDirector.GetCharacterPosition(mCharacter),
-                        EncounterFlowControl.CharacterDirector.GetCharacterPosition(mCharacter),
+                    List<TileIdx> autoSelection = mActionCalculator.CalculateTilesInRange(
+                        EncounterFlowControl.MapControl.Map.GetCharacterPosition(mCharacter).Location,
+                        EncounterFlowControl.MapControl.Map.GetCharacterPosition(mCharacter).Location,
                         mSelectedAction.EffectRange);
 
                     AddTileSelection(EncounterFlowControl.MapControl.GetTiles(autoSelection), TileControl.HighlightState.AOESelect);
@@ -235,8 +228,8 @@ namespace MAGE.GameModes.FlowControl
 
                     mValidHoverSelections = EncounterFlowControl.MapControl.GetTiles(
                         mActionCalculator.CalculateTilesInRange(
-                        EncounterFlowControl.CharacterDirector.GetCharacterPosition(mCharacter),
-                        EncounterFlowControl.CharacterDirector.GetCharacterPosition(mCharacter),
+                        EncounterFlowControl.MapControl.Map.GetCharacterPosition(mCharacter).Location,
+                        EncounterFlowControl.MapControl.Map.GetCharacterPosition(mCharacter).Location,
                         mSelectedAction.CastRange));
 
                     AddTileSelection(mValidHoverSelections, TileControl.HighlightState.TargetSelect);
@@ -264,7 +257,6 @@ namespace MAGE.GameModes.FlowControl
             if (confirmed)
             {
                 mCharacter.UpdateOnMoved();
-
 
                 List<TileControl> tilePath = EncounterFlowControl.MapControl.GetTiles(mMovementPathFinder.GetPathTo(mSelectedTile.Idx));
                 List<Transform> route = new List<Transform>();
@@ -324,58 +316,35 @@ namespace MAGE.GameModes.FlowControl
             }
         }
 
-        public IDataProvider Publish(int containerId)
+        private void HandleAbilityTargetSelected()
         {
-            IDataProvider dataProvider = null;
+            mState = TurnState.ConfirmAbilityTarget;
+            mSelectedTile = mHoveredTile;
+            UIManager.Instance.Publish(UIContainerId.ActorActionsView);
+        }
 
-            switch ((UIContainerId)containerId)
+        private void HandleMovementTargetSelected()
+        {
+            mState = TurnState.ConfirmMovementTarget;
+            mSelectedTile = mHoveredTile;
+            UIManager.Instance.Publish(UIContainerId.ActorActionsView);
+        }
+
+        public override IDataProvider Publish(int containerId)
+        {
+            IDataProvider dataProvider = base.Publish(containerId);
+
+            if (dataProvider == null)
             {
-                case UIContainerId.ActorActionsView:
-                    dataProvider = PublishActorActions();
-                    break;
-                case UIContainerId.EncounterCharacterInfoView:
-                    dataProvider = PublishCharacterInfo();
-                    break;
+                switch ((UIContainerId)containerId)
+                {
+                    case UIContainerId.ActorActionsView:
+                        dataProvider = PublishActorActions();
+                        break;
+                }
             }
 
             return dataProvider;
-        }
-
-        IDataProvider PublishCharacterInfo()
-        {
-            EncounterCharacterInfoView.DataProvider dp = new EncounterCharacterInfoView.DataProvider();
-
-            dp.IsAlly = mCharacter.TeamSide == TeamSide.AllyHuman;
-            dp.PortraitAsset = mCharacter.GetAppearance().PortraitSpriteId.ToString();
-            dp.Name = mCharacter.Name;
-            dp.Level = mCharacter.Level;
-            dp.Exp = mCharacter.Experience;
-            dp.Specialization = mCharacter.CurrentSpecializationType.ToString();
-            dp.CurrentHP = mCharacter.CurrentResources[ResourceType.Health].Current;
-            dp.MaxHP = mCharacter.CurrentResources[ResourceType.Health].Max;
-            dp.CurrentMP = mCharacter.CurrentResources[ResourceType.Mana].Current;
-            dp.MaxMP = mCharacter.CurrentResources[ResourceType.Mana].Max;
-            dp.Might = (int)mCharacter.CurrentAttributes[PrimaryStat.Might];
-            dp.Finesse = (int)mCharacter.CurrentAttributes[PrimaryStat.Finese];
-            dp.Magic = (int)mCharacter.CurrentAttributes[PrimaryStat.Magic];
-            dp.Fortitude = (int)mCharacter.CurrentAttributes[SecondaryStat.Fortitude];
-            dp.Attunement = (int)mCharacter.CurrentAttributes[SecondaryStat.Attunement];
-            dp.Block = (int)mCharacter.CurrentAttributes[TertiaryStat.Block];
-            dp.Dodge = (int)mCharacter.CurrentAttributes[TertiaryStat.Dodge];
-            dp.Parry = (int)mCharacter.CurrentAttributes[TertiaryStat.Parry];
-
-            List<IDataProvider> statusEffects = new List<IDataProvider>();
-            foreach (StatusEffect effect in mCharacter.StatusEffects)
-            {
-                StatusIcon.DataProvider statusDp = new StatusIcon.DataProvider();
-                statusDp.Count = effect.StackCount;
-                statusDp.IsBeneficial = effect.Beneficial;
-                statusDp.AssetName = effect.SpriteId.ToString();
-                statusEffects.Add(statusDp);
-            }
-            dp.StatusEffects = new UIList.DataProvider(statusEffects);
-
-            return dp;
         }
 
         IDataProvider PublishActorActions()
@@ -449,15 +418,12 @@ namespace MAGE.GameModes.FlowControl
             {
                 if (mState == TurnState.SelectAbilityTarget)
                 {
-                    mState = TurnState.ConfirmAbilityTarget;
-                    mSelectedTile = mHoveredTile;
-                    UIManager.Instance.Publish(UIContainerId.ActorActionsView);
+                    HandleAbilityTargetSelected();
+                    
                 }
                 else if (mState == TurnState.SelectMovementLocation)
                 {
-                    mState = TurnState.ConfirmMovementTarget;
-                    mSelectedTile = mHoveredTile;
-                    UIManager.Instance.Publish(UIContainerId.ActorActionsView);
+                    HandleMovementTargetSelected();
                 }
             }
         }
@@ -468,45 +434,24 @@ namespace MAGE.GameModes.FlowControl
         }
 
         // Helpers
-        private void ToggleSelectedTiles(bool visible)
-        {
-            mDisplaySelections = visible;
-            if (mDisplaySelections)
-            {
-                mSelectionStack.DisplayTiles();
-            }
-            else
-            {
-                mSelectionStack.HideTiles();
-            }
-        }
-
-        private void AddTileSelection(List<TileControl> selection, TileControl.HighlightState highlight)
-        {
-            mSelectionStack.AddLayer(selection, highlight);
-            if (mDisplaySelections)
-            {
-                mSelectionStack.RefreshDisplay();
-            }
-        }
-
-        private void PopTileSelection()
-        {
-            mSelectionStack.RemoveLayer();
-            if (mDisplaySelections)
-            {
-                mSelectionStack.RefreshDisplay();
-            }
-        }
-
-        private void ClearTileSelections()
-        {
-            mSelectionStack.Reset();
-        }
-
         private bool IsValidHoveredTile(TileControl hoveredTile)
         {
             return hoveredTile != null && mValidHoverSelections.Contains(hoveredTile);
+        }
+
+        private void UpdateTargetedCharacter(Character targeted)
+        {
+            if (mTargetedCharacter != null)
+            {
+                if (mTargetedCharacter != targeted)
+                {
+                    UIManager.Instance.Publish(UIContainerId.EncounterCharacterInfoRightView);
+                }
+            }
+            else if (targeted != null)
+            {
+                UIManager.Instance.Publish(UIContainerId.EncounterCharacterInfoRightView);
+            }
         }
 
         private void UpdateHoveredTile(TileControl hoveredTile)
@@ -520,11 +465,31 @@ namespace MAGE.GameModes.FlowControl
                 mHoveredTile = null;
             }
 
+            if (mState == TurnState.SelectAbilityTarget)
+            {
+                if (mHoveredTile != null)
+                {
+                    Character onTile = EncounterFlowControl.MapControl.Map.TileAt(mHoveredTile.Idx).OnTile;
+                    if (onTile != null)
+                    {
+                        ShowCharacterPanel(InfoPanelSide.RIGHT, onTile);
+                    }
+                    else
+                    {
+                        HideInfoPanel(InfoPanelSide.RIGHT);
+                    }
+                }
+                else
+                {
+                    HideInfoPanel(InfoPanelSide.RIGHT);
+                }
+            }
+
             List<TileControl> hoverSelection = new List<TileControl>();
             if (mHoveredTile != null)
             {
                 hoverSelection = EncounterFlowControl.MapControl.GetTiles(mActionCalculator.CalculateTilesInRange(
-                    EncounterFlowControl.CharacterDirector.GetCharacterPosition(mCharacter),
+                    EncounterFlowControl.MapControl.Map.GetCharacterPosition(mCharacter).Location,
                      hoveredTile.Idx,
                     mHoverRangeInfo));
             }
@@ -549,29 +514,8 @@ namespace MAGE.GameModes.FlowControl
             ClearTileSelections();
             Input.InputManager.Instance.ReleaseHandler(this);
             UIManager.Instance.RemoveOverlay(UIContainerId.ActorActionsView);
-            UIManager.Instance.RemoveOverlay(UIContainerId.EncounterCharacterInfoView);
-        }
-
-        // Messaging.IMessageHandler
-        public void HandleMessage(Messaging.MessageInfoBase messageInfoBase)
-        {
-            switch (messageInfoBase.MessageId)
-            {
-                case EncounterMessage.Id:
-                {
-                    EncounterMessage message = messageInfoBase as EncounterMessage;
-
-                    switch (message.Type)
-                    {   
-                        case EncounterMessage.EventType.TurnBegun:
-                            ProgressTurn(message.Arg<Character>());
-                            break;
-                    }
-                }
-                break;
-            }
+            HideInfoPanel(InfoPanelSide.LEFT);
+            HideInfoPanel(InfoPanelSide.RIGHT);
         }
     }
-
-
 }

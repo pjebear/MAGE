@@ -68,7 +68,7 @@ namespace MAGE.GameModes.SceneElements
         // private
         private void RefreshName()
         {
-            TextMesh.text = string.Format("[{0},{1}] \n{2}", Idx.y, Idx.x, mTile.OnTile != null ? mTile.OnTile.Name : "EMPTY");
+            TextMesh.text = string.Format("{0} \n{1}", Idx.ToString(), mTile.OnTile != null ? mTile.OnTile.Name : "EMPTY");
             name = string.Format("[{0},{1}]", Idx.y, Idx.x);
         }
     }

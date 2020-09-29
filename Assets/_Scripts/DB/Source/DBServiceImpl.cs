@@ -98,6 +98,11 @@ namespace MAGE.DB.Internal
         // Appearance - End
 
         // Character
+        public void ClearCharacter(int characterId)
+        {
+            mCharacterDB.Clear(characterId);
+        }
+
         public List<int> GetAllCharacterIds()
         {
             return mCharacterDB.Keys;

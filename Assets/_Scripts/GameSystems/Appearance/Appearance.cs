@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+[System.Serializable]
 class Appearance
 {
     public static int NO_ASSET = -1;

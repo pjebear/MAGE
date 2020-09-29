@@ -1,5 +1,6 @@
 ﻿using MAGE.GameModes.FlowControl;
 using MAGE.GameModes.SceneElements;
+using MAGE.GameModes.SceneElements.Encounter;
 using MAGE.GameSystems;
 using MAGE.GameSystems.Characters;
 using System.Collections.Generic;
@@ -34,6 +35,7 @@ namespace MAGE.GameModes.Encounter
         public static EncounterStatusControl StatusViewControl;
         public static MasterFlowControl MasterFlowControl;
         public static TurnFlowControl TurnFlowControl;
+        public static AITurnControl AITurnControl;
 
         protected void CalculateSpawnPoints()
         {
@@ -80,6 +82,7 @@ namespace MAGE.GameModes.Encounter
             UnitPlacementViewControl = new EncounterUnitPlacementViewControl();
             StatusViewControl = gameObject.AddComponent<EncounterStatusControl>();
             TurnFlowControl = gameObject.AddComponent<TurnFlowControl>();
+            AITurnControl = gameObject.AddComponent<AITurnControl>();
             MasterFlowControl = gameObject.AddComponent<MasterFlowControl>();
 
             MAGE.GameModes.ILevelManagerService levelManagerService = MAGE.GameModes.LevelManagementService.Get();
@@ -97,17 +100,17 @@ namespace MAGE.GameModes.Encounter
                 { // Allies
                     TeamSide teamSide = TeamSide.AllyHuman;
                     Model.Teams.Add(teamSide, new List<Character>());
-                    foreach (ActorSpawner actorSpawner in mEncounterContainer.AlliesContainer.GetComponentsInChildren<ActorSpawner>())
+                    foreach (EncounterCharacterControl encounterCharacter in mEncounterContainer.AlliesContainer.GetComponentsInChildren<EncounterCharacterControl>())
                     {
-                        int characterId = actorSpawner.CharacterPicker.GetActorId();
+                        int characterId = encounterCharacter.GetCharacterId();
                         Character character = MAGE.GameSystems.CharacterService.Get().GetCharacter(characterId);
                         character.TeamSide = teamSide;
 
-                        TileControl closestTile = MapControl.GetClosestTileTo(actorSpawner.transform.position);
-                        Orientation startingOrientation = OrientationUtil.FromVector(actorSpawner.transform.forward);
+                        TileControl closestTile = MapControl.GetClosestTileTo(encounterCharacter.transform.position);
+                        Orientation startingOrientation = OrientationUtil.FromVector(encounterCharacter.transform.forward);
 
                         CharacterDirector.AddCharacter(character, new CharacterPosition(closestTile.Idx, startingOrientation));
-                        actorSpawner.gameObject.SetActive(false);
+                        encounterCharacter.gameObject.SetActive(false);
                     }
 
                     Model.EncounterContext.MaxAllyUnits = mEncounterContainer.MaxUserPlayers;
@@ -116,17 +119,17 @@ namespace MAGE.GameModes.Encounter
                 { // Enemies
                     TeamSide teamSide = TeamSide.EnemyAI;
                     Model.Teams.Add(teamSide, new List<Character>());
-                    foreach (ActorSpawner actorSpawner in mEncounterContainer.EnemiesContainer.GetComponentsInChildren<ActorSpawner>())
+                    foreach (EncounterCharacterControl encounterCharacter in mEncounterContainer.EnemiesContainer.GetComponentsInChildren<EncounterCharacterControl>())
                     {
-                        int characterId = actorSpawner.CharacterPicker.GetActorId();
+                        int characterId = encounterCharacter.GetCharacterId();
                         Character character = MAGE.GameSystems.CharacterService.Get().GetCharacter(characterId);
                         character.TeamSide = teamSide;
 
-                        TileControl closestTile = MapControl.GetClosestTileTo(actorSpawner.transform.position);
-                        Orientation startingOrientation = OrientationUtil.FromVector(actorSpawner.transform.forward);
+                        TileControl closestTile = MapControl.GetClosestTileTo(encounterCharacter.transform.position);
+                        Orientation startingOrientation = OrientationUtil.FromVector(encounterCharacter.transform.forward);
 
                         CharacterDirector.AddCharacter(character, new CharacterPosition(closestTile.Idx, startingOrientation));
-                        actorSpawner.gameObject.SetActive(false);
+                        encounterCharacter.gameObject.SetActive(false);
                     }
                 }
             }
@@ -149,6 +152,7 @@ namespace MAGE.GameModes.Encounter
             ProjectileDirector.Init();
             MasterFlowControl.Init();
             TurnFlowControl.Init();
+            AITurnControl.Init();
             StatusViewControl.Init();
             IntroViewControl.Init();
             UnitPlacementViewControl.Init();

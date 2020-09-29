@@ -464,7 +464,7 @@ namespace MAGE.GameSystems.Characters
                 clockDecrement = 60;
             }
 
-            mCurrentResources[ResourceType.Clock].Modify(clockDecrement);
+            mCurrentResources[ResourceType.Clock].Modify(-clockDecrement);
         }
 
         //  ------------------------------------------------------------------------------
@@ -482,8 +482,6 @@ namespace MAGE.GameSystems.Characters
         //  ------------------------------------------------------------------------------
         public void RolloverClock()
         {
-            mCurrentResources[ResourceType.Clock].Modify(-CharacterConstants.CLOCK_GUAGE_THRESHOLD);
-
             if (BaseAttributes[StatusType.ActionsAvailable] < CharacterConstants.DEFAULT_ACTIONS_A_TURN)
             {
                 BaseAttributes.Modify(new AttributeModifier(StatusType.ActionsAvailable, ModifierType.Increment, CharacterConstants.DEFAULT_ACTIONS_A_TURN));

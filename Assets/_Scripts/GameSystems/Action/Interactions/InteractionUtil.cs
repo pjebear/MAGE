@@ -40,15 +40,15 @@ namespace MAGE.GameSystems.Actions
             Orientation toOrientation = map.GetCharacterPosition(to).Orientation;
             Vector2 relativeDisplacement = GetRelativeDisplacement(displacementVec, toOrientation);
 
-            if (relativeDisplacement.y < 0)
+            if (Mathf.Approximately(relativeDisplacement.y, -1))
             {
                 relativeOrientation = RelativeOrientation.Behind;
             }
-            else if (relativeDisplacement.x < 0)
+            else if (Mathf.Approximately(relativeDisplacement.x, -1))
             {
                 relativeOrientation = RelativeOrientation.Left;
             }
-            else if (relativeDisplacement.x > 0)
+            else if (Mathf.Approximately(relativeDisplacement.x, 1))
             {
                 relativeOrientation = RelativeOrientation.Right;
             }
@@ -67,9 +67,9 @@ namespace MAGE.GameSystems.Actions
             switch (orientation)
             {
                 case Orientation.Forward: rotationAmountDeg = 0; break;
-                case Orientation.Right: rotationAmountDeg = 90; break;
-                case Orientation.Back: rotationAmountDeg = 180; break;
-                case Orientation.Left: rotationAmountDeg = 270; break;
+                case Orientation.Right: rotationAmountDeg = -90; break;
+                case Orientation.Back: rotationAmountDeg = -180; break;
+                case Orientation.Left: rotationAmountDeg = -270; break;
             }
 
             Quaternion rotationQuat = Quaternion.Euler(0, rotationAmountDeg, 0);
@@ -77,30 +77,6 @@ namespace MAGE.GameSystems.Actions
             expandedDisplacement = rotationQuat * expandedDisplacement;
 
             return new Vector2(expandedDisplacement.x, expandedDisplacement.z);
-        }
-
-        public static Orientation GetOrientation(Transform transform)
-        {
-            Orientation orientation = Orientation.Back;
-
-            if (transform.forward == Vector3.forward)
-            {
-                orientation = Orientation.Forward;
-            }
-            else if (transform.forward == Vector3.right)
-            {
-                orientation = Orientation.Right;
-            }
-            else if (transform.forward == Vector3.left)
-            {
-                orientation = Orientation.Left;
-            }
-            else
-            {
-                orientation = Orientation.Back;
-            }
-
-            return orientation;
         }
 
         public static SFXId GetSFXForInteractionResult(InteractionResultType resultType)

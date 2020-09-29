@@ -16,7 +16,7 @@ namespace MAGE.GameModes.Encounter
         {
             Transform lookAt = null;
             if ((target.TargetType == TargetSelectionType.Character && target.CharacterTarget != owner.Character) // Not targeting yourself
-                || (target.TileTarget != EncounterFlowControl.CharacterDirector.GetCharacterPosition(owner.Character))) // Not targeting your feet
+                || (target.TileTarget != EncounterFlowControl.MapControl.Map.GetCharacterPosition(owner.Character).Location)) // Not targeting your feet
             {
                 lookAt = EncounterFlowControl.MapControl.GetTargetTransform(target);
             }

@@ -37,6 +37,9 @@ namespace MAGE.GameModes
 
                 DontDestroyOnLoad(gameObject);
 
+                Logger.LogFilters[(int)LogTag.Assets] = false;
+                Logger.LogFilters[(int)LogTag.DB] = false;
+
                 Messaging.MessageRouter.Instance = gameObject.AddComponent<Messaging.MessageRouter>();
                 GameObject flowControlContainer = new GameObject("FlowControls");
                 flowControlContainer.transform.SetParent(transform);
