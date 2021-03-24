@@ -1,6 +1,9 @@
-﻿using MAGE.GameSystems;
+﻿using MAGE.GameModes.Combat;
+using MAGE.GameModes.SceneElements;
+using MAGE.GameSystems;
 using MAGE.GameSystems.Actions;
 using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.Stats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,16 +36,63 @@ namespace MAGE.GameModes.Encounter
             DurationFrames = durationFrames;
         }
 
+        protected ActionEvent()
+        {
+
+        }
+
         public abstract void Trigger();
     }
 
     class AnimationEvent : ActionEvent
     {
+        public ActorAnimator BeingAnimated;
+        public AnimationInfo Animation;
+        public Transform FocusTarget;
+
+        public AnimationEvent(ActorAnimator actor, AnimationInfo animation, Transform focusTarget)
+            : base(0, animation.NumFrames)
+        {
+            BeingAnimated = actor;
+            Animation = animation;
+            FocusTarget = focusTarget;
+        }
+
+        public override void Trigger()
+        {
+            BeingAnimated.Trigger(Animation.TriggerName);
+            if (FocusTarget != null)
+            {
+                BeingAnimated.transform.LookAt(FocusTarget);
+            }
+        }
+    }
+
+    class StateChangeEvent : ActionEvent
+    {
+        public CombatTarget HavingStateChanged;
+        public StateChange StateChange;
+
+        public StateChangeEvent(CombatTarget target, StateChange stateChange)
+            : base(0, 0)
+        {
+            HavingStateChanged = target;
+            StateChange = stateChange;
+        }
+
+        public override void Trigger()
+        {
+            HavingStateChanged.ApplyStateChange(StateChange);
+        }
+    }
+
+    class AnimationEvent_Deprecated : ActionEvent
+    {
         public CharacterActorController BeingAnimated;
         public AnimationInfo Animation;
         public Transform FocusTarget;
 
-        public AnimationEvent(CharacterActorController actor, AnimationInfo animation, int startPointOffset, Transform focusTarget)
+        public AnimationEvent_Deprecated(CharacterActorController actor, AnimationInfo animation, int startPointOffset, Transform focusTarget)
             : base(startPointOffset, animation.NumFrames)
         {
             BeingAnimated = actor;
@@ -52,12 +102,12 @@ namespace MAGE.GameModes.Encounter
 
         public override void Trigger()
         {
-            EncounterFlowControl.AnimationDirector.AnimateActor(BeingAnimated, Animation);
+            EncounterFlowControl_Deprecated.AnimationDirector.AnimateActor(BeingAnimated, Animation);
 
             if (FocusTarget != null)
             {
                 float rotationDuration = AnimationConstants.SECONDS_PER_FRAME * Animation.SyncedFrame;
-                EncounterFlowControl.AnimationDirector.RotateActorTowards(BeingAnimated, FocusTarget, rotationDuration);
+                EncounterFlowControl_Deprecated.AnimationDirector.RotateActorTowards(BeingAnimated, FocusTarget, rotationDuration);
             }
         }
     }
@@ -80,12 +130,12 @@ namespace MAGE.GameModes.Encounter
         }
     }
 
-    class StateChangeEvent : ActionEvent
+    class StateChangeEvent_Deprecated : ActionEvent
     {
         public Character HavingStateChanged;
         public StateChange StateChange;
 
-        public StateChangeEvent(Character character, StateChange stateChange, int startPointOffset)
+        public StateChangeEvent_Deprecated(Character character, StateChange stateChange, int startPointOffset)
             : base(startPointOffset, 0)
         {
             HavingStateChanged = character;
@@ -94,7 +144,7 @@ namespace MAGE.GameModes.Encounter
 
         public override void Trigger()
         {
-            EncounterFlowControl.CharacterDirector.CharacterActorLookup[HavingStateChanged].DisplayStateChange(StateChange);
+            //EncounterFlowControl_Deprecated.CharacterDirector.CharacterActorLookup[HavingStateChanged].DisplayStateChange(StateChange);
         }
     }
 
@@ -110,31 +160,54 @@ namespace MAGE.GameModes.Encounter
 
         public override void Trigger()
         {
-            EncounterFlowControl.ProjectileDirector.SpawnProjectile(SpawnParams);
+            ProjectileController projectile = GameObject.Instantiate(UnityEngine.Resources.Load<GameObject>("Props/Projectiles/" + SpawnParams.ProjectileId.ToString())).GetComponent<ProjectileController>();
+            projectile.transform.position = SpawnParams.SpawnPoint;
+
+            projectile.Init(SpawnParams.InitialForward, SpawnParams.InitialVelocity, SpawnParams.PathType == ProjectilePathType.Arc, SpawnParams.FlightDuration);
         }
     }
 
     class EffectSpawnEvent : ActionEvent
     {
-        public EffectInfo Info;
+        public EffectType EffectType;
+        public SFXId SFXId;
+        public Transform AtLocation;
 
-        public EffectSpawnEvent(EffectInfo info, int startPointOffset)
-            : base(startPointOffset, info.NumFrames)
+        public EffectSpawnEvent(EffectType type, SFXId sfxId, int startPointOffset, int duration, Transform parent)
+            : base(startPointOffset, duration)
         {
-            Info = info;
+            EffectType = type;
+            AtLocation = parent;
+            SFXId = sfxId;
         }
 
         public override void Trigger()
         {
-            EncounterFlowControl.EffectSpawner.SpawnEffect(Info);
+            GameObject effect = GameObject.Instantiate(UnityEngine.Resources.Load<GameObject>("VFX/" + EffectType.ToString()));
+            effect.transform.position = AtLocation.position;
+            if (SFXId != SFXId.INVALID)
+            {
+                AudioClip clip = AudioManager.Instance.GetSFXClip(SFXId);
+                effect.gameObject.AddComponent<AudioSource>().PlayOneShot(clip);
+            }
         }
     }
 
     abstract class TimelineBlock<T> : ISynchronizable where T : ITimelineEvent
     {
+        public struct Link
+        {
+            public TimelineBlock<T> child;
+            public AllignmentPosition parentAllignment;
+            public AllignmentPosition childAllignment;
+            public int offset;
+        }
+
         public List<T> Events = new List<T>();
 
         public SyncPoint Parent { get; set; }
+
+        public List<Link> Children = new List<Link>();
 
         public int NumFrames { get; set; }
 
@@ -142,16 +215,78 @@ namespace MAGE.GameModes.Encounter
 
         public void SyncronizeTo(AllignmentPosition allignPos, int offset, ISynchronizable syncronizeTo, AllignmentPosition toAllign)
         {
-            Parent = SyncPoint.Syncronize(syncronizeTo, toAllign, this, allignPos, offset);
-            int startOffset = Parent.GetAbsoluteOffset(AllignmentPosition.Start);
-            foreach (T timelineEvent in Events)
+            //Parent = SyncPoint.Syncronize(syncronizeTo, toAllign, this, allignPos);
+            //int startOffset = Parent.GetAbsoluteOffset(AllignmentPosition.Start);
+            //foreach (T timelineEvent in Events)
+            //{
+            //    timelineEvent.StartPointOffset += startOffset;
+            //}
+        }
+
+        public void SyncronizeAndAppend(TimelineBlock<T> timelineBlock, AllignmentPosition beingAddedsAllignementPosition, int offset, AllignmentPosition alignmentPositionOfThis)
+        {
+            timelineBlock.SyncronizeTo(beingAddedsAllignementPosition, offset, this, alignmentPositionOfThis);
+            Events.AddRange(timelineBlock.Events);
+        }
+
+        public void AddLink(TimelineBlock<T> child, AllignmentPosition childAllignment, AllignmentPosition parentAllignment, int offset)
+        {
+            Link link = new Link();
+            link.child = child;
+            link.childAllignment = childAllignment;
+            link.parentAllignment = parentAllignment;
+            link.offset = offset;
+            Children.Add(link);
+        }
+
+        public List<T> GetEvents()
+        {
+            List<T> events = new List<T>(Events);
+            foreach (Link link in Children)
             {
-                timelineEvent.StartPointOffset += startOffset;
+                int offset = SyncPoint.GetStartPointOffset(this, link.parentAllignment, link.child, link.childAllignment, link.offset);
+                List<T> linkEvents = link.child.GetEvents();
+                foreach (T linkEvent in linkEvents)
+                {
+                    linkEvent.StartPointOffset += offset;
+                }
+                events.AddRange(linkEvents);
             }
+
+            return events;
         }
     }
 
-    class ActorInteractionBlock : TimelineBlock<ActionEvent>
+    abstract class ActionEventBlock : TimelineBlock<ActionEvent>
+    {
+    }
+
+    class EmptyBlock : ActionEventBlock
+    {
+
+    }
+
+    class AnimationBlock : ActionEventBlock
+    {
+        public AnimationBlock(AnimationEvent animationEvent)
+        {
+            Events.Add(animationEvent);
+            SyncedFrame = animationEvent.Animation.SyncedFrame;
+            NumFrames = animationEvent.Animation.NumFrames;
+        }
+    }
+
+    class StateChangeBlock : ActionEventBlock
+    {
+        public StateChangeBlock(StateChangeEvent stateChangeEvent)
+        {
+            Events.Add(stateChangeEvent);
+            SyncedFrame = 0;
+            NumFrames = 0;
+        }
+    }
+
+    class ActorInteractionBlock : ActionEventBlock
     {
         private CharacterActorController owner;
         private AnimationId animationId;
@@ -164,14 +299,14 @@ namespace MAGE.GameModes.Encounter
             NumFrames = animation.NumFrames;
             SyncedFrame = animation.SyncedFrame;
 
-            Events.Add(new AnimationEvent(actorController, animation, 0, lookAt));
+            Events.Add(new AnimationEvent_Deprecated(actorController, animation, 0, lookAt));
             if (animation.SFXId != SFXId.INVALID)
             {
-                Events.Add(new AudioEvent(actorController.Actor.AudioSource, animation.SFXId, 0));
+                Events.Add(new AudioEvent(actorController.GetComponent<AudioSource>(), animation.SFXId, 0));
             }
             if (stateChange.Type != StateChangeType.None)
             {
-                Events.Add(new StateChangeEvent(actorController.Character, stateChange, animation.SyncedFrame));
+                Events.Add(new StateChangeEvent_Deprecated(actorController.Character, stateChange, animation.SyncedFrame));
             }
         }
 
@@ -184,7 +319,7 @@ namespace MAGE.GameModes.Encounter
         }
     }
 
-    class ProjectileSpawnBlock : TimelineBlock<ActionEvent>
+    class ProjectileSpawnBlock : ActionEventBlock
     {
         public ProjectileSpawnBlock(ProjectileSpawnParams spawnParams)
         {
@@ -195,15 +330,14 @@ namespace MAGE.GameModes.Encounter
         }
     }
 
-    class EffectSpawnBlock : TimelineBlock<ActionEvent>
+    class EffectSpawnBlock : ActionEventBlock
     {
-        public EffectSpawnBlock(EffectType effectType, Transform location)
+        public EffectSpawnBlock(EffectType effectType, SFXId sfxId, Transform location)
         {
-            EffectInfo effectInfo = EffectFactory.GetEffectPlaceholder(effectType, location);
-            NumFrames = effectInfo.NumFrames;
-            SyncedFrame = effectInfo.SyncedFrame;
+            NumFrames = 90;
+            SyncedFrame = 30;
 
-            Events.Add(new EffectSpawnEvent(effectInfo, 0));
+            Events.Add(new EffectSpawnEvent(effectType, sfxId, 0, NumFrames, location));
         }
     }
 }

@@ -132,6 +132,38 @@ namespace MAGE.DB.Internal
 
                     DBService.Get().WriteConversation((int)conversationId, conversation);
                 }
+
+                {  // Blacksmith training offer
+                    ConversationId conversationId = ConversationId.Demo_BlackSmithTraining_Start;
+
+                    DB.DBConversation conversation = new DB.DBConversation();
+                    conversation.Id = (int)conversationId;
+                    conversation.Name = conversationId.ToString();
+                    conversation.Members = defaultMembers;
+
+                    conversation.Header = "Arm the recruits";
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = partyAvatarIdx, Content = "I have a number of recruits that need arming" });
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = ownerIdx, Content = "With the trade routes closed we're low on materials m'Lord. We'll be needing more hide to get what you need. There are plenty of bears in hills you can get some from" });
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = partyAvatarIdx, Content = "You'll have your leather blacksmith" });
+
+
+                    DBService.Get().WriteConversation((int)conversationId, conversation);
+                }
+
+                {  // Blacksmith training complete
+                    ConversationId conversationId = ConversationId.Demo_BlackSmithTraining_Return;
+
+                    DB.DBConversation conversation = new DB.DBConversation();
+                    conversation.Id = (int)conversationId;
+                    conversation.Name = conversationId.ToString();
+                    conversation.Members = defaultMembers;
+
+                    conversation.Header = "I have your pelts";
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = partyAvatarIdx, Content = "We have your pelts blacksmith" });
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = ownerIdx, Content = "This will do hansomely m'Lord. Please take this as a token of my gratitude" });
+
+                    DBService.Get().WriteConversation((int)conversationId, conversation);
+                }
             }
 
             DBService.Get().UpdateConversationDB();

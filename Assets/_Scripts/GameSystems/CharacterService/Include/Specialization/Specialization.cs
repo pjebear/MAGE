@@ -1,4 +1,5 @@
 ﻿using MAGE.GameSystems.Actions;
+using MAGE.GameSystems.Stats;
 using System;
 using System.Collections.Generic;
 using System.Linq;

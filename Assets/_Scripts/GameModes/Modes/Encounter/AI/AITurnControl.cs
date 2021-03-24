@@ -4,6 +4,7 @@ using MAGE.GameSystems;
 using MAGE.GameSystems.Actions;
 using MAGE.GameSystems.AI;
 using MAGE.GameSystems.Characters;
+using MAGE.Messaging;
 using MAGE.UI;
 using System;
 using System.Collections;
@@ -18,252 +19,285 @@ namespace MAGE.GameModes.Encounter
     class AITurnControl
         : TurnFlowControlBase
     {
-        enum TurnAction
-        {
-            Move,
-            Act,
+        //    enum TurnAction
+        //    {
+        //        Move,
+        //        Act,
 
-            NUM
+        //        NUM
+        //    }
+
+        //    enum State
+        //    {
+        //        DisplayPossibleMoves,
+        //        DisplaySelectedMove,
+        //        DisplayPossibleTargets,
+        //        DisplaySelectedTarget,
+
+        //        NUM
+        //    }
+
+        //    float mVisualStatePauseSeconds = 1;
+
+        //    State mState;
+
+        //    private TurnProposal mCharacterTurnProposal = null;
+        //    private MapPathFinder mMovementCalculator = new MapPathFinder();
+        //    ActionTileCalculator mActionCalculator;
+
+        //    protected override void OnInit()
+        //    {
+        //        mTeam = TeamSide.EnemyAI;
+        //        mActionCalculator = new ActionTileCalculator(EncounterFlowControl_Deprecated.MapControl.Map);
+        //    }
+
+        //    protected override void Cleanup()
+        //    {
+        //        // empty
+        //    }
+
+        //    protected override void ProgressTurn(Character character)
+        //    {
+        //        if (mCharacterTurnProposal == null || character != mCharacter)
+        //        {
+        //            mCharacter = character;
+        //            mCharacterTurnProposal = TurnProposalCalculator.CalculateTurnProposal(mCharacter, EncounterFlowControl_Deprecated.MapControl.Map);
+        //        }
+
+        //        bool actionPerformed = false;
+
+        //        if (!mCharacter.HasActed )
+        //        {
+        //            if (mCharacter.CanAct)
+        //            {
+        //                if (mCharacterTurnProposal.ActionId != ActionId.INVALID)
+        //                {
+        //                    TileIdx characterPosition = EncounterFlowControl_Deprecated.MapControl.Map.GetCharacterPosition(mCharacter).Location;
+        //                    if (characterPosition == mCharacterTurnProposal.CastTile)
+        //                    {
+        //                        FocusCharacter(character);
+        //                        ShowCharacterPanel(InfoPanelSide.LEFT, mCharacter);
+        //                        DisplayPossibleTargets();
+        //                        actionPerformed = true;
+        //                    }
+        //                }
+        //            }
+        //        }
+
+        //        if (!actionPerformed)
+        //        {
+        //            if (!mCharacter.HasMoved)
+        //            {
+        //                if (mCharacter.CanMove)
+        //                {
+        //                    if (mCharacterTurnProposal.MovementProposal.Count > 0)
+        //                    {
+        //                        FocusCharacter(character);
+        //                        ShowCharacterPanel(InfoPanelSide.LEFT, mCharacter);
+        //                        actionPerformed = true;
+        //                        DisplayPossibleMoves();
+        //                    }
+        //                }
+        //            }
+        //        }
+
+        //        if (!actionPerformed)
+        //        {
+        //            mCharacter = null;
+        //            Messaging.MessageRouter.Instance.NotifyMessage(new EncounterMessage(EncounterMessage.EventType.TurnFinished));
+        //        }
+        //    }
+
+        //    protected void SendActionProposal()
+        //    {
+        //        mCharacter.UpdateOnActed();
+        //        ActionProposal_Deprecated actionProposal = new ActionProposal_Deprecated(mCharacter, mCharacterTurnProposal.ActionId, mCharacterTurnProposal.ActionTarget);
+        //        EncounterFlowControl_Deprecated.ActionDirector.DirectAction(actionProposal);
+
+        //        HideInfoPanel(InfoPanelSide.LEFT);
+        //        HideInfoPanel(InfoPanelSide.RIGHT);
+        //    }
+
+        //    protected void SendMovementProposal()
+        //    {
+        //        //mCharacter.UpdateOnMoved();
+        //        //List<TileControl> tilePath = EncounterFlowControl_Deprecated.MapControl.GetTiles(mCharacterTurnProposal.MovementProposal);
+        //        //List<Transform> route = new List<Transform>();
+        //        //foreach (TileControl tile in tilePath) { route.Add(tile.transform); }
+
+        //        //EncounterFlowControl_Deprecated.MovementDirector.DirectMovement(
+        //        //    EncounterFlowControl_Deprecated.CharacterDirector.GetController(mCharacter).transform,
+        //        //    route, () =>
+        //        //    {
+        //        //        Messaging.MessageRouter.Instance.NotifyMessage(new EncounterMessage(EncounterMessage.EventType.MoveResolved));
+        //        //                // TODO: figure out orrientation
+        //        //                CharacterPosition newPos = new CharacterPosition();
+        //        //        newPos.Location = mCharacterTurnProposal.MovementProposal.Last();
+        //        //        newPos.Orientation = EncounterFlowControl_Deprecated.CharacterDirector.GetController(mCharacter).GetOrientation();
+        //        //        EncounterFlowControl_Deprecated.CharacterDirector.UpdateCharacterPosition(mCharacter, newPos);
+        //        //    });
+
+        //        HideInfoPanel(InfoPanelSide.LEFT);
+        //        HideInfoPanel(InfoPanelSide.RIGHT);
+        //    }
+
+        //    protected IEnumerator _WaitFor(float seconds)
+        //    {
+        //        while (seconds > 0)
+        //        {
+        //            seconds -= Time.deltaTime;
+        //            yield return new WaitForFixedUpdate();
+        //        }
+        //        WaitComplete();
+        //    }
+
+        //    protected void DisplayPossibleMoves()
+        //    {
+        //        //mState = State.DisplayPossibleMoves;
+        //        //ToggleSelectedTiles(true);
+
+        //        //mMovementCalculator.CalculatePaths(EncounterFlowControl_Deprecated.MapControl.Map
+        //        //     , EncounterFlowControl_Deprecated.MapControl.Map.GetCharacterPosition(mCharacter).Location
+        //        //     , mCharacter.TeamSide
+        //        //     , mCharacter.CurrentAttributes[TertiaryStat.Movement]
+        //        //     , mCharacter.CurrentAttributes[TertiaryStat.Jump]);
+
+        //        //AddTileSelection(EncounterFlowControl_Deprecated.MapControl.GetTiles(mMovementCalculator.GetPossibleTiles()), TileControl.HighlightState.MovementSelect);
+
+        //        //StartCoroutine(_WaitFor(mVisualStatePauseSeconds));
+        //    }
+
+        //    protected void DisplayMovementSelection()
+        //    {
+        //        mState = State.DisplaySelectedMove;
+        //        List<TileIdx> selection = new List<TileIdx>() { mCharacterTurnProposal.MovementProposal.Last() };
+        //        AddTileSelection(EncounterFlowControl_Deprecated.MapControl.GetTiles(selection), TileControl.HighlightState.AOESelect);
+
+        //        StartCoroutine(_WaitFor(mVisualStatePauseSeconds));
+        //    }
+
+        //    protected void DisplayPossibleTargets()
+        //    {
+        //        mState = State.DisplayPossibleTargets;
+        //        ToggleSelectedTiles(true);
+
+        //        ActionInfoBase actionInfo = mCharacter.GetActionInfo(mCharacterTurnProposal.ActionId);
+        //        List<TileIdx> targetTiles = mActionCalculator.CalculateTilesInRange(
+        //            EncounterFlowControl_Deprecated.MapControl.Map.GetCharacterPosition(mCharacter).Location,
+        //            EncounterFlowControl_Deprecated.MapControl.Map.GetCharacterPosition(mCharacter).Location,
+        //            actionInfo.CastRange,
+        //            mCharacter.TeamSide);
+        //        AddTileSelection(EncounterFlowControl_Deprecated.MapControl.GetTiles(targetTiles), TileControl.HighlightState.TargetSelect);
+
+        //        StartCoroutine(_WaitFor(mVisualStatePauseSeconds));
+        //    }
+
+        //    protected void DisplayTargetSelection()
+        //    {
+        //        mState = State.DisplaySelectedTarget;
+        //        List<TileIdx> targetTiles = EncounterFlowControl_Deprecated.MapControl.Map.GetTargetedTiles(
+        //            EncounterFlowControl_Deprecated.MapControl.Map.GetCharacterPosition(mCharacter).Location, 
+        //            mCharacterTurnProposal.ActionTarget);
+        //        AddTileSelection(EncounterFlowControl_Deprecated.MapControl.GetTiles(targetTiles), TileControl.HighlightState.AOESelect);
+
+        //        StartCoroutine(_WaitFor(mVisualStatePauseSeconds));
+
+        //        Character focalTarget = null;
+        //        if (mCharacterTurnProposal.ActionTarget.FocalTarget.TargetType == TargetSelectionType.Character)
+        //        {
+        //            focalTarget = mCharacterTurnProposal.ActionTarget.FocalTarget.CharacterTarget;
+        //        }
+        //        else
+        //        {
+        //            focalTarget = EncounterFlowControl_Deprecated.MapControl.Map.TileAt(mCharacterTurnProposal.ActionTarget.FocalTarget.TileTarget).OnTile;
+        //        }
+        //        if (focalTarget != null)
+        //        {
+        //            ShowCharacterPanel(InfoPanelSide.RIGHT, focalTarget);
+        //        }
+        //    }
+
+        //    protected void WaitComplete()
+        //    {
+        //        switch (mState)
+        //        {
+        //            case State.DisplayPossibleMoves:
+        //            {
+        //                DisplayMovementSelection();
+        //            }
+        //            break;
+        //            case State.DisplaySelectedMove:
+        //            {
+        //                ClearTileSelections();
+        //                SendMovementProposal();
+        //            }
+        //            break;
+        //            case State.DisplayPossibleTargets:
+        //            {
+        //                DisplayTargetSelection();
+        //            }
+        //            break;
+        //            case State.DisplaySelectedTarget:
+        //            {
+        //                ClearTileSelections();
+        //                SendActionProposal();
+        //            }
+        //            break;
+        //        }
+        //    }
+        public override string Condition(string queryEvent)
+        {
+            return base.Condition(queryEvent);
         }
 
-        enum State
+        public override FlowControlId GetFlowControlId()
         {
-            DisplayPossibleMoves,
-            DisplaySelectedMove,
-            DisplayPossibleTargets,
-            DisplaySelectedTarget,
-
-            NUM
+            throw new NotImplementedException();
         }
 
-        float mVisualStatePauseSeconds = 1;
-
-        State mState;
-
-        private TurnProposal mCharacterTurnProposal = null;
-        private HashSet<TurnAction> mTurnActions = new HashSet<TurnAction>();
-        private MapPathFinder mMovementCalculator = new MapPathFinder();
-        ActionTileCalculator mActionCalculator;
-
-        protected override void OnInit()
+        public override void HandleMessage(MessageInfoBase eventInfoBase)
         {
-            mTeam = TeamSide.EnemyAI;
-            mActionCalculator = new ActionTileCalculator(EncounterFlowControl.MapControl.Map);
+            base.HandleMessage(eventInfoBase);
+        }
+
+        public override bool Notify(string notifyEvent)
+        {
+            return base.Notify(notifyEvent);
+        }
+
+        public override void OnKeyPressed(InputSource source, int key, InputState state)
+        {
+            base.OnKeyPressed(source, key, state);
+        }
+
+        public override void OnMouseHoverChange(GameObject mouseHover)
+        {
+            base.OnMouseHoverChange(mouseHover);
+        }
+
+        public override void OnMouseScrolled(float scrollDelta)
+        {
+            base.OnMouseScrolled(scrollDelta);
+        }
+
+        public override string Query(string queryEvent)
+        {
+            return base.Query(queryEvent);
         }
 
         protected override void Cleanup()
         {
-            // empty
+            base.Cleanup();
         }
 
-        protected override void ProgressTurn(Character character)
+        protected override void SetState(State state)
         {
-            if (mCharacterTurnProposal == null || mTurnActions.Count == 0
-                || character != mCharacter)
-            {
-                mTurnActions.Clear();
-                mCharacter = character;
-                mCharacterTurnProposal = TurnProposalCalculator.CalculateTurnProposal(mCharacter, EncounterFlowControl.MapControl.Map);
-                
-                if (mCharacterTurnProposal.ActionId != ActionId.INVALID)
-                {
-                    mTurnActions.Add(TurnAction.Act);
-                }
-                if (mCharacterTurnProposal.MovementProposal.Count > 0)
-                {
-                    mTurnActions.Add(TurnAction.Move);
-                }
-            }
-
-            bool actionPerformed = false;
-
-            TileIdx characterPosition = EncounterFlowControl.MapControl.Map.GetCharacterPosition(mCharacter).Location;
-            if (!mCharacter.HasActed )
-            {
-                if (mCharacter.CanAct)
-                {
-                    if (mTurnActions.Contains(TurnAction.Act))
-                    {
-                        if (characterPosition == mCharacterTurnProposal.CastTile)
-                        {
-                            FocusCharacter(character);
-                            ShowCharacterPanel(InfoPanelSide.LEFT, mCharacter);
-                            DisplayPossibleTargets();
-                            actionPerformed = true;
-                            mTurnActions.Remove(TurnAction.Act);
-                        }
-                    }
-                }
-                else
-                {
-                    mTurnActions.Remove(TurnAction.Act);
-                }
-            }
-            
-            if (!actionPerformed)
-            {
-                if (!mCharacter.HasMoved)
-                {
-                    if (mCharacter.CanMove)
-                    {
-                        if (mTurnActions.Contains(TurnAction.Move))
-                        {
-                            FocusCharacter(character);
-                            ShowCharacterPanel(InfoPanelSide.LEFT, mCharacter);
-                            actionPerformed = true;
-                            mTurnActions.Remove(TurnAction.Move);
-                            DisplayPossibleMoves();
-                        }
-                    }
-                    else
-                    {
-                        mTurnActions.Remove(TurnAction.Move);
-                    }
-                }
-            }
-
-            if (!actionPerformed)
-            {
-                mCharacter = null;
-                Messaging.MessageRouter.Instance.NotifyMessage(new EncounterMessage(EncounterMessage.EventType.TurnFinished));
-            }
+            base.SetState(state);
         }
 
-        protected void SendActionProposal()
+        protected override void Setup()
         {
-            mCharacter.UpdateOnActed();
-            ActionProposal actionProposal = new ActionProposal(mCharacter, mCharacterTurnProposal.ActionId, mCharacterTurnProposal.ActionTarget);
-            EncounterFlowControl.ActionDirector.DirectAction(actionProposal);
-
-            HideInfoPanel(InfoPanelSide.LEFT);
-            HideInfoPanel(InfoPanelSide.RIGHT);
-        }
-
-        protected void SendMovementProposal()
-        {
-            mCharacter.UpdateOnMoved();
-            List<TileControl> tilePath = EncounterFlowControl.MapControl.GetTiles(mCharacterTurnProposal.MovementProposal);
-            List<Transform> route = new List<Transform>();
-            foreach (TileControl tile in tilePath) { route.Add(tile.transform); }
-
-            EncounterFlowControl.MovementDirector.DirectMovement(
-                EncounterFlowControl.CharacterDirector.GetController(mCharacter).ActorController,
-                route, () =>
-                {
-                    Messaging.MessageRouter.Instance.NotifyMessage(new EncounterMessage(EncounterMessage.EventType.MoveResolved));
-                            // TODO: figure out orrientation
-                            CharacterPosition newPos = new CharacterPosition();
-                    newPos.Location = mCharacterTurnProposal.MovementProposal.Last();
-                    newPos.Orientation = EncounterFlowControl.CharacterDirector.GetController(mCharacter).GetOrientation();
-                    EncounterFlowControl.CharacterDirector.UpdateCharacterPosition(mCharacter, newPos);
-                });
-
-            HideInfoPanel(InfoPanelSide.LEFT);
-            HideInfoPanel(InfoPanelSide.RIGHT);
-        }
-
-        protected IEnumerator _WaitFor(float seconds)
-        {
-            while (seconds > 0)
-            {
-                seconds -= Time.deltaTime;
-                yield return new WaitForFixedUpdate();
-            }
-            WaitComplete();
-        }
-
-        protected void DisplayPossibleMoves()
-        {
-            mState = State.DisplayPossibleMoves;
-            ToggleSelectedTiles(true);
-
-            mMovementCalculator.CalculatePaths(EncounterFlowControl.MapControl.Map
-                 , EncounterFlowControl.MapControl.Map.GetCharacterPosition(mCharacter).Location
-                 , mCharacter.TeamSide
-                 , mCharacter.CurrentAttributes[TertiaryStat.Movement]
-                 , mCharacter.CurrentAttributes[TertiaryStat.Jump]);
-
-            AddTileSelection(EncounterFlowControl.MapControl.GetTiles(mMovementCalculator.GetPossibleTiles()), TileControl.HighlightState.MovementSelect);
-
-            StartCoroutine(_WaitFor(mVisualStatePauseSeconds));
-        }
-
-        protected void DisplayMovementSelection()
-        {
-            mState = State.DisplaySelectedMove;
-            List<TileIdx> selection = new List<TileIdx>() { mCharacterTurnProposal.MovementProposal.Last() };
-            AddTileSelection(EncounterFlowControl.MapControl.GetTiles(selection), TileControl.HighlightState.AOESelect);
-
-            StartCoroutine(_WaitFor(mVisualStatePauseSeconds));
-        }
-
-        protected void DisplayPossibleTargets()
-        {
-            mState = State.DisplayPossibleTargets;
-            ToggleSelectedTiles(true);
-
-            ActionInfo actionInfo = mCharacter.GetActionInfo(mCharacterTurnProposal.ActionId);
-            List<TileIdx> targetTiles = mActionCalculator.CalculateTilesInRange(
-                EncounterFlowControl.MapControl.Map.GetCharacterPosition(mCharacter).Location,
-                EncounterFlowControl.MapControl.Map.GetCharacterPosition(mCharacter).Location,
-                actionInfo.CastRange);
-            AddTileSelection(EncounterFlowControl.MapControl.GetTiles(targetTiles), TileControl.HighlightState.TargetSelect);
-
-            StartCoroutine(_WaitFor(mVisualStatePauseSeconds));
-        }
-
-        protected void DisplayTargetSelection()
-        {
-            mState = State.DisplaySelectedTarget;
-            List<TileIdx> targetTiles = EncounterFlowControl.MapControl.Map.GetTargetedTiles(
-                EncounterFlowControl.MapControl.Map.GetCharacterPosition(mCharacter).Location, 
-                mCharacterTurnProposal.ActionTarget);
-            AddTileSelection(EncounterFlowControl.MapControl.GetTiles(targetTiles), TileControl.HighlightState.AOESelect);
-
-            StartCoroutine(_WaitFor(mVisualStatePauseSeconds));
-
-            Character focalTarget = null;
-            if (mCharacterTurnProposal.ActionTarget.FocalTarget.TargetType == TargetSelectionType.Character)
-            {
-                focalTarget = mCharacterTurnProposal.ActionTarget.FocalTarget.CharacterTarget;
-            }
-            else
-            {
-                focalTarget = EncounterFlowControl.MapControl.Map.TileAt(mCharacterTurnProposal.ActionTarget.FocalTarget.TileTarget).OnTile;
-            }
-            if (focalTarget != null)
-            {
-                ShowCharacterPanel(InfoPanelSide.RIGHT, focalTarget);
-            }
-        }
-
-        protected void WaitComplete()
-        {
-            switch (mState)
-            {
-                case State.DisplayPossibleMoves:
-                {
-                    DisplayMovementSelection();
-                }
-                break;
-                case State.DisplaySelectedMove:
-                {
-                    ClearTileSelections();
-                    SendMovementProposal();
-                }
-                break;
-                case State.DisplayPossibleTargets:
-                {
-                    DisplayTargetSelection();
-                }
-                break;
-                case State.DisplaySelectedTarget:
-                {
-                    ClearTileSelections();
-                    SendActionProposal();
-                }
-                break;
-            }
+            base.Setup();
         }
     }
 }

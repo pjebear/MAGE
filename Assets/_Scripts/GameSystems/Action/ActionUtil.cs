@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MAGE.GameSystems.Characters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,8 @@ namespace MAGE.GameSystems.Actions
         {
             RangeInfo rangeInfo = new RangeInfo();
 
-            rangeInfo.AreaType = (AreaType)dbEntry.Type;
+            rangeInfo.AreaType = (AreaType)dbEntry.AreaType;
+            rangeInfo.TargetingType = (TargetingType)dbEntry.TargetingType;
             rangeInfo.MinRange = dbEntry.Min;
             rangeInfo.MaxRange = dbEntry.Max;
             rangeInfo.MaxElevationChange = dbEntry.Elevation;
@@ -20,7 +22,7 @@ namespace MAGE.GameSystems.Actions
             return rangeInfo;
         }
 
-        public static void FromDB(DB.DBAction dbAction, ActionInfo fromDB)
+        public static void FromDB(DB.DBAction dbAction, ActionInfoBase fromDB)
         {
             fromDB.ActionId = (ActionId)dbAction.Id;
             fromDB.ActionRange = (ActionRange)dbAction.ActionRange;
@@ -31,8 +33,12 @@ namespace MAGE.GameSystems.Actions
             fromDB.AnimationInfo.AnimationId = (AnimationId)dbAction.AnimationId;
             fromDB.ProjectileInfo.ProjectileId = (ProjectileId)dbAction.ProjectileId;
             fromDB.EffectInfo.EffectId = (EffectType)dbAction.EffectId;
+            fromDB.EffectInfo.SFXId = (SFXId)dbAction.SFXId;
             fromDB.ChainInfo.NumChainTargets = dbAction.NumChainBounces;
             fromDB.ChainInfo.ChainEffectFalloff = dbAction.ChainFalloff;
+            fromDB.SummonInfo.SummonType = (SpecializationType)dbAction.SummonType;
+            fromDB.SummonInfo.SummonCount = dbAction.SummonCount;
+            fromDB.SummonInfo.MaxSummonCount = dbAction.MaxSummonCount;
             fromDB.IsSelfCast = dbAction.IsSelfCast;
         }
 

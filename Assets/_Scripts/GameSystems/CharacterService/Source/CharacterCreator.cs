@@ -1,4 +1,7 @@
 ﻿using MAGE.GameSystems.Actions;
+using MAGE.GameSystems.Appearances;
+using MAGE.GameSystems.Items;
+using MAGE.GameSystems.Stats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,7 +50,9 @@ namespace MAGE.GameSystems.Characters.Internal
 
             // Attributes
             emptyCharacter.CharacterInfo.Attributes = Enumerable.Repeat(new DB.DBAttributes(), (int)AttributeCategory.NUM).ToList();
-            emptyCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat] = new DB.DBAttributes() { AttributeCategory = (int)AttributeCategory.Stat, Attributes = Enumerable.Repeat(0f, (int)CharacterStat.NUM).ToList() };
+            emptyCharacter.CharacterInfo.Attributes[(int)AttributeCategory.PrimaryStat] = new DB.DBAttributes() { AttributeCategory = (int)AttributeCategory.PrimaryStat, Attributes = Enumerable.Repeat(0f, (int)PrimaryStat.NUM).ToList() };
+            emptyCharacter.CharacterInfo.Attributes[(int)AttributeCategory.SecondaryStat] = new DB.DBAttributes() { AttributeCategory = (int)AttributeCategory.SecondaryStat, Attributes = Enumerable.Repeat(0f, (int)SecondaryStat.NUM).ToList() };
+            emptyCharacter.CharacterInfo.Attributes[(int)AttributeCategory.TertiaryStat] = new DB.DBAttributes() { AttributeCategory = (int)AttributeCategory.TertiaryStat, Attributes = Enumerable.Repeat(0f, (int)TertiaryStat.NUM).ToList() };
             emptyCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Resource] = new DB.DBAttributes() { AttributeCategory = (int)AttributeCategory.Resource, Attributes = Enumerable.Repeat(0f, (int)ResourceType.NUM).ToList() };
             emptyCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Allignment] = new DB.DBAttributes() { AttributeCategory = (int)AttributeCategory.Allignment, Attributes = Enumerable.Repeat(0f, (int)AllignmentType.NUM).ToList() };
             emptyCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Status] = new DB.DBAttributes() { AttributeCategory = (int)AttributeCategory.Status, Attributes = Enumerable.Repeat(0f, (int)StatusType.NUM).ToList() };
@@ -81,17 +86,11 @@ namespace MAGE.GameSystems.Characters.Internal
             dbCharacter.CharacterInfo.Experience = 0;
 
             // Appearance
-            if (createParams.appearanceOverrides != null)
-            {
-                dbCharacter.AppearanceId = dbCharacter.Id;
-                dbAppearance.Id = dbCharacter.Id;
-                dbAppearance.BodyType = createParams.appearanceOverrides.BodyType != BodyType.NUM ? (int)createParams.appearanceOverrides.BodyType : (int)BodyType.Body_0;
-                dbAppearance.PortraitSpriteId = createParams.appearanceOverrides.PortraitSpriteId != PortraitSpriteId.INVALID ? (int)createParams.appearanceOverrides.PortraitSpriteId : (int)PortraitSpriteId.INVALID;
-            }
-            else
-            {
-                dbAppearance.Id = -1;
-            }
+            dbCharacter.AppearanceId = dbCharacter.Id;
+
+            dbAppearance = AppearanceUtil.ToDB(createParams.appearanceOverrides);
+
+            dbAppearance.Id = dbCharacter.Id;
 
             // Equipment
             for (int i = 0; i < (int)Equipment.Slot.NUM; ++i)
@@ -130,16 +129,16 @@ namespace MAGE.GameSystems.Characters.Internal
                 break;
             }
 
-            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)PrimaryStat.Might] = primaryStat == PrimaryStat.Might ? 20 : 10;
-            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)PrimaryStat.Finese] = primaryStat == PrimaryStat.Finese ? 20 : 10;
-            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)PrimaryStat.Magic] = primaryStat == PrimaryStat.Magic ? 20 : 10;
-            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)SecondaryStat.Fortitude] = 60;
-            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)SecondaryStat.Attunement] = 40;
-            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)TertiaryStat.Movement] = 4;
-            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)TertiaryStat.Jump] = 2;
-            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)TertiaryStat.Speed] = 7;
-            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Stat].Attributes[(int)TertiaryStat.MaxClockGuage] = 100;
-            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Resource].Attributes[(int)ResourceType.Health] = 20;
+            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.PrimaryStat].Attributes[(int)PrimaryStat.Might] = primaryStat == PrimaryStat.Might ? 20 : 10;
+            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.PrimaryStat].Attributes[(int)PrimaryStat.Finese] = primaryStat == PrimaryStat.Finese ? 20 : 10;
+            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.PrimaryStat].Attributes[(int)PrimaryStat.Magic] = primaryStat == PrimaryStat.Magic ? 20 : 10;
+            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.SecondaryStat].Attributes[(int)SecondaryStat.Fortitude] = 60;
+            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.SecondaryStat].Attributes[(int)SecondaryStat.Attunement] = 40;
+            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.TertiaryStat].Attributes[(int)TertiaryStat.Movement] = 4;
+            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.TertiaryStat].Attributes[(int)TertiaryStat.Jump] = 2;
+            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.TertiaryStat].Attributes[(int)TertiaryStat.Speed] = 7;
+            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.TertiaryStat].Attributes[(int)TertiaryStat.MaxClockGuage] = 100;
+            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Resource].Attributes[(int)ResourceType.Health] = 0;
         }
 
         public static int GetNextAvailableCharacterId(CharacterType characterType)

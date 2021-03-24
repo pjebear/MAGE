@@ -37,10 +37,28 @@ namespace MAGE.GameModes.FlowControl
         }
     }
 
+    class Invoke : FlowActionBase
+    {
+        public Invoke(string arg)
+            : base(FlowMessage.EventType.Invoke, arg)
+        {
+            // empty
+        }
+    }
+
     class Query : FlowActionBase
     {
         public Query(string arg)
             : base(FlowMessage.EventType.Query, arg)
+        {
+            // empty
+        }
+    }
+
+    class Condition : FlowActionBase
+    {
+        public Condition(string arg)
+            : base(FlowMessage.EventType.Condition, arg)
         {
             // empty
         }

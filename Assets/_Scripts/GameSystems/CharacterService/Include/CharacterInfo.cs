@@ -1,4 +1,7 @@
 ﻿using MAGE.GameSystems.Actions;
+using MAGE.GameSystems.Appearances;
+using MAGE.GameSystems.Items;
+using MAGE.GameSystems.Stats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,6 +56,8 @@ namespace MAGE.GameSystems.Characters
 
         protected Appearance mBaseAppearance = new Appearance();
 
+        public List<Character> Children = new List<Character>(); 
+        public List<Character> Parents = new List<Character>(); 
 
         public CharacterInfo GetInfo()
         {
@@ -104,12 +109,8 @@ namespace MAGE.GameSystems.Characters
                     Internal.SpecializationFactory.CheckoutSpecialization(specializationPair.Key, specializationPair.Value));
             }
             
-
             // Appearance Overrides
-            if (characterInfo.AppearanceId != -1)
-            {
-                mBaseAppearance = AppearanceUtil.FromDB(DBService.Get().LoadAppearance(characterInfo.AppearanceId));
-            }
+            mBaseAppearance = AppearanceUtil.FromDB(DBService.Get().LoadAppearance(characterInfo.AppearanceId));
             
             // Assorted things
             foreach (ActionResponseId actionResponseId in GetActionResponseIds())
@@ -127,6 +128,8 @@ namespace MAGE.GameSystems.Characters
                AttributeUtil.ResourceFromAttribtues(ResourceType.Mana, mCurrentAttributes),
                AttributeUtil.ResourceFromAttribtues(ResourceType.Endurance, mCurrentAttributes),
                AttributeUtil.ResourceFromAttribtues(ResourceType.Clock, mCurrentAttributes));
+
+            OnCharacterStateChanged();
         }
 
         public void ApplyStateChange(StateChange stateChange)
@@ -200,9 +203,9 @@ namespace MAGE.GameSystems.Characters
         }
 
         //  ------------------------------------------------------------------------------
-        public ActionInfo GetActionInfo(ActionId actionId)
+        public ActionInfoBase GetActionInfo(ActionId actionId)
         {
-            ActionInfo actionInfo = ActionFactory.CreateActionInfoFromId(actionId, this);
+            ActionInfoBase actionInfo = ActionFactory.CreateActionInfoFromId(actionId, this);
 
             foreach (IActionModifier modifier in GetActionModifiers().Where(x => x.ActionId == actionId))
             {
@@ -216,7 +219,7 @@ namespace MAGE.GameSystems.Characters
         {
             List<ActionId> actions = new List<ActionId>();
 
-            actions.Add(ActionId.WeaponAttack);
+            actions.Add(ActionId.MeeleWeaponAttack);
             actions.AddRange(CurrentSpecialization.GetActions());
 
             return actions;
@@ -281,6 +284,8 @@ namespace MAGE.GameSystems.Characters
 
                 // Finall, equip the item
                 Equipment[inSlot] = equippable;
+
+                OnCharacterStateChanged();
             }
             else
             {
@@ -333,7 +338,7 @@ namespace MAGE.GameSystems.Characters
         public void ApplyStatusEffect(StatusEffect effect)
         {
             StatusEffect existingEffect = StatusEffects.Find(
-                (x) => x.CreatedBy == effect.CreatedBy && x.EffectType == effect.EffectType);
+                (x) => /*x.CreatedBy == effect.CreatedBy && */ x.EffectType == effect.EffectType);
 
             if (existingEffect != null)
             {
@@ -351,7 +356,7 @@ namespace MAGE.GameSystems.Characters
         public void RemoveStatusEffect(StatusEffect effect)
         {
             StatusEffect existingEffect = StatusEffects.Find(
-                (x) => x.CreatedBy == effect.CreatedBy && x.EffectType == effect.EffectType);
+                (x) => /*x.CreatedBy == effect.CreatedBy &&*/ x.EffectType == effect.EffectType);
 
             if (existingEffect != null)
             {
@@ -398,7 +403,7 @@ namespace MAGE.GameSystems.Characters
             StatusEffect statusEffect = StatusEffects.Find(
                 x =>
                 x.EffectType == statusEffectId 
-                && ownedBy == x.CreatedBy.Id);
+                /*&& ownedBy == x.CreatedBy.Id*/);
 
             if (statusEffect != null)
             {
@@ -493,6 +498,25 @@ namespace MAGE.GameSystems.Characters
             }
         }
         #endregion //StateManagement
+
+        public bool HasResourcesForAction(StateChange actionCost)
+        {
+            bool hasResources = true;
+
+            hasResources &= mCurrentResources[ResourceType.Health].Current > actionCost.healthChange;
+            hasResources &= mCurrentResources[ResourceType.Mana].Current >= actionCost.resourceChange;
+
+            foreach (StatusEffect statusEffect in actionCost.statusEffects)
+            {
+                int countRequirement = statusEffect.StackCount;
+                int hasCount = GetStackCountForStatus(statusEffect.EffectType, this);
+
+                hasResources &= countRequirement >= hasCount;
+            }
+
+            return hasResources;
+        }
+
         // Private:
         //  ------------------------------------------------------------------------------
         private void OnCharacterStateChanged()
@@ -539,40 +563,26 @@ namespace MAGE.GameSystems.Characters
         {
             Appearance appearance = new Appearance();
 
-            appearance.AppearanceId = mBaseAppearance.AppearanceId;
+            appearance = mBaseAppearance;
             
             // Portrait
-            if (mBaseAppearance.PortraitSpriteId != PortraitSpriteId.INVALID)
-            {
-                appearance.PortraitSpriteId = mBaseAppearance.PortraitSpriteId;
-            }
-            else
+            if (appearance.PortraitSpriteId == PortraitSpriteId.INVALID)
             {
                 appearance.PortraitSpriteId = SpecializationUtil.GetPortraitSpriteIdForSpecialization(CurrentSpecializationType);
-            }
-
-            // Update Body Type
-            if (mBaseAppearance.BodyType != BodyType.NUM)
-            {
-                appearance.BodyType = mBaseAppearance.BodyType;
-            }
-            else
-            {
-                appearance.BodyType = BodyType.Body_0;
             }
 
             // Update Equipment
             for (int equipmentSlotIdx = 0; equipmentSlotIdx < (int)Equipment.Slot.NUM; ++equipmentSlotIdx)
             {
                 Equipment.Slot slot = (Equipment.Slot)equipmentSlotIdx;
-                AppearancePrefabId prefabId = Equipment[slot] == Equipment.NO_EQUIPMENT ? AppearancePrefabId.prefab_none : Equipment[slot].PrefabId;
+                ApparelAssetId prefabId = Equipment[slot] == Equipment.NO_EQUIPMENT ? ApparelAssetId.NONE : Equipment[slot].PrefabId;
 
                 switch (slot)
                 {
                     case Equipment.Slot.Accessory:      /* empty */ break;
-                    case Equipment.Slot.Armor: appearance.ArmorId = prefabId; break;
-                    case Equipment.Slot.LeftHand: appearance.LeftHeldId = prefabId; break;
-                    case Equipment.Slot.RightHand: appearance.RightHeldId = prefabId; break;
+                    case Equipment.Slot.Armor: appearance.OutfitType = prefabId; break;
+                    case Equipment.Slot.LeftHand: appearance.LeftHeldAssetId = prefabId; break;
+                    case Equipment.Slot.RightHand: appearance.RightHeldAssetId = prefabId; break;
                 }
             }
 

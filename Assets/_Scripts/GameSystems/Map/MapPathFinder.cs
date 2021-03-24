@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace MAGE.GameSystems
 {
@@ -120,8 +121,18 @@ namespace MAGE.GameSystems
                 TileIdx tileIdx = UnFlatten(nextNode);
                 potentialNodes.Remove(nextNode);
 
+                if (!map.IsValidIdx(tileIdx))
+                {
+                    Debug.Assert(false);
+                }
+
                 UnityEngine.Debug.Assert(!IsNodeSet(tileIdx));
-                UpdateNode(node);
+                if (!IsNodeSet(tileIdx))
+                {
+                    UpdateNode(node);
+                }
+                
+                
 
                 // End
 
@@ -183,13 +194,26 @@ namespace MAGE.GameSystems
             }
         }
 
-        private int FlattenIdx(TileIdx tileIdx) { return tileIdx.y * mPathNodes.Count + tileIdx.x; }
+        private int FlattenIdx(TileIdx tileIdx)
+        {
+            if (!IsValidIdx(tileIdx))
+            {
+                Debug.Assert(false);
+            }
+            return tileIdx.y * mPathNodes[0].Count + tileIdx.x;
+        }
         private TileIdx UnFlatten(int flattened)
         {
-            return new TileIdx(flattened % mPathNodes.Count, flattened / mPathNodes.Count);
+            int width = mPathNodes[0].Count;
+            TileIdx idx = new TileIdx(flattened % width, flattened / width);
+            if (!IsValidIdx(idx))
+            {
+                Debug.Assert(false);
+            }
+            return idx;
         }
 
-        private bool CanNavigateToNeighbour(TileIdx index)
+        private bool IsValidIdx(TileIdx index)
         {
             return index.y >= 0 && index.y < mPathNodes.Count
                 && index.x >= 0 && index.x < mPathNodes[0].Count;
@@ -202,27 +226,57 @@ namespace MAGE.GameSystems
 
         private PathNode NodeAt(TileIdx atIdx)
         {
-            return mPathNodes[atIdx.y][atIdx.x];
+            PathNode node = null;
+            if (IsValidIdx(atIdx))
+            {
+                node = mPathNodes[atIdx.y][atIdx.x];
+            }
+            else
+            {
+                Debug.Assert(false);
+            }
+
+            return node;
         }
 
         private void UpdateNode(PathNode node)
         {
-            mPathNodes[node.Location.y][node.Location.x] = node;
+            if (node != null && IsValidIdx(node.Location))
+            {
+                mPathNodes[node.Location.y][node.Location.x] = node;
+            }
+            else
+            {
+                Debug.Assert(false);
+            }
         }
 
         private float CostTo(PathNode node)
         {
-            float cost = node.CostFromPrevious;
-            if (node.Previous != PathNode.InvalidIdx)
+            float cost = 0;
+            if (node == null)
             {
-                cost += CostTo(NodeAt(node.Previous));
+                Debug.Assert(false);
             }
+            else
+            {
+                cost = node.CostFromPrevious;
+                if (node.Previous != PathNode.InvalidIdx)
+                {
+                    cost += CostTo(NodeAt(node.Previous));
+                }
+            }
+            
             return cost;
         }
 
         private void HorzVertCostTo(PathNode pathNode, ref float horzCost, ref float vertCost)
         {
-            if (pathNode.Previous != PathNode.InvalidIdx)
+            if (pathNode == null)
+            {
+                Debug.Assert(false);
+            }
+            else if (pathNode.Previous != PathNode.InvalidIdx)
             {
                 horzCost += pathNode.HorzCostFromPrevious;
                 vertCost += pathNode.VertCostFromPrevious;

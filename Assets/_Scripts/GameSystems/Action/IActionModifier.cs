@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace MAGE.GameSystems.Actions
 {
-    interface IActionModifier : IModifier<ActionInfo>
+    interface IActionModifier : IModifier<ActionInfoBase>
     {
         ActionId ActionId { get; }
     }
 
     class SwordActionModifier : IActionModifier
     {
-        public ActionId ActionId { get { return ActionId.WeaponAttack; } }
+        public ActionId ActionId { get { return ActionId.MeeleWeaponAttack; } }
 
-        public void Modify(ActionInfo info)
+        public void Modify(ActionInfoBase info)
         {
             WeaponActionInfoBase meleeAttackInfo = (WeaponActionInfoBase)info;
 
@@ -33,7 +33,7 @@ namespace MAGE.GameSystems.Actions
             HealAmp = healAmp;
         }
 
-        public void Modify(ActionInfo info)
+        public void Modify(ActionInfoBase info)
         {
             info.Effectiveness += HealAmp;
         }

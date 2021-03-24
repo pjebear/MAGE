@@ -15,6 +15,7 @@ namespace MAGE.GameModes.LevelManagement
         EncounterAvailable,
         EncounterComplete,
         EncounterUpdated,
+        LevelLoaded,
         PropUpdated,
 
         NUM

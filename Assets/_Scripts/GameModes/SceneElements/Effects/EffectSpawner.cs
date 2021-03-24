@@ -2,46 +2,37 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-class EffectSpawner : MonoBehaviour
+namespace MAGE.GameModes.SceneElements
 {
-    public Effect FirePrefab;
-    public Effect HealPrefab;
-
-    // Start is called before the first frame update
-    void Start()
+    class EffectSpawner : MonoBehaviour
     {
+        private AssetLoader<Effect> mEffectLoader = new AssetLoader<Effect>("VFX");
 
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public void SpawnEffect(EffectInfo effectInfo)
-    {
-        Effect effect = null;
-        switch (effectInfo.EffectType)
+        private void Awake()
         {
-            case (EffectType.Fire):
-                effect = Instantiate(FirePrefab, effectInfo.SpawnParent);
-                break;
-            case (EffectType.Heal):
-                effect = Instantiate(HealPrefab, effectInfo.SpawnParent);
-                break;
-            default:
-                Debug.Assert(false);
-                break;
+            mEffectLoader.LoadAssets();
+        }
+        // Start is called before the first frame update
+        void Start()
+        {
+
         }
 
-        StartCoroutine(SpawnEffectFor(effect, effectInfo.NumFrames / (float)AnimationConstants.FRAMES_PER_SECOND));
-    }
+        // Update is called once per frame
+        void Update()
+        {
 
-    IEnumerator SpawnEffectFor(Effect effect, float duration)
-    {
-        yield return new WaitForSeconds(duration);
+        }
 
-        Destroy(effect.gameObject);
+        public EffectDurationInfo GetEffectDurationInfo(EffectType effectType)
+        {
+            return mEffectLoader.GetAsset(effectType.ToString()).DurationInfo;
+        }
+
+        public Effect SpawnEffect(EffectType effectType, Transform parent = null)
+        {
+            return Instantiate(mEffectLoader.GetAsset(effectType.ToString()), parent);   
+        }
     }
 }
+

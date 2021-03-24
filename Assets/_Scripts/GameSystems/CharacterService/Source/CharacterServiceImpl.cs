@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MAGE.GameSystems.Appearances;
+using MAGE.GameSystems.Items;
+using MAGE.GameSystems.Stats;
 using MAGE.Services;
 
 namespace MAGE.GameSystems.Characters.Internal
@@ -99,16 +102,17 @@ namespace MAGE.GameSystems.Characters.Internal
             CharacterCreator.CreateCharacter(createParams, out dbCharacter, out dbAppearance);
 
             CharacterInfo characterInfo = CharacterDBUtil.FromDB(dbCharacter);
-
-            if (dbAppearance.Id != -1)
-            {
-                Appearance appearance = AppearanceUtil.FromDB(dbAppearance);
-                DBService.Get().WriteAppearance(characterInfo.AppearanceId, AppearanceUtil.ToDB(appearance));
-            }
-
             WriteCharacter(characterInfo);
 
+            Appearance appearance = AppearanceUtil.FromDB(dbAppearance);
+            DBService.Get().WriteAppearance(characterInfo.AppearanceId, AppearanceUtil.ToDB(appearance));
+
             return characterInfo.Id;
+        }
+
+        public int CreateMob(Mobs.MobId mobId, int level)
+        {
+            return CreateCharacter(MobFactory.GetCreateParamsForMob(mobId, level));
         }
 
         public List<int> EquipCharacter(int characterId, EquippableId equippableId, Equipment.Slot inSlot)

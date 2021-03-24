@@ -1,5 +1,7 @@
-﻿using MAGE.GameSystems;
+﻿using MAGE.GameModes.Combat;
+using MAGE.GameSystems;
 using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.Stats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +12,25 @@ namespace MAGE.GameSystems.Actions
 {
     class ActionProposal
     {
+        public CombatEntity Proposer;
+        public Target Target;
+        public ActionId Action;
+
+        public ActionProposal(CombatEntity proposer, Target target, ActionId action)
+        {
+            Action = action;
+            Proposer = proposer;
+            Target = target;
+        }
+    }
+
+    class ActionProposal_Deprecated
+    {
         public Character Proposer;
         public ActionId Action;
         public TargetSelection ActionTarget;
 
-        public ActionProposal(Character proposer, ActionId action, TargetSelection actionTarget)
+        public ActionProposal_Deprecated(Character proposer, ActionId action, TargetSelection actionTarget)
         {
             Proposer = proposer;
             Action = action;
@@ -24,13 +40,13 @@ namespace MAGE.GameSystems.Actions
 
     static class ActionProposalUtil
     {
-        public static bool IsProposalValid(ActionProposal proposal)
+        public static bool IsProposalValid(ActionProposal_Deprecated proposal)
         {
             return DoesActionHaveValidTargets(proposal)
                 && DoesProposerHaveSufficientResources(proposal.Proposer, proposal.Proposer.GetActionInfo(proposal.Action));
         }
 
-        public static bool DoesProposerHaveSufficientResources(Character owner, ActionInfo actionInfo)
+        public static bool DoesProposerHaveSufficientResources(Character owner, ActionInfoBase actionInfo)
         {
             bool isValidState =
                 owner.CurrentResources[ResourceType.Health].Current > actionInfo.ActionCost.healthChange
@@ -39,7 +55,7 @@ namespace MAGE.GameSystems.Actions
             return isValidState;
         }
 
-        public static bool DoesActionHaveValidTargets(ActionProposal proposal)
+        public static bool DoesActionHaveValidTargets(ActionProposal_Deprecated proposal)
         {
             return true;
         }

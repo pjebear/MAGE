@@ -29,22 +29,28 @@ namespace MAGE.GameSystems
         void UpdatePartyLocation(World.PartyLocation updatedLocation);
         // Location - End
 
+        // Loot
+        void ClaimLoot(Loot.ClaimLootInfo toClaim);
+        Loot.ClaimLootInfo GetLoot(Loot.ClaimLootParams claimParams);
+        Loot.LootTable DEBUG_GetLootTable();
+        // Loot - End
+
         // Party
         void AddCharacterToParty(int characterId);
-        void AddToInventory(int itemId);
+        void AddToInventory(int itemId, int num = 1);
         void AssignTalentPoint(int characterId, Characters.TalentId talentId);
         void ChangeSpecialization(int characterId, Characters.SpecializationType specializationType);
-        void EquipCharacter(int characterId, EquippableId equippableId, Characters.Equipment.Slot inSlot);
+        void EquipCharacter(int characterId, EquippableId equippableId, Items.Equipment.Slot inSlot);
         List<int> GetCharactersInParty(); 
         int GetCurrency(); 
         Inventory GetInventory();
         int GetPartyAvatarId();
         void PurchaseItem(int cost, int itemId);
         void RemoveCharacterFromParty(int characterId);
-        void RemoveFromInventory(int itemId);
+        void RemoveFromInventory(int itemId, int num = 1);
         void ResetTalentPoints(int characterId);
         void SellItem(int cost, int itemId);
-        void UnEquipCharacter(int characterId, Characters.Equipment.Slot inSlot);
+        void UnEquipCharacter(int characterId, Items.Equipment.Slot inSlot);
         // Party - End
 
         // Save Load

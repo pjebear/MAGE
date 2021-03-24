@@ -34,8 +34,6 @@ namespace MAGE.GameModes.SceneElements
             {
                 propCollider.gameObject.layer = LayerMask.NameToLayer("Interactible");
             }
-            
-            Refresh();
         }
 
         void OnDestroy()
@@ -74,6 +72,11 @@ namespace MAGE.GameModes.SceneElements
                             {
                                 Refresh();
                             }
+                        }
+                        break;
+                        case LevelManagement.MessageType.LevelLoaded:
+                        {
+                            Refresh();
                         }
                         break;
                     }

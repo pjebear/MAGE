@@ -22,8 +22,7 @@ namespace MAGE.GameSystems.Characters
 
     enum SpecializationType
     {
-        NONE = -2,
-        Base = -1,
+        INVALID = -1, 
 
         Archer,
         Footman,
@@ -59,5 +58,15 @@ namespace MAGE.GameSystems.Characters
         MULTI_SPECIALIZATION_FIRST = Archer,
         MULTI_SPECIALIZATION_LAST = Monk,
         MULTI_SEPCIALIZATION_NUM = MULTI_SPECIALIZATION_LAST - MULTI_SPECIALIZATION_FIRST + 1,
+    }
+
+    enum SpecializationRole
+    {
+        Tank,
+        Support,
+        Range,
+        Specialist,
+
+        NUM
     }
 }

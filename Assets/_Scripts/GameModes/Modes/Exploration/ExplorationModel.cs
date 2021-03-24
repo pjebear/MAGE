@@ -10,10 +10,8 @@ namespace MAGE.GameModes.Exploration
 {
     class ExplorationModel
     {
-        public static ExplorationModel Instance = null;
-
-        public ThirdPersonActorController PartyAvatar;
-        public PropBase InteractionTarget;
+        public Actor PartyAvatar;
+        public Interactable InteractionTarget;
         public MovementDirector MovementDirector;
     }
 }

@@ -1,10 +1,13 @@
 ﻿
 using MAGE.GameSystems.Actions;
+using MAGE.GameSystems.Items;
+using MAGE.GameSystems.Stats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Attribute = MAGE.GameSystems.Stats.Attribute;
 
 namespace MAGE.GameSystems.Characters.Internal
 {

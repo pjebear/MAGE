@@ -1,5 +1,6 @@
 ﻿using MAGE.GameModes.SceneElements;
 using MAGE.GameSystems;
+using MAGE.GameSystems.Loot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,8 @@ enum EncounterType
 
 enum EncounterScenarioId
 {
+    INVALID = -1,
+
     Random,
     Scenario,
 
@@ -77,8 +80,7 @@ class EncounterResultInfo
 {
     public Teams PlayersInEncounter = new Teams();
     public bool DidUserWin = false;
-    public int CurrencyReward = 0;
-    public List<int> ItemRewards = new List<int>();
+    public ClaimLootInfo Rewards = new ClaimLootInfo();
 }
 
 class EncounterInfo
@@ -86,6 +88,12 @@ class EncounterInfo
     public EncounterScenarioId EncounterScenarioId = EncounterScenarioId.Random;
     public bool IsActive = false;
     public LevelId LevelId;
+}
+
+class EncounterAwards
+{
+    public int Currency = 0;
+    public Dictionary<int, Item> Items = new Dictionary<int, Item>();
 }
 
 

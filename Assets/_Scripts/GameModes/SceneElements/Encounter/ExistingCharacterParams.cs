@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace MAGE.GameModes.SceneElements.Encounter
+namespace MAGE.GameModes.SceneElements.Encounters
 {
     class ExistingCharacterParams : MonoBehaviour
     {

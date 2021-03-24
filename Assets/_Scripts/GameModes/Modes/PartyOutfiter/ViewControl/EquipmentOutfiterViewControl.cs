@@ -1,5 +1,6 @@
 ﻿using MAGE.GameSystems;
 using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.Items;
 using MAGE.UI;
 using MAGE.UI.Views;
 using System;

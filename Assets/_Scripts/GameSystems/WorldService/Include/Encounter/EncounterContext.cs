@@ -1,5 +1,6 @@
 ﻿using MAGE.GameModes.LevelManagement;
 using MAGE.GameModes.SceneElements;
+using MAGE.GameSystems.Loot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,7 @@ namespace MAGE.GameSystems.World
     {
         public int MaxAllyUnits;
         public EncounterType EncounterType;
-        public int CurrencyReward;
-        public List<ItemId> ItemRewards = new List<ItemId>();
+        public ClaimLootInfo Rewards = new ClaimLootInfo();
 
         public LevelId LevelId;
         public TileIdx BottomLeft;

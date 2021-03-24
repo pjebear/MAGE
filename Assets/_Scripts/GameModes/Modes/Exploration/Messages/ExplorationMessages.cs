@@ -12,6 +12,7 @@ namespace MAGE.GameModes.Exploration
         public enum EventType
         {
             CinematicMomentTriggered,
+            EncounterTriggered,
             InteractionStart,
             InteractionEnd,
             ScenarioTriggered,

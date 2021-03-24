@@ -1,4 +1,5 @@
 ﻿using MAGE.GameSystems;
+using MAGE.GameSystems.Appearances;
 using MAGE.GameSystems.Characters;
 using System;
 using System.Collections.Generic;
@@ -66,53 +67,65 @@ namespace MAGE.GameModes.SceneElements
             return appearace;
         }
 
-        public virtual int GetActorId()
+        public virtual int GetCharacterId()
         {
-            int actorId = -1;
+            int characterId = -1;
 
             if (CharacterType != CharacterType.INVALID)
             {
                 if (StoryCharacterId != StoryCharacterId.INVALID)
                 {
-                    actorId = (int)StoryCharacterId;
+                    characterId = (int)StoryCharacterId;
                 }
                 else if (ScenarioId != ScenarioId.INVALID)
                 {
-                    actorId = CharacterUtil.ScenarioIdToDBId(ScenarioId, ScenarioCharacterOffset);
+                    characterId = CharacterUtil.ScenarioIdToDBId(ScenarioId, ScenarioCharacterOffset);
                 }
                 else if (CreateCharacterId != CharacterConstants.INVALID_ID)
                 {
-                    actorId = CharacterUtil.CreateIdToDBId(CreateCharacterId);
+                    characterId = CharacterUtil.CreateIdToDBId(CreateCharacterId);
                 }
             }
             else if (NPCId != NPCPropId.None)
             {
-                actorId = (int)NPCId;
+                characterId = (int)NPCId;
             }
             else if (RootCharacterId != -1)
             {
-                actorId = RootCharacterId;
+                characterId = RootCharacterId;
             }
 
-            return actorId;
+            return characterId;
         }
 
         public virtual string GetActorName()
         {
             string actorName = "NONE";
 
-            int actorId = GetActorId();
+            int characterId = GetCharacterId();
 
-            if (CharacterType != CharacterType.INVALID)
+            if (CharacterType != CharacterType.INVALID || RootCharacterId != -1)
             {
-                actorName = CharacterService.Get().GetCharacter(actorId).Name;
+                actorName = CharacterService.Get().GetCharacter(characterId).Name;
             }
             else if (NPCId != NPCPropId.None)
             {
-                actorName = LevelManagementService.Get().GetPropInfo(actorId).Name;
+                actorName = LevelManagementService.Get().GetPropInfo(characterId).Name;
             }
 
             return actorName;
+        }
+
+        public void Reset()
+        {
+            RootCharacterId = CharacterConstants.INVALID_ID;
+
+            CharacterType = CharacterType.INVALID;
+            StoryCharacterId = StoryCharacterId.INVALID;
+            ScenarioId = ScenarioId.INVALID;
+            CreateCharacterId = CharacterConstants.INVALID_ID;
+
+            NPCId = NPCPropId.None;
         }
     }
 }

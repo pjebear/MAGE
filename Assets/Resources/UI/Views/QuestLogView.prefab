@@ -1455,6 +1455,16 @@ PrefabInstance:
       propertyPath: ElementPrefab
       value: 
       objectReference: {fileID: 6163929997156424710}
+    - target: {fileID: 326016477809826125, guid: a41661357f7d72f43a5235ebf099ed3b,
+        type: 3}
+      propertyPath: ListDirection.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 326016477809826125, guid: a41661357f7d72f43a5235ebf099ed3b,
+        type: 3}
+      propertyPath: ListDirection.y
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 1548308324309296355, guid: a41661357f7d72f43a5235ebf099ed3b,
         type: 3}
       propertyPath: m_Name

@@ -1,5 +1,6 @@
 ﻿using MAGE.GameModes.SceneElements;
 using MAGE.GameSystems;
+using MAGE.GameSystems.Appearances;
 using MAGE.GameSystems.Characters;
 using System;
 using System.Collections.Generic;
@@ -19,24 +20,30 @@ namespace MAGE.DB.Internal
 
                 dBAppearance.Id = guardAppearanceId;
                 dBAppearance.PortraitSpriteId = (int)PortraitSpriteId.Guard_0;
-                dBAppearance.BodyType = (int)BodyType.Body_0;
-                dBAppearance.ArmorPrefabId = (int)AppearancePrefabId.Chain_0;
-                dBAppearance.HeldLeftPrefabId = (int)AppearancePrefabId.Shield_0;
-                dBAppearance.HeldRightPrefabId = (int)AppearancePrefabId.Sword_0;
+                dBAppearance.BodyType = (int)BodyType.HumanoidMale;
+                dBAppearance.OutfitType = (int)ApparelAssetId.Mail_0;
+                dBAppearance.LeftHeldAssetId = (int)ApparelAssetId.Shield_0;
+                dBAppearance.RightHeldAssetId = (int)ApparelAssetId.Sword_0;
 
                 DBService.Get().WriteAppearance(dBAppearance.Id, dBAppearance);
             }
 
             int vendorAppearanceId = 1;
             {
-                DBAppearance dBAppearance = new DBAppearance();
+                Appearance appearance = new Appearance()
+                {
+                    AppearanceId = vendorAppearanceId,
+                    PortraitSpriteId = PortraitSpriteId.Vendor,
+                    BodyType = BodyType.HumanoidMale,
+                    FacialHairType = FacialHairType.LongBeard,
+                    HairColor = HairColor.Grey,
+                    HairType = HairType.MaleLong,
+                    SkinToneType = SkinToneType.Dark,
+                    OutfitType = ApparelAssetId.Cloth_0
+                };
+                
 
-                dBAppearance.Id = vendorAppearanceId;
-                dBAppearance.PortraitSpriteId = (int)PortraitSpriteId.Vendor;
-                dBAppearance.BodyType = (int)BodyType.Body_0;
-                dBAppearance.ArmorPrefabId = (int)AppearancePrefabId.Cloth_1;
-
-                DBService.Get().WriteAppearance(dBAppearance.Id, dBAppearance);
+                DBService.Get().WriteAppearance(appearance.AppearanceId, AppearanceUtil.ToDB(appearance));
             }
 
             // Containers
@@ -150,8 +157,8 @@ namespace MAGE.DB.Internal
 
                     dBAppearance.Id = (int)propId;
                     dBAppearance.PortraitSpriteId = (int)PortraitSpriteId.GuildLeader;
-                    dBAppearance.BodyType = (int)BodyType.Body_0;
-                    dBAppearance.ArmorPrefabId = (int)AppearancePrefabId.Cloth_1;
+                    dBAppearance.BodyType = (int)BodyType.HumanoidMale;
+                    dBAppearance.OutfitType = (int)ApparelAssetId.Cloth_0;
 
                     DBService.Get().WriteAppearance(dBAppearance.Id, dBAppearance);
                 }
@@ -172,8 +179,8 @@ namespace MAGE.DB.Internal
 
                     dBAppearance.Id = (int)propId;
                     dBAppearance.PortraitSpriteId = (int)PortraitSpriteId.Magistrate;
-                    dBAppearance.BodyType = (int)BodyType.Body_0;
-                    dBAppearance.ArmorPrefabId = (int)AppearancePrefabId.Cloth_0;
+                    dBAppearance.BodyType = (int)BodyType.HumanoidMale;
+                    dBAppearance.OutfitType = (int)ApparelAssetId.Cloth_0;
 
                     DBService.Get().WriteAppearance(dBAppearance.Id, dBAppearance);
                 }
@@ -201,6 +208,31 @@ namespace MAGE.DB.Internal
                     dBPropInfo.IsActive = true;
                     dBPropInfo.Inventory = new List<int>() { };
                     dBPropInfo.State = 0;
+
+                    DBService.Get().WritePropInfo(dBPropInfo.Id, dBPropInfo);
+                }
+
+                { // Black Smith
+                    NPCPropId propId = NPCPropId.DemoLevel_BlackSmith;
+
+                    DBPropInfo dBPropInfo = new DBPropInfo();
+                    dBPropInfo.Id = (int)propId;
+                    dBPropInfo.Name = propId.ToString();
+                    dBPropInfo.AppearanceId = vendorAppearanceId;
+                    dBPropInfo.IsInteractable = true;
+                    dBPropInfo.IsActive = true;
+                    dBPropInfo.Conversations = new List<int>() { };
+                    dBPropInfo.Inventory = new List<int>()
+                    {
+                        (int)EquippableId.Axe_0
+                        ,(int)EquippableId.Sword_0
+                        ,(int)EquippableId.Bow_0
+                        ,(int)EquippableId.Mace_0
+                        ,(int)EquippableId.ClothArmor_0
+                        ,(int)EquippableId.LeatherArmor_0
+                        ,(int)EquippableId.ChainArmor_0
+                        ,(int)EquippableId.PlateArmor_0
+                    };
 
                     DBService.Get().WritePropInfo(dBPropInfo.Id, dBPropInfo);
                 }

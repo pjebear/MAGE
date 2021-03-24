@@ -16,6 +16,7 @@ enum SFXId
     Cast,
     Confirm,
     Dodge,
+    Heal,
     MaleDeath,
     MenuHover,
     Parry,

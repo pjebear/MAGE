@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 3228035947709797799}
   - component: {fileID: 6813855677090661494}
   - component: {fileID: 698171482701333709}
-  - component: {fileID: 6468108216425026415}
   m_Layer: 11
   m_Name: Fletching
   m_TagString: Untagged
@@ -80,19 +79,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &6468108216425026415
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1008041168204514530}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1230742325148174390
 GameObject:
   m_ObjectHideFlags: 0
@@ -185,7 +171,7 @@ BoxCollider:
   m_GameObject: {fileID: 7902129553888993992}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 0.05, y: 0.05, z: 0.6}
   m_Center: {x: 0, y: 0, z: 0}
@@ -214,7 +200,6 @@ GameObject:
   - component: {fileID: 4260591345573817510}
   - component: {fileID: 9099190981142500851}
   - component: {fileID: 2918779464702308397}
-  - component: {fileID: 8354833867023174608}
   m_Layer: 11
   m_Name: Head
   m_TagString: Untagged
@@ -283,19 +268,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &8354833867023174608
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8855008215361431051}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8990213337764983426
 GameObject:
   m_ObjectHideFlags: 0
@@ -307,7 +279,6 @@ GameObject:
   - component: {fileID: 6359731879484573372}
   - component: {fileID: 6792593766701937040}
   - component: {fileID: 4975445622465508455}
-  - component: {fileID: 717656155406027861}
   m_Layer: 11
   m_Name: Shaft
   m_TagString: Untagged
@@ -376,16 +347,3 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &717656155406027861
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8990213337764983426}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}

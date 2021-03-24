@@ -1,4 +1,6 @@
-﻿using MAGE.GameSystems;
+﻿using MAGE.Common;
+using MAGE.GameSystems;
+using MAGE.GameSystems.Appearances;
 using MAGE.GameSystems.Characters;
 
 using System;
@@ -11,6 +13,7 @@ using UnityEngine;
 
 namespace MAGE.GameModes.SceneElements
 {
+    [RequireComponent(typeof(CharacterPickerControl))]
     class ActorSpawner 
         : MonoBehaviour
         , Messaging.IMessageHandler
@@ -20,12 +23,7 @@ namespace MAGE.GameModes.SceneElements
             void OnActorRefresh();
         }
 
-        public CharacterPicker CharacterPicker;
-
-        public Actor Actor = null;
-        public Actor SpawnerPlaceHolder = null;
         public bool RefreshOnStart = true;
-        public bool RefreshOnUpdate = true;
 
         public Appearance Appearance;
         public string Name;
@@ -34,20 +32,31 @@ namespace MAGE.GameModes.SceneElements
 
         private void Awake()
         {
-            SpawnerPlaceHolder = GetComponentInChildren<Actor>();
-            Logger.Assert(SpawnerPlaceHolder != null, LogTag.Character, "ActorSpawner", "No Placeholder actor found in spawner", LogLevel.Warning);
-
-            Actor = SpawnerPlaceHolder;
+           
         }
 
         private void OnDestroy()
         {
-            Messaging.MessageRouter.Instance.UnRegisterHandler(this);
+            if (Messaging.MessageRouter.Instance != null)
+            {
+                Messaging.MessageRouter.Instance.UnRegisterHandler(this);
+            }
+            else
+            {
+                Logger.Log(LogTag.Level, "ActorSpawner", "MessageRouter not initialized", LogLevel.Warning);
+            }
         }
 
         private void Start()
         {
-            Messaging.MessageRouter.Instance.RegisterHandler(this);
+            if (Messaging.MessageRouter.Instance != null)
+            {
+                Messaging.MessageRouter.Instance.RegisterHandler(this);
+            }
+            else
+            {
+                Logger.Log(LogTag.Level, "ActorSpawner", "MessageRouter not initialized", LogLevel.Warning);
+            }
 
             if (RefreshOnStart)
             {
@@ -57,36 +66,20 @@ namespace MAGE.GameModes.SceneElements
 
         public void Refresh()
         {
-            Appearance = CharacterPicker.GetAppearance();
-            
+            Appearance = GetComponent<CharacterPickerControl>().CharacterPicker.GetAppearance();
+
             if (Appearance != null)
             {
-                SpawnerPlaceHolder.gameObject.SetActive(false);
-
-                Actor oldActor = Actor;
-
-                Actor = ActorLoader.Instance.CreateActor(Appearance, transform);
-
-                if (oldActor != null)
-                {
-                    Actor.gameObject.layer = oldActor.gameObject.layer;
-                    if (oldActor != SpawnerPlaceHolder)
-                    {
-                        Destroy(oldActor.gameObject);
-                    }
-                }
+                GetComponent<ActorOutfitter>().UpdateAppearance(Appearance);
             }
-            else
-            {
-                SpawnerPlaceHolder.gameObject.SetActive(true);
-                Actor = SpawnerPlaceHolder;
-            }
-
-            Name = CharacterPicker.GetActorName();
+            
+            Name = GetComponent<CharacterPickerControl>().CharacterPicker.GetActorName();
             gameObject.name = Name;
 
             NotifyRefresh();
         }
+
+       
 
         // IMessageHandler
         public void HandleMessage(Messaging.MessageInfoBase messageInfoBase)
@@ -100,10 +93,15 @@ namespace MAGE.GameModes.SceneElements
                     {
                         case LevelManagement.MessageType.AppearanceUpdated:
                         {
-                            if (message.Arg<int>() == CharacterPicker.GetActorId())
+                            if (message.Arg<int>() == GetComponent<CharacterPickerControl>().CharacterPicker.GetCharacterId())
                             {
                                 Refresh();
                             }
+                        }
+                        break;
+                        case LevelManagement.MessageType.LevelLoaded:
+                        {
+                            Refresh();   
                         }
                         break;
                     }

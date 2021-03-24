@@ -8,6 +8,7 @@ interface ITimelineEvent
 {
     int StartPointOffset { get; set; }
     int DurationFrames { get; set; }
+    
     void Trigger();
 }
 

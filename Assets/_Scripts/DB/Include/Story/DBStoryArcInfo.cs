@@ -11,7 +11,7 @@ namespace MAGE.DB
     {
         public int Id = -1;
         public string Name = "INVALID";
-        public DBStoryCondition ActivationCondition = new DBStoryCondition();
+        public DBStoryObjective ActivationCondition = new DBStoryObjective();
         public List<DBStoryNodeInfo> StoryArc = new List<DBStoryNodeInfo>();
 
         public override void Copy(Internal.DBEntryBase _from, Internal.DBEntryBase _to)

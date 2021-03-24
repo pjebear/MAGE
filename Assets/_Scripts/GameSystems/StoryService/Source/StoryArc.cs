@@ -14,13 +14,13 @@ namespace MAGE.GameSystems.Story.Internal
         private StoryArcId mId;
         private int mCurrentNodeIdx = INACTIVE_IDX;
         private List<StoryNode> mStoryArc = new List<StoryNode>();
-        private StoryCondition mActivationCondition;
+        private StoryObjective mActivationObjective;
 
-        public StoryArc(StoryArcId id, List<StoryNode> nodes, StoryCondition activationCondition)
+        public StoryArc(StoryArcId id, List<StoryNode> nodes, StoryObjective activationCondition)
         {
             mId = id;
             mStoryArc = nodes;
-            mActivationCondition = activationCondition;
+            mActivationObjective = activationCondition;
             TAG += "-" + id.ToString();
         }
 
@@ -28,8 +28,16 @@ namespace MAGE.GameSystems.Story.Internal
         {
             StoryArcUpdateType updateType = StoryArcUpdateType.None;
 
-            bool arcActivated = !HasArcStarted() && mActivationCondition.IsMet(storyEvent);
-            bool arcProgressed = IsArcActive() && mStoryArc[mCurrentNodeIdx].Requirement.IsMet(storyEvent);
+            bool arcActivated = 
+                !HasArcStarted() 
+                && mActivationObjective.HandleStoryEvent(storyEvent) 
+                && mActivationObjective.IsMet();
+
+            bool arcProgressed = 
+                IsArcActive() 
+                && mStoryArc[mCurrentNodeIdx].HandleEvent(storyEvent) 
+                && mStoryArc[mCurrentNodeIdx].IsComplete();
+
             if (arcActivated)
             {
                 updateType = StoryArcUpdateType.Started;

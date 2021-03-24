@@ -126,7 +126,7 @@ MonoBehaviour:
   IsClickable: 1
   ClickSFX: 4
   IsHoverable: 1
-  HoverSFX: 7
+  HoverSFX: -1
   mId: -1
   Image: {fileID: 5474720301834447151}
 --- !u!114 &4879614012830604043

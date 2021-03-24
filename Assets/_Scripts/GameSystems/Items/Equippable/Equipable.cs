@@ -1,5 +1,7 @@
 ﻿using MAGE.GameSystems.Actions;
+using MAGE.GameSystems.Appearances;
 using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.Stats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,12 +27,12 @@ namespace MAGE.GameSystems
     {
         public EquippableTag EquipmentTag;
         public EquippableId EquipmentId { get { return (EquippableId)ItemTag.ItemId; } }
-        public AppearancePrefabId PrefabId;
+        public ApparelAssetId PrefabId;
 
         public List<AttributeModifier> EquipBonuses;
 
-        public Equippable(EquippableId id, EquippableTag tag, AppearancePrefabId prefabId, UI.ItemIconSpriteId spriteId, List<AttributeModifier> equipBonuses)
-            : base(new ItemTag(id), spriteId, id.ToString())
+        public Equippable(EquippableId id, EquippableTag tag, ApparelAssetId prefabId, UI.ItemIconSpriteId spriteId, List<AttributeModifier> equipBonuses, int value)
+            : base(new ItemTag(id), spriteId, id.ToString(), value)
         {
             EquipmentTag = tag;
             EquipBonuses = equipBonuses;
@@ -45,8 +47,8 @@ namespace MAGE.GameSystems
         public List<AttributeScalar> EffectivenessScalars = new List<AttributeScalar>();
         public int NumHandsRequired;
 
-        public HeldEquippable(int numHandsRequired, float blockChance, float parryChance, List<AttributeScalar> effectivenessScalars, EquippableId id, EquippableTag tag, AppearancePrefabId prefabId, UI.ItemIconSpriteId spriteId, List<AttributeModifier> modifiers)
-            : base(id, tag, prefabId, spriteId, modifiers)
+        public HeldEquippable(int numHandsRequired, float blockChance, float parryChance, List<AttributeScalar> effectivenessScalars, EquippableId id, EquippableTag tag, ApparelAssetId prefabId, UI.ItemIconSpriteId spriteId, List<AttributeModifier> modifiers, int value)
+            : base(id, tag, prefabId, spriteId, modifiers, value)
         {
             BlockChance = blockChance;
             ParryChance = parryChance;
@@ -61,14 +63,12 @@ namespace MAGE.GameSystems
         public ActionProjectileInfo ProjectileInfo = new ActionProjectileInfo();
         public ActionAnimationInfo AnimationInfo = new ActionAnimationInfo();
 
-        public WeaponEquippable(AnimationId animationId, ProjectileId projectileId, RangeInfo range, int numHandsRequired, float blockChance, float parryChance, List<AttributeScalar> effectivenessScalars, EquippableId id, EquippableTag tag, AppearancePrefabId prefabId, UI.ItemIconSpriteId spriteId, List<AttributeModifier> modifiers)
-           : base(numHandsRequired, blockChance, parryChance, effectivenessScalars, id, tag, prefabId, spriteId, modifiers)
+        public WeaponEquippable(AnimationId animationId, ProjectileId projectileId, RangeInfo range, int numHandsRequired, float blockChance, float parryChance, List<AttributeScalar> effectivenessScalars, EquippableId id, EquippableTag tag, ApparelAssetId prefabId, UI.ItemIconSpriteId spriteId, List<AttributeModifier> modifiers, int value)
+           : base(numHandsRequired, blockChance, parryChance, effectivenessScalars, id, tag, prefabId, spriteId, modifiers, value)
         {
             Range = range;
             ProjectileInfo.ProjectileId = projectileId;
             AnimationInfo.AnimationId = animationId;
         }
     }
-
-
 }

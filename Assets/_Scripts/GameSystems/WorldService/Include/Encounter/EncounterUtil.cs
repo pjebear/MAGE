@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace MAGE.GameSystems.World
 { 
@@ -27,6 +28,20 @@ namespace MAGE.GameSystems.World
             info.LevelId = (LevelId)db.LevelId;
 
             return info;
+        }
+
+        public static TeamSide GetOpponentTeamSide(TeamSide teamSide)
+        {
+            TeamSide opponentTeamSide = TeamSide.INVALID;
+
+            switch (teamSide)
+            {
+                case TeamSide.AllyHuman:    opponentTeamSide = TeamSide.EnemyAI; break;
+                case TeamSide.EnemyAI:      opponentTeamSide = TeamSide.AllyHuman; break;
+                default: Debug.Assert(false); break;
+            }
+
+            return opponentTeamSide;
         }
     }
 }

@@ -31,20 +31,30 @@ namespace MAGE.GameSystems
             return Items.ContainsKey(itemId);
         }
 
-        public void Remove(int itemId)
+        public void Remove(int itemId, int num = 1)
         {
-            Logger.Log(LogTag.GameSystems, TAG, string.Format("Remove() - {0}", itemId));
+            Logger.Log(LogTag.GameSystems, TAG, string.Format("Remove() - {0} x {1}", itemId, num));
 
             Logger.Assert(Contains(itemId), LogTag.GameSystems, TAG, string.Format("Remove() Failed to find {0}", itemId), LogLevel.Warning);
 
             if (Contains(itemId))
             {
-                Items[itemId]--;
-
-                if (Items[itemId] == 0)
+                if (num == -1)
                 {
                     Items.Remove(itemId);
                 }
+                else
+                {
+                    Logger.Assert(Items[itemId] >= num, LogTag.GameSystems, TAG, string.Format("Remove() Num to remove [{0}] > num owned [{1}]", num, Items[itemId]), LogLevel.Warning);
+
+                    Items[itemId]-= num;
+
+                    if (Items[itemId] <= 0)
+                    {
+                        Items.Remove(itemId);
+                    }
+                }
+               
             }
         }
     }

@@ -92,6 +92,36 @@ namespace MAGE.GameSystems.Actions
             }
             return sFXId;
         }
+
+        public static RelativeOrientation GetRelativeOrientation(Transform relative, Transform to)
+        {
+
+            Vector3 toForward = to.forward;
+            Vector3 toToRealtive = relative.position - to.position;
+
+            float degreesBetweenForwardAndRelative = Vector3.SignedAngle(toForward, toToRealtive, Vector3.up);
+
+            RelativeOrientation relativeOrientation = RelativeOrientation.Behind;
+
+            if (Mathf.Abs(degreesBetweenForwardAndRelative) < 45)
+            {
+                relativeOrientation = RelativeOrientation.Front;
+            }
+            else if (Mathf.Abs(degreesBetweenForwardAndRelative) > 90)
+            {
+                relativeOrientation = RelativeOrientation.Behind;
+            }
+            else if (degreesBetweenForwardAndRelative < 0)
+            {
+                relativeOrientation = RelativeOrientation.Left;
+            }
+            else
+            {
+                relativeOrientation = RelativeOrientation.Right;
+            }
+
+            return relativeOrientation;
+        }
     }
 
 

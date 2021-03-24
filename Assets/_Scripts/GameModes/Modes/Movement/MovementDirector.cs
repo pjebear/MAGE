@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MAGE.GameModes.SceneElements;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ class MovementDirector : MonoBehaviour
     public delegate void MovementCompleteCB();
 
     private MovementCompleteCB mGoalReachedCB = null;
-    private ActorController mBeingMoved;
+    private Transform mBeingMoved;
     private List<Transform> mRoute = new List<Transform>();
     private int mCurrentGoalIdx = 0;
 
@@ -32,14 +33,14 @@ class MovementDirector : MonoBehaviour
         
     }
 
-    public void RotateActor(ActorController toRotate, Transform goal, MovementCompleteCB callback)
+    public void RotateActor(Transform toRotate, Transform goal, MovementCompleteCB callback)
     {
         mBeingMoved = toRotate;
         mGoalReachedCB = callback;
         StartCoroutine(RotateToNextGoal(goal));
     }
 
-    public void DirectMovement(ActorController toMove, List<Transform> route, MovementCompleteCB callback)
+    public void DirectMovement(Transform toMove, List<Transform> route, MovementCompleteCB callback)
     {
         mBeingMoved = toMove;
         mRoute = route;
@@ -52,22 +53,22 @@ class MovementDirector : MonoBehaviour
     {
         bool finishedRotating = false;
 
-        Vector3 actorForwardFlattened = mBeingMoved.transform.forward;
+        Vector3 actorForwardFlattened = mBeingMoved.forward;
         actorForwardFlattened.y = 0;
-        Vector3 goalFlattened = goal.position - mBeingMoved.transform.position;
+        Vector3 goalFlattened = goal.position - mBeingMoved.position;
         goalFlattened.y = 0;
 
         float initialAngleToGoalDeg = Vector3.SignedAngle(actorForwardFlattened, goalFlattened, Vector3.up);
 
-        float rotSpeed = mBeingMoved.RotSpeed * initialAngleToGoalDeg < 0 ? -1 : 1;
-        mBeingMoved.mRigidBody.maxAngularVelocity = 10;
-        mBeingMoved.mRigidBody.angularVelocity = Vector3.up * 10;
+        float rotSpeed = 100 * initialAngleToGoalDeg < 0 ? -1 : 1;
+        mBeingMoved.GetComponent<Rigidbody>().maxAngularVelocity = 10;
+        mBeingMoved.GetComponent<Rigidbody>().angularVelocity = Vector3.up * 10;
 
         while (!finishedRotating)
         {
-            actorForwardFlattened = mBeingMoved.transform.forward;
+            actorForwardFlattened = mBeingMoved.forward;
             actorForwardFlattened.y = 0;
-            goalFlattened = goal.transform.position - mBeingMoved.transform.position;
+            goalFlattened = goal.transform.position - mBeingMoved.position;
             goalFlattened.y = 0;
 
             float angleToGoalDeg = Vector3.SignedAngle(actorForwardFlattened, goalFlattened, Vector3.up);
@@ -77,23 +78,23 @@ class MovementDirector : MonoBehaviour
             //    float rotDegrees = Time.deltaTime * mBeingMoved.ActorController.RotSpeed;
             //    if (rotDegrees > Mathf.Abs(angleToGoalDeg)) rotDegrees = Mathf.Abs(angleToGoalDeg);
             //    if (initialAngleToGoalDeg < 0) rotDegrees *= -1;
-            //    mBeingMoved.transform.Rotate(Vector3.up, rotDegrees); // LOL Fix this
+            //    mBeingMoved.Rotate(Vector3.up, rotDegrees); // LOL Fix this
             //    yield return new WaitForFixedUpdate();
             //}
             //else
             if (Mathf.Abs(angleToGoalDeg) <= 1 || pastGoalAngle)
             {
                 finishedRotating = true;
-                Vector3 finalForward = goal.transform.position - mBeingMoved.transform.position;
-                finalForward.y = mBeingMoved.transform.forward.y;
-                mBeingMoved.transform.forward = finalForward;
-                mBeingMoved.mRigidBody.angularVelocity = Vector3.zero;
+                Vector3 finalForward = goal.transform.position - mBeingMoved.position;
+                finalForward.y = mBeingMoved.forward.y;
+                mBeingMoved.forward = finalForward;
+                mBeingMoved.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
             }
             else {
-                float rotDegrees = Time.deltaTime * mBeingMoved.RotSpeed;
+                float rotDegrees = Time.deltaTime * 100;
                 if (rotDegrees > Mathf.Abs(angleToGoalDeg)) rotDegrees = Mathf.Abs(angleToGoalDeg);
                 if (initialAngleToGoalDeg < 0) rotDegrees *= -1;
-                mBeingMoved.transform.Rotate(Vector3.up, rotDegrees); // LOL Fix this
+                mBeingMoved.Rotate(Vector3.up, rotDegrees); // LOL Fix this
             }
             yield return new WaitForFixedUpdate();
         }
@@ -119,7 +120,7 @@ class MovementDirector : MonoBehaviour
 
         bool arrived = false;
 
-        Vector3 initialForward = goal.position - mBeingMoved.transform.position;
+        Vector3 initialForward = goal.position - mBeingMoved.position;
 
         while (!arrived)
         {
@@ -127,20 +128,20 @@ class MovementDirector : MonoBehaviour
 
             if (timeoutTimer >= 5)
             {
-                mBeingMoved.transform.position = goal.position;
+                mBeingMoved.position = goal.position;
             }
 
-            Vector3 goalDirection = (goal.position - mBeingMoved.transform.position).normalized;
+            Vector3 goalDirection = (goal.position - mBeingMoved.position).normalized;
             if (goalDirection.magnitude >= .1f && Vector3.Angle(goalDirection, initialForward) < 1)
             {
-                mBeingMoved.MoveCharacter(Vector3.forward);
+                //mBeingMoved(Vector3.forward);
                 yield return new WaitForFixedUpdate();
             }
             else
             {
                 arrived = true;
-                mBeingMoved.transform.position = goal.position;
-                mBeingMoved.MoveCharacter(Vector3.zero);
+                mBeingMoved.position = goal.position;
+                //mBeingMoved.MoveCharacter(Vector3.zero);
             }
         }
         GoalReached();
@@ -149,7 +150,7 @@ class MovementDirector : MonoBehaviour
     void GoalReached()
     {
         mCurrentGoalIdx++;
-        mBeingMoved.mRigidBody.angularVelocity = Vector3.zero;
+        mBeingMoved.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
         if (mCurrentGoalIdx < mRoute.Count)
         {
             StartCoroutine(RotateToNextGoal(mRoute[mCurrentGoalIdx].transform));
@@ -162,7 +163,7 @@ class MovementDirector : MonoBehaviour
 
     void NotifyComplete()
     {
-        mBeingMoved.MoveCharacter(Vector3.zero);
+        //mBeingMoved.MoveCharacter(Vector3.zero);
         mRoute.Clear();
         mCurrentGoalIdx = 0;
 

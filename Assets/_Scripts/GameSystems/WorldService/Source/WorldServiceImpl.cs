@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MAGE.GameSystems.Loot;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,12 +12,14 @@ namespace MAGE.GameSystems.World.Internal
         private LocationSystem mLocationSystem;
         private PartySystem mPartySystem;
         private EncounterSystem mEncounterSystem;
+        private LootTable mLootTable;
 
         public WorldServiceImpl()
         {
             mLocationSystem = new LocationSystem();
             mPartySystem = new PartySystem();
             mEncounterSystem = new EncounterSystem();
+            mLootTable = new LootTable();
         }
 
         // IService
@@ -89,17 +92,34 @@ namespace MAGE.GameSystems.World.Internal
         }
         // Location - End
 
+        // Loot 
+        public void ClaimLoot(ClaimLootInfo loot)
+        {
+            mPartySystem.ClaimLoot(loot);
+        }
+
+        public ClaimLootInfo GetLoot(ClaimLootParams claimParams)
+        {
+            return mLootTable.CheckoutLoot(claimParams);
+        }
+
+        public Loot.LootTable DEBUG_GetLootTable()
+        {
+            return mLootTable;
+        }
+        // Loot - End
+
         // Party
         public void AddCharacterToParty(int characterId)
         {
             mPartySystem.AddCharacterToParty(characterId);
         }
 
-        public void AddToInventory(int itemId)
+        public void AddToInventory(int itemId, int num = 1)
         {
-            mPartySystem.AddToInventory(itemId);
+            mPartySystem.AddToInventory(itemId, num);
 
-            StoryService.Get().NotifyStoryEvent(new Story.StoryEventBase((ItemId)itemId));
+            StoryService.Get().NotifyStoryEvent(new Story.StoryEventBase((ItemId)itemId, 1));
         }
 
         public void AssignTalentPoint(int characterId, Characters.TalentId talentId)
@@ -114,7 +134,7 @@ namespace MAGE.GameSystems.World.Internal
             mPartySystem.AddToInventory(unequippedItems);
         }
 
-        public void EquipCharacter(int characterId, EquippableId equippableId, Characters.Equipment.Slot inSlot)
+        public void EquipCharacter(int characterId, EquippableId equippableId, Items.Equipment.Slot inSlot)
         {
             mPartySystem.EquipCharacter(characterId, equippableId, inSlot);
         }
@@ -150,9 +170,9 @@ namespace MAGE.GameSystems.World.Internal
             mPartySystem.RemoveCharacterFromParty(characterId);
         }
 
-        public void RemoveFromInventory(int itemId)
+        public void RemoveFromInventory(int itemId, int num)
         {
-            mPartySystem.RemoveFromInventory(itemId);
+            mPartySystem.RemoveFromInventory(itemId, num);
         }
 
         public void ResetTalentPoints(int characterId)
@@ -168,7 +188,7 @@ namespace MAGE.GameSystems.World.Internal
             mPartySystem.RemoveFromInventory(itemId);
         }
 
-        public void UnEquipCharacter(int characterId, Characters.Equipment.Slot inSlot)
+        public void UnEquipCharacter(int characterId, Items.Equipment.Slot inSlot)
         {
             mPartySystem.UnEquipCharacter(characterId, inSlot);
         }

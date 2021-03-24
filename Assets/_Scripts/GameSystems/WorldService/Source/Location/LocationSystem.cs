@@ -8,7 +8,7 @@ namespace MAGE.GameSystems.World.Internal
 {
     class LocationSystem
     {
-        public PartyLocation PartyLocation = new PartyLocation() { Level = LevelId.DemoLevel, SpawnPoint = 0 };
+        public PartyLocation PartyLocation = new PartyLocation() { Level = LevelId.Demo, SpawnPoint = 0 };
     }
 
 }

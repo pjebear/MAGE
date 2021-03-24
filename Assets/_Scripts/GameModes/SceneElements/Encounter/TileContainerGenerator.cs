@@ -12,7 +12,7 @@ namespace MAGE.GameModes.SceneElements
     {
         public TileControl TilePrefab;
 
-        public TileContainer GenerateTiles(Transform centerTileLocation, int width, int length, Transform parent = null)
+        public TileContainer GenerateTiles(Vector3 centerTileLocation, int width, int length, Transform parent = null)
         {
             TileContainer tileContainer = new GameObject("TileContainer").AddComponent<TileContainer>();
             if (parent != null)
@@ -20,7 +20,7 @@ namespace MAGE.GameModes.SceneElements
                 tileContainer.transform.SetParent(parent);
             }
 
-            Vector3 bottomLeft = new Vector3(centerTileLocation.position.x - width / 2, 0, centerTileLocation.position.z - length / 2);
+            Vector3 bottomLeft = new Vector3(centerTileLocation.x - width / 2, 0, centerTileLocation.z - length / 2);
 
             for (int z = 0; z < length; ++z)
             {
@@ -85,11 +85,6 @@ namespace MAGE.GameModes.SceneElements
             if (container.gameObject.GetComponent<TileContainer>() == null)
             {
                 container.gameObject.AddComponent<TileContainer>();
-            }
-            else
-            {
-                Logger.Log(LogTag.GameModes, "TileContainerGenerator", "You still need to remove tile containers at end of encounter!", LogLevel.Warning);
-                container.gameObject.GetComponent<TileContainer>().ClearTiles();
             }
 
             TileContainer tileContainer = container.GetComponent<TileContainer>();

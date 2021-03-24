@@ -1,7 +1,9 @@
 ﻿
+using MAGE.GameModes.SceneElements;
 using MAGE.GameSystems;
 using MAGE.GameSystems.Actions;
 using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.Stats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +18,9 @@ namespace MAGE.GameModes.Encounter
         private float mBillboardDuration = 1f;
         private float mBillboardHeight = 2;
         public BillboardEmitter BillboardEmitter;
-        public Actor Actor;
-        public Character Character;
+        public ActorSpawner ActorSpawner;
         public ActorController ActorController;
+        public Character Character;
 
         private void Awake()
         {

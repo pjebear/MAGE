@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 class AnimationConstants
 {
-    public static readonly int FRAMES_PER_SECOND = 60;
+    public static readonly int FRAMES_PER_SECOND = 30;
     public static readonly float SECONDS_PER_FRAME = 1 / (float)FRAMES_PER_SECOND;
     public static int FRAMES_IN_DURATION(float duration)
     {

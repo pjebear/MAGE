@@ -17,6 +17,16 @@ namespace MAGE.GameSystems
     {
         GateKey = ItemType.Story,
 
+        DEMO_GoldenBearPelt,
+
+        END
+    }
+
+    enum VendorItemId
+    {
+        DEMO_BearPelt = ItemType.Vendor,
+        DEMO_BearClaw,
+
         END
     }
 
@@ -32,7 +42,8 @@ namespace MAGE.GameSystems
         Equippable = 0,
         Consumable = EquippableId.END + 1,
         Story = ConsumableId.END + 1,
-        Bundle = StoryItemId.END + 1
+        Vendor = StoryItemId.END + 1,
+        Bundle = VendorItemId.END + 1
     }
 
     enum ItemId

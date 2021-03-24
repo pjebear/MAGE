@@ -7,11 +7,16 @@ using UnityEngine;
 
 namespace MAGE.GameModes.SceneElements
 {
-    class CinematicMomentTriggerVolume : PartyAvatarTriggerVolumeBase
+    class CinematicMomentTriggerVolume : TriggerVolumeBase<ThirdPersonActorController>
     {
         public bool DeactivateOnTrigger = true;
 
-        protected override void HandleTriggerEntered()
+        protected override int GetLayer()
+        {
+            return (int)Layer.Default;
+        }
+
+        protected override void HandleTriggerEntered(ThirdPersonActorController partyAvatar)
         {
             CinematicMoment cinematicMoment = GetComponentInParent<CinematicMoment>();
             Debug.Assert(cinematicMoment != null);

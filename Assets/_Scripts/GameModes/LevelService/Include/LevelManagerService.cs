@@ -1,4 +1,5 @@
 ﻿using MAGE.GameSystems;
+using MAGE.GameSystems.Appearances;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,6 @@ namespace MAGE.GameModes
         Appearance GetNPCAppearance(SceneElements.NPCPropId npcId);
         SceneElements.PropInfo GetPropInfo(int propId);
         void LoadLevel(GameSystems.LevelId levelId);
-        void NotifyLevelLoaded(GameModes.SceneElements.Level level);
         void UnloadLevel();
         void UpdateEncounterInfo(EncounterInfo encounterInfo);
         void UpdatePropInfo(SceneElements.PropInfo updatedInfo);

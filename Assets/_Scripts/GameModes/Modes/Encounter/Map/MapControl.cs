@@ -25,8 +25,8 @@ namespace MAGE.GameModes.SceneElements
         {
             TileControlLookup.Clear();
 
-            int width = tileContainer.Tiles.Count;
-            int length = tileContainer.Tiles[0].Count;
+            int width = tileContainer.Tiles[0].Count;
+            int length = tileContainer.Tiles.Count;
 
             List<List<Tile>> tileGrid = new List<List<Tile>>();
 
@@ -110,7 +110,7 @@ namespace MAGE.GameModes.SceneElements
             Character character = Map.TileAt(tile.Idx).OnTile;
             if (character != null)
             {
-                onTile = EncounterFlowControl.CharacterDirector.CharacterActorLookup[character];
+                //onTile = EncounterFlowControl_Deprecated.CharacterDirector.CharacterActorLookup[character];
             }
             return onTile;
         }
@@ -122,7 +122,7 @@ namespace MAGE.GameModes.SceneElements
             if (target.TargetType == TargetSelectionType.Character)
             {
                 Character character = target.CharacterTarget;
-                transform = EncounterFlowControl.CharacterDirector.CharacterActorLookup[character].transform;
+                //transform = EncounterFlowControl_Deprecated.CharacterDirector.CharacterActorLookup[character].transform;
             }
             else
             {

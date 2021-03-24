@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MAGE.GameSystems.Appearances;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -46,6 +47,23 @@ namespace MAGE.GameSystems.Characters
             }
 
             return portraitSpriteId;
+        }
+
+        public static SpecializationRole GetRoleForSpecialization(SpecializationType specializationType)
+        {
+            SpecializationRole role = SpecializationRole.Tank;
+
+            switch (specializationType)
+            {
+                case SpecializationType.Archer:             role = SpecializationRole.Range; break;
+                case SpecializationType.Bear:               role = SpecializationRole.Tank; break;
+                case SpecializationType.Footman:            role = SpecializationRole.Tank; break;
+                case SpecializationType.Monk:               role = SpecializationRole.Support; break;
+                default:
+                    break;
+            }
+
+            return role;
         }
     }
 }

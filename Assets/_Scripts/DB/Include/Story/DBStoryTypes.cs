@@ -9,36 +9,36 @@ namespace MAGE.DB
     [System.Serializable]
     class DBStoryMutatorParams : Internal.DBEntryBase
     {
-        public int Param0;
-        public int Param1;
-        public int Param2;
-        public int Param3;
+        public int MutateType;
+        public List<int> Params = new List<int>();
 
         public override void Copy(Internal.DBEntryBase _from, Internal.DBEntryBase _to)
         {
             DBStoryMutatorParams from = _from as DBStoryMutatorParams;
             DBStoryMutatorParams to = _to as DBStoryMutatorParams;
 
-            to.Param0 = from.Param0;
-            to.Param1 = from.Param1;
-            to.Param2 = from.Param2;
-            to.Param3 = from.Param3;
+            to.MutateType = from.MutateType;
+            to.Params.AddRange(from.Params);
         }
     }
 
     [System.Serializable]
-    class DBStoryCondition : Internal.DBEntryBase
+    class DBStoryObjective : Internal.DBEntryBase
     {
         public int EventType = -1;
         public int Param = -1;
+        public int Progress = 0;
+        public int Goal = 1;
 
         public override void Copy(Internal.DBEntryBase _from, Internal.DBEntryBase _to)
         {
-            DBStoryCondition from = _from as DBStoryCondition;
-            DBStoryCondition to = _to as DBStoryCondition;
+            DBStoryObjective from = _from as DBStoryObjective;
+            DBStoryObjective to = _to as DBStoryObjective;
 
             to.EventType = from.EventType;
             to.Param = from.Param;
+            to.Progress = from.Progress;
+            to.Goal = from.Goal;
         }
     }
 
@@ -47,7 +47,7 @@ namespace MAGE.DB
     {
         public string Name = "NAME";
         public string Description = "DESCRIPTION";
-        public DBStoryCondition CompletionCondition = new DBStoryCondition();
+        public List<DBStoryObjective> CompletionObjectives = new List<DBStoryObjective>();
         public List<DBStoryMutatorParams> OnActivateChanges = new List<DBStoryMutatorParams>();
         public List<DBStoryMutatorParams> OnCompleteChanges = new List<DBStoryMutatorParams>();
 
@@ -59,8 +59,14 @@ namespace MAGE.DB
             to.Name = from.Name;
             to.Description = from.Description;
 
-            from.CompletionCondition.CopyTo(to.CompletionCondition);
-            
+            to.CompletionObjectives = new List<DBStoryObjective>();
+            foreach (DBStoryObjective storyCondition in from.CompletionObjectives)
+            {
+                DBStoryObjective copy = new DBStoryObjective();
+                storyCondition.CopyTo(copy);
+                to.CompletionObjectives.Add(copy);
+            }
+
             to.OnActivateChanges = new List<DBStoryMutatorParams>();
             foreach (DBStoryMutatorParams dBStoryMutatorParams in from.OnActivateChanges)
             {

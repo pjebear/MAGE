@@ -52,7 +52,7 @@ MonoBehaviour:
   IsClickable: 1
   ClickSFX: 4
   IsHoverable: 1
-  HoverSFX: 7
+  HoverSFX: 8
   mId: -1
   Button: {fileID: 2660977789418977858}
   Text: {fileID: 1279252043328286378}

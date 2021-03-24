@@ -1,65 +1,121 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-enum PortraitSpriteId
+namespace MAGE.GameSystems.Appearances
 {
-    INVALID = -1,
+    //enum OutfitArrangementType
+    //{
+    //    NONE = -1,
 
-    // Custom Heads
-    Rheinhardt,
-    Asmund,
-    Balgrid,
-    Lothar,
-    Maric,
+    //    Default,
+    //    Cloth_0,
+    //    Leather_0,
+    //    Mail_0,
+    //    Plate_0,
 
-    // Professions
-    Archer,
-    Bear,
-    Footman,
-    Monk,
+    //    NUM
+    //}
 
-    // NPCs
-    BanditLeader,
-    Bandit_0,
-    Guard_0,
-    Guard_1,
-    GuildLeader,
-    Magistrate,
-    Vendor,
+    enum PortraitSpriteId
+    {
+        INVALID = -1,
 
-    NUM
-}
+        // Custom Heads
+        Rheinhardt,
+        Asmund,
+        Balgrid,
+        Lothar,
+        Maric,
 
-enum AppearancePrefabId
-{
-    prefab_none = -1,
+        // Professions
+        Archer,
+        Bear,
+        Footman,
+        Monk,
 
-    Body_0,
+        // NPCs
+        BanditLeader,
+        Bandit_0,
+        Guard_0,
+        Guard_1,
+        GuildLeader,
+        Magistrate,
+        Vendor,
 
-    // Weapons
-    Dagger_0,
-    Sword_0,
-    Axe_0,
-    Mace_0,
-    BattleAxe_0,
-    BastardSword_0,
-    Maul_0,
-    Bow_0,
-    LongBow_0,
-    Crossbow_0,
-    Staff_0,
-    Rod_0,
+        NUM
+    }
 
-    // Shields
-    Shield_0,
-    TowerShield_0,
+    enum ApparelAssetId
+    {
+        NONE = -1,
 
-    // Armor
-    Cloth_0,
-    Cloth_1,
-    Leather_0,
-    Chain_0,
-    Plate_0,
+        // Weapons
+        Dagger_0,
+        Sword_0,
+        Axe_0,
+        Mace_0,
+        BattleAxe_0,
+        BastardSword_0,
+        Maul_0,
+        Bow_0,
+        LongBow_0,
+        Crossbow_0,
+        Staff_0,
+        Rod_0,
 
-    NUM
+        // Shields
+        Shield_0,
+        TowerShield_0,
+
+        // Armor
+        Default,
+        Cloth_0,
+        Leather_0,
+        Mail_0,
+        Plate_0,
+
+        NUM
+    }
+
+    public enum HairType
+    {
+        MaleBuzz,
+        MaleLong,
+        MaleShort,
+
+        NUM
+    }
+
+    public enum FacialHairType
+    {
+        None,
+        ShortBeard,
+        LongBeard,
+
+        NUM
+    }
+
+    public enum HairColor
+    {
+        Brunette,
+        Blonde,
+        Dark,
+        Red,
+        Grey,
+        White,
+
+        NUM
+    }
+
+    enum SkinToneType
+    {
+        Base,
+        Tan,
+        Dark,
+        Pale,
+        Elf,
+        Yellow,
+
+        NUM
+    }
 }

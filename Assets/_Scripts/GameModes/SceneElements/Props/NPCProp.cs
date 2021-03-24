@@ -13,6 +13,12 @@ namespace MAGE.GameModes.SceneElements
     {
         public NPCPropId NPCId = NPCPropId.None;
 
+        private void Awake()
+        {
+            GetComponent<CharacterPickerControl>().CharacterPicker.NPCId = NPCId;
+            GetComponent<ActorSpawner>().RefreshOnStart = false;    
+        }
+
         public override void Start()
         {
             base.Start();
@@ -25,12 +31,12 @@ namespace MAGE.GameModes.SceneElements
 
         public override void OnInteractionEnd()
         {
-            GetComponent<ActorSpawner>().Actor.Animator.SetTrigger(AnimationId.SwordSwing.ToString());
+            GetComponent<ActorAnimator>().Trigger(AnimationId.SwordSwing.ToString());
         }
 
         public override void OnInteractionStart()
         {
-            GetComponent<ActorSpawner>().Actor.Animator.SetTrigger(AnimationId.SwordSwing.ToString());
+            GetComponent<ActorAnimator>().Trigger(AnimationId.SwordSwing.ToString());
         }
     }
 }

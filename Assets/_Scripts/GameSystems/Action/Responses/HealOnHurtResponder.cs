@@ -35,7 +35,7 @@ namespace MAGE.GameSystems.Actions
                         && InRange(responder, target, responseInfo.Range, map))
                     {
                         TargetSelection selection = new TargetSelection(new Target(target));
-                        responses.Add(new ActionProposalResponse(new ActionProposal(responder, ActionId.Heal, selection)));
+                        responses.Add(new ActionProposalResponse_Deprecated(new ActionProposal_Deprecated(responder, ActionId.Heal, selection)));
                     }
                 }
             }

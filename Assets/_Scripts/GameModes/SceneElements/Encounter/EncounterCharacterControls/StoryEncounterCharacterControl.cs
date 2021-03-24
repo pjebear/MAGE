@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace MAGE.GameModes.SceneElements.Encounter
+namespace MAGE.GameModes.SceneElements.Encounters
 {
-    class StoryEncounterCharacterControl : EncounterCharacterControl
+    class StoryEncounterCharacterControl : CharacterControl
     {
         public CharacterPicker CharacterPicker;
         public int LevelOverride = -1;
@@ -21,7 +21,7 @@ namespace MAGE.GameModes.SceneElements.Encounter
 
         public override int GetCharacterId()
         {
-            return (int)CharacterPicker.GetActorId();
+            return (int)CharacterPicker.GetCharacterId();
         }
 
         protected override void Init()

@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using CharacterInfo = MAGE.GameSystems.Characters.CharacterInfo;
 using MAGE.GameModes.Exploration;
+using MAGE.GameSystems.Appearances;
 
 namespace MAGE.GameModes.FlowControl
 {
@@ -49,7 +50,7 @@ namespace MAGE.GameModes.FlowControl
         
 
         private float mDistanceToHovered = 0;
-        private ThirdPersonActorController mExplorationActor = null;
+        private Actor mExplorationActor = null;
         private PropBase mHoveredInteractable = null;
         private PropBase mInteractingWith = null;
         private InteractionState mInteractionState = InteractionState.INVALID;
@@ -74,8 +75,8 @@ namespace MAGE.GameModes.FlowControl
 
         protected override void Setup()
         {
-            mExplorationActor = ExplorationModel.Instance.PartyAvatar;
-            BeginInteraction(ExplorationModel.Instance.InteractionTarget);
+            mExplorationActor = GameModel.Exploration.PartyAvatar;
+            BeginInteraction(GameModel.Exploration.InteractionTarget.GetComponent<PropBase>());
         }
 
         protected override void Cleanup()
@@ -87,8 +88,8 @@ namespace MAGE.GameModes.FlowControl
 
             mInteractingWith.OnInteractionEnd();
             mInteractingWith = null;
-            mExplorationActor.Enable(true);
-            Camera.main.gameObject.GetComponent<ThirdPersonCamera>().Follow(mExplorationActor.transform);
+            //mExplorationActor.SetControllerState(ActorController.ControllerState.ThirdPerson);
+            //Camera.main.gameObject.GetComponent<ThirdPersonCamera>().Follow(mExplorationActor.transform);
         }
 
         public void BeginInteraction(PropBase propBase)
@@ -102,9 +103,7 @@ namespace MAGE.GameModes.FlowControl
                 {
                     mInteractionState = InteractionState.NPCActionSelect;
 
-                    ExplorationModel.Instance.MovementDirector.RotateActor(mExplorationActor.ActorController, mInteractingWith.transform, null);
-                    mExplorationActor.Enable(false);
-                    Camera.main.gameObject.GetComponent<ThirdPersonCamera>().Interact(mExplorationActor.transform, mInteractingWith.transform);
+                    GameModel.Exploration.MovementDirector.RotateActor(mExplorationActor.transform, mInteractingWith.transform, null);
                     UIManager.Instance.PostContainer(UIContainerId.NPCActionSelectView, this);
                 }
                 break;
@@ -407,8 +406,8 @@ namespace MAGE.GameModes.FlowControl
         {
             VendorView.DataProvider dataProvider = new VendorView.DataProvider();
 
-
-            dataProvider.Currency = WorldService.Get().GetCurrency();
+            int partyFunds = WorldService.Get().GetCurrency();
+            dataProvider.Currency = partyFunds;
 
             dataProvider.ItemNames = new List<string>();
             dataProvider.ItemIconAssetNames = new List<string>();
@@ -420,6 +419,8 @@ namespace MAGE.GameModes.FlowControl
                 {
                     dataProvider.ItemNames.Add(item.Name);
                     dataProvider.ItemIconAssetNames.Add(item.SpriteId.ToString());
+                    dataProvider.ItemValues.Add(item.Value);
+                    dataProvider.ItemSelectability.Add(item.Value < partyFunds);
                 }
             }
             else
@@ -429,6 +430,8 @@ namespace MAGE.GameModes.FlowControl
                     Item item = ItemFactory.LoadItem(itemCountPair.Key);
                     dataProvider.ItemNames.Add(string.Format("{0} x{1}", item.Name, itemCountPair.Value));
                     dataProvider.ItemIconAssetNames.Add(item.SpriteId.ToString());
+                    dataProvider.ItemValues.Add(item.Value);
+                    dataProvider.ItemSelectability.Add(item.Value != -1 && item.ItemTag.ItemType != ItemType.Story);
                 }
             }
 
@@ -440,8 +443,8 @@ namespace MAGE.GameModes.FlowControl
         private void InteractWithContainer(PropBase propBase)
         {
             Messaging.MessageRouter.Instance.NotifyMessage(new ExplorationMessage(ExplorationMessage.EventType.InteractionStart, mInteractingWith));
-            ExplorationModel.Instance.MovementDirector.RotateActor(mExplorationActor.ActorController, mInteractingWith.transform, null);
-            mExplorationActor.Enable(false);
+            GameModel.Exploration.MovementDirector.RotateActor(mExplorationActor.transform, mInteractingWith.transform, null);
+            //mExplorationActor.SetControllerState(ActorController.ControllerState.None);
             Camera.main.gameObject.GetComponent<ThirdPersonCamera>().Interact(mExplorationActor.transform, mInteractingWith.transform);
             UIManager.Instance.PostContainer(UIContainerId.ContainerInspectView, this);
         }

@@ -60,9 +60,6 @@ namespace MAGE.GameSystems.World.Internal
                 }
 
                 // Rewards
-                scenarioContext.CurrencyReward = UnityEngine.Random.Range(0, 500);
-                scenarioContext.ItemRewards.Add((ItemId)UnityEngine.Random.Range(0, (int)ItemId.NUM));
-
                 scenarioContext.LevelId = LevelId.Forest;
                 scenarioContext.BottomLeft = new TileIdx(20, 3);
                 scenarioContext.TopRight = new TileIdx(29, 12);
@@ -94,9 +91,6 @@ namespace MAGE.GameSystems.World.Internal
             }
 
             // Rewards
-            randomContext.CurrencyReward = UnityEngine.Random.Range(0, 500);
-            randomContext.ItemRewards.Add((ItemId)UnityEngine.Random.Range(0, (int)ItemId.NUM));
-
             randomContext.LevelId = createParams.LevelId;
             randomContext.BottomLeft = createParams.BottomLeft;
             randomContext.TopRight = createParams.TopRight;

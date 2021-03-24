@@ -35,7 +35,7 @@ class ProjectileController : MonoBehaviour
         mFlightTime += Time.deltaTime;
         if (mFlightTime >= mExpectedDuration)
         {
-            Logger.Log(LogTag.GameModes, "Projectile","Duration Elapsed. Destroying");
+            Logger.Log(LogTag.GameModes, "Projectile", "Duration Elapsed. Destroying");
             Destroy(gameObject);
         }
     }

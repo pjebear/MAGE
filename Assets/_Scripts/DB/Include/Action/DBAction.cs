@@ -17,8 +17,12 @@ namespace MAGE.DB
         public int AnimationId = -1;
         public int ProjectileId = -1;
         public int EffectId = -1;
+        public int SFXId = -1;
         public int NumChainBounces = -1;
         public float ChainFalloff = -1;
+        public int SummonType = -1;
+        public int SummonCount = -1;
+        public int MaxSummonCount = -1;
         public bool IsSelfCast = false;
 
         public DBRangeInfo CastRange = new DBRangeInfo();
@@ -37,8 +41,12 @@ namespace MAGE.DB
             to.AnimationId = from.AnimationId;
             to.ProjectileId = from.ProjectileId;
             to.EffectId = from.EffectId;
+            to.SFXId = from.SFXId;
             to.NumChainBounces = from.NumChainBounces;
             to.ChainFalloff = from.ChainFalloff;
+            to.SummonType = from.SummonType;
+            to.SummonCount = from.SummonCount;
+            to.MaxSummonCount = from.MaxSummonCount;
             to.IsSelfCast = from.IsSelfCast;
 
             to.CastRange.Set(from.CastRange);

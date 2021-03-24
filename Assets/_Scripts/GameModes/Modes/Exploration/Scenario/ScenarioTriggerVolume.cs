@@ -7,50 +7,14 @@ using UnityEngine;
 
 namespace MAGE.GameModes.SceneElements
 {
-    abstract class PartyAvatarTriggerVolumeBase : MonoBehaviour
+    class ScenarioTriggerVolume : TriggerVolumeBase<ThirdPersonActorController>
     {
-        protected virtual void HandleTriggerEntered() { }
-        protected virtual void HandleTriggerExited() { }
-
-        protected virtual void HandleCollisionEntered() { }
-        protected virtual void HandleCollisionExited() { }
-
-        void OnTriggerEnter(Collider collider)
+        protected override int GetLayer()
         {
-            if (collider.gameObject.GetComponent<ThirdPersonActorController>() != null)
-            {
-                HandleTriggerEntered();
-            }
+            return (int)Layer.Scenario;
         }
 
-        void OnTriggerExit(Collider collider)
-        {
-            if (collider.gameObject.GetComponent<ThirdPersonActorController>() != null)
-            {
-                HandleTriggerExited();
-            }
-        }
-
-        private void OnCollisionEnter(Collision collision)
-        {
-            if (collision.collider.gameObject.GetComponent<ThirdPersonActorController>() != null)
-            {
-                HandleCollisionEntered();
-            }
-        }
-
-        private void OnCollisionExit(Collision collision)
-        {
-            if (collision.collider.gameObject.GetComponent<ThirdPersonActorController>() != null)
-            {
-                HandleCollisionExited();
-            }
-        }
-    }
-
-    class ScenarioTriggerVolume : PartyAvatarTriggerVolumeBase
-    {
-        protected override void HandleTriggerEntered()
+        protected override void HandleTriggerEntered(ThirdPersonActorController entered)
         {
             GetComponentInParent<Scenario>().ScenarioTriggered();
         }

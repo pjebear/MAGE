@@ -15,6 +15,7 @@ enum InputSource
 
 enum InputState
 {
+    None,
     Up,
     Down,
     Held,
@@ -27,6 +28,13 @@ enum MouseKey
     Left,
     Right,
     Middle,
+    NUM
+}
+
+enum InputAxis
+{
+    Horizontal,
+    Vertical,
     NUM
 }
 

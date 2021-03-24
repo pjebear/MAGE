@@ -1,4 +1,5 @@
 ﻿using MAGE.GameSystems;
+using MAGE.GameSystems.Appearances;
 using MAGE.GameSystems.Characters;
 using MAGE.GameSystems.Characters.Internal;
 using System;
@@ -25,7 +26,16 @@ namespace MAGE.DB.Internal
                 createParams.name = StoryCharacterId.Rheinhardt.ToString();
                 createParams.currentSpecialization = SpecializationType.Paladin;
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Mace_0, EquippableId.Relic };
-                createParams.appearanceOverrides = new Appearance() { PortraitSpriteId = PortraitSpriteId.Rheinhardt };
+                createParams.appearanceOverrides = new Appearance()
+                {
+                    PortraitSpriteId = PortraitSpriteId.Rheinhardt,
+
+                    BodyType = BodyType.HumanoidMale,
+                    FacialHairType = FacialHairType.ShortBeard,
+                    HairColor = HairColor.Brunette,
+                    HairType = HairType.MaleShort,
+                    SkinToneType = SkinToneType.Base,
+                };
 
                 int characterId = characterService.CreateCharacter(createParams);
                 characterService.Debug_MaxOutTalents(characterId);
@@ -40,7 +50,16 @@ namespace MAGE.DB.Internal
                 createParams.name = StoryCharacterId.Asmund.ToString();
                 createParams.currentSpecialization = SpecializationType.Monk;
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.ClothArmor_0, EquippableId.INVALID, EquippableId.Staff_0, EquippableId.INVALID };
-                createParams.appearanceOverrides = new Appearance() { PortraitSpriteId = PortraitSpriteId.Asmund };
+                createParams.appearanceOverrides = new Appearance()
+                {
+                    PortraitSpriteId = PortraitSpriteId.Asmund,
+
+                    BodyType = BodyType.HumanoidMale,
+                    FacialHairType = FacialHairType.LongBeard,
+                    HairColor = HairColor.Grey,
+                    HairType = HairType.MaleLong,
+                    SkinToneType = SkinToneType.Pale,
+                };
 
                 characterService.CreateCharacter(createParams);
             }
@@ -54,7 +73,16 @@ namespace MAGE.DB.Internal
                 createParams.name = StoryCharacterId.Lothar.ToString();
                 createParams.currentSpecialization = SpecializationType.Archer;
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.INVALID, EquippableId.Bow_0, EquippableId.INVALID };
-                createParams.appearanceOverrides = new Appearance() { PortraitSpriteId = PortraitSpriteId.Lothar };
+                createParams.appearanceOverrides = new Appearance()
+                {
+                    PortraitSpriteId = PortraitSpriteId.Lothar,
+
+                    BodyType = BodyType.HumanoidMale,
+                    FacialHairType = FacialHairType.None,
+                    HairColor = HairColor.Dark,
+                    HairType = HairType.MaleLong,
+                    SkinToneType = SkinToneType.Tan,
+                };
 
                 characterService.CreateCharacter(createParams);
             }
@@ -68,7 +96,16 @@ namespace MAGE.DB.Internal
                 createParams.name = StoryCharacterId.Balgrid.ToString();
                 createParams.currentSpecialization = SpecializationType.Footman;
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
-                createParams.appearanceOverrides = new Appearance() { PortraitSpriteId = PortraitSpriteId.Balgrid };
+                createParams.appearanceOverrides = new Appearance()
+                {
+                    PortraitSpriteId = PortraitSpriteId.Balgrid,
+
+                    BodyType = BodyType.HumanoidMale,
+                    FacialHairType = FacialHairType.None,
+                    HairColor = HairColor.Brunette,
+                    HairType = HairType.MaleShort,
+                    SkinToneType = SkinToneType.Base,
+                };
 
                 characterService.CreateCharacter(createParams);
             }
@@ -82,8 +119,16 @@ namespace MAGE.DB.Internal
                 createParams.name = StoryCharacterId.Maric.ToString();
                 createParams.currentSpecialization = SpecializationType.Footman;
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
-                createParams.appearanceOverrides = new Appearance() { PortraitSpriteId = PortraitSpriteId.Maric };
+                createParams.appearanceOverrides = new Appearance()
+                {
+                    PortraitSpriteId = PortraitSpriteId.Maric,
 
+                    BodyType = BodyType.HumanoidMale,
+                    FacialHairType = FacialHairType.None,
+                    HairColor = HairColor.Dark,
+                    HairType = HairType.MaleBuzz,
+                    SkinToneType = SkinToneType.Pale,
+                };
                 characterService.CreateCharacter(createParams);
             }
 

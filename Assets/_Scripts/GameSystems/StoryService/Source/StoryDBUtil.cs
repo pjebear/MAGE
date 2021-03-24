@@ -10,37 +10,35 @@ namespace MAGE.GameSystems.Story.Internal
     {
         public static StoryMutatorParams FromDB(DB.DBStoryMutatorParams dbMutatorParams)
         {
-            return new StoryMutatorParams(
-                (StoryMutatorType)dbMutatorParams.Param0
-                , dbMutatorParams.Param1
-                , dbMutatorParams.Param2
-                , dbMutatorParams.Param3
-                );
+            return new StoryMutatorParams((StoryMutatorType)dbMutatorParams.MutateType, dbMutatorParams.Params);
         }
 
         public static DB.DBStoryMutatorParams ToDB(StoryMutatorParams mutatorParams)
         {
             DB.DBStoryMutatorParams dBStoryMutatorParams = new DB.DBStoryMutatorParams();
-            dBStoryMutatorParams.Param0 = (int)mutatorParams.StoryMutatorType;
-            dBStoryMutatorParams.Param1 = mutatorParams.Param1;
-            dBStoryMutatorParams.Param2 = mutatorParams.Param2;
-            dBStoryMutatorParams.Param3 = mutatorParams.Param3;
+            dBStoryMutatorParams.MutateType = (int)mutatorParams.StoryMutatorType;
+            dBStoryMutatorParams.Params.AddRange(mutatorParams.Params);
 
             return dBStoryMutatorParams;
         }
 
-        public static StoryCondition FromDB(DB.DBStoryCondition dbStoryCondition)
+        public static StoryObjective FromDB(DB.DBStoryObjective dbStoryCondition)
         {
-            return new StoryCondition(
+            return new StoryObjective(
                 (StoryEventType)dbStoryCondition.EventType
-                , dbStoryCondition.Param);
+                , dbStoryCondition.Param
+                , dbStoryCondition.Progress
+                , dbStoryCondition.Goal);
+
         }
 
-        public static DB.DBStoryCondition ToDB(StoryCondition storyCondition)
+        public static DB.DBStoryObjective ToDB(StoryObjective storyCondition)
         {
-            DB.DBStoryCondition dbStoryCondition = new DB.DBStoryCondition();
-            dbStoryCondition.EventType = (int)storyCondition.StoryEventType;
-            dbStoryCondition.Param = storyCondition.EventParam;
+            DB.DBStoryObjective dbStoryCondition = new DB.DBStoryObjective();
+            dbStoryCondition.EventType = (int)storyCondition.ListeningForEvent;
+            dbStoryCondition.Param = storyCondition.ListeningForParam;
+            dbStoryCondition.Progress = storyCondition.Progress;
+            dbStoryCondition.Goal = storyCondition.Goal;
 
             return dbStoryCondition;
         }
@@ -51,7 +49,11 @@ namespace MAGE.GameSystems.Story.Internal
 
             storyNode.Name = dbStoryNodeInfo.Name;
             storyNode.Description = dbStoryNodeInfo.Description;
-            storyNode.Requirement = FromDB(dbStoryNodeInfo.CompletionCondition);
+
+            foreach (DB.DBStoryObjective objective in dbStoryNodeInfo.CompletionObjectives)
+            {
+                storyNode.Objectives.Add(FromDB(objective));
+            }
             foreach (DB.DBStoryMutatorParams activationChange in dbStoryNodeInfo.OnActivateChanges)
             {
                 storyNode.ChangesOnActivation.Add(FromDB(activationChange));
@@ -72,7 +74,7 @@ namespace MAGE.GameSystems.Story.Internal
             {
                 storyArc.Add(FromDB(nodeInfo));
             }
-            StoryCondition activationCondition = FromDB(dbStoryArc.ActivationCondition);
+            StoryObjective activationCondition = FromDB(dbStoryArc.ActivationCondition);
 
             return new StoryArc(storyArcId, storyArc, activationCondition);
         }
@@ -84,25 +86,27 @@ namespace MAGE.GameSystems.Story.Internal
             node.Description = description;
 
             { // Condition
-                node.CompletionCondition = ToDB(new StoryCondition(StoryEventType.ConversationComplete, conversationId));
+                node.CompletionObjectives.Add(ToDB(new StoryObjective(StoryEventType.ConversationComplete, conversationId, 0, 1)));
             }
 
             {// OnActivate
-                node.OnActivateChanges.Add(ToDB(new StoryMutatorParams(
-                    PropMutatorType.Conversation_Add,
+                node.OnActivateChanges.Add(ToDB(StoryMutatorParams.PropMutateParams(
                     conversationOwner,
-                    conversationId)));
-                node.OnActivateChanges.Add(ToDB(new StoryMutatorParams(
-                    PropMutatorType.Interactible,
+                    (int)PropMutateType.Conversation,
+                    conversationId,
+                    MutatorConstants.ADD)));
+                node.OnActivateChanges.Add(ToDB(StoryMutatorParams.PropMutateParams(
                     conversationOwner,
+                    (int)PropMutateType.Interactible,
                     MutatorConstants.TRUE)));
             }
 
             {// OnComplete
-                node.OnCompleteChanges.Add(ToDB(new StoryMutatorParams(
-                    PropMutatorType.Conversation_Remove,
+                node.OnCompleteChanges.Add(ToDB(StoryMutatorParams.PropMutateParams(
                     conversationOwner,
-                    conversationId)));
+                    (int)PropMutateType.Conversation,
+                    conversationId,
+                    MutatorConstants.REMOVE)));
             }
 
             return node;
@@ -115,20 +119,20 @@ namespace MAGE.GameSystems.Story.Internal
             node.Description = description;
 
             { // Condition
-                node.CompletionCondition = ToDB(new StoryCondition(StoryEventType.EncounterComplete, encounterId));
+                node.CompletionObjectives.Add(ToDB(new StoryObjective(StoryEventType.EncounterComplete, encounterId, 0, 1)));
             }
 
             {// OnActivate
-                node.OnActivateChanges.Add(ToDB(new StoryMutatorParams(
-                    EncounterMutatorType.Activate,
+                node.OnActivateChanges.Add(ToDB(StoryMutatorParams.EncounterMutateParams(
                     encounterId,
+                    (int)EncounterMutateType.Active,
                     MutatorConstants.TRUE)));
             }
 
             {// OnComplete
-                node.OnCompleteChanges.Add(ToDB(new StoryMutatorParams(
-                    EncounterMutatorType.Activate,
+                node.OnCompleteChanges.Add(ToDB(StoryMutatorParams.EncounterMutateParams(
                     encounterId,
+                    (int)EncounterMutateType.Active,
                     MutatorConstants.FALSE)));
             }
 
@@ -142,20 +146,20 @@ namespace MAGE.GameSystems.Story.Internal
             node.Description = description;
 
             { // Condition
-                node.CompletionCondition = ToDB(new StoryCondition(StoryEventType.CinematicComplete, cinematicId));
+                node.CompletionObjectives.Add(ToDB(new StoryObjective(StoryEventType.CinematicComplete, cinematicId, 0, 1)));
             }
 
             {// OnActivate
-                node.OnActivateChanges.Add(ToDB(new StoryMutatorParams(
-                    CinematicMutatorType.Activate,
+                node.OnActivateChanges.Add(ToDB(StoryMutatorParams.CinematicMutatorParams(
                     cinematicId,
+                    (int)CinematicMutateType.Active,
                     MutatorConstants.TRUE)));
             }
 
             {// OnComplete
-                node.OnCompleteChanges.Add(ToDB(new StoryMutatorParams(
-                    CinematicMutatorType.Activate,
+                node.OnCompleteChanges.Add(ToDB(StoryMutatorParams.CinematicMutatorParams(
                     cinematicId,
+                    (int)CinematicMutateType.Active,
                     MutatorConstants.FALSE)));
             }
 
@@ -169,25 +173,67 @@ namespace MAGE.GameSystems.Story.Internal
             node.Description = description;
 
             { // Condition
-                node.CompletionCondition = ToDB(new StoryCondition(StoryEventType.ItemAddedToInventory, itemId));
+                node.CompletionObjectives.Add(ToDB(new StoryObjective(StoryEventType.ItemAddedToInventory, itemId, 0, 1)));
             }
 
             {// OnActivate
-                node.OnActivateChanges.Add(ToDB(new StoryMutatorParams(
-                    PropMutatorType.Interactible,
+                node.OnActivateChanges.Add(ToDB(StoryMutatorParams.PropMutateParams(
                     containerId,
+                    (int)PropMutateType.Item,
+                    itemId,
+                    MutatorConstants.ADD)));
+                node.OnActivateChanges.Add(ToDB(StoryMutatorParams.PropMutateParams(
+                    containerId,
+                    (int)PropMutateType.Interactible,
                     MutatorConstants.TRUE)));
-                node.OnActivateChanges.Add(ToDB(new StoryMutatorParams(
-                    PropMutatorType.Item_Add,
-                    containerId,
-                    itemId)));
             }
 
             {// OnComplete
-                node.OnCompleteChanges.Add(ToDB(new StoryMutatorParams(
-                    PropMutatorType.Interactible,
+                node.OnCompleteChanges.Add(ToDB(StoryMutatorParams.PropMutateParams(
                     containerId,
-                    (int)MutatorConstants.FALSE)));
+                    (int)PropMutateType.Interactible,
+                    MutatorConstants.FALSE)));
+            }
+
+            return node;
+        }
+
+        public static DB.DBStoryNodeInfo CreateGatherItem(string name, string description, int itemId, int dropChance, int dropAmount, int dropVarience, int numToGather, int mobId)
+        {
+            DB.DBStoryNodeInfo node = new DB.DBStoryNodeInfo();
+            node.Name = name;
+            node.Description = description;
+
+            { // Condition
+                node.CompletionObjectives.Add(ToDB(new StoryObjective(StoryEventType.ItemAddedToInventory, itemId, 0, numToGather)));
+            }
+
+            {// OnActivate
+                if (mobId != -1)
+                {
+                    node.OnActivateChanges.Add(ToDB(StoryMutatorParams.LootTableParams(
+                    (int)LootTableMutateType.Mob,
+                    mobId,
+                    itemId,
+                    MutatorConstants.ADD,
+                    dropChance,
+                    dropAmount,
+                    dropVarience)));
+                }
+            }
+
+            {// OnComplete
+                if (mobId != -1)
+                {
+                    node.OnCompleteChanges.Add(ToDB(StoryMutatorParams.LootTableParams(
+                    (int)LootTableMutateType.Mob,
+                    mobId,
+                    itemId,
+                    MutatorConstants.REMOVE,
+                    dropChance,
+                    dropAmount,
+                    dropVarience)));
+                }
             }
 
             return node;

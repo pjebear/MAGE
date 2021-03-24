@@ -94,6 +94,43 @@ namespace MAGE.Input
         {
             mInputHandlers.RemoveAll((x) => { return x.Key == handler; });
         }
+
+        public InputState GetKeyState(KeyCode key)
+        {
+            return KeyboardInputController.GetKeyState(key);
+        }
+
+        public MouseInfo GetMouseInfo()
+        {
+            return MouseInputController.GetMouseInfo();
+        }
+
+        public float GetAxisInput(InputAxis axis)
+        {
+            InputState negAxisState = InputState.None, posAxisState = InputState.None;
+            if (axis == InputAxis.Horizontal)
+            {
+                negAxisState = KeyboardInputController.GetKeyState(KeyCode.A);
+                posAxisState = KeyboardInputController.GetKeyState(KeyCode.D);
+            }
+            else
+            {
+                negAxisState = KeyboardInputController.GetKeyState(KeyCode.S);
+                posAxisState = KeyboardInputController.GetKeyState(KeyCode.W);
+            }
+
+            float input = 0;    
+            if (negAxisState == InputState.Down || negAxisState == InputState.Held)
+            {
+                input = -1;
+            }
+            else if (posAxisState == InputState.Down || posAxisState == InputState.Held)
+            {
+                input = 1;
+            }
+
+            return input;
+        }
    }
 }
 

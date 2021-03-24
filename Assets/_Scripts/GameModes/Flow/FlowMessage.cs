@@ -15,7 +15,9 @@ namespace MAGE.GameModes.FlowControl
             FlowEvent,
             Transition,
 
+            Condition,
             Notify, 
+            Invoke,
             Query, 
 
             LoadFlowControl,

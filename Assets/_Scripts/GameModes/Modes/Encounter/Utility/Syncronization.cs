@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 interface ISynchronizable
 {
-    SyncPoint Parent { get; set; }
     int NumFrames { get; }
     int SyncedFrame { get; }
 }
@@ -27,16 +26,6 @@ class SyncPoint
         Referenced = reference;
         Synced = synced;
         StartPointOffset = startPointOffset;
-    }
-
-    public int GetAbsoluteOffset(AllignmentPosition fromSyncPos)
-    {
-        int cummOffset = GetRelativeOffset(AllignmentPosition.Start, fromSyncPos);
-        if (Referenced.Parent != null)
-        {
-            cummOffset += Referenced.Parent.GetAbsoluteOffset(AllignmentPosition.Start);
-        }
-        return cummOffset;
     }
 
     public int GetRelativeOffset(AllignmentPosition referenceAllignment, AllignmentPosition syncAllignment)
@@ -66,48 +55,35 @@ class SyncPoint
         return offset;
     }
 
-    public static int GetStartPointOffset(ISynchronizable syncroA, AllignmentPosition alignPosA, ISynchronizable syncroB, AllignmentPosition allignPosB, int beingSyncedOffset)
+    public static int GetStartPointOffset(ISynchronizable syncro, AllignmentPosition alignPos, int beingSyncedOffset)
     {
         int startPointOffset = beingSyncedOffset;
 
-        if (allignPosB == AllignmentPosition.Start)
+        if (alignPos == AllignmentPosition.Start)
         {
             // nothing
         }
-        else if (allignPosB == AllignmentPosition.Interaction)
+        else if (alignPos == AllignmentPosition.Interaction)
         {
-            startPointOffset -= syncroB.SyncedFrame;
-           
-        }
-        else if (allignPosB == AllignmentPosition.End)
-        {
-            startPointOffset -= syncroA.NumFrames;
-        }
+            startPointOffset += syncro.SyncedFrame;
 
-        if (alignPosA == AllignmentPosition.Start)
-        {
-            // nothing
         }
-        else if (alignPosA == AllignmentPosition.Interaction)
+        else if (alignPos == AllignmentPosition.End)
         {
-            startPointOffset += syncroA.SyncedFrame;
-        }
-        else if (alignPosA == AllignmentPosition.End)
-        {
-            startPointOffset += syncroA.NumFrames;
+            startPointOffset += syncro.NumFrames;
         }
 
         return startPointOffset;
     }
 
-    public static SyncPoint Syncronize(ISynchronizable referenced, AllignmentPosition referencedPos, ISynchronizable beingSynced, AllignmentPosition beingSyncedPos, int beingSyncedOffset)
+    public static int GetStartPointOffset(ISynchronizable syncroA, AllignmentPosition alignPosA, ISynchronizable syncroB, AllignmentPosition allignPosB, int beingSyncedOffset)
     {
-        int startPointOffset = GetStartPointOffset(referenced, referencedPos, beingSynced, beingSyncedPos, beingSyncedOffset);
+        int startPointOffset = beingSyncedOffset;
 
-        SyncPoint synchronizedPoint = new SyncPoint(referenced, beingSynced, startPointOffset);
-        beingSynced.Parent = synchronizedPoint;
+        startPointOffset += GetStartPointOffset(syncroA, alignPosA, 0);
+        startPointOffset -= GetStartPointOffset(syncroB, allignPosB, 0);
 
-        return synchronizedPoint;
+        return startPointOffset;
     }
 }
 

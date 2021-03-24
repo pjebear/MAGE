@@ -19,9 +19,12 @@ namespace MAGE.DB
         public int PrefabId = -1;
         public int AnimationId = -1;
         public int ProjectileId = -1;
+        public int Value = -1;
         public DBRangeInfo Range = new DBRangeInfo();
         public List<DBAttributeScalar> EffectivenessScalars = new List<DBAttributeScalar>();
         public List<DBAttributeModifier> EquipBonuses = new List<DBAttributeModifier>();
+
+
         
         public override void Copy(Internal.DBEntryBase _from, Internal.DBEntryBase _to)
         {
@@ -38,8 +41,9 @@ namespace MAGE.DB
             to.PrefabId = from.PrefabId;
             to.AnimationId = from.AnimationId;
             to.ProjectileId = from.ProjectileId;
+            to.Value = from.Value;
             to.Range.Set(from.Range);
-
+            
             to.EffectivenessScalars.Clear();
             foreach (DBAttributeScalar scalar in from.EffectivenessScalars)
             {

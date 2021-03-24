@@ -2,6 +2,7 @@
 
 using MAGE.GameSystems;
 using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.Stats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,7 +61,7 @@ namespace MAGE.GameSystems.Actions
             List<ActionResponseBase> responses = new List<ActionResponseBase>();
             if (stackCount > 0)
             {
-                StateChange stateChange = new StateChange(stateChangeType, new List<StatusEffect>() { StatusEffectFactory.CheckoutStatusEffect(StatusEffectId.Avenger, responder, stackCount) });
+                StateChange stateChange = new StateChange(stateChangeType, new List<StatusEffect>() { StatusEffectFactory.CheckoutStatusEffect(StatusEffectId.Avenger, stackCount) });
                 responses.Add(new StateChangeResponse(stateChange));
             }
             return responses;

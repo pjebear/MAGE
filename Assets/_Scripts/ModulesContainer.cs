@@ -9,21 +9,15 @@ namespace MAGE.GameModes
 {
     class ModulesContainer : MonoBehaviour
     {
-        
-
         public static ModulesContainer Container = null;
-
         
         public UIManager UIManager;
-
-        public bool DebugEncounter = false;
-        public bool DebugExplore = false;
-
 
         private ActorLoader mActorLoader;
         private AudioManager mAudioManager;
         private FlowControl.FlowManager mFlowManager;
         public GameSystemModule mGameSystemModule;
+        
 
         private void Awake()
         {
@@ -37,8 +31,8 @@ namespace MAGE.GameModes
 
                 DontDestroyOnLoad(gameObject);
 
-                Logger.LogFilters[(int)LogTag.Assets] = false;
-                Logger.LogFilters[(int)LogTag.DB] = false;
+                Logger.LogFilters[(int)LogTag.Assets] = true;
+                Logger.LogFilters[(int)LogTag.DB] = true;
 
                 Messaging.MessageRouter.Instance = gameObject.AddComponent<Messaging.MessageRouter>();
                 GameObject flowControlContainer = new GameObject("FlowControls");
@@ -51,28 +45,7 @@ namespace MAGE.GameModes
                 mGameSystemModule.InitModule();
                 UIManager.Initialize();
                 mFlowManager.Init();
-
-                //if (DebugEncounter)
-                //{
-                //    MAGE.GameSystems.WorldService.Get().PrepareNewGame();
-                //    EncounterCreateParams encounterCreateParams = new EncounterCreateParams();
-                //    encounterCreateParams.BottomLeft = new TileIdx(12, 4);
-                //    encounterCreateParams.TopRight = new TileIdx(24, 8);
-                //    MAGE.GameSystems.WorldService.Get().PrepareEncounter(encounterCreateParams);
-                //    GameModesModule.Encounter();
-                //}
-                //else if (DebugExplore)
-                //{
-                //    MAGE.GameSystems.WorldService.Get().PrepareNewGame();
-                //    GameModesModule.Explore();
-                //}
-                //else 
-                //{
-                //    GameModesModule.MainMenu();
-                //}
             }
-
-           
         }
 
         private void Start()

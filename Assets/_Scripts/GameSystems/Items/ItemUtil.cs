@@ -17,6 +17,10 @@ namespace MAGE.GameSystems
             {
                 type = ItemType.Bundle;
             }
+            else if (itemId >= (int)ItemType.Vendor)
+            {
+                type = ItemType.Vendor;
+            }
             else if (itemId >= (int)ItemType.Story)
             {
                 type = ItemType.Story;
@@ -42,6 +46,8 @@ namespace MAGE.GameSystems
                     return ((ConsumableId)itemId).ToString();
                 case (ItemType.Bundle):
                     return ((BundleId)itemId).ToString();
+                case (ItemType.Vendor):
+                    return ((VendorItemId)itemId).ToString();
             }
             Debug.LogWarning("");
             return "INVALID";

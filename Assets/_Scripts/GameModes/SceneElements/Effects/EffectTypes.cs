@@ -5,12 +5,24 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+namespace MAGE.GameModes.SceneElements
+{
+    [System.Serializable]
+    struct EffectDurationInfo
+    {
+        public float DurationSeconds;
+        public float SyncPointSeconds;
+    }
+}
 enum EffectType
 {
     INVALID,
 
-    Heal,
+    AOE_Heal,
     Fire, 
+    FlameStrike, 
+    LightningBolt,
+    Regen,
 
     NUM
 }

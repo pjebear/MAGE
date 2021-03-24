@@ -1,8 +1,12 @@
-﻿using MAGE.GameModes.Encounter;
+﻿using MAGE.GameModes.Combat;
+using MAGE.GameModes.Encounter;
+using MAGE.GameModes.FlowControl;
 using MAGE.GameModes.SceneElements;
+using MAGE.GameModes.SceneElements.Navigation;
 using MAGE.GameSystems;
 using MAGE.GameSystems.Actions;
 using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.Stats;
 using MAGE.UI;
 using MAGE.UI.Views;
 using System;
@@ -11,132 +15,153 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Events;
 
-namespace MAGE.GameModes.FlowControl
+namespace MAGE.GameModes.Encounter
 {
-    abstract class TurnFlowControlBase
-        : MonoBehaviour
-        , UIContainerControl
-        , Messaging.IMessageHandler
+    abstract class TurnFlowControlBase 
+        : FlowControl.FlowControlBase
+        
     {
-        protected enum InfoPanelSide
+        protected enum State
         {
-            LEFT,
-            RIGHT,
-
-            NUM
+            Idle,
+            Moving,
+            TargetSelect
         }
+        protected State mState = State.Idle;
 
+        // Private 
+        protected CombatCharacter mCurrentCharacter;
+        protected List<ActionId> mAvailableActions;
+        protected CombatCharacter mCurrentTarget;
+        protected Vector3 mCurrentMoveToPoint = Vector3.zero;
 
-        string Tag = "TurnFlowControlBase";
+        protected LineRenderer mAbilityRangeRenderer = null;
+        protected LineRenderer mAbilityEffectRenderer = null;
+        protected LineRenderer mMovementRangeRenderer = null;
 
-        protected bool mDisplaySelections = false;
-        protected TileSelectionStack mSelectionStack;
+        protected int mCircleSegments = 32;
 
-        protected Character mCharacter;
-        protected Character mTargetedCharacter;
-        protected TeamSide mTeam;
+        protected Dictionary<CombatCharacter, NavMeshObstacle> mMovementObstacles = new Dictionary<CombatCharacter, NavMeshObstacle>();
 
-        private Character mLeftPanelCharacter;
-        private Character mRightPanelCharacter;
-
-
-        public virtual void Init()
+        protected override void Setup()
         {
-            mSelectionStack = new TileSelectionStack();
-            Messaging.MessageRouter.Instance.RegisterHandler(this);
+            mAbilityRangeRenderer = EncounterPrefabLoader.RangeRenderer;
+            mAbilityRangeRenderer.transform.SetParent(transform);
+            mAbilityRangeRenderer.gameObject.SetActive(false);
+            mAbilityRangeRenderer.positionCount = mCircleSegments + 1;
+            mAbilityRangeRenderer.useWorldSpace = true;
 
-            OnInit();
-        }
-        protected abstract void OnInit();
+            mAbilityEffectRenderer = EncounterPrefabLoader.RangeRenderer;
+            mAbilityEffectRenderer.transform.SetParent(transform);
+            mAbilityEffectRenderer.gameObject.SetActive(false);
+            mAbilityEffectRenderer.positionCount = mCircleSegments + 1;
+            mAbilityEffectRenderer.useWorldSpace = true;
 
-        void OnDestroy()
-        {
-            Messaging.MessageRouter.Instance.UnRegisterHandler(this);
-            UIManager.Instance.RemoveOverlay(UIContainerId.EncounterCharacterInfoLeftView);
-            UIManager.Instance.RemoveOverlay(UIContainerId.EncounterCharacterInfoRightView);
+            mMovementRangeRenderer = EncounterPrefabLoader.RangeRenderer;
+            mMovementRangeRenderer.transform.SetParent(transform);
+            mMovementRangeRenderer.gameObject.SetActive(false);
+            mMovementRangeRenderer.useWorldSpace = true;
 
-            Cleanup();
-        }
-        protected abstract void Cleanup();
-
-        protected abstract void ProgressTurn(Character character);
-
-        protected void FocusCharacter(Character character)
-        {
-            Transform actorTransform = EncounterFlowControl.CharacterDirector.GetController(character).transform;
-            EncounterFlowControl.CameraDirector.FocusTarget(actorTransform);
-        }
-
-        // UIContainerControl
-        public virtual void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)
-        {
-            // empty
-        }
-
-        public virtual IDataProvider Publish(int containerId)
-        {
-            IDataProvider dataProvider = null;
-
-            switch ((UIContainerId)containerId)
+            foreach (CombatCharacter combatCharacter in GameModel.Encounter.Players)
             {
-                case UIContainerId.EncounterCharacterInfoLeftView:
-                    dataProvider = PublishCharacterInfo(mLeftPanelCharacter);
-                    break;
-                case UIContainerId.EncounterCharacterInfoRightView:
-                    dataProvider = PublishCharacterInfo(mRightPanelCharacter);
-                    break;
-            }
-
-            return dataProvider;
-        }
-
-        protected void ShowCharacterPanel(InfoPanelSide side, Character toShow)
-        {
-            switch (side)
-            {
-                case InfoPanelSide.LEFT:
+                if (combatCharacter.GetComponent<ResourcesControl>().IsAlive())
                 {
-                    if (mLeftPanelCharacter != null)
-                    {
-                        UIManager.Instance.Publish(UIContainerId.EncounterCharacterInfoLeftView);
-                    }
-                    else
-                    {
-                        UIManager.Instance.PostContainer(UIContainerId.EncounterCharacterInfoLeftView, this);
-                    }
-                    mLeftPanelCharacter = toShow;
+                    NavMeshObstacle obstacle = EncounterPrefabLoader.Obstacle;
+                    obstacle.transform.SetParent(combatCharacter.transform);
+                    obstacle.transform.localPosition = Vector3.zero;
+                    mMovementObstacles.Add(combatCharacter, obstacle);
                 }
-                break;
-                case InfoPanelSide.RIGHT:
-                {
-                    if (mRightPanelCharacter != null)
-                    {
-                        UIManager.Instance.Publish(UIContainerId.EncounterCharacterInfoRightView);
-                    }
-                    else
-                    {
-                        UIManager.Instance.PostContainer(UIContainerId.EncounterCharacterInfoRightView, this);
-                    }
-                    mRightPanelCharacter = toShow;
-                }
-                break;
             }
+
+            SetCurrentCharacter(GameModel.Encounter.CurrentTurn);
+
+            SetState(State.Idle);
         }
 
-        protected void HideInfoPanel(InfoPanelSide side)
+        protected override void Cleanup()
         {
-            switch (side)
+            foreach (var obstaclePair in mMovementObstacles)
             {
-                case InfoPanelSide.LEFT: UIManager.Instance.RemoveOverlay(UIContainerId.EncounterCharacterInfoLeftView); mLeftPanelCharacter = null; break;
-                case InfoPanelSide.RIGHT: UIManager.Instance.RemoveOverlay(UIContainerId.EncounterCharacterInfoRightView); mRightPanelCharacter = null; break;
+                Destroy(obstaclePair.Value.gameObject);
+            }
+            mMovementObstacles.Clear();
+        }
+
+
+        private void SetCurrentCharacter(CombatCharacter combatCharacter)
+        {
+            mCurrentCharacter = combatCharacter;
+            mAvailableActions = combatCharacter.GetComponent<ActionsControl>().Actions;
+            mMovementObstacles[combatCharacter].enabled = false;
+
+            Camera.main.GetComponent<Cameras.CameraController>().SetTarget(mCurrentCharacter.transform, Cameras.CameraType.TopDown);
+        }
+
+        protected void MoveAttack()
+        {
+            bool attackQueued = false;
+            if (!GameModel.Encounter.HasActed)
+            {
+                attackQueued = true;
+                GameModel.Encounter.HasActed = true;
+
+                ActionProposal proposal = new ActionProposal(
+                mCurrentCharacter.GetComponent<CombatEntity>(),
+                new Target(mCurrentTarget.GetComponent<CombatTarget>()),
+                ActionId.MeeleWeaponAttack);
+
+                GameModel.Encounter.mActionQueue.Enqueue(proposal);
+            }
+
+            if ((mCurrentTarget.transform.position - mCurrentCharacter.transform.position).magnitude > 1.5f)
+            {
+                SetState(State.Moving);
+
+                GameModel.Encounter.HasMoved = true;
+                mCurrentCharacter.GetComponent<ActorMotor>().MoveToPoint(mCurrentMoveToPoint, () =>
+                {
+                    SendFlowMessage("actionChosen");
+                });
+            }
+            else if (attackQueued)
+            {
+                SendFlowMessage("actionChosen");
             }
         }
 
-        IDataProvider PublishCharacterInfo(Character toPublish)
+        protected virtual void SetState(State state)
+        {
+            mState = state;
+
+            if (state == State.Idle)
+            {
+                mMovementRangeRenderer.gameObject.SetActive(!GameModel.Encounter.HasMoved);
+                mAbilityRangeRenderer.gameObject.SetActive(false);
+                mAbilityEffectRenderer.gameObject.SetActive(false);
+            }
+            else if (state == State.TargetSelect)
+            {
+                mMovementRangeRenderer.gameObject.SetActive(false);
+                mAbilityRangeRenderer.gameObject.SetActive(true);
+                mAbilityEffectRenderer.gameObject.SetActive(true);
+            }
+            else if (state == State.Moving)
+            {
+                mMovementRangeRenderer.gameObject.SetActive(false);
+                mAbilityRangeRenderer.gameObject.SetActive(false);
+                mAbilityEffectRenderer.gameObject.SetActive(false);
+            }
+        }
+
+
+        protected IDataProvider PublishCharacterInfoPanelLeft()
         {
             CharacterInspector.DataProvider dp = new CharacterInspector.DataProvider();
+
+            Character toPublish = mCurrentCharacter.Character;
 
             dp.IsAlly = toPublish.TeamSide == TeamSide.AllyHuman;
             dp.PortraitAsset = toPublish.GetAppearance().PortraitSpriteId.ToString();
@@ -144,21 +169,25 @@ namespace MAGE.GameModes.FlowControl
             dp.Level = toPublish.Level;
             dp.Exp = toPublish.Experience;
             dp.Specialization = toPublish.CurrentSpecializationType.ToString();
-            dp.CurrentHP = toPublish.CurrentResources[ResourceType.Health].Current;
-            dp.MaxHP = toPublish.CurrentResources[ResourceType.Health].Max;
-            dp.CurrentMP = toPublish.CurrentResources[ResourceType.Mana].Current;
-            dp.MaxMP = toPublish.CurrentResources[ResourceType.Mana].Max;
-            dp.Might = (int)toPublish.CurrentAttributes[PrimaryStat.Might];
-            dp.Finesse = (int)toPublish.CurrentAttributes[PrimaryStat.Finese];
-            dp.Magic = (int)toPublish.CurrentAttributes[PrimaryStat.Magic];
-            dp.Fortitude = (int)toPublish.CurrentAttributes[SecondaryStat.Fortitude];
-            dp.Attunement = (int)toPublish.CurrentAttributes[SecondaryStat.Attunement];
-            dp.Block = (int)toPublish.CurrentAttributes[TertiaryStat.Block];
-            dp.Dodge = (int)toPublish.CurrentAttributes[TertiaryStat.Dodge];
-            dp.Parry = (int)toPublish.CurrentAttributes[TertiaryStat.Parry];
+
+            dp.CurrentHP    = mCurrentCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Health].Current;
+            dp.MaxHP        = mCurrentCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Health].Max;
+            dp.CurrentMP    = mCurrentCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Mana].Current;
+            dp.MaxMP        = mCurrentCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Mana].Max;
+
+            dp.Might        = (int)mCurrentCharacter.GetComponent<StatsControl>().Attributes[PrimaryStat.Might];
+            dp.Finesse      = (int)mCurrentCharacter.GetComponent<StatsControl>().Attributes[PrimaryStat.Finese];
+            dp.Magic        = (int)mCurrentCharacter.GetComponent<StatsControl>().Attributes[PrimaryStat.Magic];
+
+            dp.Fortitude    = (int)mCurrentCharacter.GetComponent<StatsControl>().Attributes[SecondaryStat.Fortitude];
+            dp.Attunement   = (int)mCurrentCharacter.GetComponent<StatsControl>().Attributes[SecondaryStat.Attunement];
+
+            dp.Block        = (int)mCurrentCharacter.GetComponent<StatsControl>().Attributes[TertiaryStat.Block];
+            dp.Dodge        = (int)mCurrentCharacter.GetComponent<StatsControl>().Attributes[TertiaryStat.Dodge];
+            dp.Parry        = (int)mCurrentCharacter.GetComponent<StatsControl>().Attributes[TertiaryStat.Parry];
 
             List<IDataProvider> statusEffects = new List<IDataProvider>();
-            foreach (StatusEffect effect in toPublish.StatusEffects)
+            foreach (StatusEffect effect in mCurrentCharacter.GetComponent<StatusEffectControl>().StatusEffects)
             {
                 StatusIcon.DataProvider statusDp = new StatusIcon.DataProvider();
                 statusDp.Count = effect.StackCount;
@@ -171,75 +200,83 @@ namespace MAGE.GameModes.FlowControl
             return dp;
         }
 
-
-        public string Name()
+        protected void DisplayRange(LineRenderer rangeRender, Vector3 center, float radius)
         {
-            return Tag;
-        }
+            rangeRender.gameObject.SetActive(true);
 
-        // Helpers
-        protected void ToggleSelectedTiles(bool visible)
-        {
-            mDisplaySelections = visible;
-            if (mDisplaySelections)
+            float currentAngle = 0f;
+            
+            for (int i = 0; i < mCircleSegments + 1; ++i)
             {
-                mSelectionStack.DisplayTiles();
-            }
-            else
-            {
-                mSelectionStack.HideTiles();
-            }
-        }
+                float xOffset = Mathf.Sin(Mathf.Deg2Rad * currentAngle) * radius + center.x;
+                float zOffset = Mathf.Cos(Mathf.Deg2Rad * currentAngle) * radius + center.z;
 
-        protected void AddTileSelection(List<TileControl> selection, TileControl.HighlightState highlight)
-        {
-            mSelectionStack.AddLayer(selection, highlight);
-            if (mDisplaySelections)
-            {
-                mSelectionStack.RefreshDisplay();
-            }
-        }
-
-        protected void PopTileSelection()
-        {
-            mSelectionStack.RemoveLayer();
-            if (mDisplaySelections)
-            {
-                mSelectionStack.RefreshDisplay();
-            }
-        }
-
-        protected void ClearTileSelections()
-        {
-            mSelectionStack.Reset();
-        }
-
-        // Messaging.IMessageHandler
-        public void HandleMessage(Messaging.MessageInfoBase messageInfoBase)
-        {
-            switch (messageInfoBase.MessageId)
-            {
-                case EncounterMessage.Id:
+                Vector3 circlePosition = new Vector3(xOffset, center.y, zOffset);
+                Ray ray = new Ray(circlePosition + Vector3.up * 100, Vector3.down);
+                RaycastHit hit;
+                int layerMask = 1 << (int)RayCastLayer.Terrain;
+                if (Physics.Raycast(ray, out hit, 500, layerMask))
                 {
-                    EncounterMessage message = messageInfoBase as EncounterMessage;
+                    circlePosition.y = hit.point.y;
+                }
 
-                    switch (message.Type)
-                    {   
-                        case EncounterMessage.EventType.TurnBegun:
+                rangeRender.SetPosition(i, circlePosition);
+
+                currentAngle += 360f / mCircleSegments;
+            }
+        }
+
+        protected void DisplayMovementRange(Vector3 destination)
+        {
+            mMovementRangeRenderer.gameObject.SetActive(true);
+
+            NavMeshPath path = new NavMeshPath();
+            NavMesh.CalculatePath(mCurrentCharacter.transform.position, destination, NavMesh.AllAreas, path);
+
+            mMovementRangeRenderer.positionCount = path.corners.Length + 1;
+            mMovementRangeRenderer.SetPosition(0, mCurrentCharacter.transform.position + Vector3.up * .1f);
+            for (int i = 0; i < path.corners.Length; i++)
+            {
+                mMovementRangeRenderer.SetPosition(i + 1, path.corners[i]);
+            }
+        }
+
+        protected Vector3 GetPointAlongPathInRangeOf(Vector3[] path, Vector3 destination, float range)
+        {
+            float lineSegmentSize = 0.1f;
+            for (int i = 1; i < path.Length; ++i)
+            {
+                Vector3 lineSegmentStart = path[i - 1];
+                Vector3 lineSegmentEnd = path[i];
+
+                Vector3 lineSegment = lineSegmentEnd - lineSegmentStart;
+                Vector3 startToDestination = destination - lineSegmentStart;
+                Vector3 endToDestination = destination - lineSegmentEnd;
+
+                //double projectionDistance = Vector3.Dot(toDestination, lineSegment);
+                //if (projectionDistance > lineSegment.magnitude)
+                //{
+                //    continue;
+                //}
+                //else if (projectionDistance )
+
+
+                if (endToDestination.magnitude < range)
+                {
+                    float segmentLength = lineSegment.magnitude;
+                    int numSegments = Mathf.CeilToInt(segmentLength / lineSegmentSize);
+                    for (int j = 0; j < numSegments; ++j)
+                    {
+                        Vector3 pointOnSegment = lineSegmentStart + lineSegment * (j * lineSegmentSize) / segmentLength;
+                        if ((destination - pointOnSegment).magnitude < range)
                         {
-                            Character character = message.Arg<Character>();
-                            if (character.TeamSide == mTeam)
-                            {
-                                ProgressTurn(character);
-                            }
+                            return pointOnSegment;
                         }
-                        break;
                     }
                 }
-                break;
             }
+
+            return path[path.Length - 1];
         }
     }
-
-
 }

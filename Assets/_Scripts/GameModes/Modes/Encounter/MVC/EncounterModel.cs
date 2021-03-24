@@ -1,5 +1,7 @@
-﻿using MAGE.GameModes.SceneElements;
+﻿using MAGE.GameModes.Combat;
+using MAGE.GameModes.SceneElements;
 using MAGE.GameSystems;
+using MAGE.GameSystems.Actions;
 using MAGE.GameSystems.Characters;
 using MAGE.GameSystems.World;
 using System;
@@ -12,17 +14,15 @@ namespace MAGE.GameModes.Encounter
 {
     class EncounterModel
     {
-        public EncounterContext EncounterContext;
-        public List<TileIdx> AllySpawnPoints = new List<TileIdx>();
-        public List<TileIdx> EnemySpawnPoints = new List<TileIdx>();
+        public Queue<ActionProposal> mActionQueue = new Queue<ActionProposal>();
+        public Dictionary<ActionProposal, int> mDelayedActions = new Dictionary<ActionProposal, int>();
 
-        public Dictionary<TeamSide, List<Character>> Teams = new Dictionary<TeamSide, List<Character>>();
-        public Dictionary<int, Character> Characters = new Dictionary<int, Character>();
-        public List<Character> PendingCharacterTurns = new List<Character>();
-        public Character CurrrentTurnCharacter = null;
-        public bool TurnCompleted = false;
-        public int Clock;
-        public EncounterState EncounterState = EncounterState.InProgress;
+        public List<CombatCharacter> Players = new List<CombatCharacter>();
+        public List<CombatCharacter> TurnQueue = new List<CombatCharacter>();
+
+        public CombatCharacter CurrentTurn = null;
+        public bool HasActed = false;
+        public bool HasMoved = false;
     }
 }
 

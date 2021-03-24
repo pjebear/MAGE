@@ -36,9 +36,9 @@ namespace MAGE.GameModes.SceneElements
                         if (animator != null)
                         {
                             GameObject go = animator.gameObject;
-                            ActorSpawner actorSpawner = go.GetComponentInParent<ActorSpawner>();
+                            Actor actor = go.GetComponentInParent<Actor>();
 
-                            playableDirector.SetGenericBinding(animationTrack, actorSpawner.Actor.GetComponentInChildren<Animator>());
+                            playableDirector.SetGenericBinding(animationTrack, actor.GetComponentInChildren<Animator>());
                         }               
                     }
                 }

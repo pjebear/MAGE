@@ -9,20 +9,67 @@ namespace MAGE.GameModes
         {
             int numFrames = 60;
             int syncFrame = 30;
+            string animationName = "";
             switch (id)
             {
                 case AnimationId.SwordSwing:
-                case AnimationId.Block:
-                case AnimationId.Dodge:
-                case AnimationId.Parry:
+                {
+                    numFrames = 55;
+                    syncFrame = 18;
+                }
+                break;
+                case AnimationId.BowDraw:
+                {
+                    numFrames = 35;
+                    syncFrame = 35;
+                }
+                break;
                 case AnimationId.Hurt:
-                    numFrames = 60;
-                    syncFrame = 30;
+                {
+                    numFrames = 25;
+                    syncFrame = 3;
+                }
+                break;
+                case AnimationId.Block:
+                case AnimationId.Parry:
+                
+                    numFrames = 75;
+                    syncFrame = 26;
+                    break;
+
+                case AnimationId.Dodge:
+                    numFrames = 48;
+                    syncFrame = 35;
                     break;
 
                 case AnimationId.Cast:
-                    numFrames = 90;
-                    syncFrame = 60;
+                    numFrames = 50;
+                    syncFrame = 50;
+                    break;
+            }
+
+            switch (id)
+            {
+                case AnimationId.SwordSwing:
+                    animationName = "attack1Right";
+                    break;
+                case AnimationId.BowDraw:
+                    animationName = "bowShoot1Right";
+                    break;
+                case AnimationId.Block:
+                    animationName = "blockLeft";
+                    break;
+                case AnimationId.Parry:
+                    animationName = "parryRight";
+                    break;
+                case AnimationId.Dodge:
+                    animationName = "dodge";
+                    break;
+                case AnimationId.Hurt:
+                    animationName = "gotHit";
+                    break;
+                case AnimationId.Cast:
+                    animationName = "cast3";
                     break;
             }
 
@@ -39,7 +86,7 @@ namespace MAGE.GameModes
                 case AnimationId.Faint: sFXId = SFXId.MaleDeath; break;
             }
 
-            return new AnimationInfo(id.ToString(), numFrames, syncFrame, sFXId);
+            return new AnimationInfo(animationName == "" ? id.ToString() : animationName, numFrames, syncFrame, sFXId);
         }
     }
 }

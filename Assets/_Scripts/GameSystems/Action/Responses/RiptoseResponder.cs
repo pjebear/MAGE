@@ -24,13 +24,13 @@ namespace MAGE.GameSystems.Actions
                 && WasCharacterATarget(responder, actionResult))
             {
                 InteractionResult result = actionResult.TargetResults[responder];
-                ActionInfo info = actionResult.ActionInfo;
+                ActionInfoBase info = actionResult.ActionInfo;
                 if (info.ActionRange == ActionRange.Meele
                     && info.ActionSource == ActionSource.Weapon
                     && result.InteractionResultType == InteractionResultType.Parry)
                 {
                     TargetSelection selection = new TargetSelection(new Target(actionResult.Initiator));
-                    responses.Add(new ActionProposalResponse(new ActionProposal(responder, ActionId.WeaponAttack, selection)));
+                    responses.Add(new ActionProposalResponse_Deprecated(new ActionProposal_Deprecated(responder, ActionId.MeeleWeaponAttack, selection)));
                 }
             }
 

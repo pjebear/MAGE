@@ -37,7 +37,7 @@ public enum LogLevel
 
 static class Logger 
 {
-    public static bool[] LogFilters = Enumerable.Repeat<bool>(true, (int)LogTag.NUM).ToArray();
+    public static bool[] LogFilters = Enumerable.Repeat<bool>(false, (int)LogTag.NUM).ToArray();
     public static LogLevel LogThreshold = LogLevel.Notify;
 
     public static void Fail(LogTag tag, string name, string message, LogLevel logLevel = LogLevel.Warning)
@@ -56,12 +56,12 @@ static class Logger
     public static void Log(LogTag tag, string name, string message, LogLevel logLevel = LogLevel.Notify)
     {
         // Still allow log messages that are above logLevel through the filter
-        if (!LogFilters[(int)tag] && logLevel < LogThreshold)
+        if (logLevel < LogThreshold)
         {
             return;
         }
 
-        if (logLevel < LogThreshold)
+        if (LogFilters[(int)tag])
         {
             return;
         }

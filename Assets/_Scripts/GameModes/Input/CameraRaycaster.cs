@@ -25,13 +25,11 @@ class CameraRaycaster : MonoBehaviour
 
     GameObject mHovered = null;
 
-    private Camera mCaster;
     private List<UnityAction<GameObject>> mHoverChangeCBs;
 
     private void Awake()
     {
         mHoverChangeCBs = new List<UnityAction<GameObject>>();
-        
     }
 
     // Update is called once per frame

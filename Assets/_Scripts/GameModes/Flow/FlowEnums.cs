@@ -36,4 +36,12 @@ namespace MAGE.GameModes.FlowControl
 
         NUM
     }
+
+    static class FlowConstants
+    {
+        public static readonly string CONDITION_TRUE = "true";
+        public static readonly string CONDITION_FALSE = "false";
+        public static readonly string CONDITION_EMPTY = "";
+    }
+
 }

@@ -47,7 +47,7 @@ namespace MAGE.GameModes.FlowControl
 
                             case (int)MapView.ComponentId.DemoLevelBtn:
                             {
-                                MAGE.GameSystems.WorldService.Get().UpdatePartyLocation(new PartyLocation() { Level = GameSystems.LevelId.DemoLevel, SpawnPoint = 0 });
+                                MAGE.GameSystems.WorldService.Get().UpdatePartyLocation(new PartyLocation() { Level = GameSystems.LevelId.Demo, SpawnPoint = 0 });
                                 SendFlowMessage("back");
                             }
                             break;

@@ -1,6 +1,8 @@
 ﻿using MAGE.GameSystems;
 using MAGE.GameSystems.Actions;
+using MAGE.GameSystems.Appearances;
 using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.Stats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +13,13 @@ namespace MAGE.DB.Internal
 {
     class EquipmentDBLoader
     {
-        private static DB.DBRangeInfo MELEE_RANGE = new DB.DBRangeInfo() { Min = 1, Max = 1, Elevation = 1, Type = (int)AreaType.Circle };
-        private static DB.DBRangeInfo BOW_RANGE = new DB.DBRangeInfo() { Min = 3, Max = 6, Elevation = 7, Type = (int)AreaType.Expanding };
+        private static DB.DBRangeInfo MELEE_RANGE = new DB.DBRangeInfo() { Min = 1, Max = 1, Elevation = 1, AreaType = (int)AreaType.Circle };
+        private static DB.DBRangeInfo BOW_RANGE = new DB.DBRangeInfo() { Min = 3, Max = 6, Elevation = 7, AreaType = (int)AreaType.Expanding };
+
+        private static int ACCESSORY_COST = 700;
+        private static int TWO_HAND_WEAPON_COST = 600;
+        private static int ONE_HAND_WEAPON_COST = 400;
+        private static int ARMOR_COST = 800;
 
         public static void LoadDB()
         {
@@ -29,10 +36,11 @@ namespace MAGE.DB.Internal
                 };
                 entry.EquipBonuses = new List<DB.DBAttributeModifier>()
             {
-                new DB.DBAttributeModifier(){ AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)TertiaryStat.PhysicalResistance, ModifierType = (int)ModifierType.Increment, Modifier = .15f}
+                new DB.DBAttributeModifier(){ AttributeCategory = (int)AttributeCategory.TertiaryStat, AttributeId = (int)TertiaryStat.PhysicalResistance, ModifierType = (int)ModifierType.Increment, Modifier = .15f}
             };
                 entry.SpriteId = (int)UI.ItemIconSpriteId.Cloth;
-                entry.PrefabId = (int)AppearancePrefabId.Cloth_0;
+                entry.PrefabId = (int)ApparelAssetId.Cloth_0;
+                entry.Value = ARMOR_COST;
 
                 DBService.Get().WriteEquipment(entry.Id, entry);
             }
@@ -49,10 +57,11 @@ namespace MAGE.DB.Internal
                 };
                 entry.EquipBonuses = new List<DB.DBAttributeModifier>()
             {
-                new DB.DBAttributeModifier(){ AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)TertiaryStat.PhysicalResistance, ModifierType = (int)ModifierType.Increment, Modifier = .3f}
+                new DB.DBAttributeModifier(){ AttributeCategory = (int)AttributeCategory.TertiaryStat, AttributeId = (int)TertiaryStat.PhysicalResistance, ModifierType = (int)ModifierType.Increment, Modifier = .3f}
             };
                 entry.SpriteId = (int)UI.ItemIconSpriteId.Leather;
-                entry.PrefabId = (int)AppearancePrefabId.Leather_0;
+                entry.PrefabId = (int)ApparelAssetId.Leather_0;
+                entry.Value = ARMOR_COST;
 
                 DBService.Get().WriteEquipment(entry.Id, entry);
             }
@@ -69,10 +78,11 @@ namespace MAGE.DB.Internal
                 };
                 entry.EquipBonuses = new List<DB.DBAttributeModifier>()
             {
-                new DB.DBAttributeModifier(){ AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)TertiaryStat.PhysicalResistance, ModifierType = (int)ModifierType.Increment, Modifier = .4f}
+                new DB.DBAttributeModifier(){ AttributeCategory = (int)AttributeCategory.TertiaryStat, AttributeId = (int)TertiaryStat.PhysicalResistance, ModifierType = (int)ModifierType.Increment, Modifier = .4f}
             };
                 entry.SpriteId = (int)UI.ItemIconSpriteId.Chain;
-                entry.PrefabId = (int)AppearancePrefabId.Chain_0;
+                entry.PrefabId = (int)ApparelAssetId.Mail_0;
+                entry.Value = ARMOR_COST;
 
                 DBService.Get().WriteEquipment(entry.Id, entry);
             }
@@ -89,10 +99,11 @@ namespace MAGE.DB.Internal
                 };
                 entry.EquipBonuses = new List<DB.DBAttributeModifier>()
                 {
-                    new DB.DBAttributeModifier(){ AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)TertiaryStat.PhysicalResistance, ModifierType = (int)ModifierType.Increment, Modifier = .6f}
+                    new DB.DBAttributeModifier(){ AttributeCategory = (int)AttributeCategory.TertiaryStat, AttributeId = (int)TertiaryStat.PhysicalResistance, ModifierType = (int)ModifierType.Increment, Modifier = .6f}
                 };
                 entry.SpriteId = (int)UI.ItemIconSpriteId.Plate;
-                entry.PrefabId = (int)AppearancePrefabId.Plate_0;
+                entry.PrefabId = (int)ApparelAssetId.Plate_0;
+                entry.Value = ARMOR_COST;
 
                 DBService.Get().WriteEquipment(entry.Id, entry);
             }
@@ -110,10 +121,9 @@ namespace MAGE.DB.Internal
                 entry.AnimationId = (int)AnimationId.SwordSwing;
                 entry.Range = MELEE_RANGE;
 
-
                 entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
             {
-                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Might, Scalar = .75f}
+                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Scalar = .75f}
             };
 
                 entry.EquipBonuses = new List<DB.DBAttributeModifier>()
@@ -122,7 +132,7 @@ namespace MAGE.DB.Internal
 
                 };
                 entry.SpriteId = (int)UI.ItemIconSpriteId.INVALID;
-                entry.PrefabId = (int)AppearancePrefabId.prefab_none;
+                entry.PrefabId = (int)ApparelAssetId.NONE;
 
                 DBService.Get().WriteEquipment(entry.Id, entry);
             }
@@ -142,8 +152,8 @@ namespace MAGE.DB.Internal
 
                 entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
             {
-                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Might, Scalar = .75f}
-                , new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Finese, Scalar = .25f}
+                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Scalar = .75f}
+                , new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Finese, Scalar = .25f}
             };
                 entry.EquipBonuses = new List<DB.DBAttributeModifier>()
                 {
@@ -151,7 +161,8 @@ namespace MAGE.DB.Internal
                 };
 
                 entry.SpriteId = (int)UI.ItemIconSpriteId.Axe;
-                entry.PrefabId = (int)AppearancePrefabId.Axe_0;
+                entry.PrefabId = (int)ApparelAssetId.Axe_0;
+                entry.Value = ONE_HAND_WEAPON_COST;
 
                 DBService.Get().WriteEquipment(entry.Id, entry);
             }
@@ -169,7 +180,7 @@ namespace MAGE.DB.Internal
 
                 entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
             {
-                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Might, Scalar = 1}
+                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Scalar = 1}
             };
                 entry.EquipBonuses = new List<DB.DBAttributeModifier>()
                 {
@@ -177,7 +188,8 @@ namespace MAGE.DB.Internal
                 };
 
                 entry.SpriteId = (int)UI.ItemIconSpriteId.Mace;
-                entry.PrefabId = (int)AppearancePrefabId.Mace_0;
+                entry.PrefabId = (int)ApparelAssetId.Mace_0;
+                entry.Value = ONE_HAND_WEAPON_COST;
 
                 DBService.Get().WriteEquipment(entry.Id, entry);
             }
@@ -195,8 +207,8 @@ namespace MAGE.DB.Internal
 
                 entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
             {
-                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Might, Scalar = .5f}
-                , new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Finese, Scalar = .5f}
+                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Scalar = .5f}
+                , new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Finese, Scalar = .5f}
             };
                 entry.EquipBonuses = new List<DB.DBAttributeModifier>()
                 {
@@ -204,7 +216,8 @@ namespace MAGE.DB.Internal
                 };
 
                 entry.SpriteId = (int)UI.ItemIconSpriteId.Sword;
-                entry.PrefabId = (int)AppearancePrefabId.Sword_0;
+                entry.PrefabId = (int)ApparelAssetId.Sword_0;
+                entry.Value = ONE_HAND_WEAPON_COST;
 
                 DBService.Get().WriteEquipment(entry.Id, entry);
             }
@@ -225,8 +238,8 @@ namespace MAGE.DB.Internal
 
                 entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
             {
-                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Might, Scalar = .5f},
-                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Finese, Scalar = .5f}
+                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Scalar = .5f},
+                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Finese, Scalar = .5f}
             };
 
                 entry.EquipBonuses = new List<DB.DBAttributeModifier>()
@@ -235,7 +248,8 @@ namespace MAGE.DB.Internal
                 };
 
                 entry.SpriteId = (int)UI.ItemIconSpriteId.Bow;
-                entry.PrefabId = (int)AppearancePrefabId.Bow_0;
+                entry.PrefabId = (int)ApparelAssetId.Bow_0;
+                entry.Value = TWO_HAND_WEAPON_COST;
 
                 DBService.Get().WriteEquipment(entry.Id, entry);
             }
@@ -252,16 +266,17 @@ namespace MAGE.DB.Internal
 
                 entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
             {
-                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Might, Scalar = .5f}
+                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Scalar = .5f}
             };
 
                 entry.EquipBonuses = new List<DB.DBAttributeModifier>()
             {
-                new DB.DBAttributeModifier(){ AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Magic, ModifierType = (int)ModifierType.Multiply, Modifier = .1f}
+                new DB.DBAttributeModifier(){ AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Magic, ModifierType = (int)ModifierType.Multiply, Modifier = .1f}
             };
 
                 entry.SpriteId = (int)UI.ItemIconSpriteId.Staff;
-                entry.PrefabId = (int)AppearancePrefabId.Staff_0;
+                entry.PrefabId = (int)ApparelAssetId.Staff_0;
+                entry.Value = TWO_HAND_WEAPON_COST;
 
                 DBService.Get().WriteEquipment(entry.Id, entry);
             }
@@ -286,7 +301,8 @@ namespace MAGE.DB.Internal
                     // empty
                 };
                 entry.SpriteId = (int)UI.ItemIconSpriteId.Shield;
-                entry.PrefabId = (int)AppearancePrefabId.Shield_0;
+                entry.PrefabId = (int)ApparelAssetId.Shield_0;
+                entry.Value = ONE_HAND_WEAPON_COST;
 
                 DBService.Get().WriteEquipment(entry.Id, entry);
             }
@@ -307,10 +323,11 @@ namespace MAGE.DB.Internal
                 };
                 entry.EquipBonuses = new List<DB.DBAttributeModifier>()
             {
-                new DB.DBAttributeModifier(){ AttributeCategory = (int)AttributeCategory.Stat, AttributeId = (int)PrimaryStat.Might, ModifierType = (int)ModifierType.Increment, Modifier = 15}
+                new DB.DBAttributeModifier(){ AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, ModifierType = (int)ModifierType.Increment, Modifier = 15}
             };
                 entry.SpriteId = (int)UI.ItemIconSpriteId.Relic;
-                entry.PrefabId = (int)AppearancePrefabId.prefab_none;
+                entry.PrefabId = (int)ApparelAssetId.NONE;
+                entry.Value = ACCESSORY_COST;
 
                 DBService.Get().WriteEquipment(entry.Id, entry);
             }

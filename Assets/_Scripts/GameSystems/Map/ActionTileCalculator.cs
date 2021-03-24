@@ -1,5 +1,6 @@
 ﻿using MAGE.GameSystems;
 using MAGE.GameSystems.Actions;
+using MAGE.GameSystems.Characters;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,7 +15,7 @@ namespace MAGE.GameSystems
             mMap = map;
         }
 
-        public List<TileIdx> CalculateTilesInRange(TileIdx casterTile, TileIdx centerTile, RangeInfo rangeInfo)
+        public List<TileIdx> CalculateTilesInRange(TileIdx casterTile, TileIdx centerTile, RangeInfo rangeInfo, TeamSide teamSide)
         {
             List<TileIdx> tilesInRange = new List<TileIdx>();
             switch (rangeInfo.AreaType)
@@ -43,6 +44,9 @@ namespace MAGE.GameSystems
                     Debug.Assert(false);
                     break;
             }
+
+            tilesInRange.RemoveAll(x => !DoesIdxMatchFilter(x, rangeInfo.TargetingType, mMap, teamSide));
+
             return tilesInRange;
         }
 
@@ -174,6 +178,24 @@ namespace MAGE.GameSystems
                 }
             }
             return tiles;
+        }
+
+        private bool DoesIdxMatchFilter(TileIdx idx, TargetingType filter, Map map, TeamSide teamSide)
+        {
+            bool matchesFilter = true;
+
+            Character onTile = map.TileAt(idx).OnTile;
+
+            switch (filter)
+            {
+                case TargetingType.Any:         matchesFilter = true; break;
+                case TargetingType.Allies:      matchesFilter = onTile == null || onTile.TeamSide == teamSide; break;
+                case TargetingType.Enemies:     matchesFilter = onTile == null || onTile.TeamSide != teamSide; break;
+                case TargetingType.Empty:       matchesFilter = onTile == null;     break;
+                default: Debug.Assert(false);   matchesFilter = false; break;
+            }
+
+            return matchesFilter;
         }
 
         //private void CalculateLineTiles(MapTile lineOrigin, MapTile lineTarget, ref Dictionary<int, MapTile> tileMap, int minRange, int maxRange, int maxElevation, int elevationModifier = 1, bool localized = true /* actionarea*/)

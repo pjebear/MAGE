@@ -1,4 +1,6 @@
 ﻿using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.Items;
+using MAGE.GameSystems.Loot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -70,14 +72,25 @@ namespace MAGE.GameSystems.World.Internal
             }
         }
 
-        public void AddToInventory(int itemId)
+        public void AddToInventory(int itemId, int count = 1)
         {
-            mPartyInfo.Inventory.Add(itemId);
+            StoryService.Get().NotifyStoryEvent(new Story.StoryEventBase((ItemId)itemId, count));
+            mPartyInfo.Inventory.Add(itemId, count);
         }
 
-        public void RemoveFromInventory(int itemId)
+        public void ClaimLoot(ClaimLootInfo loot)
         {
-            mPartyInfo.Inventory.Remove(itemId);
+            AddCurrency(loot.Currency);
+
+            foreach (var itemCountPair in loot.Items)
+            {
+                AddToInventory(itemCountPair.Key, itemCountPair.Value);
+            }
+        }
+
+        public void RemoveFromInventory(int itemId, int num = 1)
+        {
+            mPartyInfo.Inventory.Remove(itemId, num);
         }
 
         public void UnEquipCharacter(int characterId, Equipment.Slot inSlot)
@@ -126,14 +139,7 @@ namespace MAGE.GameSystems.World.Internal
                 CharacterService.Get().AssignExperience(characterId, CharacterConstants.LEVEL_UP_THRESHOLD);
             }
 
-            // Add new Items
-            foreach (int itemReward in resultInfo.ItemRewards)
-            {
-                mPartyInfo.Inventory.Add(itemReward);
-            }
-
-            // Currency Reward
-            mPartyInfo.Currency += resultInfo.CurrencyReward;
+            ClaimLoot(resultInfo.Rewards);
         }
 
         //! Characters
@@ -169,7 +175,7 @@ namespace MAGE.GameSystems.World.Internal
             mPartyInfo.CharacterIds.AddRange(CharacterService.Get().GetCharactersOfType(CharacterType.Create)); 
             mPartyInfo.CharacterIds.Add((int)StoryCharacterId.Rheinhardt);
             mPartyInfo.CharacterIds.Add((int)StoryCharacterId.Asmund);
-            mPartyInfo.CharacterIds.Add((int)StoryCharacterId.Balgrid);
+            //mPartyInfo.CharacterIds.Add((int)StoryCharacterId.Balgrid);
 
             List<int> defaultInventory = new List<int>()
             {

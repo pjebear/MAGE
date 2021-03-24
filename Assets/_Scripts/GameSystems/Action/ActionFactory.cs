@@ -1,4 +1,6 @@
 ﻿using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.Items;
+using MAGE.GameSystems.Stats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +14,10 @@ namespace MAGE.GameSystems.Actions
         static StateChange NO_COST = new StateChange(StateChangeType.ActionCost, 0, 0);
         static StateChange SPELL_COST = new StateChange(StateChangeType.ActionCost, 0, -6);
 
-        public static ActionInfo CreateActionInfoFromId(ActionId actionId, Character character)
+        public static ActionInfoBase CreateActionInfoFromId(ActionId actionId, Character character)
         {
             DB.DBAction dbAction = DBService.Get().LoadAction((int)actionId);
-            ActionInfo info = null;
+            ActionInfoBase info = null;
 
             switch (actionId)
             {
@@ -62,7 +64,7 @@ namespace MAGE.GameSystems.Actions
                 case (ActionId.MightyBlow):
                 {
                     int bloodScentCount = character.GetStackCountForStatus(StatusEffectId.BloodScent, character);
-                    StatusEffect bloodScentCost = StatusEffectFactory.CheckoutStatusEffect(StatusEffectId.BloodScent, character, bloodScentCount);
+                    StatusEffect bloodScentCost = StatusEffectFactory.CheckoutStatusEffect(StatusEffectId.BloodScent, bloodScentCount);
                     StateChange cost = new StateChange(StateChangeType.ActionCost, 0, 0, new List<StatusEffect>() { bloodScentCost });
 
                     info = new MightyBlowInfo();
@@ -95,7 +97,7 @@ namespace MAGE.GameSystems.Actions
                 }
                 break;
 
-                case (ActionId.WeaponAttack):
+                case (ActionId.MeeleWeaponAttack):
                 {
                     WeaponEquippable weapon = (WeaponEquippable)character.Equipment[Equipment.Slot.RightHand];
 

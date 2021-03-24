@@ -2,8 +2,10 @@
 using MAGE.GameSystems;
 using MAGE.GameSystems.Actions;
 using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.Stats;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace MAGE.GameSystems
@@ -109,7 +111,15 @@ namespace MAGE.GameSystems
                 centralTile = targetSelection.FocalTarget.TileTarget;
             }
 
-            return mActionCalculator.CalculateTilesInRange(casterLocation, centralTile, targetSelection.SelectionRange);
+            TeamSide teamSide = TeamSide.INVALID;
+            Character onTile = TileAt(casterLocation).OnTile;
+            Debug.Assert(onTile != null);
+            if (onTile != null)
+            {
+                teamSide = onTile.TeamSide;
+            }
+
+            return mActionCalculator.CalculateTilesInRange(casterLocation, centralTile, targetSelection.SelectionRange, teamSide);
         }
 
         public List<Character> GetTargetedCharacters(CharacterPosition casterPosition, TargetSelection targetSelection)
@@ -124,7 +134,15 @@ namespace MAGE.GameSystems
                 centralTile = targetSelection.FocalTarget.TileTarget;
             }
 
-            List<TileIdx> tiles = mActionCalculator.CalculateTilesInRange(casterPosition.Location, centralTile, targetSelection.SelectionRange);
+            TeamSide teamSide = TeamSide.INVALID;
+            Character onTile = TileAt(casterPosition.Location).OnTile;
+            Debug.Assert(onTile != null);
+            if (onTile != null)
+            {
+                teamSide = onTile.TeamSide;
+            }
+
+            List<TileIdx> tiles = mActionCalculator.CalculateTilesInRange(casterPosition.Location, centralTile, targetSelection.SelectionRange, teamSide);
 
             return GetCharactersOnTiles(tiles);
         }
@@ -164,6 +182,29 @@ namespace MAGE.GameSystems
             }
 
             return tiles;
+        }
+
+        public TileIdx GetFocalPositionForTeam(TeamSide teamSide)
+        {
+            float averageX = 0;
+            float averageY = 0;
+            int numCharacters = 0;
+            foreach (var characterPosPair in CharacterPositionLookup.Where(x => x.Key.TeamSide == teamSide))
+            {
+                TileIdx location = characterPosPair.Value.Location;
+                averageX += location.x;
+                averageY += location.y;
+                ++numCharacters;
+            }
+
+            TileIdx focalPoint = new TileIdx();
+            if (numCharacters > 0)
+            {
+                focalPoint.x = Mathf.RoundToInt(averageX / (float)numCharacters);
+                focalPoint.y = Mathf.RoundToInt(averageY / (float)numCharacters);
+            }
+
+            return focalPoint;
         }
 
         public Tile TileAt(TileIdx tileIdx)

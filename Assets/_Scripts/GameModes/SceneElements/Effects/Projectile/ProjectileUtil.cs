@@ -21,13 +21,13 @@ namespace MAGE.GameModes.Encounter
             TileControl projectileEndPoint = null;
             if (target.TargetType == TargetSelectionType.Character)
             {
-                TileIdx location = EncounterFlowControl.MapControl.Map.GetCharacterPosition(target.CharacterTarget).Location;
-                projectileEndPoint = EncounterFlowControl.MapControl[location];
+                TileIdx location = EncounterFlowControl_Deprecated.MapControl.Map.GetCharacterPosition(target.CharacterTarget).Location;
+                projectileEndPoint = EncounterFlowControl_Deprecated.MapControl[location];
             }
             else
             {
                 TileIdx location = target.TileTarget;
-                projectileEndPoint = EncounterFlowControl.MapControl[location];
+                projectileEndPoint = EncounterFlowControl_Deprecated.MapControl[location];
             }
 
             return GenerateSpawnParams(spawnPoint, projectileEndPoint, pathType, projectileId);
@@ -52,10 +52,15 @@ namespace MAGE.GameModes.Encounter
 
         private static ProjectileSpawnParams GenerateLinearProjectileParams(TileControl start, TileControl end)
         {
+            return GenerateLinearProjectileParams(start.transform, end.transform);
+        }
+
+        public static ProjectileSpawnParams GenerateLinearProjectileParams(Transform start, Transform end)
+        {
             ProjectileSpawnParams linearParams = new ProjectileSpawnParams();
 
-            Vector3 spawnPosition = start.transform.position + VertOffset;
-            Vector3 endPosition = end.transform.position + VertOffset;
+            Vector3 spawnPosition = start.position + VertOffset;
+            Vector3 endPosition = end.position + VertOffset;
 
             linearParams.PathType = ProjectilePathType.Linear;
             linearParams.SpawnPoint = spawnPosition;
@@ -64,7 +69,7 @@ namespace MAGE.GameModes.Encounter
             linearParams.InitialVelocity = LINEAR_VELOCITY;
             linearParams.EndPoint = endPosition;
 
-            linearParams.CollisionWith = RaycastUtil.GetObjectHitByRay(spawnPosition, trajectory, trajectory.magnitude);
+            linearParams.CollisionWith = RaycastUtil.GetObjectAtPosition(endPosition);
             if (linearParams.CollisionWith != null)
             {
                 linearParams.EndPoint = linearParams.CollisionWith.transform.position;
@@ -115,8 +120,8 @@ namespace MAGE.GameModes.Encounter
                     bool filledTileAndCorrectCollision 
                         = end != null 
                         && collisionAlongArc != null
-                        && EncounterFlowControl.MapControl.GetOnTile(end) != null
-                        && collisionAlongArc.GetComponent<CharacterActorController>() == EncounterFlowControl.MapControl.GetOnTile(end);
+                        && EncounterFlowControl_Deprecated.MapControl.GetOnTile(end) != null
+                        && collisionAlongArc.GetComponent<CharacterActorController>() == EncounterFlowControl_Deprecated.MapControl.GetOnTile(end);
 
                     if (emptyTileAndNoCollisions || filledTileAndCorrectCollision)
                     {

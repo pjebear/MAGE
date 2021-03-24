@@ -24,6 +24,8 @@ namespace MAGE.GameSystems
         // Demo Level
         Demo_LayDownTheLaw,
         Demo_TrainingTime,
+        Demo_BlackSmithTraining_Start,
+        Demo_BlackSmithTraining_Return,
         Demo_TrainingComplete,
 
         NUM

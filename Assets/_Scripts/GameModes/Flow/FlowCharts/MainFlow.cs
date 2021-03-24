@@ -13,12 +13,41 @@ namespace MAGE.GameModes.FlowControl
         {
             OnEnterActions = new List<FlowActionBase>()
             {
-
+                new LoadFlowControl(FlowControlId.Debug)
             };
 
+             OnExitActions = new List<FlowActionBase>()
+            {
+                new UnLoadFlowControl(FlowControlId.Debug)
+            };
+            
             States = new List<FlowNode>()
             {
-                new FlowNode("MainMenu")
+                new FlowNode("AutoStartGame")
+                {
+                    OnEnterActions = new List<FlowActionBase>()
+                    {
+                        new Condition("skipMainMenu")
+                    }
+                    , Transitions = new Dictionary<string, string>()
+                    {
+                        { "true", "DebugInit" }
+                        , { "false", "MainMenu" }
+                    }
+                }
+                , new FlowNode("DebugInit")
+                {
+                    OnEnterActions = new List<FlowActionBase>()
+                    {
+                        new Notify("debugInit")
+                        , new Invoke("advance")
+                    }
+                    , Transitions = new Dictionary<string, string>()
+                    {
+                        { "advance", "LevelFlow" }
+                    }
+                }
+                , new FlowNode("MainMenu")
                 {
                      OnEnterActions = new List<FlowActionBase>()
                      {
@@ -45,6 +74,12 @@ namespace MAGE.GameModes.FlowControl
                         , new Notify("fadeOut")
                         , new UnLoadFlowControl(FlowControlId.Level)
                     }
+                    , Transitions = new Dictionary<string, string>()
+                    {
+                        { "encounter", "EncounterFlow" }
+                        ,{ "explore", "ExplorationFlow" }
+                        ,{ "cinematic", "CinematicFlow" }
+                    }
                     , States = new List<FlowNode>()
                     {
                         new FlowNode("LoadLevel")
@@ -64,12 +99,6 @@ namespace MAGE.GameModes.FlowControl
                             {
                                 new Query("levelFlowType")
                             }
-                            , Transitions = new Dictionary<string, string>()
-                             {
-                                 { "encounter", "EncounterFlow" }
-                                ,{ "explore", "ExplorationFlow" }
-                                ,{ "cinematic", "CinematicFlow" }
-                             }
                         }
                         , new ExplorationFlow()
                         {
@@ -107,34 +136,11 @@ namespace MAGE.GameModes.FlowControl
                                 }
                             }
                         }
-                        , new FlowNode("EncounterFlow")
+                        , new EncounterFlow()
                         {
-                            States = new List<FlowNode>()
+                            ExternalTransitions = new Dictionary<string, string>()
                             {
-                                new FlowNode("PlayEncounter")
-                                {
-                                    OnEnterActions = new List<FlowActionBase>()
-                                    {
-                                        new LoadFlowControl(FlowControlId.Encounter)
-                                        , new Notify("fadeIn")
-                                    }
-                                    , OnExitActions = new List<FlowActionBase>()
-                                    {
-                                        new UnLoadFlowControl(FlowControlId.Encounter)
-                                        , new Notify("fadeOut")
-                                    }
-                                    , Transitions = new Dictionary<string, string>()
-                                    {
-                                        { "advance", "FadeOut" }
-                                    }
-                                }
-                                , new WaitState("FadeOut", "fadeOut", "fadeComplete")
-                                {
-                                    ExternalTransitions = new Dictionary<string, string>()
-                                    {
-                                        {FlowGraph.OutAdvance, "QueryFlowType" }
-                                    }
-                                }
+                                { OutAdvance, "QueryFlowType" }
                             }
                         }
                         //, new FlowNode("Encounter")

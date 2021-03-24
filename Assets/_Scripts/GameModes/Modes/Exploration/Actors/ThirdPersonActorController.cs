@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MAGE.GameModes.SceneElements;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,87 +8,98 @@ using UnityEngine;
 
 class ThirdPersonActorController 
     : MonoBehaviour
-    , IInputHandler
 {
-    public ActorController ActorController;
-    private Vector3 mMovementInput;
-    private bool mEnabled = true;
+    public float MovementSpeed = 6f;
+    public float TurnSpeed = 6f;
+    public float JumpStrength = 6f;
+    public float TurnSmoothTime = 0.1f;
+    public float GroundDistance = 0.4f;
+    public LayerMask GroundMask;
 
-    public void Enable(bool enabled)
-    {
-        if (enabled != mEnabled)
-        {
-            mEnabled = enabled;
-            if (mEnabled)
-            {
-                MAGE.Input.InputManager.Instance.RegisterHandler(this, false);
-            }
-            else
-            {
-                MAGE.Input.InputManager.Instance.ReleaseHandler(this);
-                mMovementInput = Vector2.zero;
-            }
-        }
-    }
+    private CharacterController rCharacterController;
 
-    #region IInputHandler
-    // IInputHandler
-    public void OnKeyPressed(InputSource source, int key, InputState state)
-    {
-        if (source == InputSource.Keyboard)
-        {
-            int inputValue = state == InputState.Up ? 0 : 1;
-
-            switch ((KeyCode)key)
-            {
-                case (KeyCode.W):
-                {
-                    mMovementInput.z = inputValue;
-                }
-                break;
-                case (KeyCode.S):
-                {
-                    mMovementInput.z = -inputValue;
-                }
-                break;
-                case (KeyCode.A):
-                {
-                    mMovementInput.x = -inputValue;
-                }
-                break;
-                case (KeyCode.D):
-                {
-                    mMovementInput.x = inputValue;
-                }
-                break;
-            }
-        }
-    }
-
-    public void OnMouseHoverChange(GameObject mouseHover)
-    {
-        // empty
-    }
-
-    public void OnMouseScrolled(float scrollDelta)
-    {
-        // empty 
-    }
-    #endregion // IInputHandler
+    private float mTurnSmoothVelocity;
+    private Vector3 mVelocity;
+    private bool mIsGrounded = true;
+    private bool mIsJumpPressed = false;
 
     #region Unity
+    private void Awake()
+    {
+        rCharacterController = gameObject.GetComponent<CharacterController>();
+    }
+
     private void Start()
     {
-        ActorController = gameObject.AddComponent<ActorController>();
-        MAGE.Input.InputManager.Instance.RegisterHandler(this, false);
+        
     }
 
     private void Update()
     {
-        ActorController.MoveCharacter(mMovementInput);
-        ActorController.RotateToDirection(mMovementInput);
+        mIsGrounded = Physics.CheckSphere(transform.position, GroundDistance, GroundMask);
+
+        if (mIsGrounded && mVelocity.y < 0)
+        {
+            mVelocity.y = -2f;
+        }
+
+        MAGE.Input.InputManager input = MAGE.Input.InputManager.Instance;
+        if (input != null)
+        {
+            if (mIsGrounded)
+            {
+                if (!mIsJumpPressed 
+                    && (input.GetKeyState(KeyCode.Space) == InputState.Down 
+                    || input.GetKeyState(KeyCode.Space) == InputState.Held))
+                {
+                    mIsJumpPressed = true;
+                    mVelocity.y = JumpStrength;
+                }
+                else if ((input.GetKeyState(KeyCode.Space) == InputState.None
+                    || input.GetKeyState(KeyCode.Space) == InputState.Up))
+                {
+                    mIsJumpPressed = false;
+                }
+            }
+
+            float horzInput = input.GetAxisInput(InputAxis.Horizontal);
+            if (Mathf.Abs(horzInput) > 0.1f)
+            {
+                float rotationDeg = horzInput * TurnSpeed * Time.deltaTime;
+                transform.Rotate(Vector3.up * rotationDeg);
+            }
+
+            float vertInput = input.GetAxisInput(InputAxis.Vertical);
+            if (Mathf.Abs(vertInput) > 0.1f)
+            {
+                float movementSpeed = MovementSpeed * vertInput;
+                if (vertInput < 0)
+                {
+                    movementSpeed /= 2;
+                }
+
+                Vector3 forwardMovement = transform.forward;
+                forwardMovement.y = 0;
+                rCharacterController.Move(forwardMovement.normalized * movementSpeed * Time.deltaTime);
+
+                GetComponent<ActorAnimator>().SetCurrentSpeed(movementSpeed);
+            }
+            else
+            {
+                GetComponent<ActorAnimator>().SetCurrentSpeed(0);
+            }
+        }
+
+        mVelocity.y += Physics.gravity.y * Time.deltaTime;
+        rCharacterController.Move(mVelocity * Time.deltaTime);
+
     }
     #endregion //Unity
+
+    public void Enable(bool enabled)
+    {
+        this.enabled = enabled;
+    }
 }
 
 //namespace Invector.vCharacterController

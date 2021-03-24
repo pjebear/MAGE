@@ -11,11 +11,11 @@ namespace MAGE.GameModes
 {
     static class AnimationUtil
     {
-        public static AnimationId InteractionResultTypeToAnimationId(InteractionResultType resultType)
+        public static AnimationId InteractionResultTypeToAnimationId(InteractionResult result)
         {
             AnimationId animationId = AnimationId.INVALID;
 
-            switch (resultType)
+            switch (result.InteractionResultType)
             {
                 case InteractionResultType.Block:
                     animationId = AnimationId.Block;
@@ -32,8 +32,13 @@ namespace MAGE.GameModes
                 case InteractionResultType.Hit:
                 case InteractionResultType.Partial:
                 case InteractionResultType.Resist:
-                    animationId = AnimationId.Hurt;
-                    break;
+                {
+                    if (!result.StateChange.IsBeneficial())
+                    {
+                        animationId = AnimationId.Hurt;
+                    }
+                }    
+                break;
 
                 case InteractionResultType.Miss:
                     animationId = AnimationId.Dodge;

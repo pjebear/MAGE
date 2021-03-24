@@ -150,7 +150,7 @@ namespace MAGE.GameModes.FlowControl
                 GameObject.Destroy(mCharacterSpawnPoint.GetChild(0).gameObject);
             }
 
-            ActorLoader.Instance.CreateActor(mOutfitingCharacter.GetAppearance(), mCharacterSpawnPoint);
+            //ActorLoader.Instance.LoadActor(mOutfitingCharacter.GetAppearance(), mCharacterSpawnPoint);
         }
     }
 }

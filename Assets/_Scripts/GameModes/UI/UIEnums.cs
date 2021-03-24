@@ -49,6 +49,11 @@ namespace MAGE.UI
         // Story
         QuestItem,
 
+        // Vendor
+        Fur,
+        GoldenFur,
+        Claws,
+
         NUM
     }
 

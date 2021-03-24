@@ -13,6 +13,9 @@ namespace MAGE.UI.Views
         {
             Default,
 
+            Combat_Near,
+            Combat_Far,
+
             Interact_Near,
             Interact_Far,
 

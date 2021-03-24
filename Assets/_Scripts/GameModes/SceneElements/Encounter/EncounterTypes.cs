@@ -1,4 +1,5 @@
 ﻿using MAGE.GameSystems;
+using MAGE.GameSystems.World;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,16 @@ namespace MAGE.GameModes.SceneElements
     [System.Serializable]
     class PlacementInfo
     {
-        public Tile BottomLeft;
-        public Tile TopRight;
+        public PlacementRegion PlacementRegion;
+    }
+
+    enum PlacementRegion
+    {
+        Left,
+        Right,
+        Top,
+        Bottom,
+
+        NUM
     }
 }

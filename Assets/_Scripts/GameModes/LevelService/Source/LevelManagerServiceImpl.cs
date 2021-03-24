@@ -1,14 +1,17 @@
 ﻿using MAGE.GameModes.FlowControl;
 using MAGE.GameModes.SceneElements;
 using MAGE.GameSystems;
+using MAGE.GameSystems.Appearances;
 using MAGE.GameSystems.World;
 using MAGE.Messaging;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace MAGE.GameModes.LevelManagement.Internal
 {
@@ -130,7 +133,7 @@ namespace MAGE.GameModes.LevelManagement.Internal
 
                         case (MessageType.EncounterComplete):
                         {
-                            EncounterScenarioId completedEncounter = levelMessage.Arg<EncounterContainer>().EncounterScenarioId;
+                            EncounterScenarioId completedEncounter = levelMessage.Arg<EncounterContainer_Deprecated>().EncounterScenarioId;
 
                             DB.DBEncounterInfo info = DBService.Get().LoadEncounterInfo((int)completedEncounter);
                             info.IsActive = false;
@@ -207,13 +210,27 @@ namespace MAGE.GameModes.LevelManagement.Internal
 
         public void LoadLevel(LevelId levelId)
         {
-            mLoadedLevel = Instantiate(mLevelLoader.GetAsset(levelId.ToString()));
+            if (SceneManager.GetActiveScene().name != levelId.ToString())
+            {
+                StartCoroutine(_LoadLevel(SceneManager.LoadSceneAsync(levelId.ToString(), LoadSceneMode.Single)));
+            }
+            else
+            {
+                OnLevelLoaded();
+            }
         }
 
-        public void NotifyLevelLoaded(Level level)
+        private IEnumerator _LoadLevel(AsyncOperation asyncOp)
         {
-            mLoadedLevel = level;
+            yield return asyncOp;
 
+            OnLevelLoaded();
+        }
+
+        private void OnLevelLoaded()
+        {
+            mLoadedLevel = FindObjectOfType<Level>();
+            Messaging.MessageRouter.Instance.NotifyMessage(new LevelMessage(MessageType.LevelLoaded));
             SendFlowMessage("levelLoaded");
         }
 

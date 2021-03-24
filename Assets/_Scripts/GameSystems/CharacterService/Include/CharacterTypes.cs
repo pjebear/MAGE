@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MAGE.GameSystems.Appearances;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -77,8 +78,8 @@ namespace MAGE.GameSystems.Characters
         public CharacterClass characterClass = CharacterClass.MonoSpecialization;
         public int id = -1;
         public string name = "EMPTY";
-        public Appearance appearanceOverrides = null;
-        public SpecializationType currentSpecialization = SpecializationType.NONE;
+        public Appearance appearanceOverrides = new Appearance();
+        public SpecializationType currentSpecialization = SpecializationType.INVALID;
         public List<EquippableId> currentEquipment = EMPTY_EQUIPMENT;
     }
 

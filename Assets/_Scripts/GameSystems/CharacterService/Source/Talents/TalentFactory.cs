@@ -1,4 +1,5 @@
 ﻿using MAGE.GameSystems.Actions;
+using MAGE.GameSystems.Stats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,7 +78,7 @@ namespace MAGE.GameSystems.Characters.Internal
                 {
                     modifiers.Add(
                     new AttributeModifier(
-                        new AttributeIndex(AttributeCategory.Stat, (int)TertiaryStat.Block)
+                        new AttributeIndex(AttributeCategory.TertiaryStat, (int)TertiaryStat.Block)
                         , ModifierType.Increment
                         , BlockIncreasePerPoint * PointsAssigned));
                 }
@@ -119,7 +120,7 @@ namespace MAGE.GameSystems.Characters.Internal
                 // empty;
             }
 
-            public virtual List<IActionModifier> GetActionModifiers()
+            public override List<IActionModifier> GetActionModifiers()
             {
                 List<IActionModifier> modifiers = base.GetActionModifiers();
 

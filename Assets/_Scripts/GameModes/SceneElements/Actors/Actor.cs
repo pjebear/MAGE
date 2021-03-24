@@ -5,19 +5,26 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class Actor : MonoBehaviour
+namespace MAGE.GameModes.SceneElements
 {
-    public Transform LeftHand;
-    public Transform RightHand;
-    public Transform Body;
-    public Animator Animator;
-    public AudioSource AudioSource;
-
-    private void Awake()
+    class Actor : MonoBehaviour
     {
-        Animator = GetComponentInChildren<Animator>();
+        private bool mInCombat = false;
+
+        public void SetInCombat(bool inCombat)
+        {
+            mInCombat = inCombat;
+
+            ActorOutfitter actorOutfitter = GetComponent<ActorOutfitter>();
+            actorOutfitter.UpdateHeldApparelState(mInCombat ? HumanoidActorConstants.HeldApparelState.Held : HumanoidActorConstants.HeldApparelState.Holstered);
+
+            ActorAnimator actorAnimator = GetComponentInChildren<ActorAnimator>();
+            actorAnimator.SetInCombat(mInCombat);
+        }
     }
 }
+
+
 
 
 

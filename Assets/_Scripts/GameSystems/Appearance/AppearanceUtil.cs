@@ -4,20 +4,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MAGE.GameSystems
+namespace MAGE.GameSystems.Appearances
 {
     static class AppearanceUtil
     {
         // Appearance
         public static Appearance FromDB(DB.DBAppearance dbAppearance)
         {
+
             Appearance fromDB = new Appearance();
 
-            fromDB.PortraitSpriteId = (PortraitSpriteId)dbAppearance.PortraitSpriteId;
-            fromDB.BodyType = (BodyType)dbAppearance.BodyType;
-            fromDB.ArmorId = (AppearancePrefabId)dbAppearance.ArmorPrefabId;
-            fromDB.LeftHeldId = (AppearancePrefabId)dbAppearance.HeldLeftPrefabId;
-            fromDB.RightHeldId = (AppearancePrefabId)dbAppearance.HeldRightPrefabId;
+            fromDB.PortraitSpriteId         = (PortraitSpriteId)dbAppearance.PortraitSpriteId;
+            fromDB.BodyType                 = (BodyType)dbAppearance.BodyType;
+            fromDB.OutfitType               = (ApparelAssetId)dbAppearance.OutfitType;
+            fromDB.SkinToneType             = (SkinToneType)dbAppearance.SkinToneType;
+            fromDB.HairType                 = (HairType)dbAppearance.HairType;
+            fromDB.FacialHairType           = (FacialHairType)dbAppearance.FacialHairType;
+            fromDB.HairColor                = (HairColor)dbAppearance.HairColor;
+            fromDB.LeftHeldAssetId          = (ApparelAssetId)dbAppearance.LeftHeldAssetId;
+            fromDB.RightHeldAssetId         = (ApparelAssetId)dbAppearance.RightHeldAssetId;
 
             return fromDB;
         }
@@ -28,9 +33,13 @@ namespace MAGE.GameSystems
 
             toDB.PortraitSpriteId = (int)appearance.PortraitSpriteId;
             toDB.BodyType = (int)appearance.BodyType;
-            toDB.ArmorPrefabId = (int)appearance.ArmorId;
-            toDB.HeldLeftPrefabId = (int)appearance.LeftHeldId;
-            toDB.HeldRightPrefabId = (int)appearance.RightHeldId;
+            toDB.OutfitType = (int)appearance.OutfitType;
+            toDB.SkinToneType = (int)appearance.SkinToneType;
+            toDB.HairType = (int)appearance.HairType;
+            toDB.FacialHairType = (int)appearance.FacialHairType;
+            toDB.HairColor = (int)appearance.HairColor;
+            toDB.LeftHeldAssetId = (int)appearance.LeftHeldAssetId;
+            toDB.RightHeldAssetId = (int)appearance.RightHeldAssetId;
 
             return toDB;
         }

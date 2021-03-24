@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Effect : MonoBehaviour
+namespace MAGE.GameModes.SceneElements
 {
-    // Start is called before the first frame update
-    void Start()
+    class Effect : MonoBehaviour
     {
-        
-    }
+        public EffectDurationInfo DurationInfo = new EffectDurationInfo();
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        private void Awake()
+        {
+            Destroy(gameObject, DurationInfo.DurationSeconds);
+        }
     }
 }
+

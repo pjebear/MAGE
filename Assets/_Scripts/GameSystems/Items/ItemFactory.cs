@@ -1,5 +1,7 @@
 ﻿using MAGE.GameSystems.Actions;
+using MAGE.GameSystems.Appearances;
 using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.Stats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +26,9 @@ namespace MAGE.GameSystems
                 case ItemType.Story:
                     toReturn = LoadStoryItem((StoryItemId)id);
                     break;
+                case ItemType.Vendor:
+                    toReturn = LoadVendorItem((VendorItemId)id);
+                    break;
                 default:
                     Debug.Assert(false);
                     break;
@@ -41,6 +46,15 @@ namespace MAGE.GameSystems
             return new StoryItem(id, spriteId);
         }
 
+        public static Item LoadVendorItem(VendorItemId id)
+        {
+            DB.DBItem dbItem = DBService.Get().LoadItem((int)id);
+
+            UI.ItemIconSpriteId spriteId = (UI.ItemIconSpriteId)dbItem.SpriteId;
+
+            return new VendorItem(id, spriteId, dbItem.Value);
+        }
+
         public static Equippable LoadEquipable(EquippableId id)
         {
             //Equippable equippable = new Equippable();
@@ -49,7 +63,7 @@ namespace MAGE.GameSystems
             EquippableTag tag = new EquippableTag((EquippableCategory)dbEquipment.Category, dbEquipment.Type);
 
             // Appearance
-            AppearancePrefabId appearancePrefabId = (AppearancePrefabId)dbEquipment.PrefabId;
+            ApparelAssetId appearancePrefabId = (ApparelAssetId)dbEquipment.PrefabId;
             UI.ItemIconSpriteId spriteId = (UI.ItemIconSpriteId)dbEquipment.SpriteId;
 
             // Equip Bonuses
@@ -79,7 +93,7 @@ namespace MAGE.GameSystems
             {
                 case EquippableCategory.Accessory:
                 case EquippableCategory.Armor:
-                    equippable = new Equippable(id, tag, appearancePrefabId, spriteId, equipBonuses);
+                    equippable = new Equippable(id, tag, appearancePrefabId, spriteId, equipBonuses, dbEquipment.Value);
                     break;
 
                 case EquippableCategory.OneHandWeapon:
@@ -92,12 +106,12 @@ namespace MAGE.GameSystems
 
                     if (category == EquippableCategory.Shield)
                     {
-                        equippable = new HeldEquippable(numHandsRequired, dbEquipment.BlockChance, dbEquipment.ParryChance, proficiencyBonuses, id, tag, appearancePrefabId, spriteId, equipBonuses);
+                        equippable = new HeldEquippable(numHandsRequired, dbEquipment.BlockChance, dbEquipment.ParryChance, proficiencyBonuses, id, tag, appearancePrefabId, spriteId, equipBonuses, dbEquipment.Value);
                     }
                     else
                     {
-                        RangeInfo range = new RangeInfo(dbEquipment.Range.Min, dbEquipment.Range.Max, dbEquipment.Range.Elevation, (AreaType)dbEquipment.Range.Type);
-                        equippable = new WeaponEquippable(animationId, projectileId, range, numHandsRequired, dbEquipment.BlockChance, dbEquipment.ParryChance, proficiencyBonuses, id, tag, appearancePrefabId, spriteId, equipBonuses);
+                        RangeInfo range = new RangeInfo(dbEquipment.Range.Min, dbEquipment.Range.Max, dbEquipment.Range.Elevation, (AreaType)dbEquipment.Range.AreaType, TargetingType.Any);
+                        equippable = new WeaponEquippable(animationId, projectileId, range, numHandsRequired, dbEquipment.BlockChance, dbEquipment.ParryChance, proficiencyBonuses, id, tag, appearancePrefabId, spriteId, equipBonuses, dbEquipment.Value);
                     }
                 }
                 break;

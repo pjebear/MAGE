@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MAGE.GameSystems.Stats;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ namespace MAGE.GameSystems.Actions
     {
         StateChange,
         ActionProposal,
+        ActionProposalDeprecated,
     }
 
     abstract class ActionResponseBase
@@ -36,6 +38,16 @@ namespace MAGE.GameSystems.Actions
         public ActionProposal Response = null;
         public ActionProposalResponse(ActionProposal response)
             : base(ActionResponseType.ActionProposal)
+        {
+            Response = response;
+        }
+    }
+
+    class ActionProposalResponse_Deprecated : ActionResponseBase
+    {
+        public ActionProposal_Deprecated Response = null;
+        public ActionProposalResponse_Deprecated(ActionProposal_Deprecated response)
+            : base(ActionResponseType.ActionProposalDeprecated)
         {
             Response = response;
         }

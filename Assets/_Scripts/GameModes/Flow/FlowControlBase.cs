@@ -11,8 +11,15 @@ namespace MAGE.GameModes.FlowControl
 {
     enum FlowControlId
     {
+        Debug,
+
         Cinematic,
         Encounter,
+        EncounterActionDirector,
+        EncounterIntroFlowControl,
+        EncounterUnitPlacementFlowControl,
+        EncounterPlayerTurnFlowControl,
+        EncounterAITurnFlowControl,
         Exploration,
         ExplorationInteractionFlowControl,
         ExplorationMenuFlowControl,
@@ -34,14 +41,14 @@ namespace MAGE.GameModes.FlowControl
         public void Init()
         {
             Setup();
-            InputManager.Instance.RegisterHandler(this, false);
+            Input.InputManager.Instance.RegisterHandler(this, false);
             MessageRouter.Instance.RegisterHandler(this);
         }
         protected abstract void Setup();
 
         public void Takedown()
         {
-            InputManager.Instance.ReleaseHandler(this);
+            Input.InputManager.Instance.ReleaseHandler(this);
             MessageRouter.Instance.UnRegisterHandler(this);
             Cleanup();    
         }
@@ -74,6 +81,11 @@ namespace MAGE.GameModes.FlowControl
         }
 
         public virtual string Query(string queryEvent)
+        {
+            return "";
+        }
+
+        public virtual string Condition(string queryEvent)
         {
             return "";
         }

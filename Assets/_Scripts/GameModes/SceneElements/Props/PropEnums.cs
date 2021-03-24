@@ -56,6 +56,7 @@ namespace MAGE.GameModes.SceneElements
         DemoLevel_Magistrate,
         DemoLevel_GuildLeader,
         DemoLevel_Captain,
+        DemoLevel_BlackSmith,
 
 
         NUM

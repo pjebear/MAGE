@@ -122,8 +122,12 @@ namespace MAGE.GameSystems.Actions
 
         // spells
         FireBall,
+        FlameStrike,
+        ChainLightning,
+        Regen,
 
-        WeaponAttack,
+        MeeleWeaponAttack,
+        RangedWeaponAttack,
 
         // Followup
         Riptose,

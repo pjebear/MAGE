@@ -1,11 +1,23 @@
-﻿using System;
+﻿using MAGE.GameSystems.Characters;
+using System;
 using System.Collections.Generic;
 
 namespace MAGE.GameSystems.Actions
 {
+    enum TargetingType
+    {
+        Any,
+        Allies,
+        Enemies,
+        Empty,
+
+        NUM
+    }
+
     enum AreaType
     {
         Circle,
+        Chain,
         //Ring,
         Cone,
         //Line,
@@ -15,20 +27,23 @@ namespace MAGE.GameSystems.Actions
         NUM
     }
 
+    [System.Serializable]
     struct RangeInfo
     {
-        public static RangeInfo Unit { get { return new RangeInfo(0, 0, 0, AreaType.Circle); } }
+        public static RangeInfo Unit { get { return new RangeInfo(0, 0, 0, AreaType.Circle, TargetingType.Any); } }
         public int MinRange;
         public int MaxRange;
         public int MaxElevationChange;
         public AreaType AreaType;
+        public TargetingType TargetingType;
 
-        public RangeInfo(int minRange, int maxRange, int maxElevationChange, AreaType areaType)
+        public RangeInfo(int minRange, int maxRange, int maxElevationChange, AreaType areaType, TargetingType targetingType)
         {
             MinRange = minRange;
             MaxRange = maxRange;
             MaxElevationChange = maxElevationChange;
             AreaType = areaType;
+            TargetingType = targetingType;
         }
     }
 
@@ -45,12 +60,20 @@ namespace MAGE.GameSystems.Actions
     class ActionEffectInfo
     {
         public EffectType EffectId = EffectType.INVALID;
+        public SFXId SFXId = SFXId.INVALID;
     }
 
     class ActionChainInfo
     {
         public int NumChainTargets = -1;
         public float ChainEffectFalloff = 0;
+    }
+
+    class ActionSummonInfo
+    {
+        public SpecializationType SummonType;
+        public int SummonCount = 1;
+        public int MaxSummonCount = 1;
     }
 }
 

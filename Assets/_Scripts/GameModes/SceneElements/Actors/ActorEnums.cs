@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 enum BodyType
 {
     Bear_0,
-    Body_0,
+    HumanoidMale,
 
     NUM
 }

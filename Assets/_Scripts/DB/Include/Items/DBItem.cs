@@ -12,6 +12,7 @@ namespace MAGE.DB
         public int Id = -1;
         public string Name = "INVALID";
         public int SpriteId = -1;
+        public int Value = -1;
         
         public override void Copy(Internal.DBEntryBase _from, Internal.DBEntryBase _to)
         {
@@ -21,6 +22,7 @@ namespace MAGE.DB
             to.Id = from.Id;
             to.Name = from.Name;
             to.SpriteId = from.SpriteId;
+            to.Value = from.Value;
         }
     }
 }

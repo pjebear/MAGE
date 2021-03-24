@@ -23,6 +23,8 @@ namespace MAGE.UI.Views
         {
             public List<string> ItemNames = new List<string>();
             public List<string> ItemIconAssetNames = new List<string>();
+            public List<int> ItemValues = new List<int>();
+            public List<bool> ItemSelectability = new List<bool>();
             public Optional<int> Currency;
         }
 

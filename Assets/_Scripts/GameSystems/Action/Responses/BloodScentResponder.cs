@@ -1,6 +1,7 @@
 ﻿
 using MAGE.GameSystems;
 using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.Stats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace MAGE.GameSystems.Actions
                     InteractionResult result = targetResultPair.Value;
                     if (result.StateChange.healthChange < 0)
                     {
-                        bloodScent = StatusEffectFactory.CheckoutStatusEffect(StatusEffectId.BloodScent, responder);
+                        bloodScent = StatusEffectFactory.CheckoutStatusEffect(StatusEffectId.BloodScent);
                     }
                 }
             }
@@ -40,7 +41,7 @@ namespace MAGE.GameSystems.Actions
                 InteractionResult result = actionResult.TargetResults[responder];
                 if (result.StateChange.healthChange < 0)
                 {
-                    bloodScent = StatusEffectFactory.CheckoutStatusEffect(StatusEffectId.BloodScent, responder, 2);
+                    bloodScent = StatusEffectFactory.CheckoutStatusEffect(StatusEffectId.BloodScent, 2);
                 }
             }
 

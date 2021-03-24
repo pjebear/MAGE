@@ -116,7 +116,5 @@ namespace MAGE.UI.Views
             EncounterOverObj.gameObject.SetActive(false);
         }
     }
-
-
 }
 

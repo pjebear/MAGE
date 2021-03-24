@@ -56,6 +56,16 @@ namespace MAGE.GameModes.FlowControl
                         Query(message.Arg<string>());
                     }
                     break;
+                    case FlowMessage.EventType.Condition:
+                    {
+                        Condition(message.Arg<string>());
+                    }
+                    break;
+                    case FlowMessage.EventType.Invoke:
+                    {
+                        HandleEvent(message.Arg<string>());
+                    }
+                    break;
                     case FlowMessage.EventType.LoadFlowControl:
                     {
                         LoadFlowControl(message.Arg<FlowControlId>());
@@ -204,9 +214,13 @@ namespace MAGE.GameModes.FlowControl
 
                 switch (flowControlId)
                 {
+                    case FlowControlId.Debug: flowControlBase = gameObject.AddComponent<DebugFlow.DebugFlowControl>(); break;
                     case FlowControlId.Cinematic: flowControlBase = gameObject.AddComponent<CinematicFlowControl>(); break;
                     case FlowControlId.Encounter: flowControlBase = gameObject.AddComponent<Encounter.EncounterFlowControl>(); break;
-                    case FlowControlId.Exploration: flowControlBase = gameObject.AddComponent<ExplorationModule>(); break;
+                    case FlowControlId.EncounterActionDirector: flowControlBase = gameObject.AddComponent<Encounter.ActionDirector>(); break;
+                    case FlowControlId.EncounterAITurnFlowControl: flowControlBase = gameObject.AddComponent<Encounter.AITurnFlowControl>(); break;
+                    case FlowControlId.EncounterPlayerTurnFlowControl: flowControlBase = gameObject.AddComponent<Encounter.PlayerTurnFlowControl>(); break;
+                    case FlowControlId.Exploration: flowControlBase = gameObject.AddComponent<ExplorationFlowControl>(); break;
                     case FlowControlId.ExplorationRoamFlowControl: flowControlBase = gameObject.AddComponent<Exploration.RoamFlowControl>(); break;
                     case FlowControlId.ExplorationInteractionFlowControl: flowControlBase = gameObject.AddComponent<InteractionFlowControl>(); break;
                     case FlowControlId.ExplorationMenuFlowControl: flowControlBase = gameObject.AddComponent<ExplorationMenuViewControl>(); break;
@@ -265,6 +279,24 @@ namespace MAGE.GameModes.FlowControl
             }
 
             Logger.Assert(result != "", LogTag.FlowControl, TAG, string.Format("Query() {0} - Was not handled by any flow controls", arg));
+            if (result != "")
+            {
+                HandleEvent(result);
+            }
+        }
+
+        protected void Condition(string arg)
+        {
+            Logger.Log(LogTag.FlowControl, TAG, string.Format("Condition() - {0}", arg));
+            string result = "";
+
+            for (int i = mFlowControls.Count - 1; i >= 0; --i)
+            {
+                result = mFlowControlStack[i].Condition(arg);
+                if (result != "") break;
+            }
+
+            Logger.Assert(result != "", LogTag.FlowControl, TAG, string.Format("Condition() {0} - Was not handled by any flow controls", arg));
             if (result != "")
             {
                 HandleEvent(result);

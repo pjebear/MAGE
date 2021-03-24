@@ -25,7 +25,7 @@ namespace MAGE.GameModes.SceneElements
                 if (spawner != null)
                 {
                     spawner.Refresh();
-                    NPCs.Add(spawner.CharacterPicker.GetActorId(), spawner.Actor);
+                    NPCs.Add(spawner.GetComponent<CharacterPickerControl>().CharacterPicker.GetCharacterId(), spawner.GetComponent<Actor>());
                 }
             }
         }

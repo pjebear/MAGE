@@ -1,6 +1,7 @@
 ﻿using MAGE.GameModes.SceneElements;
 using MAGE.GameSystems;
 using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.Mobs;
 using MAGE.GameSystems.Story;
 using MAGE.GameSystems.Story.Internal;
 using System;
@@ -25,7 +26,7 @@ namespace MAGE.DB.Internal
 
                 // Activate Condition
                 {
-                    DBStoryCondition activateCondition = new DBStoryCondition();
+                    DBStoryObjective activateCondition = new DBStoryObjective();
                     activateCondition.EventType = (int)StoryEventType.NewGame;
                     storyArcInfo.ActivationCondition = activateCondition;
                 }
@@ -60,6 +61,64 @@ namespace MAGE.DB.Internal
                 DBService.Get().WriteStoryArcInfo(storyArcInfo.Id, storyArcInfo);
             }
 
+            // Debug Level Gather Bear Pelts
+            {
+                StoryArcId storyArcId = StoryArcId.DebugLevel_OnBoardingBlacksmith;
+
+                DBStoryArcInfo storyArcInfo = new DBStoryArcInfo();
+                storyArcInfo.Id = (int)storyArcId;
+                storyArcInfo.Name = storyArcId.ToString();
+
+                // Activate Condition
+                {
+                    DBStoryObjective activateCondition = new DBStoryObjective();
+                    activateCondition.EventType = (int)StoryEventType.NewGame;
+                    storyArcInfo.ActivationCondition = activateCondition;
+                }
+
+                { // Talk with blacksmith to start quest
+                    storyArcInfo.StoryArc.Add(StoryDBUtil.CreateConversationStoryNode(
+                        "Learn to use the black smith feature"
+                        , "Talk with the blacksmith"
+                        , (int)ConversationId.Demo_BlackSmithTraining_Start
+                        , (int)NPCPropId.DemoLevel_BlackSmith));
+                }
+
+                { // Gather bear pelts
+                    storyArcInfo.StoryArc.Add(StoryDBUtil.CreateGatherItem(
+                          "These pelts will go a long way"
+                          , "Gather pelts from the bears in the hills"
+                          , (int)StoryItemId.DEMO_GoldenBearPelt
+                          , 100
+                          , 1
+                          , 0
+                          , 1
+                          , (int)MobId.DEMO_Bear));
+                }
+
+                { // Return quest
+                    DBStoryNodeInfo storyNode = StoryDBUtil.CreateConversationStoryNode(
+                        "Return to the Blacksmith"
+                        , "Return to the Blacksmith"
+                        , (int)ConversationId.Demo_BlackSmithTraining_Return
+                        , (int)NPCPropId.DemoLevel_BlackSmith);
+
+                    // Remove the bear pelts
+                    storyNode.OnCompleteChanges.Add(StoryDBUtil.ToDB(StoryMutatorParams.RemovePartyItem(
+                    (int)StoryItemId.DEMO_GoldenBearPelt)));
+
+                    // Reward for quest
+                    storyNode.OnCompleteChanges.Add(StoryDBUtil.ToDB(StoryMutatorParams.PartyMutateParams(
+                        (int)PartyMutateType.Item
+                        , (int)EquippableId.Relic
+                        , MutatorConstants.ADD)));
+                    
+                    storyArcInfo.StoryArc.Add(storyNode);
+                }
+
+                DBService.Get().WriteStoryArcInfo(storyArcInfo.Id, storyArcInfo);
+            }
+
             // Debug Level Story Arc
             {
                 StoryArcId storyArcId = StoryArcId.DebugLevel;
@@ -70,81 +129,75 @@ namespace MAGE.DB.Internal
 
                 // Activate Condition
                 {
-                    DBStoryCondition activateCondition = new DBStoryCondition();
+                    DBStoryObjective activateCondition = new DBStoryObjective();
                     activateCondition.EventType = (int)StoryEventType.NewGame;
                     storyArcInfo.ActivationCondition = activateCondition;
                 }
 
-                // Nodes
-                {
-                    { // Training Battles
-                        storyArcInfo.StoryArc.Add(StoryDBUtil.CreateCompleteEncounterStoryNode(
-                            ""
-                            , ""
-                            , (int)EncounterScenarioId.Demo_TrainingGrounds));
-                    }
+                /*
+              // Nodes
+              {
+                  { // Opening Cinematic
+                      DBStoryNodeInfo storyNode = StoryDBUtil.CreateViewCinematicStoryNode(
+                          ""
+                          , ""
+                          , (int)CinematicId.Demo_IntroCinematic);
 
-                    { // Opening Cinematic
-                        DBStoryNodeInfo storyNode = StoryDBUtil.CreateViewCinematicStoryNode(
-                            ""
-                            , ""
-                            , (int)CinematicId.Demo_IntroCinematic);
+                      storyNode.OnCompleteChanges.Add(StoryDBUtil.ToDB(new StoryMutatorParams(
+                         PropMutatorType.StateChange
+                         , (int)DoorPropId.DemoLevel_TownGateFront
+                         , MutatorConstants.OPEN)));
 
-                        storyNode.OnCompleteChanges.Add(StoryDBUtil.ToDB(new StoryMutatorParams(
-                           PropMutatorType.StateChange
-                           , (int)DoorPropId.DemoLevel_TownGateFront
-                           , MutatorConstants.OPEN)));
+                      storyArcInfo.StoryArc.Add(storyNode);
+                  }
 
-                        storyArcInfo.StoryArc.Add(storyNode);
-                    }
+                  { // Find the magistrate
+                      DBStoryNodeInfo storyNode = StoryDBUtil.CreateConversationStoryNode(
+                          "Who's in charge here?"
+                          , "Find the Magistrates office and talk with the town Magistrate"
+                          , (int)ConversationId.Demo_LayDownTheLaw
+                          , (int)NPCPropId.DemoLevel_Magistrate);
 
-                    { // Find the magistrate
-                        DBStoryNodeInfo storyNode = StoryDBUtil.CreateConversationStoryNode(
-                            "Who's in charge here?"
-                            , "Find the Magistrates office and talk with the town Magistrate"
-                            , (int)ConversationId.Demo_LayDownTheLaw
-                            , (int)NPCPropId.DemoLevel_Magistrate);
+                      storyNode.OnActivateChanges.Add(StoryDBUtil.ToDB(new StoryMutatorParams(
+                          CinematicMutatorType.Activate
+                          , (int)CinematicId.Demo_TownHallCinematic
+                          , MutatorConstants.TRUE)));
 
-                        storyNode.OnActivateChanges.Add(StoryDBUtil.ToDB(new StoryMutatorParams(
-                            CinematicMutatorType.Activate
-                            , (int)CinematicId.Demo_TownHallCinematic
-                            , MutatorConstants.TRUE)));
+                      storyArcInfo.StoryArc.Add(storyNode);
+                  }
 
-                        storyArcInfo.StoryArc.Add(storyNode);
-                    }
+                  { // Talk with captain to trigger tutorial battle
+                      storyArcInfo.StoryArc.Add(StoryDBUtil.CreateConversationStoryNode(
+                          "One last training session"
+                          , "Talk with Balgrid and run the recruits through the paces"
+                          , (int)ConversationId.Demo_TrainingTime
+                          , (int)NPCPropId.DemoLevel_Captain));
+                  }
 
-                    { // Talk with captain to trigger tutorial battle
-                        storyArcInfo.StoryArc.Add(StoryDBUtil.CreateConversationStoryNode(
-                            "One last training session"
-                            , "Talk with Balgrid and run the recruits through the paces"
-                            , (int)ConversationId.Demo_TrainingTime
-                            , (int)NPCPropId.DemoLevel_Captain));
-                    }
+                  { // Training Battles
+                      storyArcInfo.StoryArc.Add(StoryDBUtil.CreateCompleteEncounterStoryNode(
+                          ""
+                          , ""
+                          , (int)EncounterScenarioId.Demo_TrainingGrounds));
+                  }
 
-                    { // Training Battles
-                        storyArcInfo.StoryArc.Add(StoryDBUtil.CreateCompleteEncounterStoryNode(
-                            ""
-                            , ""
-                            , (int)EncounterScenarioId.Demo_TrainingGrounds));
-                    }
+                  { // Talk with captain to review what happens next
+                      storyArcInfo.StoryArc.Add(StoryDBUtil.CreateConversationStoryNode(
+                          "Training complete"
+                          , "See Balgrid now that the training is complete"
+                          , (int)ConversationId.Demo_TrainingComplete
+                          , (int)NPCPropId.DemoLevel_Captain));
+                  }
 
-                    { // Talk with captain to review what happens next
-                        storyArcInfo.StoryArc.Add(StoryDBUtil.CreateConversationStoryNode(
-                            "Training complete"
-                            , "See Balgrid now that the training is complete"
-                            , (int)ConversationId.Demo_TrainingComplete
-                            , (int)NPCPropId.DemoLevel_Captain));
-                    }
-
-                    //{ // Tutorial battles with captain
-                    //    storyArcInfo.StoryArc.Add(StoryDBUtil.CreateConversationStoryNode(
-                    //        "One last training session"
-                    //        , "Talk with Balgrid and run the recruits through the paces"
-                    //        , (int)ConversationId.Demo_TrainingTime
-                    //        , (int)NPCPropId.DemoLevel_Captain));
-                    //}
-                }
-
+                  //{ // Tutorial battles with captain
+                  //    storyArcInfo.StoryArc.Add(StoryDBUtil.CreateConversationStoryNode(
+                  //        "One last training session"
+                  //        , "Talk with Balgrid and run the recruits through the paces"
+                  //        , (int)ConversationId.Demo_TrainingTime
+                  //        , (int)NPCPropId.DemoLevel_Captain));
+                  //}
+              }
+              */
                 DBService.Get().WriteStoryArcInfo(storyArcInfo.Id, storyArcInfo);
             }
 

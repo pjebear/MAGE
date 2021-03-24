@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using MAGE.GameModes.SceneElements;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -36,13 +37,13 @@ namespace MAGE.GameModes.Encounter
         public void AnimateActor(CharacterActorController actor, AnimationInfo animation)
         {
             mActorToAnimationRigLookup[actor].DisplayAnimation(animation);
-            actor.Actor.Animator.SetTrigger(animation.TriggerName);
+            actor.GetComponent<ActorAnimator>().Trigger(animation.TriggerName);
         }
 
         public void RotateActorTowards(CharacterActorController actor, Transform target, float rotationDuration)
         {
 
-            EncounterFlowControl.MovementDirector.RotateActor(actor.ActorController, target, null);
+            EncounterFlowControl_Deprecated.MovementDirector.RotateActor(actor.transform, target, null);
 
             //mRotatingActors.Add(actor);
             //StartCoroutine(RotateActor(actor, target, rotationDuration));

@@ -14,7 +14,8 @@ namespace MAGE.DB
         public int Min;
         public int Max;
         public int Elevation;
-        public int Type;
+        public int AreaType;
+        public int TargetingType;
 
         public override void Copy(Internal.DBEntryBase _from, Internal.DBEntryBase _to)
         {
@@ -24,7 +25,8 @@ namespace MAGE.DB
             to.Min = from.Min;
             to.Max = from.Max;
             to.Elevation = from.Elevation;
-            to.Type = from.Type;
+            to.AreaType = from.AreaType;
+            to.TargetingType = from.TargetingType;
         }
     }
 
