@@ -25,9 +25,6 @@ namespace MAGE.GameModes.Encounter
         , UIContainerControl
 
     {
-        ActionId mSelectedAction = ActionId.MeeleWeaponAttack;
-        ActionInfo mActionInfo = null;
-
         public override FlowControlId GetFlowControlId()
         {
             return FlowControlId.EncounterPlayerTurnFlowControl;
@@ -45,6 +42,7 @@ namespace MAGE.GameModes.Encounter
         {
             base.Cleanup();
 
+            UIManager.Instance.RemoveOverlay(UIContainerId.EncounterCharacterInfoRightView);
             UIManager.Instance.RemoveOverlay(UIContainerId.EncounterCharacterInfoLeftView);
             UIManager.Instance.RemoveOverlay(UIContainerId.ActorActionsView);
         }
@@ -146,6 +144,8 @@ namespace MAGE.GameModes.Encounter
 
         public override void OnMouseHoverChange(GameObject gameObject)
         {
+            CombatCharacter previousTarget = mCurrentTarget;
+
             if (mCurrentTarget != null)
             {
                 if (mState == State.Idle && mCurrentTarget != mCurrentCharacter)
@@ -168,43 +168,25 @@ namespace MAGE.GameModes.Encounter
                 }
             }
 
-            CursorControl.CursorType updatedCursorType = CursorControl.CursorType.Default;
-            // Update Cursor
-            if (mState == State.Idle)
+            if (mCurrentTarget != null)
             {
-                if (mCurrentTarget != null)
+                if (previousTarget == null)
                 {
-                    if (mCurrentTarget.GetComponent<CombatEntity>().TeamSide == mCurrentCharacter.GetComponent<CombatEntity>().TeamSide)
-                    {
-                        if ((mCurrentTarget.transform.position - mCurrentCharacter.transform.position).magnitude > 1.5f)
-                        {
-                            updatedCursorType = CursorControl.CursorType.Interact_Near;
-                        }
-                    }
-                    else
-                    {
-                        if (!GameModel.Encounter.HasActed)
-                        {
-                            updatedCursorType = CursorControl.CursorType.Combat_Near;
-                        }
-                        else if ((mCurrentTarget.transform.position - mCurrentCharacter.transform.position).magnitude > 1.5f)
-                        {
-                            updatedCursorType = CursorControl.CursorType.Interact_Near;
-                        }
-                    }
-                } 
-                else
+                    UIManager.Instance.PostContainer(UIContainerId.EncounterCharacterInfoRightView, this);
+                }
+                else if (previousTarget != mCurrentTarget)
                 {
-                    updatedCursorType = CursorControl.CursorType.Interact_Near;
+                    UIManager.Instance.Publish(UIContainerId.EncounterCharacterInfoRightView);
                 }
             }
-            else if (mState == State.TargetSelect)
+            else if (previousTarget != null)
             {
-                updatedCursorType = CursorControl.CursorType.Interact_Near;
+                UIManager.Instance.RemoveOverlay(UIContainerId.EncounterCharacterInfoRightView);
             }
 
+            UpdateCursor();
 
-            UIManager.Instance.SetCursor(updatedCursorType);
+            Debug.Log(string.Format("HoverTargetChangedTo - {0}", mCurrentTarget != null ? mCurrentTarget.Character.Name : "NONE"));
         }
 
         void OnLeftClick(Vector2 screenPos)
@@ -319,6 +301,11 @@ namespace MAGE.GameModes.Encounter
                     return PublishCharacterInfoPanelLeft();
                 }
                 break;
+                case (int)UIContainerId.EncounterCharacterInfoRightView:
+                {
+                    return PublishCharacterInfoPanelRight();
+                }
+                break;
             }
 
             return null;
@@ -365,6 +352,8 @@ namespace MAGE.GameModes.Encounter
         {
             base.SetState(state);
 
+            UpdateCursor();
+
             UIManager.Instance.Publish(UIContainerId.ActorActionsView);
         }
 
@@ -372,6 +361,47 @@ namespace MAGE.GameModes.Encounter
         public string Name()
         {
             return "PlayerTurnFlowControl";
+        }
+
+        void UpdateCursor()
+        {
+            CursorControl.CursorType updatedCursorType = CursorControl.CursorType.Default;
+            // Update Cursor
+            if (mState == State.Idle)
+            {
+                if (mCurrentTarget != null)
+                {
+                    if (mCurrentTarget.GetComponent<CombatEntity>().TeamSide == mCurrentCharacter.GetComponent<CombatEntity>().TeamSide)
+                    {
+                        if ((mCurrentTarget.transform.position - mCurrentCharacter.transform.position).magnitude > 1.5f)
+                        {
+                            updatedCursorType = CursorControl.CursorType.Interact_Near;
+                        }
+                    }
+                    else
+                    {
+                        if (!GameModel.Encounter.HasActed)
+                        {
+                            updatedCursorType = CursorControl.CursorType.Combat_Near;
+                        }
+                        else if ((mCurrentTarget.transform.position - mCurrentCharacter.transform.position).magnitude > 1.5f)
+                        {
+                            updatedCursorType = CursorControl.CursorType.Interact_Near;
+                        }
+                    }
+                }
+                else
+                {
+                    updatedCursorType = CursorControl.CursorType.Interact_Near;
+                }
+            }
+            else if (mState == State.TargetSelect)
+            {
+                updatedCursorType = CursorControl.CursorType.Interact_Near;
+            }
+
+
+            UIManager.Instance.SetCursor(updatedCursorType);
         }
 
         bool CursorToTerrainPos(ref Vector3 out_terrainPos)

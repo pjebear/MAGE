@@ -31,7 +31,8 @@ namespace MAGE.GameModes.Encounter
             TargetSelect
         }
         protected State mState = State.Idle;
-
+        protected ActionId mSelectedAction = ActionId.MeeleWeaponAttack;
+        protected ActionInfo mActionInfo = null;
         // Private 
         protected CombatCharacter mCurrentCharacter;
         protected List<ActionId> mAvailableActions;
@@ -156,38 +157,55 @@ namespace MAGE.GameModes.Encounter
             }
         }
 
+        protected IDataProvider PublishCharacterInfoPanelRight()
+        {
+            if (mCurrentTarget != null)
+            {
+                return PublishCharacterInfoPanel(mCurrentTarget);
+            }
+            else
+            {
+                Debug.LogWarning("CurrentTarget is null");
+                return new CharacterInspector.DataProvider();
+            }
+        }
 
         protected IDataProvider PublishCharacterInfoPanelLeft()
         {
+            return PublishCharacterInfoPanel(mCurrentCharacter);
+        }
+
+        protected IDataProvider PublishCharacterInfoPanel(CombatCharacter combatCharacter)
+        {
             CharacterInspector.DataProvider dp = new CharacterInspector.DataProvider();
+            
+            Character toPublish = combatCharacter.Character;
 
-            Character toPublish = mCurrentCharacter.Character;
-
-            dp.IsAlly = toPublish.TeamSide == TeamSide.AllyHuman;
+            dp.IsAlly = combatCharacter.GetComponent<CombatEntity>().TeamSide == TeamSide.AllyHuman;
             dp.PortraitAsset = toPublish.GetAppearance().PortraitSpriteId.ToString();
             dp.Name = toPublish.Name;
             dp.Level = toPublish.Level;
             dp.Exp = toPublish.Experience;
             dp.Specialization = toPublish.CurrentSpecializationType.ToString();
 
-            dp.CurrentHP    = mCurrentCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Health].Current;
-            dp.MaxHP        = mCurrentCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Health].Max;
-            dp.CurrentMP    = mCurrentCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Mana].Current;
-            dp.MaxMP        = mCurrentCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Mana].Max;
+            dp.CurrentHP    = combatCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Health].Current;
+            dp.MaxHP        = combatCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Health].Max;
+            dp.CurrentMP    = combatCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Mana].Current;
+            dp.MaxMP        = combatCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Mana].Max;
 
-            dp.Might        = (int)mCurrentCharacter.GetComponent<StatsControl>().Attributes[PrimaryStat.Might];
-            dp.Finesse      = (int)mCurrentCharacter.GetComponent<StatsControl>().Attributes[PrimaryStat.Finese];
-            dp.Magic        = (int)mCurrentCharacter.GetComponent<StatsControl>().Attributes[PrimaryStat.Magic];
+            dp.Might        = (int)combatCharacter.GetComponent<StatsControl>().Attributes[PrimaryStat.Might];
+            dp.Finesse      = (int)combatCharacter.GetComponent<StatsControl>().Attributes[PrimaryStat.Finese];
+            dp.Magic        = (int)combatCharacter.GetComponent<StatsControl>().Attributes[PrimaryStat.Magic];
 
-            dp.Fortitude    = (int)mCurrentCharacter.GetComponent<StatsControl>().Attributes[SecondaryStat.Fortitude];
-            dp.Attunement   = (int)mCurrentCharacter.GetComponent<StatsControl>().Attributes[SecondaryStat.Attunement];
+            dp.Fortitude    = (int)combatCharacter.GetComponent<StatsControl>().Attributes[SecondaryStat.Fortitude];
+            dp.Attunement   = (int)combatCharacter.GetComponent<StatsControl>().Attributes[SecondaryStat.Attunement];
 
-            dp.Block        = (int)mCurrentCharacter.GetComponent<StatsControl>().Attributes[TertiaryStat.Block];
-            dp.Dodge        = (int)mCurrentCharacter.GetComponent<StatsControl>().Attributes[TertiaryStat.Dodge];
-            dp.Parry        = (int)mCurrentCharacter.GetComponent<StatsControl>().Attributes[TertiaryStat.Parry];
+            dp.Block        = (int)combatCharacter.GetComponent<StatsControl>().Attributes[TertiaryStat.Block];
+            dp.Dodge        = (int)combatCharacter.GetComponent<StatsControl>().Attributes[TertiaryStat.Dodge];
+            dp.Parry        = (int)combatCharacter.GetComponent<StatsControl>().Attributes[TertiaryStat.Parry];
 
             List<IDataProvider> statusEffects = new List<IDataProvider>();
-            foreach (StatusEffect effect in mCurrentCharacter.GetComponent<StatusEffectControl>().StatusEffects)
+            foreach (StatusEffect effect in combatCharacter.GetComponent<StatusEffectControl>().StatusEffects)
             {
                 StatusIcon.DataProvider statusDp = new StatusIcon.DataProvider();
                 statusDp.Count = effect.StackCount;

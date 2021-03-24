@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98227900c4507c3408a704f1612afa3e, type: 3}
+  m_Name: SkinTone_0
+  m_EditorClassIdentifier: 
+  Type: 0
+  HeadTexture: {fileID: 2800000, guid: a7be5ed62d99101419b2031cac1e7e0d, type: 3}
+  BodyTexture: {fileID: 2800000, guid: 77612f3d53f12414188aefe1f46858a7, type: 3}

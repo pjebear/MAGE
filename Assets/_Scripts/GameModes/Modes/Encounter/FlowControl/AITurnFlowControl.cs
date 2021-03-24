@@ -61,13 +61,17 @@ namespace MAGE.GameModes.Encounter
             mMovementObstacles[mCurrentTarget].gameObject.SetActive(false);
 
             mCurrentMoveToPoint = mCurrentTarget.transform.position;
+
+            mSelectedAction = ActionId.MeeleWeaponAttack;
+            mActionInfo = ActionComposer.GetAction(mCurrentCharacter.GetComponent<CombatEntity>(), mSelectedAction).ActionInfo;
+
             if (mCurrentTarget != null && mCurrentTarget != mCurrentCharacter)
             {
                 NavMeshPath path = new NavMeshPath();
                 NavMesh.CalculatePath(mCurrentCharacter.transform.position, mCurrentTarget.transform.position, NavMesh.AllAreas, path);
                 if (path.corners.Length > 0)
                 {
-                    mCurrentMoveToPoint = GetPointAlongPathInRangeOf(path.corners, mCurrentTarget.transform.position, 1.5f);
+                    mCurrentMoveToPoint = GetPointAlongPathInRangeOf(path.corners, mCurrentTarget.transform.position, mActionInfo.CastRange.MaxRange);
                 }
                 else
                 {

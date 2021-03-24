@@ -44,7 +44,7 @@ namespace MAGE.GameSystems.Stats
         public static Attribute operator -(Attribute lhs, AttributeModifier rhs)
         {
             Attribute modified = (Attribute)lhs.MemberwiseClone();
-            Modify(modified, rhs);
+            Revert(modified, rhs);
             return modified;
         }
 
