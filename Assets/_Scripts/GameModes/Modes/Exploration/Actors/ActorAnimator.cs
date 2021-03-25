@@ -12,8 +12,6 @@ namespace MAGE.GameModes.SceneElements
     class ActorAnimator : MonoBehaviour
     {
         private float mSpeedPercent = 0f;
-        public AnimationClip CombatIdle;
-        public AnimationClip Idle;
 
         private void Update()
         {   

@@ -70,7 +70,26 @@ namespace MAGE.GameModes.SceneElements
 
             if (Appearance != null)
             {
-                GetComponent<ActorOutfitter>().UpdateAppearance(Appearance);
+                Body currentBody = GetComponentInChildren<Body>();
+                if (currentBody == null || currentBody.BodyType != Appearance.BodyType)
+                {
+                    Destroy(currentBody.gameObject);
+
+                    string bodyPath = "Props/Bodies/";
+                    switch (Appearance.BodyType)
+                    {
+                        case BodyType.HumanoidMale: bodyPath += "Humanoid/HumanoidMale"; break;
+                        case BodyType.Bear_0: bodyPath += "Bear/Bear_0"; break;
+
+                    }
+                    Body newBody = Instantiate(Resources.Load<Body>(bodyPath), transform);
+                }
+
+                // TEMP: only try to outfit humans
+                if (GetComponentInChildren<Body>().BodyType == BodyType.HumanoidMale)
+                {
+                    GetComponent<ActorOutfitter>().UpdateAppearance(Appearance);
+                }
             }
             
             Name = GetComponent<CharacterPickerControl>().CharacterPicker.GetActorName();
@@ -78,8 +97,6 @@ namespace MAGE.GameModes.SceneElements
 
             NotifyRefresh();
         }
-
-       
 
         // IMessageHandler
         public void HandleMessage(Messaging.MessageInfoBase messageInfoBase)

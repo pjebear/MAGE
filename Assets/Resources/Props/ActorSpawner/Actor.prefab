@@ -252,7 +252,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshOnStart: 1
-  RefreshOnUpdate: 1
   Appearance:
     AppearanceId: -1
     PortraitSpriteId: -1
@@ -300,7 +299,7 @@ PrefabInstance:
     - target: {fileID: 5162733453013256683, guid: 949e717bd4f250949916b3fbc87e8ba7,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.1
       objectReference: {fileID: 0}
     - target: {fileID: 5162733453013256683, guid: 949e717bd4f250949916b3fbc87e8ba7,
         type: 3}

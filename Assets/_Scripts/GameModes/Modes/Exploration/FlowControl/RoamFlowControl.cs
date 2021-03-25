@@ -1,6 +1,7 @@
 ﻿using MAGE.GameModes.Combat;
 using MAGE.GameModes.FlowControl;
 using MAGE.GameModes.SceneElements;
+using MAGE.GameModes.SceneElements.Encounters;
 using MAGE.GameModes.SceneElements.Navigation;
 using MAGE.GameSystems;
 using MAGE.Input;
@@ -20,8 +21,7 @@ namespace MAGE.GameModes.Exploration
         : FlowControlBase
     {
         private string TAG = "RoamFlowControl";
-        private float mMinInteractionDistance = 20;
-        private float mDistanceToHovered = 0;
+
         private Actor mPlayer = null;
         private Interactable mHoveredInteractable = null;
         private Optional<Vector3> mWorldHoverPosition;
@@ -220,15 +220,23 @@ namespace MAGE.GameModes.Exploration
             Level level = LevelManagementService.Get().GetLoadedLevel();
             EncounterContainer randomEncounter = level.CreateEncounter();
 
-            enemy.gameObject.SetActive(false);
-            for (int i = 0; i < 2; ++i)
+            Collider[] overlapped = Physics.OverlapSphere(enemy.transform.position, 15f);
+            List<MobControl> mobsInRange = overlapped.Select(x => x.GetComponent<MobControl>()).Where(x => x != null && x.gameObject.activeSelf).ToList();
+
+            foreach (MobControl mob in mobsInRange)
             {
+                mob.gameObject.SetActive(false);
+
                 CombatCharacter player = level.CreateCombatCharacter();
-                player.GetComponent<CharacterPickerControl>().CharacterPicker.RootCharacterId = enemy.GetComponent<CharacterPickerControl>().CharacterPicker.GetCharacterId();
+                player.GetComponent<CharacterPickerControl>().CharacterPicker.RootCharacterId = mob.GetComponent<CharacterPickerControl>().CharacterPicker.GetCharacterId();
                 player.transform.SetParent(randomEncounter.Enemies);
-                player.transform.position = enemy.transform.position + i * Vector3.forward * 2;
-                player.transform.rotation = enemy.transform.rotation;
+                player.transform.position = mob.transform.position;
+                player.transform.rotation = mob.transform.rotation;
             }
+
+            Vector3 partyToEnemy = enemy.transform.position - mPlayer.transform.position;
+            partyToEnemy.y = 0;
+            Vector3 right = Vector3.Cross(partyToEnemy, Vector3.up);
 
             int characterCount = 0;
             foreach (int partyCharacterId in WorldService.Get().GetCharactersInParty())
@@ -237,7 +245,7 @@ namespace MAGE.GameModes.Exploration
                 CombatCharacter player = level.CreateCombatCharacter();
                 player.GetComponent<CharacterPickerControl>().CharacterPicker.RootCharacterId = partyCharacterId;
                 player.transform.SetParent(randomEncounter.Allys);
-                player.transform.position = mPlayer.transform.position + characterCount++ * Vector3.forward;
+                player.transform.position = mPlayer.transform.position + characterCount++ * right;
                 player.transform.rotation = mPlayer.transform.rotation;
             }
         }

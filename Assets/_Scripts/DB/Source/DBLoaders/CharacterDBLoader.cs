@@ -141,6 +141,12 @@ namespace MAGE.DB.Internal
                 createParams.name = "Francious";
                 createParams.currentSpecialization = SpecializationType.Archer;
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.INVALID, EquippableId.Bow_0, EquippableId.INVALID };
+                createParams.appearanceOverrides = new Appearance()
+                {
+                    HairColor = HairColor.Blonde,
+                    HairType = HairType.MaleLong,
+                    SkinToneType = SkinToneType.Pale,
+                };
 
                 characterService.CreateCharacter(createParams);
             }

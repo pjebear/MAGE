@@ -48,6 +48,8 @@ namespace MAGE.GameModes.Encounter
             Level level = LevelManagementService.Get().GetLoadedLevel();
             EncounterContainer activeEncounter = level.GetActiveEncounter();
 
+            GameModel.Encounter = new EncounterModel();
+
             List<CombatCharacter> allies = activeEncounter.Allys.GetComponentsInChildren<CombatCharacter>().ToList();
             GameModel.Encounter.Players.AddRange(allies);
             foreach (CombatCharacter character in allies)

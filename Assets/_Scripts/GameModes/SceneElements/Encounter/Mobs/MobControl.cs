@@ -68,6 +68,8 @@ namespace MAGE.GameModes.SceneElements.Encounters
                 {
                     GetComponent<ActorMotor>().Stop();
                 }
+
+                GetComponent<Actor>().SetInCombat(mState != State.Idle);
             }
 
             if (mState == State.Chase)
