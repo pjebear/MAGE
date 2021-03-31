@@ -1,1 +1,0 @@
-{"List":[{"Key":22,"Value":{"Id":22,"Name":"GateKey","SpriteId":12,"Value":-1}},{"Key":23,"Value":{"Id":23,"Name":"DEMO_GoldenBearPelt","SpriteId":14,"Value":-1}},{"Key":25,"Value":{"Id":25,"Name":"DEMO_BearPelt","SpriteId":13,"Value":50}},{"Key":26,"Value":{"Id":26,"Name":"DEMO_BearClaw","SpriteId":15,"Value":5}}]}

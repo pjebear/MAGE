@@ -21,9 +21,9 @@ EditorBuildSettings:
     path: Assets/_Scenes/Levels/Demo.unity
     guid: edb869d74ae79a640b8c095e7ffd27d9
   - enabled: 1
-    path: Assets/_Scenes/Sandbox/PlaySandbox/Town.unity
+    path: Assets/_Scenes/Levels/Town.unity
     guid: 9bee37628c746854cadb3bc7e54b3aee
   - enabled: 1
-    path: Assets/_Scenes/Sandbox/PlaySandbox/Forest.unity
+    path: Assets/_Scenes/Levels/Forest.unity
     guid: 78cc519f2c448c544b2205d5ecb83633
   m_configObjects: {}
