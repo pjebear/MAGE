@@ -91,8 +91,8 @@ namespace MAGE.GameSystems.Loot
 
         private void DebugInit()
         {
-            { // Bear
-                TableEntry bearEntry = new TableEntry();
+            { // Bandit
+                TableEntry entry = new TableEntry();
                 { // currency
                     LootInfo lootInfo = new LootInfo();
                     lootInfo.LootType = LootType.Currency;
@@ -101,7 +101,44 @@ namespace MAGE.GameSystems.Loot
                     lootInfo.DropVarience = 10;
                     lootInfo.DropChance = 100;
 
-                    bearEntry.Loot.Add(lootInfo);
+                    entry.Loot.Add(lootInfo);
+                }
+
+                { // Sword
+                    LootInfo lootInfo = new LootInfo();
+                    lootInfo.LootType = LootType.Item;
+                    lootInfo.Value = (int)EquippableId.Sword_0;
+                    lootInfo.DropAmount = 1;
+                    lootInfo.DropVarience = 0;
+                    lootInfo.DropChance = 50;
+
+                    entry.Loot.Add(lootInfo);
+                }
+
+                { // Bow
+                    LootInfo lootInfo = new LootInfo();
+                    lootInfo.LootType = LootType.Item;  
+                    lootInfo.Value = (int)EquippableId.LongBow_0;
+                    lootInfo.DropAmount = 1;
+                    lootInfo.DropVarience = 0;
+                    lootInfo.DropChance = 50;
+
+                    entry.Loot.Add(lootInfo);
+                }
+                MobLoot.Add(Mobs.MobId.DEMO_Bandit, entry);
+            }
+
+            { // Bear
+                TableEntry entry = new TableEntry();
+                { // currency
+                    LootInfo lootInfo = new LootInfo();
+                    lootInfo.LootType = LootType.Currency;
+                    lootInfo.Value = 50;
+                    lootInfo.DropAmount = 45;
+                    lootInfo.DropVarience = 10;
+                    lootInfo.DropChance = 100;
+
+                    entry.Loot.Add(lootInfo);
                 }
 
                 { // Bear Claw
@@ -112,7 +149,7 @@ namespace MAGE.GameSystems.Loot
                     lootInfo.DropVarience = 4;
                     lootInfo.DropChance = 100;
 
-                    bearEntry.Loot.Add(lootInfo);
+                    entry.Loot.Add(lootInfo);
                 }
 
                 { // Bear Pelt
@@ -123,11 +160,10 @@ namespace MAGE.GameSystems.Loot
                     lootInfo.DropVarience = 0;
                     lootInfo.DropChance = 100;
 
-                    bearEntry.Loot.Add(lootInfo);
+                    entry.Loot.Add(lootInfo);
                 }
-                MobLoot.Add(Mobs.MobId.DEMO_Bear, bearEntry);
+                MobLoot.Add(Mobs.MobId.DEMO_Bear, entry);
             }
-            
         }
     }
 

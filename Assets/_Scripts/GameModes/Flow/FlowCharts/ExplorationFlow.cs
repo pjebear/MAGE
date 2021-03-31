@@ -15,6 +15,7 @@ namespace MAGE.GameModes.FlowControl
             {
                 { "cinematicAvailable", "FadeOut" }
                 ,{ "encounterAvailable", "FadeOut" }
+                ,{ "travel", "FadeOut" }
             };
 
             OnEnterActions = new List<FlowActionBase>()

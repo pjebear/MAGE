@@ -5,6 +5,7 @@ using MAGE.GameModes.LevelManagement;
 using MAGE.GameModes.SceneElements;
 using MAGE.GameSystems;
 using MAGE.GameSystems.Characters;
+using MAGE.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,13 +32,8 @@ namespace MAGE.GameModes
             Level level = LevelManagementService.Get().GetLoadedLevel();
 
             Actor player = level.Player.GetComponent<Actor>();
-            player.gameObject.SetActive(true);
-            player.GetComponent<CharacterPickerControl>().CharacterPicker.RootCharacterId = WorldService.Get().GetPartyAvatarId();
-            player.GetComponent<ActorSpawner>().Refresh();
-            GameModel.Exploration.PartyAvatar = player;
 
-            Camera.main.GetComponent<Cameras.CameraController>().SetTarget(player.transform, Cameras.CameraType.ThirdPerson);
-
+            // Update location
             GameSystems.World.PartyLocation partyLocation = WorldService.Get().GetPartyLocation();
             if (partyLocation.PositionType == GameSystems.World.PartyPositionType.SpawnPoint)
             {
@@ -48,35 +44,43 @@ namespace MAGE.GameModes
             {
                 player.transform.position = partyLocation.Position;
             }
-            
+
+            player.gameObject.SetActive(true);
+
+            player.GetComponent<CharacterPickerControl>().CharacterPicker.RootCharacterId = WorldService.Get().GetPartyAvatarId();
+            player.GetComponent<ActorSpawner>().Refresh();
+            GameModel.Exploration.PartyAvatar = player;
+
+            Camera.main.GetComponent<Cameras.CameraController>().SetTarget(player.transform, Cameras.CameraType.ThirdPerson);
+
             mAmbientSoundSource = gameObject.AddComponent<AudioSource>();
             mAmbientSoundSource.clip = AudioManager.Instance.GetTrack(TrackId.Explore);
             mAmbientSoundSource.loop = true;
             mAmbientSoundSource.spatialBlend = 0; // global volume
                                                   //mAmbientSoundSource.Play();
-            AudioManager.Instance.FadeInTrack(mAmbientSoundSource, 5, .5f);
+            //AudioManager.Instance.FadeInTrack(mAmbientSoundSource, 5, .5f);
         }
 
         protected override void Cleanup()
         {
-            GameSystems.World.PartyLocation partyLocation = GameSystems.WorldService.Get().GetPartyLocation();
-            partyLocation.SetPosition(GameModel.Exploration.PartyAvatar.transform.position);
-            GameSystems.WorldService.Get().UpdatePartyLocation(partyLocation);
-
             GameModel.Exploration.PartyAvatar.gameObject.SetActive(false);
-            //GameModel.Exploration.PartyAvatar = null;
         }
 
-        public void TriggerRandomEncounter()
+        public override void HandleMessage(MessageInfoBase eventInfoBase)
         {
-            Vector3 avatarPosition = GameModel.Exploration.PartyAvatar.transform.position;
-
-            LevelManagementService.Get().GetLoadedLevel().GenerateTilesAtPosition(GameModel.Exploration.PartyAvatar.transform);
-
-            EncounterCreateParams randomParams = new EncounterCreateParams();
-            randomParams.ScenarioId = EncounterScenarioId.Random;
-            randomParams.LevelId = MAGE.GameModes.LevelManagementService.Get().GetLoadedLevel().LevelId;
-            MAGE.GameSystems.WorldService.Get().PrepareEncounter(randomParams);
+            switch (eventInfoBase.MessageId)
+            {
+                case ExplorationMessage.Id:
+                {
+                    ExplorationMessage message = eventInfoBase as ExplorationMessage;
+                    if (message.Type == ExplorationMessage.EventType.TravelTriggered)
+                    {
+                        WorldService.Get().UpdatePartyLocation(message.Arg<GameSystems.World.PartyLocation>());
+                        SendFlowMessage("travel");
+                    }
+                }
+                break;
+            }
         }
     }
 }

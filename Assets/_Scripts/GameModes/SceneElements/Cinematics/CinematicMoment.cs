@@ -34,10 +34,6 @@ namespace MAGE.GameModes.SceneElements
 
         private void Start()
         {
-            if (LevelManagementService.Get().GetCinematicInfo((int)CinematicId).IsActive)
-            {
-                CinematicEnabled();
-            }
             Messaging.MessageRouter.Instance.RegisterHandler(this);
         }
 
@@ -147,6 +143,17 @@ namespace MAGE.GameModes.SceneElements
                         {
                             EnableHeirarchy(false);
                         }
+                    }
+                }
+                else if (levelMessage.Type == LevelManagement.MessageType.LevelLoaded)
+                {
+                    if (LevelManagementService.Get().GetCinematicInfo((int)CinematicId).IsActive)
+                    {
+                        CinematicEnabled();
+                    }
+                    else
+                    {
+                        EnableHeirarchy(false);
                     }
                 }
             }

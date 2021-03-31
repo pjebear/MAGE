@@ -77,7 +77,11 @@ namespace MAGE.GameModes.LevelManagement.Internal
             {
                 case "levelFlowType":
                 {
-                    if (mLoadedLevel.GetActiveCinematics().Count > 0)
+                    if (mLoadedLevel.LevelId != WorldService.Get().GetPartyLocation().Level)
+                    {
+                        queryResult = "travel";
+                    }
+                    else if (mLoadedLevel.GetActiveCinematics().Count > 0)
                     {
                         queryResult = "cinematic";
                     }

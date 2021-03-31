@@ -16,6 +16,7 @@ namespace MAGE.GameModes.Exploration
             InteractionStart,
             InteractionEnd,
             ScenarioTriggered,
+            TravelTriggered,
 
             NUM
         }

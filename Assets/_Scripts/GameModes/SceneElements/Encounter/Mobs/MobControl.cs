@@ -25,6 +25,7 @@ namespace MAGE.GameModes.SceneElements.Encounters
         private Transform rPlayer;
         private NavigationCoordinatorBase rIdleCoordinator;
         private float mCurrentWanderDelaySec = 0;
+        private float mCurrentWanderDurationSec = 0;
 
         public int MobChaseRange = 10;
         public int MobInteractRange = 3;
@@ -80,7 +81,8 @@ namespace MAGE.GameModes.SceneElements.Encounters
             {
                 if (rIdleCoordinator != null)
                 {
-                    if (!GetComponent<NavMeshAgent>().hasPath)
+                    NavMeshAgent navMeshAgent = GetComponent<NavMeshAgent>();
+                    if (!navMeshAgent.hasPath)
                     {
                         mCurrentWanderDelaySec += Time.deltaTime;
                         if (mCurrentWanderDelaySec > NavigationDelayRangeSec)
@@ -88,6 +90,15 @@ namespace MAGE.GameModes.SceneElements.Encounters
                             GetComponent<ActorMotor>().MoveToPoint(rIdleCoordinator.GetNextNavigationPoint(transform.position));
 
                             mCurrentWanderDelaySec = 0;
+                        }
+                    }
+                    else 
+                    {
+                        mCurrentWanderDurationSec += Time.deltaTime;
+                        if (mCurrentWanderDurationSec > 10f)
+                        {
+                            GetComponent<ActorMotor>().Stop();
+                            mCurrentWanderDurationSec = 0f;
                         }
                     }
                 }

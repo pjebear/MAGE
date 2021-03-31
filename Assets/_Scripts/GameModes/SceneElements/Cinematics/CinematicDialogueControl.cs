@@ -1,4 +1,5 @@
 ﻿using MAGE.GameModes.Exploration;
+using MAGE.GameSystems.Appearances;
 using MAGE.UI;
 using MAGE.UI.Views;
 using System;
@@ -26,7 +27,7 @@ namespace MAGE.GameModes.SceneElements
         int mDialogueIdx = -1;
         bool mIsDialoguePosted = false;
 
-        public List<ActorSpawner> Speakers = new List<ActorSpawner>();
+        public List<CharacterPickerControl> Speakers = new List<CharacterPickerControl>();
 
         public List<DialogueInfo> Dialogue = new List<DialogueInfo>();
 
@@ -37,7 +38,11 @@ namespace MAGE.GameModes.SceneElements
 
         void OnDisable()
         {
-            UIManager.Instance.RemoveOverlay(UIContainerId.ConversationView);
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.RemoveOverlay(UIContainerId.ConversationView);
+            }
+            
             mIsDialoguePosted = false;
         }
 
@@ -72,8 +77,8 @@ namespace MAGE.GameModes.SceneElements
                 Debug.Assert(mDialogueIdx < Dialogue.Count);
                 if (mDialogueIdx < Dialogue.Count)
                 {
-                    dp.Name = Speakers[Dialogue[mDialogueIdx].SpeakerIdx].Name;
-                    dp.PortraitAssetName = Speakers[Dialogue[mDialogueIdx].SpeakerIdx].Appearance.PortraitSpriteId.ToString();
+                    dp.Name = Speakers[Dialogue[mDialogueIdx].SpeakerIdx].CharacterPicker.GetActorName();
+                    dp.PortraitAssetName = Speakers[Dialogue[mDialogueIdx].SpeakerIdx].CharacterPicker.GetAppearance().PortraitSpriteId.ToString();
                     dp.Content = Dialogue[mDialogueIdx].Content;
                 }
 

@@ -16,16 +16,22 @@ namespace MAGE.DB.Internal
         {
             int guardAppearanceId = 0;
             {
-                DBAppearance dBAppearance = new DBAppearance();
+                Appearance appearance = new Appearance()
+                {
+                    AppearanceId = guardAppearanceId,
+                    PortraitSpriteId = PortraitSpriteId.Guard_0,
+                    BodyType = BodyType.HumanoidMale,
+                    FacialHairType = FacialHairType.ShortBeard,
+                    HairColor = HairColor.Brunette,
+                    HairType = HairType.MaleShort,
+                    SkinToneType = SkinToneType.Base,
+                    OutfitType = ApparelAssetId.Mail_0,
+                    LeftHeldAssetId = ApparelAssetId.Shield_0,
+                    RightHeldAssetId = ApparelAssetId.Sword_0
+                };
 
-                dBAppearance.Id = guardAppearanceId;
-                dBAppearance.PortraitSpriteId = (int)PortraitSpriteId.Guard_0;
-                dBAppearance.BodyType = (int)BodyType.HumanoidMale;
-                dBAppearance.OutfitType = (int)ApparelAssetId.Mail_0;
-                dBAppearance.LeftHeldAssetId = (int)ApparelAssetId.Shield_0;
-                dBAppearance.RightHeldAssetId = (int)ApparelAssetId.Sword_0;
 
-                DBService.Get().WriteAppearance(dBAppearance.Id, dBAppearance);
+                DBService.Get().WriteAppearance(appearance.AppearanceId, AppearanceUtil.ToDB(appearance));
             }
 
             int vendorAppearanceId = 1;

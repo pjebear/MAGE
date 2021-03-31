@@ -43,13 +43,8 @@ namespace MAGE.GameModes.SceneElements
             //mHeldItemLoader.LoadAssets();
             //mHairLoader.LoadAssets();
 
-            rActorAnimator = GetComponent<ActorAnimator>();
-            rBody = GetComponentInChildren<Body>();
-        }
-
-        public void Refresh()
-        {
-            rBody = GetComponentInChildren<Body>();
+            rActorAnimator = GetComponentInParent<ActorAnimator>();
+            rBody = GetComponent<Body>();
         }
 
         public void UpdateAppearance(Appearance appearance)
@@ -157,9 +152,12 @@ namespace MAGE.GameModes.SceneElements
 
         private IEnumerator _DelayedApparelUpdate()
         {
-            rActorAnimator.AnimateHoldItem(HumanoidActorConstants.Hand.Right, mHeldApparelState == HumanoidActorConstants.HeldApparelState.Held);
-            rActorAnimator.SetHandGraspState(HumanoidActorConstants.Hand.Left, mHeldApparelState == HumanoidActorConstants.HeldApparelState.Held);
-
+            if (rActorAnimator != null)
+            {
+                rActorAnimator.AnimateHoldItem(HumanoidActorConstants.Hand.Right, mHeldApparelState == HumanoidActorConstants.HeldApparelState.Held);
+                rActorAnimator.SetHandGraspState(HumanoidActorConstants.Hand.Left, mHeldApparelState == HumanoidActorConstants.HeldApparelState.Held);
+            }
+            
             yield return new WaitForSeconds(1);
 
             UpdateHeldApparelLocation();

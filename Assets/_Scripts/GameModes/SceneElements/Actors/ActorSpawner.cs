@@ -86,9 +86,9 @@ namespace MAGE.GameModes.SceneElements
                 }
 
                 // TEMP: only try to outfit humans
-                if (GetComponentInChildren<Body>().BodyType == BodyType.HumanoidMale)
+                if (GetComponentInChildren<ActorOutfitter>() != null)
                 {
-                    GetComponent<ActorOutfitter>().UpdateAppearance(Appearance);
+                    GetComponentInChildren<ActorOutfitter>().UpdateAppearance(Appearance);
                 }
             }
             

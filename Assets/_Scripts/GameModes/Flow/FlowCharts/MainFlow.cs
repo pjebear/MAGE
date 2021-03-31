@@ -79,6 +79,7 @@ namespace MAGE.GameModes.FlowControl
                         { "encounter", "EncounterFlow" }
                         ,{ "explore", "ExplorationFlow" }
                         ,{ "cinematic", "CinematicFlow" }
+                        ,{ "travel", "LoadLevel" }
                     }
                     , States = new List<FlowNode>()
                     {

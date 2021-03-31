@@ -4,6 +4,8 @@ using MAGE.GameModes.SceneElements;
 using MAGE.GameModes.SceneElements.Encounters;
 using MAGE.GameModes.SceneElements.Navigation;
 using MAGE.GameSystems;
+using MAGE.GameSystems.Loot;
+using MAGE.GameSystems.Mobs;
 using MAGE.Input;
 using MAGE.Messaging;
 using MAGE.UI;
@@ -217,15 +219,21 @@ namespace MAGE.GameModes.Exploration
 
         private void PrepareEncounter(GameObject enemy)
         {
+            GameSystems.World.PartyLocation partyLocation = GameSystems.WorldService.Get().GetPartyLocation();
+            partyLocation.SetPosition(GameModel.Exploration.PartyAvatar.transform.position);
+            GameSystems.WorldService.Get().UpdatePartyLocation(partyLocation);
+
             Level level = LevelManagementService.Get().GetLoadedLevel();
             EncounterContainer randomEncounter = level.CreateEncounter();
 
             Collider[] overlapped = Physics.OverlapSphere(enemy.transform.position, 15f);
             List<MobControl> mobsInRange = overlapped.Select(x => x.GetComponent<MobControl>()).Where(x => x != null && x.gameObject.activeSelf).ToList();
 
+            ClaimLootParams claimLootParams = new ClaimLootParams();
             foreach (MobControl mob in mobsInRange)
             {
                 mob.gameObject.SetActive(false);
+                claimLootParams.Mobs.Add(mob.GetComponent<MobCharacterControl>().MobId);
 
                 CombatCharacter player = level.CreateCombatCharacter();
                 player.GetComponent<CharacterPickerControl>().CharacterPicker.RootCharacterId = mob.GetComponent<CharacterPickerControl>().CharacterPicker.GetCharacterId();
@@ -233,6 +241,9 @@ namespace MAGE.GameModes.Exploration
                 player.transform.position = mob.transform.position;
                 player.transform.rotation = mob.transform.rotation;
             }
+
+            ClaimLootInfo lootInfo = WorldService.Get().GetLoot(claimLootParams);
+            WorldService.Get().ClaimLoot(lootInfo);
 
             Vector3 partyToEnemy = enemy.transform.position - mPlayer.transform.position;
             partyToEnemy.y = 0;

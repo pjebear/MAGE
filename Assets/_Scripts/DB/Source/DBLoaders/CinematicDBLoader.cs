@@ -17,7 +17,7 @@ namespace MAGE.DB.Internal
                 DBCinematicInfo cinematicInfo = new DBCinematicInfo();
                 cinematicInfo.Id = (int)cinematicId;
                 cinematicInfo.Name = cinematicId.ToString();
-                cinematicInfo.IsActive = false;
+                cinematicInfo.IsActive = true;
 
                 DBService.Get().WriteCinematicInfo(cinematicInfo.Id, cinematicInfo);
             }
