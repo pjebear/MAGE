@@ -102,6 +102,16 @@ namespace MAGE.GameSystems.Actions
         NUM
     }
 
+    enum RelativeOrientation
+    {
+        Behind,
+        Left,
+        Right,
+        Front,
+
+        NUM
+    }
+
     enum ActionId
     {
         INVALID = -1,

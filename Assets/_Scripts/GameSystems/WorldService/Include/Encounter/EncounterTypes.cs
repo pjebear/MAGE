@@ -72,9 +72,6 @@ struct EncounterCreateParams
 {
     public LevelId LevelId;
     public EncounterScenarioId ScenarioId;
-
-    public TileIdx BottomLeft;
-    public TileIdx TopRight;
 }
 
 class EncounterResultInfo

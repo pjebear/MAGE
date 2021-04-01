@@ -19,55 +19,16 @@ namespace MAGE.GameModes.SceneElements
         public Transform NPCContainer;
         public Dictionary<ScenarioId, Scenario> Scenarios = new Dictionary<ScenarioId, Scenario>();
         public Actor Player;
-        public TileContainerGenerator TileContainerGenerator;
-        public GameObject TreeColliderPrefab;
-        public List<CapsuleCollider> TreeColliders = new List<CapsuleCollider>();
-
-        public ActorLoader ActorLoader;
-        //public Dictionary<NPCId, GameO> Scenarios = new Dictionary<ScenarioId, Scenario>();
-
+      
         private void Awake()
         {
-            ActorLoader = gameObject.AddComponent<ActorLoader>();
+            
         }
 
         // Start is called before the first frame update
         void Start()
         {
-            if (Terrain != null)
-            {
-                //foreach (TreeInstance tree in Terrain.terrainData.treeInstances)
-                //{
-                //    int protypeIndex = tree.prototypeIndex;
-                //    TreePrototype prototype = Terrain.terrainData.treePrototypes[protypeIndex];
-                //    float baseTreeRadius = prototype.prefab.GetComponent<CapsuleCollider>().radius;
-                //    float scaledTreeRadius = tree.widthScale * baseTreeRadius;
-                //    float xzScale = scaledTreeRadius / 0.5f;
-
-                //    GameObject capsule = Instantiate(TreeColliderPrefab, Terrain.transform);
-                //    capsule.transform.localPosition = Vector3.Scale(tree.position, Terrain.terrainData.size);
-                //    capsule.transform.localScale = new Vector3(xzScale, 1, xzScale);
-                //    TreeColliders.Add(capsule.GetComponentInChildren<CapsuleCollider>());
-                //}
-            }
-        }
-
-        public void GenerateTilesAtPosition(Transform parent)
-        {
-             TileContainerGenerator.GenerateTiles(parent.position, 15, 15, parent);
-        }
-
-        public TileContainer GenerateTiles(Vector3 center, int width, int height, Transform parent)
-        {
-            return TileContainerGenerator.GenerateTiles(center, width, height, parent);
-        }
-
-        public void ToggleTreeColliders(bool on)
-        {
-            foreach (CapsuleCollider collider in TreeColliders)
-            {
-                collider.isTrigger = !on;
-            }
+           
         }
 
         // Update is called once per frame

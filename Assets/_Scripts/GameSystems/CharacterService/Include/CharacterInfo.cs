@@ -44,7 +44,7 @@ namespace MAGE.GameSystems.Characters
         public SpecializationType CurrentSpecializationType;
         public Specialization CurrentSpecialization { get { return Specializations[CurrentSpecializationType]; } }
 
-        protected List<ActionResponderBase> ActionResponders = new List<ActionResponderBase>();
+        protected List<ActionResponseId> ActionResponders = new List<ActionResponseId>();
         public Equipment Equipment = new Equipment();
         public List<StatusEffect> StatusEffects = new List<StatusEffect>();
 
@@ -111,12 +111,9 @@ namespace MAGE.GameSystems.Characters
             
             // Appearance Overrides
             mBaseAppearance = AppearanceUtil.FromDB(DBService.Get().LoadAppearance(characterInfo.AppearanceId));
-            
+
             // Assorted things
-            foreach (ActionResponseId actionResponseId in GetActionResponseIds())
-            {
-                ActionResponders.Add(ActionResponderFactory.CheckoutResponder(actionResponseId));
-            }
+            ActionResponders = GetActionResponseIds();
 
             // Attributes
             BaseAttributes = new Attributes(characterInfo.Attributes);
@@ -187,22 +184,6 @@ namespace MAGE.GameSystems.Characters
         }
 
         //  ------------------------------------------------------------------------------
-        public List<ActionResponseBase> RespondToAction(ActionResult actionResult, Map map)
-        {
-            List<ActionResponseBase> responses = new List<ActionResponseBase>();
-
-            if (IsAlive)
-            {
-                foreach (ActionResponderBase responder in ActionResponders)
-                {
-                    responses.AddRange(responder.RespondToActionResult(this, actionResult, map));
-                }
-            }
-
-            return responses;
-        }
-
-        //  ------------------------------------------------------------------------------
         public ActionInfoBase GetActionInfo(ActionId actionId)
         {
             ActionInfoBase actionInfo = ActionFactory.CreateActionInfoFromId(actionId, this);
@@ -215,11 +196,11 @@ namespace MAGE.GameSystems.Characters
             return actionInfo;
         }
 
+        //  ------------------------------------------------------------------------------
         public List<ActionId> GetActionIds()
         {
             List<ActionId> actions = new List<ActionId>();
 
-            actions.Add(ActionId.MeeleWeaponAttack);
             actions.AddRange(CurrentSpecialization.GetActions());
 
             return actions;

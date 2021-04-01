@@ -445,7 +445,7 @@ namespace MAGE.GameModes.FlowControl
             Messaging.MessageRouter.Instance.NotifyMessage(new ExplorationMessage(ExplorationMessage.EventType.InteractionStart, mInteractingWith));
             GameModel.Exploration.MovementDirector.RotateActor(mExplorationActor.transform, mInteractingWith.transform, null);
             //mExplorationActor.SetControllerState(ActorController.ControllerState.None);
-            Camera.main.gameObject.GetComponent<ThirdPersonCamera>().Interact(mExplorationActor.transform, mInteractingWith.transform);
+            //Camera.main.gameObject.GetComponent<ThirdPersonCamera>().Interact(mExplorationActor.transform, mInteractingWith.transform);
             UIManager.Instance.PostContainer(UIContainerId.ContainerInspectView, this);
         }
     }

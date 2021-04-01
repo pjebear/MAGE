@@ -35,8 +35,7 @@ namespace MAGE.GameModes.SceneElements.Encounters
         {
             Vector3 triggerVolumePos = triggerVolume.transform.position;
             Vector3 mapPos = RaycastUtil.GetRayCastHit(triggerVolumePos + Vector3.up * 100, Vector3.down, 500, new List<RayCastLayer>() { RayCastLayer.Terrain });
-            EncounterContainerGenerator.GenerateEncounterContainer(entered, Mobs.Select(x=>x.GetComponent<ActorSpawner>()).ToList(), mapPos);
-
+            
             EnableHeirarchy(false);
 
             mMobsInEncounter = true;

@@ -43,8 +43,6 @@ namespace MAGE.GameSystems.Actions
 
     enum TargetSelectionType
     {
-        Tile,
-        Character,
         Point,
         Focal,
 
@@ -55,33 +53,11 @@ namespace MAGE.GameSystems.Actions
     {
         public Transform PointTarget;
         public CombatTarget FocalTarget;
-        public TileIdx TileTarget;
-        public Character CharacterTarget;
         public TargetSelectionType TargetType;
-
-        public Target(TileIdx tileTarget)
-        {
-            TargetType = TargetSelectionType.Tile;
-            TileTarget = tileTarget;
-            CharacterTarget = null;
-            PointTarget = null;
-            FocalTarget = null;
-        }
-
-        public Target(Character actorTarget)
-        {
-            TargetType = TargetSelectionType.Character;
-            CharacterTarget = actorTarget;
-            TileTarget = new TileIdx();
-            PointTarget = null;
-            FocalTarget = null;
-        }
 
         public Target(Transform pointTarget)
         {
             TargetType = TargetSelectionType.Point;
-            CharacterTarget = null;
-            TileTarget = new TileIdx();
             PointTarget = pointTarget;
             FocalTarget = null;
         }
@@ -89,8 +65,7 @@ namespace MAGE.GameSystems.Actions
         public Target(CombatTarget focalTarget)
         {
             TargetType = TargetSelectionType.Focal;
-            CharacterTarget = null;
-            TileTarget = new TileIdx();
+
             PointTarget = null;
             FocalTarget = focalTarget;
         }
@@ -116,6 +91,3 @@ namespace MAGE.GameSystems.Actions
         }
     }
 }
-
-
-

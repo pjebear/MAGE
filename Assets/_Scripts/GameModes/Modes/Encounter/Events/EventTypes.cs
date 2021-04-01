@@ -86,32 +86,6 @@ namespace MAGE.GameModes.Encounter
         }
     }
 
-    class AnimationEvent_Deprecated : ActionEvent
-    {
-        public CharacterActorController BeingAnimated;
-        public AnimationInfo Animation;
-        public Transform FocusTarget;
-
-        public AnimationEvent_Deprecated(CharacterActorController actor, AnimationInfo animation, int startPointOffset, Transform focusTarget)
-            : base(startPointOffset, animation.NumFrames)
-        {
-            BeingAnimated = actor;
-            Animation = animation;
-            FocusTarget = focusTarget;
-        }
-
-        public override void Trigger()
-        {
-            EncounterFlowControl_Deprecated.AnimationDirector.AnimateActor(BeingAnimated, Animation);
-
-            if (FocusTarget != null)
-            {
-                float rotationDuration = AnimationConstants.SECONDS_PER_FRAME * Animation.SyncedFrame;
-                EncounterFlowControl_Deprecated.AnimationDirector.RotateActorTowards(BeingAnimated, FocusTarget, rotationDuration);
-            }
-        }
-    }
-
     class AudioEvent : ActionEvent
     {
         public AudioSource AudioSource;
@@ -127,24 +101,6 @@ namespace MAGE.GameModes.Encounter
         public override void Trigger()
         {
             AudioSource.PlayOneShot(AudioManager.Instance.GetSFXClip(Audio));
-        }
-    }
-
-    class StateChangeEvent_Deprecated : ActionEvent
-    {
-        public Character HavingStateChanged;
-        public StateChange StateChange;
-
-        public StateChangeEvent_Deprecated(Character character, StateChange stateChange, int startPointOffset)
-            : base(startPointOffset, 0)
-        {
-            HavingStateChanged = character;
-            StateChange = stateChange;
-        }
-
-        public override void Trigger()
-        {
-            //EncounterFlowControl_Deprecated.CharacterDirector.CharacterActorLookup[HavingStateChanged].DisplayStateChange(StateChange);
         }
     }
 
@@ -283,39 +239,6 @@ namespace MAGE.GameModes.Encounter
             Events.Add(stateChangeEvent);
             SyncedFrame = 0;
             NumFrames = 0;
-        }
-    }
-
-    class ActorInteractionBlock : ActionEventBlock
-    {
-        private CharacterActorController owner;
-        private AnimationId animationId;
-        private Transform lookAt;
-        private object empty;
-
-        public ActorInteractionBlock(CharacterActorController actorController, AnimationId animationId, Transform lookAt, StateChange stateChange)
-        {
-            AnimationInfo animation = AnimationFactory.CheckoutAnimation(animationId);
-            NumFrames = animation.NumFrames;
-            SyncedFrame = animation.SyncedFrame;
-
-            Events.Add(new AnimationEvent_Deprecated(actorController, animation, 0, lookAt));
-            if (animation.SFXId != SFXId.INVALID)
-            {
-                Events.Add(new AudioEvent(actorController.GetComponent<AudioSource>(), animation.SFXId, 0));
-            }
-            if (stateChange.Type != StateChangeType.None)
-            {
-                Events.Add(new StateChangeEvent_Deprecated(actorController.Character, stateChange, animation.SyncedFrame));
-            }
-        }
-
-        public ActorInteractionBlock(CharacterActorController owner, AnimationId animationId, Transform lookAt, object empty)
-        {
-            this.owner = owner;
-            this.animationId = animationId;
-            this.lookAt = lookAt;
-            this.empty = empty;
         }
     }
 

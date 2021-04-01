@@ -9,15 +9,12 @@ namespace MAGE.UI.Views
 {
     class EncounterStatus : UIContainer
     {
-        private string tag = "EncounterStatus";
-
         public enum ComponentId
         {
             ContinueBtn,
             WinBtn,
             LoseBtn,
         }
-
 
         public class DataProvider : IDataProvider
         {

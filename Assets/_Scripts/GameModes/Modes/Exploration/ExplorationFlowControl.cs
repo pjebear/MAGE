@@ -1,16 +1,8 @@
-﻿using Invector.vCharacterController;
-using MAGE.GameModes.Exploration;
+﻿using MAGE.GameModes.Exploration;
 using MAGE.GameModes.FlowControl;
-using MAGE.GameModes.LevelManagement;
 using MAGE.GameModes.SceneElements;
 using MAGE.GameSystems;
-using MAGE.GameSystems.Characters;
 using MAGE.Messaging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace MAGE.GameModes

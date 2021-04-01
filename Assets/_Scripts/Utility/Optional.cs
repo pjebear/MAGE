@@ -73,4 +73,13 @@ struct Optional<T>
             return or;
         }
     }
+
+    public override int GetHashCode()
+    {
+        var hashCode = -282591772;
+        hashCode = hashCode * -1521134295 + HasValue.GetHashCode();
+        hashCode = hashCode * -1521134295 + EqualityComparer<T>.Default.GetHashCode(value);
+        hashCode = hashCode * -1521134295 + EqualityComparer<T>.Default.GetHashCode(Value);
+        return hashCode;
+    }
 }

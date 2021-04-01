@@ -295,17 +295,14 @@ namespace MAGE.GameModes.Encounter
 
                     return dataProvider;
                 }
-                break;
                 case (int)UIContainerId.EncounterCharacterInfoLeftView:
                 {
                     return PublishCharacterInfoPanelLeft();
                 }
-                break;
                 case (int)UIContainerId.EncounterCharacterInfoRightView:
                 {
                     return PublishCharacterInfoPanelRight();
                 }
-                break;
             }
 
             return null;
@@ -325,7 +322,7 @@ namespace MAGE.GameModes.Encounter
                             if (listInteractionInfo.ListIdx < mAvailableActions.Count)
                             {
                                 mSelectedAction = mAvailableActions[listInteractionInfo.ListIdx];
-                                mActionInfo = ActionComposer.GetAction(mCurrentCharacter.GetComponent<CombatEntity>(), mSelectedAction).ActionInfo;
+                                mActionInfo = ActionComposerFactory.CheckoutAction(mCurrentCharacter.GetComponent<CombatEntity>(), mSelectedAction).ActionInfo;
                                 DisplayRange(mAbilityRangeRenderer, mCurrentCharacter.transform.position, mActionInfo.CastRange.MaxRange);
 
                                 SetState(State.TargetSelect);

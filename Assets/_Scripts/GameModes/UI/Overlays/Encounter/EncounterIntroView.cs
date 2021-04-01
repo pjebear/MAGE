@@ -9,8 +9,6 @@ namespace MAGE.UI.Views
 {
     class EncounterIntroView : UIContainer
     {
-        private string tag = "EncounterIntroView";
-
         public enum ComponentId
         {
             ContinueBtn

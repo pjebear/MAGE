@@ -5,15 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace MAGE.GameSystems.AI
 {
     class TurnProposal
     {
-        public List<TileIdx> MovementProposal = new List<TileIdx>();
-
         public ActionId ActionId = ActionId.INVALID;
-        public TileIdx CastTile;
+        public Vector3 Position;
         public TargetSelection ActionTarget;
         public float Value;
     }

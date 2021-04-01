@@ -2299,17 +2299,17 @@ PrefabInstance:
     - target: {fileID: 3719071087411164772, guid: f82338a43ca32bc459b33a7a345d738d,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.030308055
+      value: -0.030308062
       objectReference: {fileID: 0}
     - target: {fileID: 3719071087411164772, guid: f82338a43ca32bc459b33a7a345d738d,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.000000029802326
+      value: -0.0000003576279
       objectReference: {fileID: 0}
     - target: {fileID: 3719071087411164772, guid: f82338a43ca32bc459b33a7a345d738d,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -9.313227e-10
+      value: 0.000000008381904
       objectReference: {fileID: 0}
     - target: {fileID: 3719071087411164772, guid: f82338a43ca32bc459b33a7a345d738d,
         type: 3}
@@ -4361,10 +4361,6 @@ MonoBehaviour:
   EncounterContainer: {fileID: 956271778}
   NPCContainer: {fileID: 1041850365}
   Player: {fileID: 82188877}
-  TileContainerGenerator: {fileID: 0}
-  TreeColliderPrefab: {fileID: 0}
-  TreeColliders: []
-  ActorLoader: {fileID: 0}
 --- !u!4 &1796769859
 Transform:
   m_ObjectHideFlags: 0

@@ -16,44 +16,44 @@ namespace MAGE.GameModes.Encounter
         public const float ARC_VELOCITY_START = 9;
         public static Vector3 VertOffset = Vector3.up * 1.3f;
 
-        public static ProjectileSpawnParams GenerateSpawnParams(TileControl spawnPoint, Target target, ProjectilePathType pathType, ProjectileId projectileId)
-        {
-            TileControl projectileEndPoint = null;
-            if (target.TargetType == TargetSelectionType.Character)
-            {
-                TileIdx location = EncounterFlowControl_Deprecated.MapControl.Map.GetCharacterPosition(target.CharacterTarget).Location;
-                projectileEndPoint = EncounterFlowControl_Deprecated.MapControl[location];
-            }
-            else
-            {
-                TileIdx location = target.TileTarget;
-                projectileEndPoint = EncounterFlowControl_Deprecated.MapControl[location];
-            }
+        //public static ProjectileSpawnParams GenerateSpawnParams(TileControl spawnPoint, Target target, ProjectilePathType pathType, ProjectileId projectileId)
+        //{
+        //    TileControl projectileEndPoint = null;
+        //    if (target.TargetType == TargetSelectionType.Character)
+        //    {
+        //        TileIdx location = EncounterFlowControl_Deprecated.MapControl.Map.GetCharacterPosition(target.CharacterTarget).Location;
+        //        projectileEndPoint = EncounterFlowControl_Deprecated.MapControl[location];
+        //    }
+        //    else
+        //    {
+        //        TileIdx location = target.TileTarget;
+        //        projectileEndPoint = EncounterFlowControl_Deprecated.MapControl[location];
+        //    }
 
-            return GenerateSpawnParams(spawnPoint, projectileEndPoint, pathType, projectileId);
-        }
+        //    return GenerateSpawnParams(spawnPoint, projectileEndPoint, pathType, projectileId);
+        //}
 
-        public static ProjectileSpawnParams GenerateSpawnParams(TileControl start, TileControl end, ProjectilePathType pathType, ProjectileId projectileId)
-        {
-            ProjectileSpawnParams spawnParams = null;
-            if (pathType == ProjectilePathType.Linear)
-            {
-                spawnParams = GenerateLinearProjectileParams(start, end);
-            }
-            else
-            {
-                spawnParams = GenerateLinearProjectileParams(start, end);
-            }
+        //public static ProjectileSpawnParams GenerateSpawnParams(TileControl start, TileControl end, ProjectilePathType pathType, ProjectileId projectileId)
+        //{
+        //    ProjectileSpawnParams spawnParams = null;
+        //    if (pathType == ProjectilePathType.Linear)
+        //    {
+        //        spawnParams = GenerateLinearProjectileParams(start, end);
+        //    }
+        //    else
+        //    {
+        //        spawnParams = GenerateLinearProjectileParams(start, end);
+        //    }
 
-            spawnParams.ProjectileId = projectileId;
+        //    spawnParams.ProjectileId = projectileId;
 
-            return spawnParams;
-        }
+        //    return spawnParams;
+        //}
 
-        private static ProjectileSpawnParams GenerateLinearProjectileParams(TileControl start, TileControl end)
-        {
-            return GenerateLinearProjectileParams(start.transform, end.transform);
-        }
+        //private static ProjectileSpawnParams GenerateLinearProjectileParams(TileControl start, TileControl end)
+        //{
+        //    return GenerateLinearProjectileParams(start.transform, end.transform);
+        //}
 
         public static ProjectileSpawnParams GenerateLinearProjectileParams(Transform start, Transform end)
         {
@@ -80,88 +80,88 @@ namespace MAGE.GameModes.Encounter
             return linearParams;
         }
 
-        private static ProjectileSpawnParams GenerateArcProjectileParams(TileControl start, TileControl end)
-        {
-            ProjectileSpawnParams arcParams = new ProjectileSpawnParams();
+        //private static ProjectileSpawnParams GenerateArcProjectileParams(TileControl start, TileControl end)
+        //{
+        //    ProjectileSpawnParams arcParams = new ProjectileSpawnParams();
 
-            Vector3 spawnPosition = start.transform.position + VertOffset;
-            Vector3 endPosition = end.transform.position + VertOffset;
+        //    Vector3 spawnPosition = start.transform.position + VertOffset;
+        //    Vector3 endPosition = end.transform.position + VertOffset;
 
-            arcParams.PathType = ProjectilePathType.Arc;
-            arcParams.SpawnPoint = spawnPosition;
+        //    arcParams.PathType = ProjectilePathType.Arc;
+        //    arcParams.SpawnPoint = spawnPosition;
 
-            Vector3 linearTrajectory = (endPosition - spawnPosition);
-            Vector3 horzTrajectory = linearTrajectory;
-            horzTrajectory.y = 0;
-            float horzDistance = horzTrajectory.magnitude;
-            horzTrajectory.Normalize();
+        //    Vector3 linearTrajectory = (endPosition - spawnPosition);
+        //    Vector3 horzTrajectory = linearTrajectory;
+        //    horzTrajectory.y = 0;
+        //    float horzDistance = horzTrajectory.magnitude;
+        //    horzTrajectory.Normalize();
 
-            GameObject collisionAlongArc = null;
-            float shootAngle = 0;
-            float speed = ARC_VELOCITY_START;
-            int safteyBreak = 100;
+        //    GameObject collisionAlongArc = null;
+        //    float shootAngle = 0;
+        //    float speed = ARC_VELOCITY_START;
+        //    int safteyBreak = 100;
 
-            bool foundSolution = false;
-            while (!foundSolution && safteyBreak >= 0)
-            {
-                List<float> angles = GenerateArcPathAngles(spawnPosition, endPosition, speed);
-                for (int i = 0; i < angles.Count; ++i)
-                {
-                    shootAngle = angles[i];
+        //    bool foundSolution = false;
+        //    while (!foundSolution && safteyBreak >= 0)
+        //    {
+        //        List<float> angles = GenerateArcPathAngles(spawnPosition, endPosition, speed);
+        //        for (int i = 0; i < angles.Count; ++i)
+        //        {
+        //            shootAngle = angles[i];
 
-                    float vertLobSpeed = speed * Mathf.Sin(shootAngle * Mathf.Deg2Rad);
-                    float horzLobSpeed = speed * Mathf.Cos(shootAngle * Mathf.Deg2Rad);
+        //            float vertLobSpeed = speed * Mathf.Sin(shootAngle * Mathf.Deg2Rad);
+        //            float horzLobSpeed = speed * Mathf.Cos(shootAngle * Mathf.Deg2Rad);
 
-                    Vector3 lobTrajectory = Vector3.up * vertLobSpeed + horzTrajectory * horzLobSpeed;
-                    float lobDuration = horzDistance / horzLobSpeed;
-                    collisionAlongArc = ArcMarch(spawnPosition, endPosition, lobTrajectory, lobDuration);
+        //            Vector3 lobTrajectory = Vector3.up * vertLobSpeed + horzTrajectory * horzLobSpeed;
+        //            float lobDuration = horzDistance / horzLobSpeed;
+        //            collisionAlongArc = ArcMarch(spawnPosition, endPosition, lobTrajectory, lobDuration);
 
-                    bool emptyTileAndNoCollisions = (end == null && collisionAlongArc == null);
-                    bool filledTileAndCorrectCollision 
-                        = end != null 
-                        && collisionAlongArc != null
-                        && EncounterFlowControl_Deprecated.MapControl.GetOnTile(end) != null
-                        && collisionAlongArc.GetComponent<CharacterActorController>() == EncounterFlowControl_Deprecated.MapControl.GetOnTile(end);
+        //            bool emptyTileAndNoCollisions = (end == null && collisionAlongArc == null);
+        //            bool filledTileAndCorrectCollision 
+        //                = end != null 
+        //                && collisionAlongArc != null
+        //                && EncounterFlowControl_Deprecated.MapControl.GetOnTile(end) != null
+        //                && collisionAlongArc.GetComponent<CharacterActorController>() == EncounterFlowControl_Deprecated.MapControl.GetOnTile(end);
 
-                    if (emptyTileAndNoCollisions || filledTileAndCorrectCollision)
-                    {
-                        Logger.Log(LogTag.GameModes, "ProjectileDirector", string.Format("Found solution for Lob arc. Angle[{0}] Speed[{1}]", shootAngle, speed));
-                        foundSolution = true;
-                        break;
-                    }
-                }
+        //            if (emptyTileAndNoCollisions || filledTileAndCorrectCollision)
+        //            {
+        //                Logger.Log(LogTag.GameModes, "ProjectileDirector", string.Format("Found solution for Lob arc. Angle[{0}] Speed[{1}]", shootAngle, speed));
+        //                foundSolution = true;
+        //                break;
+        //            }
+        //        }
 
-                if (!foundSolution)
-                {
-                    speed += 1;
-                    safteyBreak--;
-                }
-            }
+        //        if (!foundSolution)
+        //        {
+        //            speed += 1;
+        //            safteyBreak--;
+        //        }
+        //    }
 
-            if (!foundSolution)
-            {
-                Logger.Log(LogTag.GameModes, "ProjectileDirector", "Failed to find solution for projectile arc");
+        //    if (!foundSolution)
+        //    {
+        //        Logger.Log(LogTag.GameModes, "ProjectileDirector", "Failed to find solution for projectile arc");
 
-                shootAngle = 45;
-                speed = ARC_VELOCITY_START;
-                collisionAlongArc = null;
-            }
+        //        shootAngle = 45;
+        //        speed = ARC_VELOCITY_START;
+        //        collisionAlongArc = null;
+        //    }
 
 
-            float vertSpeed = speed * Mathf.Sin(shootAngle * Mathf.Deg2Rad);
-            float horzSpeed = speed * Mathf.Cos(shootAngle * Mathf.Deg2Rad);
+        //    float vertSpeed = speed * Mathf.Sin(shootAngle * Mathf.Deg2Rad);
+        //    float horzSpeed = speed * Mathf.Cos(shootAngle * Mathf.Deg2Rad);
 
-            Vector3 trajectory = Vector3.up * vertSpeed + horzTrajectory * horzSpeed;
+        //    Vector3 trajectory = Vector3.up * vertSpeed + horzTrajectory * horzSpeed;
 
-            arcParams.InitialForward = trajectory.normalized;
-            arcParams.InitialVelocity = speed;
-            arcParams.EndPoint = endPosition;
+        //    arcParams.InitialForward = trajectory.normalized;
+        //    arcParams.InitialVelocity = speed;
+        //    arcParams.EndPoint = endPosition;
 
-            arcParams.FlightDuration = horzDistance / horzSpeed;
-            arcParams.CollisionWith = collisionAlongArc;
+        //    arcParams.FlightDuration = horzDistance / horzSpeed;
+        //    arcParams.CollisionWith = collisionAlongArc;
 
-            return arcParams;
-        }
+        //    return arcParams;
+        //}
 
         static List<float> GenerateArcPathAngles(Vector3 startPoint, Vector3 endPoint, float speed)
         {

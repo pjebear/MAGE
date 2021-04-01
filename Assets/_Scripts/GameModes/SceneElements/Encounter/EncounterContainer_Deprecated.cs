@@ -20,7 +20,6 @@ namespace MAGE.GameModes.SceneElements
         public List<EncounterConditionParams> LoseConditions = new List<EncounterConditionParams>();
         public List<MobId> MobsInEncounter = new List<MobId>();
         public int MaxUserPlayers = 5;
-        public PlacementInfo PlacementInfo = new PlacementInfo();
         public Transform Tiles;
         public Transform AlliesContainer;
         public Transform EnemiesContainer;

@@ -21,11 +21,6 @@ namespace MAGE.GameModes.Encounter
             return UnityEngine.Resources.Load<BillboardEmitter>("EncounterPrefabs/BillboardEmmiter");
         }
 
-        public static DebugAnimationRig LoadAnimationRig()
-        {
-            return UnityEngine.Resources.Load<DebugAnimationRig>("EncounterPrefabs/DebugAnimationRig");
-        }
-
         public static LineRenderer RangeRenderer { get { return GameObject.Instantiate(UnityEngine.Resources.Load<LineRenderer>("EncounterPrefabs/RangeRenderer")); } }
 
         public static NavMeshObstacle Obstacle { get { return GameObject.Instantiate(UnityEngine.Resources.Load<NavMeshObstacle>("EncounterPrefabs/NavMeshObstacle")); } }
