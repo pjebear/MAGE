@@ -82,9 +82,9 @@ namespace MAGE.GameModes.SceneElements
             return EncounterContainer.GetComponentInChildren<EncounterContainer>();
         }
 
-        public Combat.CombatCharacter CreateCombatCharacter()
+        public Combat.CombatCharacter CreateCombatCharacter(Vector3 position, Quaternion rotation, Transform parent)
         {
-            return Instantiate(Resources.Load<Combat.CombatCharacter>("Props/ActorSpawner/CombatCharacter"));
+            return Instantiate(Resources.Load<Combat.CombatCharacter>("Props/ActorSpawner/CombatCharacter"), position, rotation, parent);
         }
 
         public List<Combat.CombatTarget> GetTargetsInRange(Combat.CombatEntity castPoint, TargetSelection targetSelection)

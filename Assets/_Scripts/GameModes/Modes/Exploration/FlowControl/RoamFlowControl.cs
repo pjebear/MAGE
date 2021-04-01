@@ -235,11 +235,8 @@ namespace MAGE.GameModes.Exploration
                 mob.gameObject.SetActive(false);
                 claimLootParams.Mobs.Add(mob.GetComponent<MobCharacterControl>().MobId);
 
-                CombatCharacter player = level.CreateCombatCharacter();
+                CombatCharacter player = level.CreateCombatCharacter(mob.transform.position, mob.transform.rotation, randomEncounter.Enemies);
                 player.GetComponent<CharacterPickerControl>().CharacterPicker.RootCharacterId = mob.GetComponent<CharacterPickerControl>().CharacterPicker.GetCharacterId();
-                player.transform.SetParent(randomEncounter.Enemies);
-                player.transform.position = mob.transform.position;
-                player.transform.rotation = mob.transform.rotation;
             }
 
             ClaimLootInfo lootInfo = WorldService.Get().GetLoot(claimLootParams);
@@ -253,11 +250,8 @@ namespace MAGE.GameModes.Exploration
             foreach (int partyCharacterId in WorldService.Get().GetCharactersInParty())
             //int partyCharacterId = WorldService.Get().GetPartyAvatarId();
             {
-                CombatCharacter player = level.CreateCombatCharacter();
+                CombatCharacter player = level.CreateCombatCharacter(mPlayer.transform.position + characterCount++ * right, mPlayer.transform.rotation, randomEncounter.Allys);
                 player.GetComponent<CharacterPickerControl>().CharacterPicker.RootCharacterId = partyCharacterId;
-                player.transform.SetParent(randomEncounter.Allys);
-                player.transform.position = mPlayer.transform.position + characterCount++ * right;
-                player.transform.rotation = mPlayer.transform.rotation;
             }
         }
     }

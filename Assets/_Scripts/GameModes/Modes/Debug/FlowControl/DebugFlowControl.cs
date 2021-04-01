@@ -32,6 +32,7 @@ namespace MAGE.GameModes.DebugFlow
             {
                 GameSystems.World.PartyLocation partyLocation = new GameSystems.World.PartyLocation();
                 partyLocation.Level = mDebugSettings.OverrideLevelId;
+                partyLocation.SpawnPoint = 0;
                 WorldService.Get().UpdatePartyLocation(partyLocation);
             }            
         }
