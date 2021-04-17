@@ -323,7 +323,8 @@ namespace MAGE.DB.Internal
                 };
                 entry.EquipBonuses = new List<DB.DBAttributeModifier>()
             {
-                new DB.DBAttributeModifier(){ AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, ModifierType = (int)ModifierType.Increment, Modifier = 15}
+                new DB.DBAttributeModifier(){ AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, ModifierType = (int)ModifierType.Increment, Modifier = 5}
+                ,new DB.DBAttributeModifier(){ AttributeCategory = (int)AttributeCategory.Resource, AttributeId = (int)ResourceType.Health, ModifierType = (int)ModifierType.Increment, Modifier = 10}
             };
                 entry.SpriteId = (int)UI.ItemIconSpriteId.Relic;
                 entry.PrefabId = (int)ApparelAssetId.NONE;

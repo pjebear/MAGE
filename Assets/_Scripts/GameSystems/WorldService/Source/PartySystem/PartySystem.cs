@@ -134,7 +134,7 @@ namespace MAGE.GameSystems.World.Internal
         {
             DBService.Get().ClearTeam(TeamSide.AllyHuman);
 
-            foreach (int characterId in resultInfo.PlayersInEncounter[TeamSide.AllyHuman])
+            foreach (int characterId in resultInfo.PlayersInEncounter)
             {
                 CharacterService.Get().AssignExperience(characterId, CharacterConstants.LEVEL_UP_THRESHOLD);
             }

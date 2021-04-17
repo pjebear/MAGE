@@ -87,9 +87,9 @@ namespace MAGE.DB.Internal
 
                     conversation.Header = "Trouble with the guilds";
                     conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = ownerIdx, Content = "Do you see what I have to deal with here? I can't be held responsible for this fiasco" });
-                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = partyAvatarIdx, Content = "Everything that happens in this town is your reponsibility as a Magistrate of the curch" });
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = partyAvatarIdx, Content = "Everything that happens in this town is your reponsibility as a Magistrate of the church" });
                     conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = ownerIdx, Content = "Now see here..." });
-                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = partyAvatarIdx, Content = "No you see, your people are your flock and your arrogance has lead them to suffer. By the Saint I should strip you of your title now." });
+                    conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = partyAvatarIdx, Content = "No YOU see, your people are your flock and your arrogance has lead them to suffer. By the Saint I should strip you of your title now." });
                     conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = ownerIdx, Content = "You wouldn't..!" });
                     conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = partyAvatarIdx, Content = "Oh I would. The only thing staying my hand right now is the faith that as a man of the Saint you can come to reconciliation and make ammends to your flock." });
                     conversation.Conversation.Add(new DB.DBDialogue() { SpeakerIdx = partyAvatarIdx, Content = "I'll be leaving shortly to deal with this bandit issue, I expect a change of heart by my return" });

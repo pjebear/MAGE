@@ -8,10 +8,13 @@ namespace MAGE.GameSystems
 {
     enum CinematicId
     {
-        // Demo Level
-        Demo_CityExit,
-        Demo_IntroCinematic,
-        Demo_TownHallCinematic,
+        // Town 
+        Intro,
+        MeetTheMayor,
+        PostTraining,
 
+        // Forest
+        LotharUnderAttack,
+        LotharSaved
     }
 }

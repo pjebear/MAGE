@@ -207,14 +207,19 @@ namespace MAGE.GameModes.FlowControl
                     }
                     else
                     {
-                        mInteractionState = InteractionState.NPCActionSelect;
-
-                        WorldService.Get().NotifyConversationComplete(mConversation.ConversationId);
-                        UIManager.Instance.RemoveOverlay(UIContainerId.ConversationView);
-                        UIManager.Instance.PostContainer(UIContainerId.NPCActionSelectView, this);
+                        EndConversation();
                     }
                 }
             }
+        }
+
+        private void EndConversation()
+        {
+            mInteractionState = InteractionState.NPCActionSelect;
+
+            WorldService.Get().NotifyConversationComplete(mConversation.ConversationId);
+            UIManager.Instance.RemoveOverlay(UIContainerId.ConversationView);
+            UIManager.Instance.PostContainer(UIContainerId.NPCActionSelectView, this);
         }
 
         private void HandleContainerInspectInteraction(UIInteractionInfo interactionInfo)
@@ -439,6 +444,19 @@ namespace MAGE.GameModes.FlowControl
         }
 
         #endregion // UIContainerControl
+
+        public override void OnKeyPressed(InputSource source, int key, InputState state)
+        {
+            if (source == InputSource.Keyboard
+                && key == (int)KeyCode.Escape
+                && state == InputState.Down)
+            {
+                if (mInteractionState == InteractionState.Conversation)
+                {
+                    EndConversation();
+                }
+            }
+        }
 
         private void InteractWithContainer(PropBase propBase)
         {

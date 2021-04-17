@@ -21,8 +21,7 @@ namespace MAGE.GameModes.SceneElements.Encounters
         public EquippableId Worn = EquippableId.INVALID;
         public EquippableId Accessory = EquippableId.INVALID;
 
-        public BodyType BodyOverride = BodyType.HumanoidMale;
-        public PortraitSpriteId PortraitOverride = PortraitSpriteId.INVALID;
+        public Appearance Appearance = new Appearance();
 
         private int mCreateCharacterId = -1;
 
@@ -52,7 +51,7 @@ namespace MAGE.GameModes.SceneElements.Encounters
                 characterCreateParams.currentEquipment[(int)Equipment.Slot.Accessory] = Accessory;
 
                 // Appearance
-                characterCreateParams.appearanceOverrides = new Appearance() { PortraitSpriteId = PortraitOverride, BodyType = BodyOverride };
+                characterCreateParams.appearanceOverrides = Appearance;
 
                 mCreateCharacterId = characterService.CreateCharacter(characterCreateParams);
             }

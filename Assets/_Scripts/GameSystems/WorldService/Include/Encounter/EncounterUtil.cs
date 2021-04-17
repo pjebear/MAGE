@@ -15,6 +15,7 @@ namespace MAGE.GameSystems.World
             db.Id = (int)info.EncounterScenarioId;
             db.Name = info.EncounterScenarioId.ToString();
             db.IsActive = info.IsActive;
+            db.IsVisible = info.IsVisible;
             db.LevelId = (int)info.LevelId;
 
             return db;
@@ -25,6 +26,7 @@ namespace MAGE.GameSystems.World
             EncounterInfo info = new EncounterInfo();
             info.EncounterScenarioId = (EncounterScenarioId)db.Id;
             info.IsActive = db.IsActive;
+            info.IsVisible = db.IsVisible;
             info.LevelId = (LevelId)db.LevelId;
 
             return info;

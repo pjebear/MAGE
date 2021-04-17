@@ -83,7 +83,7 @@ namespace MAGE.DB.Internal
 
         public void UpdateAppearanceDB()
         {
-            mAppearanceDB.Save(FileUtil.FileName.AppearanceDB.ToString());
+            mAppearanceDB.Save(FileUtil.FolderName.DB.ToString());
         }
 
         public void UnRegisterForAppearanceUpdates(object listener)

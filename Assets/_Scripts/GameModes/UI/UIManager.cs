@@ -92,12 +92,15 @@ namespace MAGE.UI
                 foreach (UIContainerId id in mContainersToPublish)
                 {
                     Debug.Assert(mContainerControlPairs.ContainsKey(id));
-                    IDataProvider publish = mContainerControlPairs[id].Value.Publish((int)id);
+                    if (mContainerControlPairs.ContainsKey(id))
+                    {
+                        IDataProvider publish = mContainerControlPairs[id].Value.Publish((int)id);
 
-                    //Logger.Log(LogTag.UI, TAG, string.Format("Publishing from {0} -> {1}: {2}",
-                    //    mContainerControlPairs[id].Value.Name(), mContainerControlPairs[id].Key.Name(), publish.ToString()));
+                        //Logger.Log(LogTag.UI, TAG, string.Format("Publishing from {0} -> {1}: {2}",
+                        //    mContainerControlPairs[id].Value.Name(), mContainerControlPairs[id].Key.Name(), publish.ToString()));
 
-                    mContainerControlPairs[id].Key.Publish(publish);
+                        mContainerControlPairs[id].Key.Publish(publish);
+                    }
                 }
 
                 mContainersToPublish.Clear();
@@ -275,7 +278,16 @@ namespace MAGE.UI
                 StopCoroutine(mFadeCoroutine);
             }
 
-            mFadeCoroutine = StartCoroutine(_FadeInOut(fadeIn, overSeconds));
+            if (overSeconds > 0)
+            {
+                mFadeCoroutine = StartCoroutine(_FadeInOut(fadeIn, overSeconds));
+            }
+            else
+            {
+                Color updatedColor = FadeSkrim.color;
+                updatedColor.a = fadeIn ? 0 : 100;
+                FadeSkrim.color = updatedColor;
+            }
         }
 
         private IEnumerator _FadeInOut(bool fadeIn, float overSeconds)

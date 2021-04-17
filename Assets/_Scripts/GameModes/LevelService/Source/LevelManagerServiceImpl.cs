@@ -2,6 +2,7 @@
 using MAGE.GameModes.SceneElements;
 using MAGE.GameSystems;
 using MAGE.GameSystems.Appearances;
+using MAGE.GameSystems.Characters;
 using MAGE.GameSystems.World;
 using MAGE.Messaging;
 using System;
@@ -137,7 +138,7 @@ namespace MAGE.GameModes.LevelManagement.Internal
 
                         case (MessageType.EncounterComplete):
                         {
-                            EncounterScenarioId completedEncounter = levelMessage.Arg<EncounterContainer_Deprecated>().EncounterScenarioId;
+                            EncounterScenarioId completedEncounter = levelMessage.Arg<EncounterContainer>().EncounterScenarioId;
 
                             DB.DBEncounterInfo info = DBService.Get().LoadEncounterInfo((int)completedEncounter);
                             info.IsActive = false;
@@ -203,8 +204,16 @@ namespace MAGE.GameModes.LevelManagement.Internal
 
         public Appearance GetNPCAppearance(NPCPropId npcId)
         {
+            // I don't like this..
             int appearanceId = GetPropInfo((int)npcId).AppearanceId;
-            return AppearanceUtil.FromDB(DBService.Get().LoadAppearance(appearanceId));
+            if (CharacterUtil.GetCharacterTypeFromId(appearanceId) == CharacterType.Story)
+            {
+                return CharacterService.Get().GetCharacter(appearanceId).GetAppearance();
+            }
+            else
+            {
+                return AppearanceUtil.FromDB(DBService.Get().LoadAppearance(appearanceId));
+            }
         }
 
         public PropInfo GetPropInfo(int propId)

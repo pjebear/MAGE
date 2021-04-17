@@ -17,6 +17,19 @@ namespace MAGE.DB.Internal
                 DBEncounterInfo encounterInfo = new DBEncounterInfo();
                 encounterInfo.Id = (int)encounterId;
                 encounterInfo.Name = encounterId.ToString();
+                encounterInfo.IsVisible = true;
+                encounterInfo.IsActive = false;
+
+                DBService.Get().WriteEncounterInfo(encounterInfo.Id, encounterInfo);
+            }
+
+            { // LotharUnderAttack
+                EncounterScenarioId encounterId = EncounterScenarioId.Demo_LotharUnderAttack;
+
+                DBEncounterInfo encounterInfo = new DBEncounterInfo();
+                encounterInfo.Id = (int)encounterId;
+                encounterInfo.Name = encounterId.ToString();
+                encounterInfo.IsVisible = true;
                 encounterInfo.IsActive = false;
 
                 DBService.Get().WriteEncounterInfo(encounterInfo.Id, encounterInfo);

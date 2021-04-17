@@ -119,10 +119,12 @@ namespace MAGE.GameModes.FlowControl
                 Logger.Assert(destination != "", LogTag.FlowControl, TAG, string.Format("HandleEvent() - Failed to find destination node [{0}] from transition [{1}] in invalid state", arg, destination), LogLevel.Error);
                 if (destination != "")
                 {
-                    List<FlowNode> newNodeStack = GetNodeStackEndingInState(destination, mFlowStack[0]);
+                    int parentGraphIndex = GetIndexOfParentGraph();
+                    List<FlowNode> newNodeStack = mFlowStack.GetRange(0, parentGraphIndex);
+                    newNodeStack.AddRange(GetNodeStackEndingInState(destination, mFlowStack[parentGraphIndex]));
 
                     int stackDivergenceIdx = -1;
-                    for (int i = 0; i < mFlowStack.Count; ++i)
+                    for (int i = parentGraphIndex; i < mFlowStack.Count; ++i)
                     {
                         if (i >= newNodeStack.Count)
                         {
@@ -345,12 +347,24 @@ namespace MAGE.GameModes.FlowControl
             {
                 foreach (FlowNode child in rootNode.States)
                 {
-                    List<FlowNode> recursiveStack = GetNodeStackEndingInState(stateName, child);
-                    if (recursiveStack.Count > 0)
+                    if (child.IsParentNode)
                     {
-                        nodeStack.Add(rootNode);
-                        nodeStack.AddRange(recursiveStack);
-                        break;
+                        if (child.Name == stateName)
+                        {
+                            nodeStack.Add(rootNode);
+                            nodeStack.Add(child);
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        List<FlowNode> recursiveStack = GetNodeStackEndingInState(stateName, child);
+                        if (recursiveStack.Count > 0)
+                        {
+                            nodeStack.Add(rootNode);
+                            nodeStack.AddRange(recursiveStack);
+                            break;
+                        }
                     }
                 }
             }
@@ -360,18 +374,23 @@ namespace MAGE.GameModes.FlowControl
 
         protected FlowGraph GetParentGraph()
         {
-            FlowGraph parent = null;
+            return mFlowStack[GetIndexOfParentGraph()] as FlowGraph;
+        }
+
+        protected int GetIndexOfParentGraph()
+        {
+            int parentIndex = 0;
 
             for (int i = mFlowStack.Count - 1; i >= 0; --i)
             {
                 if (mFlowStack[i].IsParentNode)
                 {
-                    parent = mFlowStack[i] as FlowGraph;
+                    parentIndex = i;
                     break;
                 }
             }
 
-            return parent;
+            return parentIndex;
         }
 
         protected FlowNode CurrentNode

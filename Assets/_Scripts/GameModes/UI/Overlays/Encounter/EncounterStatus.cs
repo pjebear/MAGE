@@ -61,47 +61,47 @@ namespace MAGE.UI.Views
         {
             DataProvider dp = (DataProvider)dataProvider;
 
-            string encounterStatusText = "";
-            encounterStatusText += "Clock: " + dp.CurrentTurn.ValueOr(-1);
-            encounterStatusText += Console.Out.NewLine;
-            encounterStatusText += "TurnOrder: ";
-            encounterStatusText += Console.Out.NewLine;
+            //string encounterStatusText = "";
+            //encounterStatusText += "Clock: " + dp.CurrentTurn.ValueOr(-1);
+            //encounterStatusText += Console.Out.NewLine;
+            //encounterStatusText += "TurnOrder: ";
+            //encounterStatusText += Console.Out.NewLine;
 
-            foreach (string name in dp.TurnOrder.ValueOr(new List<string>()))
-            {
-                encounterStatusText += name + Console.Out.NewLine;
-            }
+            //foreach (string name in dp.TurnOrder.ValueOr(new List<string>()))
+            //{
+            //    encounterStatusText += name + Console.Out.NewLine;
+            //}
 
-            EncounterStatusText.Publish(new UIText.DataProvider(encounterStatusText));
+            //EncounterStatusText.Publish(new UIText.DataProvider(encounterStatusText));
 
-            string actorStatusText = "";
-            actorStatusText += "name: " + dp.ActorName.ValueOr("");
-            actorStatusText += Console.Out.NewLine;
-            actorStatusText += "health: " + dp.ActorHealth.ValueOr("");
-            actorStatusText += Console.Out.NewLine;
-            actorStatusText += "owner: " + dp.ActorOwner.ValueOr("");
-            actorStatusText += Console.Out.NewLine;
-            actorStatusText += "statuses: ";
-            actorStatusText += Console.Out.NewLine;
+            //string actorStatusText = "";
+            //actorStatusText += "name: " + dp.ActorName.ValueOr("");
+            //actorStatusText += Console.Out.NewLine;
+            //actorStatusText += "health: " + dp.ActorHealth.ValueOr("");
+            //actorStatusText += Console.Out.NewLine;
+            //actorStatusText += "owner: " + dp.ActorOwner.ValueOr("");
+            //actorStatusText += Console.Out.NewLine;
+            //actorStatusText += "statuses: ";
+            //actorStatusText += Console.Out.NewLine;
 
-            foreach (string status in dp.ActorStatuses.ValueOr(new List<string>()))
-            {
-                actorStatusText += status + Console.Out.NewLine;
-            }
+            //foreach (string status in dp.ActorStatuses.ValueOr(new List<string>()))
+            //{
+            //    actorStatusText += status + Console.Out.NewLine;
+            //}
 
-            ActorStatusText.Publish(new UIText.DataProvider(actorStatusText));
+            //ActorStatusText.Publish(new UIText.DataProvider(actorStatusText));
 
-            if (dp.CurrentState.HasValue && dp.CurrentState.Value != EncounterState.InProgress)
-            {
-                EncounterOverObj.gameObject.SetActive(true);
-                EncounterOverText.Publish(new UIText.DataProvider(dp.CurrentState.Value.ToString()));
-            }
+            //if (dp.CurrentState.HasValue && dp.CurrentState.Value != EncounterState.InProgress)
+            //{
+            //    EncounterOverObj.gameObject.SetActive(true);
+            //    EncounterOverText.Publish(new UIText.DataProvider(dp.CurrentState.Value.ToString()));
+            //}
 
-            CurrentActionParent.SetActive(dp.CurrentAction.HasValue);
-            if (dp.CurrentAction.HasValue)
-            {
-                CurrentActionTxt.Publish(dp.CurrentAction.Value);
-            }
+            //CurrentActionParent.SetActive(dp.CurrentAction.HasValue);
+            //if (dp.CurrentAction.HasValue)
+            //{
+            //    CurrentActionTxt.Publish(dp.CurrentAction.Value);
+            //}
         }
 
         protected override void InitChildren()

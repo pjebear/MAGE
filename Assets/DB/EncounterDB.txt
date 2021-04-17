@@ -1,1 +1,1 @@
-{"List":[{"Key":2,"Value":{"Id":2,"Name":"Demo_TrainingGrounds","IsActive":false,"LevelId":0}}]}
+{"List":[{"Key":2,"Value":{"Id":2,"Name":"Demo_TrainingGrounds","IsActive":false,"IsVisible":true,"LevelId":0}},{"Key":3,"Value":{"Id":3,"Name":"Demo_LotharUnderAttack","IsActive":false,"IsVisible":true,"LevelId":0}}]}

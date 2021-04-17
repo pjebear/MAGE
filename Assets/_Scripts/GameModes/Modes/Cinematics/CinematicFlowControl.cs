@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace MAGE.GameModes.FlowControl
 {
@@ -57,13 +58,30 @@ namespace MAGE.GameModes.FlowControl
             }
         }
 
+        public override void OnKeyPressed(InputSource source, int key, InputState state)
+        {
+            if (source == InputSource.Keyboard
+                && state == InputState.Down
+                && key == (int)KeyCode.Escape)
+            {
+                if (mCinematicMoment != null)
+                {
+                    mCinematicMoment.Skip();
+                }
+            }
+        }
+
         private void OnCinematicComplete()
         {
-            if (mCinematicMoment != null && mCinematicMoment.PartyAvatarInCinematic != null)
+            if (mCinematicMoment != null)
             {
-                GameSystems.World.PartyLocation partyLocation = GameSystems.WorldService.Get().GetPartyLocation();
-                partyLocation.SetPosition(mCinematicMoment.PartyAvatarInCinematic.transform.position);
-                GameSystems.WorldService.Get().UpdatePartyLocation(partyLocation);
+                Transform partyAvatar = mCinematicMoment.GetPartyAvatarInScene();
+                if (partyAvatar != null)
+                {
+                    GameSystems.World.PartyLocation partyLocation = GameSystems.WorldService.Get().GetPartyLocation();
+                    partyLocation.SetPosition(partyAvatar.position);
+                    GameSystems.WorldService.Get().UpdatePartyLocation(partyLocation);
+                }
             }
 
             SendFlowMessage(FlowAction.advance.ToString());

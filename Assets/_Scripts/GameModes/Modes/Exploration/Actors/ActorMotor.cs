@@ -14,14 +14,12 @@ namespace MAGE.GameModes.SceneElements.Navigation
     class ActorMotor : MonoBehaviour
     {
         private float mMaxSpeed = 10f;
-        private NavMeshAgent rNavMeshAgent;
+        private NavMeshAgent rNavMeshAgent { get { return GetComponent<NavMeshAgent>(); } }
         private bool mIsMoving = false;
         private UnityAction mOnMoveComplete = null;
 
         private void Awake()
         {
-            rNavMeshAgent = GetComponent<NavMeshAgent>();
-
             mMaxSpeed = rNavMeshAgent.speed;
         }
 

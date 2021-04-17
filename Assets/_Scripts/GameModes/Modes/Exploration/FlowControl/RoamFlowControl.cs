@@ -225,6 +225,7 @@ namespace MAGE.GameModes.Exploration
 
             Level level = LevelManagementService.Get().GetLoadedLevel();
             EncounterContainer randomEncounter = level.CreateEncounter();
+            randomEncounter.EncounterScenarioId = EncounterScenarioId.Random;
 
             Collider[] overlapped = Physics.OverlapSphere(enemy.transform.position, 15f);
             List<MobControl> mobsInRange = overlapped.Select(x => x.GetComponent<MobControl>()).Where(x => x != null && x.gameObject.activeSelf).ToList();

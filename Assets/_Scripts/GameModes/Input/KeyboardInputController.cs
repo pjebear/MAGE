@@ -44,17 +44,17 @@ class KeyboardInputController : MonoBehaviour
     {
         InputState inputState = InputState.None;
 
-        if (UnityEngine.Input.GetKey(key))
-        {
-            inputState = InputState.Held;
-        }
-        else if (UnityEngine.Input.GetKeyDown(key))
+        if (UnityEngine.Input.GetKeyDown(key))
         {
             inputState = InputState.Down;
         }
         else if (UnityEngine.Input.GetKeyUp(key))
         {
             inputState = InputState.Up;
+        }
+        else if (UnityEngine.Input.GetKey(key))
+        {
+            inputState = InputState.Held;
         }
 
         return inputState;

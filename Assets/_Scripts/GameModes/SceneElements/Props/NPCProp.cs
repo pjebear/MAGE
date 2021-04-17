@@ -15,6 +15,7 @@ namespace MAGE.GameModes.SceneElements
 
         private void Awake()
         {
+            GetComponent<CharacterPickerControl>().CharacterPicker.Reset();
             GetComponent<CharacterPickerControl>().CharacterPicker.NPCId = NPCId;
             GetComponent<ActorSpawner>().RefreshOnStart = false;    
         }

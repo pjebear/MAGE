@@ -68,6 +68,8 @@ namespace MAGE.GameSystems.World.Internal
         {
             mPartySystem.UpdateOnEncounterEnd(resultInfo);
             mEncounterSystem.CleanupEncounter();
+
+            StoryService.Get().NotifyStoryEvent(new Story.StoryEventBase(resultInfo.EncounterScenarioId));
         }
         // Encounter - End
 

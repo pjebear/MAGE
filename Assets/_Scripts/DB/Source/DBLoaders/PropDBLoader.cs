@@ -30,7 +30,6 @@ namespace MAGE.DB.Internal
                     RightHeldAssetId = ApparelAssetId.Sword_0
                 };
 
-
                 DBService.Get().WriteAppearance(appearance.AppearanceId, AppearanceUtil.ToDB(appearance));
             }
 
@@ -159,14 +158,19 @@ namespace MAGE.DB.Internal
 
                     DBService.Get().WritePropInfo(dBPropInfo.Id, dBPropInfo);
 
-                    DBAppearance dBAppearance = new DBAppearance();
+                    Appearance appearance = new Appearance()
+                    {
+                        AppearanceId = (int)propId,
+                        PortraitSpriteId = PortraitSpriteId.GuildLeader,
+                        BodyType = BodyType.HumanoidMale,
+                        FacialHairType = FacialHairType.None,
+                        HairColor = HairColor.Dark,
+                        HairType = HairType.MaleShort,
+                        SkinToneType = SkinToneType.Tan,
+                        OutfitType = ApparelAssetId.Cloth_0
+                    };
 
-                    dBAppearance.Id = (int)propId;
-                    dBAppearance.PortraitSpriteId = (int)PortraitSpriteId.GuildLeader;
-                    dBAppearance.BodyType = (int)BodyType.HumanoidMale;
-                    dBAppearance.OutfitType = (int)ApparelAssetId.Cloth_0;
-
-                    DBService.Get().WriteAppearance(dBAppearance.Id, dBAppearance);
+                    DBService.Get().WriteAppearance(appearance.AppearanceId, AppearanceUtil.ToDB(appearance));
                 }
 
                 { // Magistrate
@@ -181,14 +185,19 @@ namespace MAGE.DB.Internal
 
                     DBService.Get().WritePropInfo(dBPropInfo.Id, dBPropInfo);
 
-                    DBAppearance dBAppearance = new DBAppearance();
+                    Appearance appearance = new Appearance()
+                    {
+                        AppearanceId = (int)propId,
+                        PortraitSpriteId = PortraitSpriteId.Magistrate,
+                        BodyType = BodyType.HumanoidMale,
+                        FacialHairType = FacialHairType.None,
+                        HairColor = HairColor.Blonde,
+                        HairType = HairType.MaleBuzz,
+                        SkinToneType = SkinToneType.Base,
+                        OutfitType = ApparelAssetId.Cloth_0
+                    };
 
-                    dBAppearance.Id = (int)propId;
-                    dBAppearance.PortraitSpriteId = (int)PortraitSpriteId.Magistrate;
-                    dBAppearance.BodyType = (int)BodyType.HumanoidMale;
-                    dBAppearance.OutfitType = (int)ApparelAssetId.Cloth_0;
-
-                    DBService.Get().WriteAppearance(dBAppearance.Id, dBAppearance);
+                    DBService.Get().WriteAppearance(appearance.AppearanceId, AppearanceUtil.ToDB(appearance));
                 }
 
                 { // Balgrid

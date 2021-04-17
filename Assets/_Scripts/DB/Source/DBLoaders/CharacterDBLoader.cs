@@ -151,6 +151,42 @@ namespace MAGE.DB.Internal
                 characterService.CreateCharacter(createParams);
             }
 
+            { // Ingrid
+                CharacterCreateParams createParams = new CharacterCreateParams();
+
+                createParams.characterType = CharacterType.Create;
+                createParams.characterClass = CharacterClass.MultiSpecialization;
+                createParams.name = "Ingrid";
+                createParams.currentSpecialization = SpecializationType.Monk;
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.ClothArmor_0, EquippableId.INVALID, EquippableId.Staff_0, EquippableId.INVALID };
+                createParams.appearanceOverrides = new Appearance()
+                {
+                    HairColor = HairColor.Dark,
+                    HairType = HairType.MaleLong,
+                    SkinToneType = SkinToneType.Pale,
+                };
+
+                characterService.CreateCharacter(createParams);
+            }
+
+            { // Thomas
+                CharacterCreateParams createParams = new CharacterCreateParams();
+
+                createParams.characterType = CharacterType.Create;
+                createParams.characterClass = CharacterClass.MultiSpecialization;
+                createParams.name = "Thomas";
+                createParams.currentSpecialization = SpecializationType.Footman;
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
+                createParams.appearanceOverrides = new Appearance()
+                {
+                    HairColor = HairColor.Brunette,
+                    HairType = HairType.MaleShort,
+                    SkinToneType = SkinToneType.Base,
+                };
+
+                characterService.CreateCharacter(createParams);
+            }
+
             // Scenario Characters
             int scenarioCharacterId = 0;
             { // Bandit Leader

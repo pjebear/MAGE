@@ -26,6 +26,7 @@ enum EncounterScenarioId
 
     // Demo Level
     Demo_TrainingGrounds,
+    Demo_LotharUnderAttack,
 
     NUM
 }
@@ -76,7 +77,8 @@ struct EncounterCreateParams
 
 class EncounterResultInfo
 {
-    public Teams PlayersInEncounter = new Teams();
+    public EncounterScenarioId EncounterScenarioId = EncounterScenarioId.Random;
+    public List<int> PlayersInEncounter = new List<int>();
     public bool DidUserWin = false;
     public ClaimLootInfo Rewards = new ClaimLootInfo();
 }
@@ -85,6 +87,7 @@ class EncounterInfo
 {
     public EncounterScenarioId EncounterScenarioId = EncounterScenarioId.Random;
     public bool IsActive = false;
+    public bool IsVisible = false;
     public LevelId LevelId;
 }
 

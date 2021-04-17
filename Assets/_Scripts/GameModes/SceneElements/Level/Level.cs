@@ -37,12 +37,12 @@ namespace MAGE.GameModes.SceneElements
 
         }
 
-        public List<EncounterContainer_Deprecated> GetActiveEncounters()
+        public List<EncounterContainer> GetActiveEncounters()
         {
-            List<EncounterContainer_Deprecated> encounters = new List<EncounterContainer_Deprecated>();
+            List<EncounterContainer> encounters = new List<EncounterContainer>();
             if (EncounterContainer != null)
             {
-                encounters = EncounterContainer.GetComponentsInChildren<EncounterContainer_Deprecated>().Where(x => x.IsEncounterPending).ToList();
+                encounters = EncounterContainer.GetComponentsInChildren<EncounterContainer>().Where(x => x.GetIsEncounterPending()).ToList();
             }
             return encounters;
         }
@@ -52,7 +52,7 @@ namespace MAGE.GameModes.SceneElements
             List<CinematicMoment> cinematics = new List<CinematicMoment>();
             if (CinematicContainer != null)
             {
-                cinematics = CinematicContainer.GetComponentsInChildren<CinematicMoment>().Where(x => x.CinematicReady).ToList();
+                cinematics = CinematicContainer.GetComponentsInChildren<CinematicMoment>().Where(x => x.IsCinematicReady()).ToList();
             }
             return cinematics;
         }

@@ -118,6 +118,7 @@ namespace MAGE.GameSystems.Characters.Internal
                 break;
                 case SpecializationType.Bear:
                 case SpecializationType.Footman:
+                case SpecializationType.Paladin:
                 {
                     primaryStat = PrimaryStat.Might;
                 }
@@ -138,7 +139,7 @@ namespace MAGE.GameSystems.Characters.Internal
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.TertiaryStat].Attributes[(int)TertiaryStat.Jump] = 2;
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.TertiaryStat].Attributes[(int)TertiaryStat.Speed] = 7;
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.TertiaryStat].Attributes[(int)TertiaryStat.MaxClockGuage] = 100;
-            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Resource].Attributes[(int)ResourceType.Health] = 0;
+            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Resource].Attributes[(int)ResourceType.Health] = 15;
         }
 
         public static int GetNextAvailableCharacterId(CharacterType characterType)

@@ -14,7 +14,7 @@ namespace MAGE.GameSystems.Story
         Main,
         Test,
         DebugLevel,
-        DebugLevel_OnBoardingBlacksmith,
+        OnBoardingBlacksmith,
 
         NUM
     }

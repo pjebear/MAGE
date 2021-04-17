@@ -44,6 +44,7 @@ namespace MAGE.GameModes
 
                 mGameSystemModule.InitModule();
                 UIManager.Initialize();
+                UIManager.Fade(false, 0);
                 mFlowManager.Init();
             }
         }

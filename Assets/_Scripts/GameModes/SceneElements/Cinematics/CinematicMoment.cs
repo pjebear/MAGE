@@ -18,11 +18,12 @@ namespace MAGE.GameModes.SceneElements
         : MonoBehaviour
         , IMessageHandler
     {
+        public CinematicId CinematicId;
+
         private PlayableDirector mCinematic;
         private CinematicMomentTriggerVolume mTriggerVolume;
-        public ActorSpawner PartyAvatarInCinematic;
-        public CinematicId CinematicId;
-        public bool CinematicReady = false;
+        private Transform rPartyAvatarInCinematic;
+        private bool mIsCinematicReady = false;
 
         private void Awake()
         {
@@ -42,6 +43,16 @@ namespace MAGE.GameModes.SceneElements
             Messaging.MessageRouter.Instance.UnRegisterHandler(this);
         }
 
+        public bool IsCinematicReady()
+        {
+            return mIsCinematicReady;
+        }
+
+        public Transform GetPartyAvatarInScene()
+        {
+            return rPartyAvatarInCinematic;
+        }
+
         public void CinematicEnabled()
         {
             if (mTriggerVolume == null)
@@ -56,15 +67,23 @@ namespace MAGE.GameModes.SceneElements
 
         public void CinematicTriggered()
         {
-            CinematicReady = true;
+            mIsCinematicReady = true;
             LevelManagement.LevelMessage cinematicAvailableMessage = new LevelManagement.LevelMessage(LevelManagement.MessageType.CinematicAvailable, this);
             Messaging.MessageRouter.Instance.NotifyMessage(cinematicAvailableMessage);
         }
 
+        public void Skip()
+        {
+            mCinematic.time = mCinematic.duration;
+        }
+
         public void Play()
         {
-            CinematicReady = false;
+            mIsCinematicReady = false;
             mCinematic.gameObject.SetActive(true);
+
+            int partyAvatarId = WorldService.Get().GetPartyAvatarId();
+            rPartyAvatarInCinematic = GetComponentsInChildren<CharacterPickerControl>().ToList().Find(x => x.CharacterPicker.GetCharacterId() == partyAvatarId)?.transform;
 
             TimelineAsset timeline = mCinematic.playableAsset as TimelineAsset;
             foreach (PlayableBinding binding in timeline.outputs)
@@ -86,11 +105,6 @@ namespace MAGE.GameModes.SceneElements
                             mCinematic.SetGenericBinding(animationTrack, actorAnimator);
 
                             Animator hopefulAnimator = (mCinematic.GetGenericBinding(animationTrack) as Animator);
-
-                            if (actorSpawner.GetComponent<CharacterPickerControl>().CharacterPicker.GetCharacterId() == GameSystems.WorldService.Get().GetPartyAvatarId())
-                            {
-                                PartyAvatarInCinematic = actorSpawner;
-                            }
                         }
                     }
                     
