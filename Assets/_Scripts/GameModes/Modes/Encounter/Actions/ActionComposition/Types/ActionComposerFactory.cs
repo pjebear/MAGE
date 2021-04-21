@@ -29,6 +29,9 @@ namespace MAGE.GameModes.Encounter
                 case (ActionId.Protection): { action = new ProtectComposer(owner); } break;
                 case (ActionId.Regen): { action = new RegenComposer(owner); } break;
                 case (ActionId.Smite): { action = new SmiteComposer(owner); } break;
+                default:
+                    Debug.Assert(false);
+                    break;
             }
             return action;
         }

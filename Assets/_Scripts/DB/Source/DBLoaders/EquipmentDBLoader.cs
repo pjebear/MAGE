@@ -14,7 +14,7 @@ namespace MAGE.DB.Internal
     class EquipmentDBLoader
     {
         private static DB.DBRangeInfo MELEE_RANGE = new DB.DBRangeInfo() { Min = 1, Max = 1, Elevation = 1, AreaType = (int)AreaType.Circle };
-        private static DB.DBRangeInfo BOW_RANGE = new DB.DBRangeInfo() { Min = 3, Max = 6, Elevation = 7, AreaType = (int)AreaType.Expanding };
+        private static DB.DBRangeInfo BOW_RANGE = new DB.DBRangeInfo() { Min = 3, Max = 12, Elevation = 7, AreaType = (int)AreaType.Expanding };
 
         private static int ACCESSORY_COST = 700;
         private static int TWO_HAND_WEAPON_COST = 600;

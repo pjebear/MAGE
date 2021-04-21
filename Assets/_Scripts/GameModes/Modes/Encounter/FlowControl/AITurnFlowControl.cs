@@ -62,8 +62,8 @@ namespace MAGE.GameModes.Encounter
 
             mCurrentMoveToPoint = mCurrentTarget.transform.position;
 
-            mSelectedAction = ActionId.MeeleWeaponAttack;
-            mActionInfo = ActionComposerFactory.CheckoutAction(mCurrentCharacter.GetComponent<CombatEntity>(), mSelectedAction).ActionInfo;
+            mSelectedAction = ActionComposerFactory.CheckoutAction(mCurrentCharacter.GetComponent<CombatEntity>(), ActionId.MeeleWeaponAttack);
+            mActionInfo = mSelectedAction.ActionInfo;
 
             if (mCurrentTarget != null && mCurrentTarget != mCurrentCharacter)
             {

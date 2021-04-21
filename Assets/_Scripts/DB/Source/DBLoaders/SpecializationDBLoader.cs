@@ -54,7 +54,7 @@ namespace MAGE.DB.Internal
                 // Actions
                 dbSpecialization.ActionIds = new List<int>()
                 {
-                    (int)ActionId.SummonBear
+                    //(int)ActionId.SummonBear
                 };
                 // none
 
@@ -149,7 +149,7 @@ namespace MAGE.DB.Internal
                 // Actions
                 dbSpecialization.ActionIds = new List<int>()
             {
-                (int)ActionId.MightyBlow
+                //(int)ActionId.MightyBlow
             };
                 // none
 
@@ -250,10 +250,10 @@ namespace MAGE.DB.Internal
                 dbSpecialization.ActionIds = new List<int>()
             {
                 (int)ActionId.Smite
-                ,(int)ActionId.Shackle
+                //,(int)ActionId.Shackle
                 ,(int)ActionId.Anvil
-                ,(int)ActionId.HolyLight
-                ,(int)ActionId.Raise
+                //,(int)ActionId.HolyLight
+                //,(int)ActionId.Raise
             };
 
                 // Actions

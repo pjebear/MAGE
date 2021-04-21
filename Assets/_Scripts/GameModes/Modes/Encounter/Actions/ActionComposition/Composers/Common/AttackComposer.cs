@@ -29,6 +29,7 @@ namespace MAGE.GameModes.Encounter
 
             WeaponEquippable weapon = Owner.GetComponent<EquipmentControl>().Equipment[Equipment.Slot.RightHand] as WeaponEquippable;
 
+            actionInfo.ActionId = ActionId.MeeleWeaponAttack;
             actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, 0);
             actionInfo.ActionRange = weapon.ProjectileInfo.ProjectileId != ProjectileId.INVALID ? ActionRange.Projectile : ActionRange.Meele;
             actionInfo.ActionSource = ActionSource.Weapon;

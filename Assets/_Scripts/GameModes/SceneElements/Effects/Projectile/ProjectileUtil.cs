@@ -12,7 +12,7 @@ namespace MAGE.GameModes.Encounter
 {
     static class ProjectileUtil
     {
-        public const float LINEAR_VELOCITY = 10;
+        public const float LINEAR_VELOCITY = 15;
         public const float ARC_VELOCITY_START = 9;
         public static Vector3 VertOffset = Vector3.up * 1.3f;
 

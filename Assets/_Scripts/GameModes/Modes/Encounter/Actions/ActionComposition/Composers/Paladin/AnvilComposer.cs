@@ -23,6 +23,7 @@ namespace MAGE.GameModes.Encounter
         {
             ActionInfo actionInfo = new ActionInfo();
 
+            actionInfo.ActionId = ActionId.Anvil;
             actionInfo.AnimationInfo.AnimationId = AnimationId.SwordSwing;
             actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, 0);
             actionInfo.ActionRange = ActionRange.Projectile;

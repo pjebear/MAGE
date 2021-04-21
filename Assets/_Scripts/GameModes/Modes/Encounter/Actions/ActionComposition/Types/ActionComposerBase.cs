@@ -1,5 +1,6 @@
 ﻿using MAGE.GameModes.Encounter;
 using MAGE.GameSystems.Actions;
+using MAGE.GameSystems.Stats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,27 @@ namespace MAGE.GameModes.Combat
             ActionInfo = PopulateActionInfo();
             mInteractionSolver = PopulateInteractionSolver();
             mRootComposition = PopulateComposition();
+        }
+
+        public bool AreActionRequirementsMet()
+        {
+            CombatCharacter combatCharacter = Owner.GetComponent<CombatCharacter>();
+
+            bool hasResources = combatCharacter.Character.HasResourcesForAction(ActionInfo.ActionCost);
+
+            bool isBlocked = false;
+            if (ActionInfo.ActionSource == ActionSource.Weapon)
+            {
+                StatsControl statsControl = Owner.GetComponent<StatsControl>();
+                isBlocked = statsControl.Attributes[StatusType.Disarmed] == 1;
+            }
+            else if (ActionInfo.ActionSource == ActionSource.Cast)
+            {
+                StatsControl statsControl = Owner.GetComponent<StatsControl>();
+                isBlocked = statsControl.Attributes[StatusType.Silenced] == 1;
+            }
+
+            return hasResources && !isBlocked;
         }
 
         protected abstract ActionInfo PopulateActionInfo();

@@ -31,11 +31,11 @@ namespace MAGE.GameModes.Encounter
             TargetSelect
         }
         protected State mState = State.Idle;
-        protected ActionId mSelectedAction = ActionId.MeeleWeaponAttack;
+        protected ActionComposerBase mSelectedAction = null;
         protected ActionInfo mActionInfo = null;
         // Private 
         protected CombatCharacter mCurrentCharacter;
-        protected List<ActionId> mAvailableActions;
+        protected List<ActionComposerBase> mAvailableActions;
         protected CombatCharacter mCurrentTarget;
         protected Vector3 mCurrentMoveToPoint = Vector3.zero;
 
@@ -95,7 +95,12 @@ namespace MAGE.GameModes.Encounter
         private void SetCurrentCharacter(CombatCharacter combatCharacter)
         {
             mCurrentCharacter = combatCharacter;
-            mAvailableActions = combatCharacter.GetComponent<ActionsControl>().Actions;
+            mAvailableActions = new List<ActionComposerBase>();
+            foreach (ActionId actionId in combatCharacter.GetComponent<ActionsControl>().Actions)
+            {
+                mAvailableActions.Add(ActionComposerFactory.CheckoutAction(mCurrentCharacter.GetComponent<CombatEntity>(), actionId));
+            }
+            
             mMovementObstacles[combatCharacter].enabled = false;
 
             Camera.main.GetComponent<Cameras.CameraController>().SetTarget(mCurrentCharacter.transform, Cameras.CameraType.TopDown);
@@ -218,36 +223,64 @@ namespace MAGE.GameModes.Encounter
             return dp;
         }
 
-        protected void DisplayRange(LineRenderer rangeRender, Vector3 center, Vector3 castPoint, RangeInfo rangeInfo)
+        protected void DisplayAbilityRange(Vector3 center, RangeInfo rangeInfo)
         {
-            if (rangeInfo.AreaType != AreaType.Point)
+            mAbilityRangeRenderer.gameObject.SetActive(true);
+            switch (rangeInfo.AreaType)
             {
-                rangeRender.gameObject.SetActive(true);
-
-                switch (rangeInfo.AreaType)
+                case AreaType.Circle:
                 {
-                    case AreaType.Circle:
-                    case AreaType.Chain:
-                    {
-                        DisplayCircleRange(rangeRender, center, rangeInfo.MaxRange);
-                    }
-                    break;
-                    case AreaType.Cone:
-                    {
-                        DisplayConeRange(rangeRender, center, castPoint, rangeInfo.MaxRange);
-                    }
-                    break;
-                    default:
-                        Debug.Assert(false);
-                        break;
+                    DisplayCircleRange(mAbilityRangeRenderer, center, rangeInfo.MaxRange);
                 }
-                
+                break;
+                case AreaType.Point:
+                {
+                    mAbilityEffectRenderer.gameObject.SetActive(false);
+                }
+                break;
+                default:
+                    Debug.Assert(false);
+                    break;
             }
-            else
+        }
+
+        protected void HideAbilityRange()
+        {
+            mAbilityRangeRenderer.gameObject.SetActive(false);
+        }
+        
+
+        protected void DisplayEffectRange(Vector3 center, Vector3 castPoint, RangeInfo rangeInfo)
+        {
+            mAbilityEffectRenderer.gameObject.SetActive(true);
+           
+            switch (rangeInfo.AreaType)
             {
-                rangeRender.gameObject.SetActive(false);
+                case AreaType.Circle:
+                case AreaType.Chain:
+                {
+                    DisplayCircleRange(mAbilityEffectRenderer, castPoint, rangeInfo.MaxRange);
+                }
+                break;
+                case AreaType.Cone:
+                {
+                    DisplayConeRange(mAbilityEffectRenderer, center, castPoint, rangeInfo.MaxRange);
+                }
+                break;
+                case AreaType.Point:
+                {
+                    mAbilityEffectRenderer.gameObject.SetActive(false);
+                }
+                break;
+                default:
+                    Debug.Assert(false);
+                    break;
             }
-            
+        }
+
+        protected void HideEffectRange()
+        {
+            mAbilityRangeRenderer.gameObject.SetActive(false);
         }
 
         protected void DisplayConeRange(LineRenderer rangeRender, Vector3 center, Vector3 castPoint, float radius)
