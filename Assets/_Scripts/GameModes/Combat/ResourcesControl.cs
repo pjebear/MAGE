@@ -52,6 +52,7 @@ namespace MAGE.GameModes.Combat
 
         public void OnDeath()
         {
+            GetComponent<AudioSource>().PlayOneShot(AudioManager.Instance.GetSFXClip(SFXId.MaleDeath));
             GetComponent<ActorAnimator>().Trigger("die");
             GetComponent<CapsuleCollider>().enabled = false;
         }

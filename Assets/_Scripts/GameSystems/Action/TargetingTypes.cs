@@ -51,11 +51,11 @@ namespace MAGE.GameSystems.Actions
 
     struct Target
     {
-        public Transform PointTarget;
+        public Vector3 PointTarget;
         public CombatTarget FocalTarget;
         public TargetSelectionType TargetType;
 
-        public Target(Transform pointTarget)
+        public Target(Vector3 pointTarget)
         {
             TargetType = TargetSelectionType.Point;
             PointTarget = pointTarget;
@@ -66,28 +66,28 @@ namespace MAGE.GameSystems.Actions
         {
             TargetType = TargetSelectionType.Focal;
 
-            PointTarget = null;
+            PointTarget = Vector3.zero;
             FocalTarget = focalTarget;
         }
 
-        public Transform GetTargetPoint()
+        public Vector3 GetTargetPoint()
         {
-            Transform transform = null;
+            Vector3 point = Vector3.zero;
 
             switch (TargetType)
             {
                 case TargetSelectionType.Point:
-                    transform = PointTarget;
+                    point = PointTarget;
                     break;
                 case TargetSelectionType.Focal:
-                    transform = FocalTarget.transform;
+                    point = FocalTarget.transform.position;
                     break;
                 default:
                     Debug.Assert(false);
                     break;
             }
 
-            return transform;
+            return point;
         }
     }
 }

@@ -218,12 +218,73 @@ namespace MAGE.GameModes.Encounter
             return dp;
         }
 
-        protected void DisplayRange(LineRenderer rangeRender, Vector3 center, float radius)
+        protected void DisplayRange(LineRenderer rangeRender, Vector3 center, Vector3 castPoint, RangeInfo rangeInfo)
         {
-            rangeRender.gameObject.SetActive(true);
+            if (rangeInfo.AreaType != AreaType.Point)
+            {
+                rangeRender.gameObject.SetActive(true);
 
-            float currentAngle = 0f;
+                switch (rangeInfo.AreaType)
+                {
+                    case AreaType.Circle:
+                    case AreaType.Chain:
+                    {
+                        DisplayCircleRange(rangeRender, center, rangeInfo.MaxRange);
+                    }
+                    break;
+                    case AreaType.Cone:
+                    {
+                        DisplayConeRange(rangeRender, center, castPoint, rangeInfo.MaxRange);
+                    }
+                    break;
+                    default:
+                        Debug.Assert(false);
+                        break;
+                }
+                
+            }
+            else
+            {
+                rangeRender.gameObject.SetActive(false);
+            }
             
+        }
+
+        protected void DisplayConeRange(LineRenderer rangeRender, Vector3 center, Vector3 castPoint, float radius)
+        {
+            int numCurvaturePoints = 5;
+            int numPoints =
+                2 // 2 points for center point
+                + numCurvaturePoints; // points for radius
+            
+            Vector3[] points = new Vector3[numPoints];
+
+            points[0] = center;
+            points[numPoints - 1] = center;
+
+            Vector3 direction = (castPoint - center).normalized * radius;
+
+            float startAngle = -22.5f;
+            float totalAngle = 45f;
+            float angleSegmentSize = totalAngle / (float)numCurvaturePoints;
+
+            for (int i = 0; i < numCurvaturePoints + 1; ++i)
+            {
+                float nextAngle = startAngle + angleSegmentSize * i;
+
+                points[1 + i] = center + Quaternion.Euler(0, nextAngle, 0) * direction;
+            }
+
+            rangeRender.positionCount = numPoints;
+            rangeRender.SetPositions(points);
+        }
+
+        protected void DisplayCircleRange(LineRenderer rangeRender, Vector3 center, float radius)
+        {
+            rangeRender.positionCount = mCircleSegments + 1;
+            Vector3[] points = new Vector3[mCircleSegments + 1];
+            float currentAngle = 0f;
+
             for (int i = 0; i < mCircleSegments + 1; ++i)
             {
                 float xOffset = Mathf.Sin(Mathf.Deg2Rad * currentAngle) * radius + center.x;
@@ -238,10 +299,12 @@ namespace MAGE.GameModes.Encounter
                     circlePosition.y = hit.point.y;
                 }
 
-                rangeRender.SetPosition(i, circlePosition);
+                points[i] = circlePosition;
 
                 currentAngle += 360f / mCircleSegments;
             }
+
+            rangeRender.SetPositions(points);
         }
 
         protected void DisplayMovementRange(Vector3 destination)

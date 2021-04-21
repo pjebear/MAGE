@@ -102,5 +102,15 @@ namespace MAGE.GameModes.Encounter
 
             return actionComposition;
         }
+
+        protected override CompositionNode PopulateComposition()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override InteractionSolverBase PopulateInteractionSolver()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

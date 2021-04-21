@@ -16,6 +16,7 @@ namespace MAGE.GameSystems.Actions
 
     enum AreaType
     {
+        Point,
         Circle,
         Chain,
         //Ring,

@@ -18,11 +18,14 @@ enum EffectType
 {
     INVALID,
 
+    Anvil,
     AOE_Heal,
     Fire, 
     FlameStrike, 
     LightningBolt,
+    Protect,
     Regen,
+    Smite,
 
     NUM
 }

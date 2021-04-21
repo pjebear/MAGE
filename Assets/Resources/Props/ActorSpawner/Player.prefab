@@ -45,6 +45,24 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 686534536240414097, guid: 03dc169a6a6892c4a9586fd3fe5e5823,
+        type: 3}
+      propertyPath: m_Volume
+      value: 0.097
+      objectReference: {fileID: 0}
+    - target: {fileID: 5819418552379925060, guid: 03dc169a6a6892c4a9586fd3fe5e5823,
+        type: 3}
+      propertyPath: m_WarningMessage
+      value: "\nBinding warning: Some generic clip(s) animate transforms that are
+        already bound by a Humanoid avatar. These transforms can only be changed
+        by Humanoid clips.\n\tTransform 'EyeR'\n\tTransform 'EyeL'\n\tTransform 'EyeR'\n\tTransform
+        'EyeL'\n\tTransform 'EyeR'\n\tTransform 'EyeL'\n\tFrom animation clip 'BowShoot_R_01_Aim'\n\tFrom
+        animation clip 'BowShoot_R_01_Setup'\n\tFrom animation clip 'Attack01a'\n\tFrom
+        animation clip 'Attack01b'\n\tFrom animation clip 'Attack02a'\n\tFrom animation
+        clip 'Attack02b'\n\tFrom animation clip 'Attack03a'\n\tFrom animation clip
+        'Attack03b'\n\tFrom animation clip 'CastSpell01'\n\tFrom animation clip 'CastSpell02'\n\tand
+        more ..."
+      objectReference: {fileID: 0}
     - target: {fileID: 6678684578594446405, guid: 03dc169a6a6892c4a9586fd3fe5e5823,
         type: 3}
       propertyPath: CharacterPicker.CharacterType

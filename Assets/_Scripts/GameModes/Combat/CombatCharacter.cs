@@ -36,7 +36,6 @@ namespace MAGE.GameModes.Combat
                 // Updates Resources Automatically
                 GetComponent<ActionsControl>().Actions = Character.GetActionIds();
                 GetComponent<EquipmentControl>().Equipment = Character.Equipment;
-                GetComponent<Combat.ActionsControl>().Actions = new List<ActionId>(Character.GetActionIds());
 
                 // Responders
                 List<ActionResponseId> responseIds = new List<ActionResponseId>()

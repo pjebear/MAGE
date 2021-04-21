@@ -96,11 +96,17 @@ namespace MAGE.GameModes.Encounter
                     }
                     else if (mState == State.TargetSelect)
                     {
-                        if (mActionInfo.EffectRange.MaxRange > 0)
+                        if (mActionInfo.EffectRange.AreaType != AreaType.Point)
                         {
                             Vector3 cursorTerrainPos = Vector3.zero;
-                            CursorToTerrainPos(ref cursorTerrainPos);
-                            DisplayRange(mAbilityEffectRenderer, cursorTerrainPos, mActionInfo.EffectRange.MaxRange);
+                            if (CursorToTerrainPos(ref cursorTerrainPos))
+                            {
+                                DisplayRange(mAbilityEffectRenderer, mCurrentCharacter.transform.position, cursorTerrainPos, mActionInfo.EffectRange);
+                            }
+                            else
+                            {
+                                mAbilityEffectRenderer.gameObject.SetActive(false);
+                            }
                         }
                     }
 
@@ -209,12 +215,26 @@ namespace MAGE.GameModes.Encounter
                 if (Physics.Raycast(ray, out hit, 100))
                 {
                     CombatTarget target = hit.collider.gameObject.GetComponent<CombatTarget>();
-                    if (target != null && target.GetComponent<CombatCharacter>() != mCurrentCharacter)
+
+                    if (target == null && mActionInfo.EffectRange.AreaType != AreaType.Point)
                     {
-                        ActionProposal proposal = new ActionProposal(mCurrentCharacter.GetComponent<CombatEntity>(), new Target(target), mSelectedAction);
+                        ActionProposal proposal = new ActionProposal(mCurrentCharacter.GetComponent<CombatEntity>(), new Target(hit.point), mSelectedAction);
                         GameModel.Encounter.mActionQueue.Enqueue(proposal);
                         GameModel.Encounter.HasActed = true;
                         SendFlowMessage("actionChosen");
+                    }
+                    else if (target != null)
+                    {
+                        if (mActionInfo.EffectRange.TargetingType == TargetingType.Any
+                            || mActionInfo.EffectRange.TargetingType == TargetingType.Allies && target.GetComponent<CombatEntity>().TeamSide == TeamSide.AllyHuman
+                            || mActionInfo.EffectRange.TargetingType == TargetingType.Enemies && target.GetComponent<CombatEntity>().TeamSide == TeamSide.EnemyAI)
+                        {
+                            ActionProposal proposal = new ActionProposal(mCurrentCharacter.GetComponent<CombatEntity>(), new Target(target), mSelectedAction);
+                            GameModel.Encounter.mActionQueue.Enqueue(proposal);
+                            GameModel.Encounter.HasActed = true;
+                            SendFlowMessage("actionChosen");
+                        }
+                            
                     }
                 }
             }
@@ -323,7 +343,7 @@ namespace MAGE.GameModes.Encounter
                             {
                                 mSelectedAction = mAvailableActions[listInteractionInfo.ListIdx];
                                 mActionInfo = ActionComposerFactory.CheckoutAction(mCurrentCharacter.GetComponent<CombatEntity>(), mSelectedAction).ActionInfo;
-                                DisplayRange(mAbilityRangeRenderer, mCurrentCharacter.transform.position, mActionInfo.CastRange.MaxRange);
+                                DisplayRange(mAbilityRangeRenderer, mCurrentCharacter.transform.position, mCurrentCharacter.transform.position, mActionInfo.CastRange);
 
                                 SetState(State.TargetSelect);
                             }

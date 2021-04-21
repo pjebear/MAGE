@@ -15,78 +15,21 @@ namespace MAGE.GameModes.Encounter
     {
         public ConcreteVar<CombatEntity> Caster = new ConcreteVar<CombatEntity>();
 
-        public SpellEffectivenessCalculator SpellDamageCalculator = new SpellEffectivenessCalculator();
-        public DeferredStateChange DeferredStateChange = new DeferredStateChange();
-
         public TargetingSolver TargetingSolver = new TargetingSolver();
-        public SpellInteractionSolver InteractionSolver = new SpellInteractionSolver();
 
         public ConcreteVar<CombatTarget> PreviousTarget = new ConcreteVar<CombatTarget>();
         public ConcreteVar<CombatTarget> CurrentTarget = new ConcreteVar<CombatTarget>();
 
-        private CompositionNode mRootComposition = null;
-
         public ChainLightningComposer(CombatEntity owner) : base(owner)
         {
             Caster.Set(owner);
-
-            
-
-
-            mRootComposition = new AnimationComposer()
-            {
-                // AnimationConstructor
-                ToAnimate = new MonoConversion<CombatEntity, ActorAnimator>(Caster),
-                AnimationTarget = TargetingSolver,
-                AnimationInfo = new ConcreteVar<AnimationInfo>(AnimationFactory.CheckoutAnimation(GameSystems.AnimationId.Cast)),
-
-                ChildComposers = new List<CompositionLink<CompositionNode>>()
-                {
-                    new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Start,
-                        new MultiTargetComposer()
-                        {
-                            Targeting = TargetingSolver
-                            , InteractionSolver = InteractionSolver
-                            , PreviousTarget = PreviousTarget
-                            , CurrentTarget = CurrentTarget
-
-                            , ChainedComposition = new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Start,
-                                new ProjectileSpawnComposer()
-                                {
-                                    Caster = new DeferredTransform<CombatTarget>(PreviousTarget),
-                                    Target = new DeferredTransform<CombatTarget>(CurrentTarget),
-                                    ProjectileType = ProjectileId.FireBall,
-                                    
-                                    ChildComposers = new List<CompositionLink<CompositionNode>>()
-                                    {
-                                        new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Interaction,
-                                            new AnimationComposer()
-                                            {
-                                                ToAnimate = new MonoConversion<CombatTarget, ActorAnimator>(TargetingSolver),
-                                                AnimationTarget = new MonoConversion<CombatEntity, CombatTarget>(Caster),
-                                                AnimationInfo = new InteractionResultToAnimation(InteractionSolver.InteractionResult)
-                                            }
-                                        )
-                                        , new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Interaction,
-                                            new StateChangeComposer()
-                                            {
-                                                Target = TargetingSolver,
-                                                StateChange = InteractionSolver.InteractionResult
-                                            }
-                                        )
-                                    }
-                                }
-                            )
-                        }
-                    )
-                }
-            };
         }
 
         protected override ActionInfo PopulateActionInfo()
         {
             ActionInfo actionInfo = new ActionInfo();
 
+            actionInfo.AnimationInfo.AnimationId = GameSystems.AnimationId.Cast;
             actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, 0);
             actionInfo.ActionRange = ActionRange.Projectile;
             actionInfo.ActionSource = ActionSource.Cast;
@@ -108,33 +51,87 @@ namespace MAGE.GameModes.Encounter
             return actionInfo;
         }
 
+
+        protected override CompositionNode PopulateComposition()
+        {
+            return new AnimationComposer()
+            {
+                // AnimationConstructor
+                ToAnimate = new MonoConversion<CombatEntity, ActorAnimator>(Caster),
+                AnimationTarget = TargetingSolver,
+                AnimationInfo = new ConcreteVar<AnimationInfo>(AnimationFactory.CheckoutAnimation(GameSystems.AnimationId.Cast)),
+
+                ChildComposers = new List<CompositionLink<CompositionNode>>()
+                {
+                    new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Start,
+                        new MultiTargetComposer()
+                        {
+                            Targeting = TargetingSolver
+                            , InteractionSolver = mInteractionSolver
+                            , PreviousTarget = PreviousTarget
+                            , CurrentTarget = CurrentTarget
+
+                            , ChainedComposition = new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Start,
+                                new ProjectileSpawnComposer()
+                                {
+                                    Caster = new DeferredTransform<CombatTarget>(PreviousTarget),
+                                    Target = new DeferredTransform<CombatTarget>(CurrentTarget),
+                                    ProjectileType = ProjectileId.FireBall,
+
+                                    ChildComposers = new List<CompositionLink<CompositionNode>>()
+                                    {
+                                        new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Interaction,
+                                            new AnimationComposer()
+                                            {
+                                                ToAnimate = new MonoConversion<CombatTarget, ActorAnimator>(TargetingSolver),
+                                                AnimationTarget = new MonoConversion<CombatEntity, CombatTarget>(Caster),
+                                                AnimationInfo = new InteractionResultToAnimation(mInteractionSolver.InteractionResult)
+                                            }
+                                        )
+                                        , new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Interaction,
+                                            new StateChangeComposer()
+                                            {
+                                                Target = TargetingSolver,
+                                                StateChange = mInteractionSolver.InteractionResult
+                                            }
+                                        )
+                                    }
+                                }
+                            )
+                        }
+                    )
+                }
+            };
+        }
+
+        protected override InteractionSolverBase PopulateInteractionSolver()
+        {
+            SpellInteractionSolver interactionSolver = new SpellInteractionSolver();
+
+            SpellEffectivenessCalculator damageCalculator = new SpellEffectivenessCalculator();
+            damageCalculator.BaseEffectiveness = ActionInfo.Effectiveness;
+            damageCalculator.DeferredCaster = new MonoConversion<CombatEntity, StatsControl>(Caster);
+            damageCalculator.IsBeneficial = false;
+
+            DeferredStateChange deferredStateChange = new DeferredStateChange();
+            deferredStateChange.HealthChange = damageCalculator;
+
+            interactionSolver.Attacker = Caster;
+            interactionSolver.Target = TargetingSolver;
+            interactionSolver.StateChange = deferredStateChange;
+
+            return interactionSolver;
+        }
+
         public override ActionComposition Compose(Target target)
         {
             TargetingSolver.Targeting = Caster;
             TargetingSolver.BeingTargeted = new TargetSelection(target, ActionInfo.EffectRange);
 
-            SpellDamageCalculator.BaseEffectiveness = ActionInfo.Effectiveness;
-            SpellDamageCalculator.DeferredCaster = new MonoConversion<CombatEntity, StatsControl>(Caster);
-            SpellDamageCalculator.IsBeneficial = false;
-
-            DeferredStateChange.HealthChange = SpellDamageCalculator;
-
-            InteractionSolver.Attacker = Caster;
-            InteractionSolver.Target = TargetingSolver;
-            InteractionSolver.StateChange = DeferredStateChange;
-
             TargetingSolver.Solve();
             PreviousTarget.Set(Caster.Get().GetComponent<CombatTarget>());
 
-            ActionComposition actionComposition = new ActionComposition();
-            actionComposition.ActionTimeline = mRootComposition.Compose();
-            actionComposition.ActionResults = new GameModes.Combat.ActionResult(
-               Owner,
-               ActionInfo,
-               new InteractionResult(InteractionUtil.GetOwnerResultTypeFromResults(InteractionSolver.Results.Values.ToList()), ActionInfo.ActionCost),
-               InteractionSolver.Results);
-
-            return actionComposition;
+            return base.Compose(target);
         }
     }
 }

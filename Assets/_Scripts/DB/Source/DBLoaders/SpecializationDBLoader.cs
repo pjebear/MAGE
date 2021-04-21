@@ -194,8 +194,8 @@ namespace MAGE.DB.Internal
             {
                 (int)ActionId.Heal,
                 (int)ActionId.Protection,
-                (int)ActionId.FireBall
-
+                (int)ActionId.Regen,
+                (int)ActionId.Smite
             };
 
                 DBService.Get().WriteSpecialization(dbSpecialization);

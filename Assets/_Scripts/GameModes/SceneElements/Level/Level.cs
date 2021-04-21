@@ -93,12 +93,40 @@ namespace MAGE.GameModes.SceneElements
 
             switch (targetSelection.SelectionRange.AreaType)
             {   
+                case AreaType.Cone:
+                {
+                    Vector3 coneDirection = Vector3.zero;
+                    if (targetSelection.FocalTarget.TargetType == TargetSelectionType.Point)
+                    {
+                        coneDirection = targetSelection.FocalTarget.PointTarget;
+                    }
+                    else if (targetSelection.FocalTarget.TargetType == TargetSelectionType.Focal)
+                    {
+                        coneDirection = targetSelection.FocalTarget.FocalTarget.transform.position;
+                    }
+
+                    coneDirection = coneDirection - castPoint.transform.position;
+
+                    combatTargets = Physics.OverlapSphere(castPoint.transform.position, targetSelection.SelectionRange.MaxRange)
+                        .Select(x => x.gameObject.GetComponent<Combat.CombatTarget>())
+                        .Where(x => x != null).ToList();
+                    combatTargets = FilterTargetsByTargetType(castPoint, targetSelection.SelectionRange.TargetingType, combatTargets);
+
+                    combatTargets = combatTargets.Where(x =>
+                    {
+                        Vector3 toTarget = x.transform.position - castPoint.transform.position;
+                        float angleBetween = Vector3.SignedAngle(coneDirection, toTarget, Vector3.up);
+                        return angleBetween >= -22.5f && angleBetween <= 22.5f;
+                    }).ToList();
+                    
+                }
+                break;
                 case AreaType.Circle:
                 {
                     Vector3 centerPoint = Vector3.zero;
                     if (targetSelection.FocalTarget.TargetType == TargetSelectionType.Point)
                     {
-                        centerPoint = targetSelection.FocalTarget.PointTarget.position;
+                        centerPoint = targetSelection.FocalTarget.PointTarget;
                     }
                     else if (targetSelection.FocalTarget.TargetType == TargetSelectionType.Focal)
                     {
@@ -144,6 +172,9 @@ namespace MAGE.GameModes.SceneElements
                     
                 }
                 break;
+                default:
+                    Debug.Assert(false);
+                    break;
             }
 
             return combatTargets;

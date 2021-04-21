@@ -81,6 +81,11 @@ namespace MAGE.GameModes.Encounter
 
         public override void Trigger()
         {
+            if (Animation.SFXId != SFXId.INVALID)
+            {
+                BeingAnimated.GetComponent<AudioSource>().PlayOneShot(AudioManager.Instance.GetSFXClip(Animation.SFXId));
+            }
+
             BeingAnimated.Trigger(Animation.TriggerName);
             if (FocusTarget != null)
             {
@@ -123,6 +128,17 @@ namespace MAGE.GameModes.Encounter
             projectile.transform.position = SpawnParams.SpawnPoint;
 
             projectile.Init(SpawnParams.InitialForward, SpawnParams.InitialVelocity, SpawnParams.PathType == ProjectilePathType.Arc, SpawnParams.FlightDuration);
+
+            if (SpawnParams.ProjectileId == ProjectileId.Arrow)
+            {
+                AudioClip clip = AudioManager.Instance.GetSFXClip(SFXId.ArrowRelease);
+
+                if (projectile.GetComponent<AudioSource>() == null)
+                {
+                    projectile.gameObject.AddComponent<AudioSource>();
+                }
+                projectile.GetComponent<AudioSource>().PlayOneShot(clip);
+            }
         }
     }
 
@@ -130,20 +146,28 @@ namespace MAGE.GameModes.Encounter
     {
         public EffectType EffectType;
         public SFXId SFXId;
-        public Transform AtLocation;
+        public Vector3 AtPosition;
+        public Transform Parent;
 
-        public EffectSpawnElement(EffectType type, SFXId sfxId, Transform parent)
+        public EffectSpawnElement(EffectType type, SFXId sfxId, Vector3 atPosition, Transform parent = null)
             : base(30, 90)
         {
             EffectType = type;
-            AtLocation = parent;
+            AtPosition = atPosition;
             SFXId = sfxId;
+            Parent = parent;
         }
 
         public override void Trigger()
         {
             GameObject effect = GameObject.Instantiate(UnityEngine.Resources.Load<GameObject>("VFX/" + EffectType.ToString()));
-            effect.transform.position = AtLocation.position;
+            effect.transform.position = AtPosition;
+            
+            if (Parent != null)
+            {
+                effect.transform.rotation = Parent.transform.rotation;
+            }
+
             if (SFXId != SFXId.INVALID)
             {
                 AudioClip clip = AudioManager.Instance.GetSFXClip(SFXId);
@@ -509,23 +533,16 @@ namespace MAGE.GameModes.Encounter
 
     class ParticleEffectComposer : CompositionNode
     {
-        public IDeferredVar<Transform> SpawnPoint;
+        public IDeferredVar<Vector3> SpawnPoint;
+        public IDeferredVar<Transform> Parent;
         public EffectType EffectType = EffectType.FlameStrike;
 
         protected override CompositionElement OnCompose()
         {
             CompositionElement toReturn = null;
 
-            Transform spawnPoint = SpawnPoint.Get();
-            if (spawnPoint != null)
-            {
-                toReturn = new EffectSpawnElement(EffectType, SFXId.INVALID, spawnPoint);
-            }
-            else
-            {
-                toReturn = new EmptyElement();
-            }
-
+            toReturn = new EffectSpawnElement(EffectType, SFXId.INVALID, SpawnPoint.Get(), Parent.Get());
+            
             return toReturn;
         }
     }
@@ -542,7 +559,15 @@ namespace MAGE.GameModes.Encounter
 
         public void Solve()
         {
-            Targets = LevelManagementService.Get().GetLoadedLevel().GetTargetsInRange(Targeting.Get(), BeingTargeted);
+            if (BeingTargeted.SelectionRange.AreaType == AreaType.Point)
+            {
+                Debug.Assert(BeingTargeted.FocalTarget.TargetType == TargetSelectionType.Focal);
+                Targets = new List<CombatTarget>() { BeingTargeted.FocalTarget.FocalTarget };
+            }
+            else
+            {
+                Targets = LevelManagementService.Get().GetLoadedLevel().GetTargetsInRange(Targeting.Get(), BeingTargeted);
+            }
         }
 
         public CombatTarget Get()
