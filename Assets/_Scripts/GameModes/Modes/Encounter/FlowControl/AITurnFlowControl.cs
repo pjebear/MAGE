@@ -40,9 +40,9 @@ namespace MAGE.GameModes.Encounter
         {
             base.Setup();
 
-            if (GameModel.Encounter.HasActed)
+            if (mCurrentCharacter.GetComponent<ResourcesControl>().GetNumAvailableActions() == 0)
             {
-                GameModel.Encounter.HasMoved = true;
+                GameModel.Encounter.TurnComplete = true;
                 SendFlowMessage("actionChosen");
                 return;
             }

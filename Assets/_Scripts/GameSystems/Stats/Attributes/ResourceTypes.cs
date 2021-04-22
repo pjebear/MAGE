@@ -10,20 +10,22 @@ namespace MAGE.GameSystems.Stats
     [Serializable]
     class Resource
     {
+        public ResourceType ResourceType;
         public int Current;
         public int Max;
 
         public float Ratio { get { return Max == 0 ? 1 : Current / (float)Max; } }
 
-        public Resource(int max)
+        public Resource(ResourceType resourceType, int max)
         {
+            ResourceType = resourceType;
             Current = max;
             Max = max;
         }
 
         public void Set(int current, int max)
         {
-            UnityEngine.Debug.Assert(current < max && max > 0);
+            UnityEngine.Debug.Assert(current <= max && max > 0);
             current = Mathf.Clamp(current, 0, max);
             Current = current;
             Max = max;
@@ -36,38 +38,47 @@ namespace MAGE.GameSystems.Stats
             Current = (int)(Max * currentRatio);
         }
 
+        public void SetCurrentToMax()
+        {
+            Current = Max;
+        }
+
         public void Modify(int delta)
         {
             Current += delta;
             if (Current > Max) Current = Max;
             if (Current < 0) Current = 0;
         }
+
+        public override string ToString()
+        {
+            return string.Format("{0}: {1}/{2}", ResourceType.ToString(), Current, Max);
+        }
     }
 
-    [Serializable]
     class Resources
     {
-        [SerializeField]
         private Resource[] mResources;
 
         public Resources()
         {
             mResources = new Resource[(int)ResourceType.NUM];
 
-            mResources[(int)ResourceType.Health] = new Resource(0);
-            mResources[(int)ResourceType.Mana] = new Resource(0);
-            mResources[(int)ResourceType.Endurance] = new Resource(0);
-            mResources[(int)ResourceType.Clock] = new Resource(0);
+            for (int i = 0; i < (int)ResourceType.NUM; ++i)
+            {
+                mResources[i] = new Resource((ResourceType)i, 0);
+            }
         }
 
-        public Resources(int health, int mana, int endurance, int clock)
+        public Resources(int health, int mana, int endurance, int clock, int actions, int movementRange)
+            : this()
         {
-            mResources = new Resource[(int)ResourceType.NUM];
-
-            mResources[(int)ResourceType.Health] = new Resource(health);
-            mResources[(int)ResourceType.Mana] = new Resource(mana);
-            mResources[(int)ResourceType.Endurance] = new Resource(endurance);
-            mResources[(int)ResourceType.Clock] = new Resource(clock);
+            mResources[(int)ResourceType.Health].Set(health, health);
+            mResources[(int)ResourceType.Mana].Set(0, mana);
+            mResources[(int)ResourceType.Endurance].Set(0, endurance);
+            mResources[(int)ResourceType.Clock].Set(0, clock); 
+            mResources[(int)ResourceType.Actions].Set(0, actions); 
+            mResources[(int)ResourceType.MovementRange].Set(0, movementRange);
         }
 
         public Resource this[ResourceType idx]

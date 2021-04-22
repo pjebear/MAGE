@@ -29,6 +29,7 @@ namespace MAGE.UI.Views
             public Optional<int> MaxHP;
             public Optional<int> CurrentMP;
             public Optional<int> MaxMP;
+            public Optional<int> CurrentClock;
             public Optional<int> Might;
             public Optional<int> Finesse;
             public Optional<int> Magic;
@@ -48,6 +49,7 @@ namespace MAGE.UI.Views
         public UIText SpecializationTxt;
         public UIBar HPBar;
         public UIBar MPBar;
+        public UIBar ClockBar;
         public UIText MightTxt;
         public UIText FinesseTxt;
         public UIText MagicTxt;
@@ -85,6 +87,9 @@ namespace MAGE.UI.Views
 
             // MP
             if (dp.CurrentMP.HasValue && dp.MaxMP.HasValue) MPBar.Publish("MP", dp.CurrentMP.Value, dp.MaxMP.Value);
+
+            // Clock
+            if (dp.CurrentClock.HasValue) ClockBar.Publish("CL", dp.CurrentClock.Value, 100);
 
             // Might
             if (dp.Might.HasValue) MightTxt.Publish(dp.Might.Value.ToString());

@@ -24,7 +24,7 @@ namespace MAGE.GameModes.Encounter
 
             actionInfo.ActionId = ActionId.Smite;
             actionInfo.AnimationInfo.AnimationId = GameSystems.AnimationId.Cast;
-            actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, 0);
+            actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -10);
             actionInfo.ActionRange = ActionRange.Projectile;
             actionInfo.ActionSource = ActionSource.Cast;
             actionInfo.EffectInfo.EffectId = EffectType.Smite;

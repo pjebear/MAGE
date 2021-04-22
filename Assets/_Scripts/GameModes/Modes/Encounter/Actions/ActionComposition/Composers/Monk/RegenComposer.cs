@@ -24,7 +24,7 @@ namespace MAGE.GameModes.Encounter
 
             actionInfo.ActionId = ActionId.Regen;
             actionInfo.AnimationInfo.AnimationId = GameSystems.AnimationId.Cast;
-            actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, 0);
+            actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -5);
             actionInfo.ActionRange = ActionRange.Projectile;
             actionInfo.ActionSource = ActionSource.Cast;
 
@@ -39,7 +39,8 @@ namespace MAGE.GameModes.Encounter
 
             actionInfo.EffectRange = new RangeInfo()
             {
-                AreaType = AreaType.Point,
+                AreaType = AreaType.Circle,
+                MaxRange = 2,
                 TargetingType = TargetingType.Allies
             };
 

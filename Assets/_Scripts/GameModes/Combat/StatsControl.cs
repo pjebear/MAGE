@@ -15,8 +15,6 @@ namespace MAGE.GameModes.Combat
         public void SetAttributes(Attributes attributes)
         {
             Attributes = attributes;
-
-            NotifyAttributesUpdated();
         }
 
         public void ApplyAttributeModifiers(List<AttributeModifier> modifiers)

@@ -109,10 +109,10 @@ namespace MAGE.GameModes.Encounter
         protected void MoveAttack()
         {
             bool attackQueued = false;
-            if (!GameModel.Encounter.HasActed)
+            if (mCurrentCharacter.GetComponent<ResourcesControl>().GetNumAvailableActions() > 0)
             {
                 attackQueued = true;
-                GameModel.Encounter.HasActed = true;
+                mCurrentCharacter.GetComponent<ResourcesControl>().OnActionPerformed(StateChange.Empty);
 
                 ActionProposal proposal = new ActionProposal(
                 mCurrentCharacter.GetComponent<CombatEntity>(),
@@ -126,7 +126,7 @@ namespace MAGE.GameModes.Encounter
             {
                 SetState(State.Moving);
 
-                GameModel.Encounter.HasMoved = true;
+                mCurrentCharacter.GetComponent<ResourcesControl>().OnMovementPerformed(mCurrentCharacter.GetComponent<ResourcesControl>().GetAvailableMovementRange());
                 mCurrentCharacter.GetComponent<ActorMotor>().MoveToPoint(mCurrentMoveToPoint, () =>
                 {
                     SendFlowMessage("actionChosen");
@@ -144,7 +144,7 @@ namespace MAGE.GameModes.Encounter
 
             if (state == State.Idle)
             {
-                mMovementRangeRenderer.gameObject.SetActive(!GameModel.Encounter.HasMoved);
+                mMovementRangeRenderer.gameObject.SetActive(mCurrentCharacter.GetComponent<ResourcesControl>().GetAvailableMovementRange() > 0);
                 mAbilityRangeRenderer.gameObject.SetActive(false);
                 mAbilityEffectRenderer.gameObject.SetActive(false);
             }
@@ -197,6 +197,7 @@ namespace MAGE.GameModes.Encounter
             dp.MaxHP        = combatCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Health].Max;
             dp.CurrentMP    = combatCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Mana].Current;
             dp.MaxMP        = combatCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Mana].Max;
+            dp.CurrentClock = combatCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Clock].Current;
 
             dp.Might        = (int)combatCharacter.GetComponent<StatsControl>().Attributes[PrimaryStat.Might];
             dp.Finesse      = (int)combatCharacter.GetComponent<StatsControl>().Attributes[PrimaryStat.Finese];
@@ -205,9 +206,12 @@ namespace MAGE.GameModes.Encounter
             dp.Fortitude    = (int)combatCharacter.GetComponent<StatsControl>().Attributes[SecondaryStat.Fortitude];
             dp.Attunement   = (int)combatCharacter.GetComponent<StatsControl>().Attributes[SecondaryStat.Attunement];
 
-            dp.Block        = (int)combatCharacter.GetComponent<StatsControl>().Attributes[TertiaryStat.Block];
-            dp.Dodge        = (int)combatCharacter.GetComponent<StatsControl>().Attributes[TertiaryStat.Dodge];
-            dp.Parry        = (int)combatCharacter.GetComponent<StatsControl>().Attributes[TertiaryStat.Parry];
+            float block, dodge, parry;
+            InteractionUtil.GetAvoidanceAttributesForCharacter(combatCharacter, out dodge, out block, out parry);
+
+            dp.Block        = (int)block;
+            dp.Dodge        = (int)dodge;
+            dp.Parry        = (int)parry;
 
             List<IDataProvider> statusEffects = new List<IDataProvider>();
             foreach (StatusEffect effect in combatCharacter.GetComponent<StatusEffectControl>().StatusEffects)

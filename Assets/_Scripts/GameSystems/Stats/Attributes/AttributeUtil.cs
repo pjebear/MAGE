@@ -46,6 +46,12 @@ namespace MAGE.GameSystems.Stats
                 case (ResourceType.Clock):
                     resourceValue += stats[TertiaryStat.MaxClockGuage];
                     break;
+                case (ResourceType.Actions):
+                    resourceValue += stats[TertiaryStat.Actions];
+                    break;
+                case (ResourceType.MovementRange):
+                    resourceValue += stats[TertiaryStat.Movement];
+                    break;
             }
 
             return (int)resourceValue;

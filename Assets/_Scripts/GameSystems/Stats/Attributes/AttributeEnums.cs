@@ -40,8 +40,8 @@ namespace MAGE.GameSystems.Stats
 
         //MobilityStats
         Speed,
+        Actions,
         Movement,
-        Jump,
         MaxClockGuage,
 
         //Defensive stats
@@ -85,6 +85,8 @@ namespace MAGE.GameSystems.Stats
         Mana,
         Endurance,
         Clock,
+        Actions,
+        MovementRange,
 
         NUM
     }

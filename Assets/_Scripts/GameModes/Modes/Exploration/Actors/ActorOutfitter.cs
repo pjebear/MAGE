@@ -29,6 +29,7 @@ namespace MAGE.GameModes.SceneElements
         //private AssetLoader<HeldApparel> mHeldItemLoader = new AssetLoader<HeldApparel>("Props/Apparel/Held");
         //private AssetLoader<GameObject> mHairLoader = new AssetLoader<GameObject>("Props/Apparel/Hair");
 
+        private OutfitColorization mOutfitColorization = OutfitColorization.Allied;
         private HumanoidActorConstants.HeldApparelState mHeldApparelState = HumanoidActorConstants.HeldApparelState.Holstered;
         private HeldApparelSlot[] mHeldApparelSlots = new HeldApparelSlot[(int)HumanoidActorConstants.Hand.NUM];
         private OutfitArrangement mOutfit = null;
@@ -104,6 +105,30 @@ namespace MAGE.GameModes.SceneElements
             ApplyHeldApparel(appearance.RightHeldAssetId, HumanoidActorConstants.Hand.Right);
         }
 
+        public void SetOutfitColorization(OutfitColorization outfitColorization)
+        {
+            mOutfitColorization = outfitColorization;
+            if (mOutfit != null)
+            {
+                foreach (SkinnedMeshRenderer toColor in mOutfit.ColorableMeshes)
+                {
+                    toColor.materials[0].color = GetColorFromColorization(mOutfitColorization);
+                }
+            }
+        }
+
+        Color GetColorFromColorization(OutfitColorization colorization)
+        {
+            Color outfitColor = Color.white;
+            switch (mOutfitColorization)
+            {
+                case OutfitColorization.Allied: outfitColor = Color.white; break;
+                case OutfitColorization.Enemy: outfitColor = Color.red; break;
+            }
+
+            return outfitColor;
+        }
+
         void SetOutfit(ApparelAssetId outfitAssetId)
         {
             mOutfit = Instantiate(ResourceLoader.Load<OutfitArrangement, ApparelAssetId>(ResourceConstants.OutfitsPath, outfitAssetId));
@@ -113,6 +138,8 @@ namespace MAGE.GameModes.SceneElements
             {
                 ReskinMesh.Reskin(outfitItem, rBody.BodyMesh);
             }
+
+            SetOutfitColorization(mOutfitColorization);
         }
 
         public void ApplyHeldApparel(ApparelAssetId heldApparel, HumanoidActorConstants.Hand side)

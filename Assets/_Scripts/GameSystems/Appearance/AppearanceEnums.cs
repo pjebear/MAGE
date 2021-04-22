@@ -77,6 +77,14 @@ namespace MAGE.GameSystems.Appearances
         NUM
     }
 
+    public enum OutfitColorization
+    {
+        Allied,
+        Enemy,
+
+        NUM
+    }
+
     public enum HairType
     {
         MaleBuzz,

@@ -47,6 +47,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bedefa2c4f13344fa99972a412863ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OutfitArrangementType: -1
+  ColorableMeshes:
+  - {fileID: 731989766318624698}
 --- !u!1001 &731989766315541530
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -139,6 +142,12 @@ PrefabInstance:
 --- !u!4 &731989766315417480 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400274, guid: 3c587c59170ec9f45bfe9360fa155634,
+    type: 3}
+  m_PrefabInstance: {fileID: 731989766315541530}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &731989766318624698 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 13700000, guid: 3c587c59170ec9f45bfe9360fa155634,
     type: 3}
   m_PrefabInstance: {fileID: 731989766315541530}
   m_PrefabAsset: {fileID: 0}

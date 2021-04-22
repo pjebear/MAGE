@@ -67,6 +67,38 @@ namespace MAGE.GameModes.Combat
             return stateChanges;
         }
 
+        //  ------------------------------------------------------------------------------
+        public int GetStackCountForStatus(StatusEffectId statusEffectId, int statusCreator)
+        {
+            int stackCount = 0;
+
+            Optional<StatusEffect> optEffect = GetStatusEffect(statusEffectId, statusCreator);
+            if (optEffect.HasValue)
+            {
+                stackCount = optEffect.Value.StackCount;
+            }
+
+            return stackCount;
+        }
+
+        //  ------------------------------------------------------------------------------
+        public Optional<StatusEffect> GetStatusEffect(StatusEffectId statusEffectId, int ownedBy)
+        {
+            Optional<StatusEffect> optEffect = new Optional<StatusEffect>();
+
+            StatusEffect statusEffect = StatusEffects.Find(
+                x =>
+                x.EffectType == statusEffectId
+                /*&& ownedBy == x.CreatedBy.Id*/);
+
+            if (statusEffect != null)
+            {
+                optEffect = statusEffect;
+            }
+
+            return optEffect;
+        }
+
         public void TickStatusEffects()
         {
             List<StatusEffect> expiredEffects = new List<StatusEffect>();

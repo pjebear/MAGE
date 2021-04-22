@@ -22,6 +22,8 @@ namespace MAGE.GameModes.Encounter
     {
         private string TAG = "EncounterFlowControl";
 
+        private EncounterModel mEncounterModel;
+
         enum FlowState
         {
             Intro,
@@ -58,24 +60,24 @@ namespace MAGE.GameModes.Encounter
 
             }
 
-            GameModel.Encounter = new EncounterModel();
+            mEncounterModel = new EncounterModel();
+            GameModel.Encounter = mEncounterModel;
 
             List<CombatCharacter> allies = activeEncounter.Allys.GetComponentsInChildren<CombatCharacter>().ToList();
-            GameModel.Encounter.Players.AddRange(allies);
+            mEncounterModel.Players.AddRange(allies);
             foreach (CombatCharacter character in allies)
             {
                 character.GetComponent<CombatEntity>().TeamSide = TeamSide.AllyHuman;
             }
             List<CombatCharacter> enemies = activeEncounter.Enemies.GetComponentsInChildren<CombatCharacter>().ToList();
-            GameModel.Encounter.Players.AddRange(enemies);
+            mEncounterModel.Players.AddRange(enemies);
             foreach (CombatCharacter character in enemies)
             {
                 character.GetComponent<CombatEntity>().TeamSide = TeamSide.EnemyAI;
+                character.GetComponentInChildren<ActorOutfitter>().SetOutfitColorization(GameSystems.Appearances.OutfitColorization.Enemy);
             }
 
-            GameModel.Encounter.TurnQueue.AddRange(GameModel.Encounter.Players);
-
-            foreach (CombatCharacter combatCharacter in GameModel.Encounter.Players)
+            foreach (CombatCharacter combatCharacter in mEncounterModel.Players)
             {
                 combatCharacter.GetComponent<ActorMotor>().Enable(false);
             }
@@ -118,7 +120,7 @@ namespace MAGE.GameModes.Encounter
 
             EncounterResultInfo result = new EncounterResultInfo();
             result.EncounterScenarioId = activeEncounter.EncounterScenarioId;
-            result.PlayersInEncounter = GameModel.Encounter.Players
+            result.PlayersInEncounter = mEncounterModel.Players
                 .Where(x => x.GetComponent<CombatEntity>().TeamSide == TeamSide.AllyHuman)
                 .Select(x=> x.Character.Id)
                 .ToList();
@@ -181,14 +183,14 @@ namespace MAGE.GameModes.Encounter
             {
                 case "havePendingActions":
                 {
-                    result = GameModel.Encounter.mActionQueue.Count > 0
+                    result = mEncounterModel.mActionQueue.Count > 0
                         ? FlowConstants.CONDITION_TRUE
                         : FlowConstants.CONDITION_FALSE;
                 }
                 break;
                 case "isCurrentTurnPlayControlled":
                 {
-                    result = GameModel.Encounter.CurrentTurn.GetComponent<CombatEntity>().TeamSide == TeamSide.AllyHuman
+                    result = mEncounterModel.CurrentTurn.GetComponent<CombatEntity>().TeamSide == TeamSide.AllyHuman
                         ? FlowConstants.CONDITION_TRUE
                         : FlowConstants.CONDITION_FALSE;
                 }
@@ -202,7 +204,7 @@ namespace MAGE.GameModes.Encounter
         {
             bool isLost = true;
 
-            foreach (CombatCharacter combatCharacter in GameModel.Encounter.Players)
+            foreach (CombatCharacter combatCharacter in mEncounterModel.Players)
             {
                 if (combatCharacter.GetComponent<ResourcesControl>().IsAlive())
                 {
@@ -221,7 +223,7 @@ namespace MAGE.GameModes.Encounter
         {
             bool isWon = true;
 
-            foreach (CombatCharacter combatCharacter in GameModel.Encounter.Players)
+            foreach (CombatCharacter combatCharacter in mEncounterModel.Players)
             {
                 if (combatCharacter.GetComponent<ResourcesControl>().IsAlive())
                 {
@@ -243,41 +245,46 @@ namespace MAGE.GameModes.Encounter
 
         private bool AreActionsPending()
         {
-            return GameModel.Encounter.mActionQueue.Count > 0;
+            return mEncounterModel.mActionQueue.Count > 0;
         }
 
         private void ProgressTurnFlow()
         {
-            if (GameModel.Encounter.CurrentTurn != null)
+            if (mEncounterModel.CurrentTurn != null)
             {
-                if (!GameModel.Encounter.CurrentTurn.GetComponent<ResourcesControl>().IsAlive() 
-                    || (GameModel.Encounter.HasActed && GameModel.Encounter.HasMoved))
+                CombatCharacter currentTurn = mEncounterModel.CurrentTurn;
+                if (!currentTurn.GetComponent<ResourcesControl>().IsAlive() 
+                    || mEncounterModel.TurnComplete
+                    || (currentTurn.GetComponent<ResourcesControl>().GetAvailableMovementRange() == 0 
+                        && currentTurn.GetComponent<ResourcesControl>().GetNumAvailableActions() == 0))
                 {
-                    GameModel.Encounter.CurrentTurn.GetComponent<ActorMotor>().Enable(false);
-                    GameModel.Encounter.CurrentTurn = null;
+                    mEncounterModel.TurnComplete = false;
+
+                    mEncounterModel.CurrentTurn.GetComponent<ActorMotor>().Enable(false);
+
+                    mEncounterModel.CurrentTurn.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Clock].Current = 0;
+
+                    mEncounterModel.CurrentTurn = null;
                 }
             }
 
             // Clean up existing turn queue
-            if (GameModel.Encounter.CurrentTurn == null)
+            if (mEncounterModel.CurrentTurn == null)
             {
-                if (GameModel.Encounter.TurnQueue.Count > 0)
+                if (mEncounterModel.TurnQueue.Count > 0)
                 {
-                    GameModel.Encounter.TurnQueue = GameModel.Encounter.TurnQueue.Where(x => x.GetComponent<ResourcesControl>().IsAlive()).ToList();
+                    mEncounterModel.TurnQueue = mEncounterModel.TurnQueue.Where(x => x.GetComponent<ResourcesControl>().IsAlive()).ToList();
                 }
 
-                if (GameModel.Encounter.TurnQueue.Count == 0)
+                if (mEncounterModel.TurnQueue.Count == 0)
                 {
-                    GameModel.Encounter.TurnQueue = GameModel.Encounter.Players.Where(x => x.GetComponent<ResourcesControl>().IsAlive()).ToList();
+                    PopulateTurnQueue();
                 }
 
-                GameModel.Encounter.CurrentTurn = GameModel.Encounter.TurnQueue[0];
-                GameModel.Encounter.CurrentTurn.OnTurnStart();
-                GameModel.Encounter.CurrentTurn.GetComponent<ActorMotor>().Enable(true);
-                GameModel.Encounter.TurnQueue.RemoveAt(0);
-                GameModel.Encounter.HasMoved = false;
-                GameModel.Encounter.HasActed = false;
-                
+                mEncounterModel.CurrentTurn = mEncounterModel.TurnQueue[0];
+                mEncounterModel.CurrentTurn.OnTurnStart();
+                mEncounterModel.CurrentTurn.GetComponent<ActorMotor>().Enable(true);
+                mEncounterModel.TurnQueue.RemoveAt(0);
             }
         }
 
@@ -307,6 +314,30 @@ namespace MAGE.GameModes.Encounter
         public string Name()
         {
             return "EncounterFlowControl";
+        }
+
+        void PopulateTurnQueue()
+        {
+            Debug.Assert(!IsEncounterOver());
+            if (!IsEncounterOver())
+            {
+                while (mEncounterModel.TurnQueue.Count == 0)
+                {
+                    foreach (CombatCharacter combatCharacter in mEncounterModel.Players)
+                    {
+                        ResourcesControl resourcesControl = combatCharacter.GetComponent<ResourcesControl>();
+                        StatsControl statsControl = combatCharacter.GetComponent<StatsControl>();
+                        if (resourcesControl.IsAlive())
+                        {
+                            resourcesControl.Resources[GameSystems.Stats.ResourceType.Clock].Modify((int)statsControl.Attributes[GameSystems.Stats.TertiaryStat.Speed]);
+                            if (resourcesControl.Resources[GameSystems.Stats.ResourceType.Clock].Ratio == 1)
+                            {
+                                mEncounterModel.TurnQueue.Add(combatCharacter);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

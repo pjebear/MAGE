@@ -200,12 +200,12 @@ PrefabInstance:
     - target: {fileID: 2043756494403449350, guid: b83aef2d0f0a72342a79a8a85fb32606,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 50
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2043756494403449350, guid: b83aef2d0f0a72342a79a8a85fb32606,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 410
+      value: 250
       objectReference: {fileID: 0}
     - target: {fileID: 2043756494403449350, guid: b83aef2d0f0a72342a79a8a85fb32606,
         type: 3}
@@ -247,10 +247,25 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2043756494403449350, guid: b83aef2d0f0a72342a79a8a85fb32606,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2043756494403449350, guid: b83aef2d0f0a72342a79a8a85fb32606,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.7
+      objectReference: {fileID: 0}
     - target: {fileID: 2043756494403449351, guid: b83aef2d0f0a72342a79a8a85fb32606,
         type: 3}
       propertyPath: m_Name
       value: CharacterInfoPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 2043756496235465624, guid: b83aef2d0f0a72342a79a8a85fb32606,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.00012207031
       objectReference: {fileID: 0}
     - target: {fileID: 2148936123421298136, guid: b83aef2d0f0a72342a79a8a85fb32606,
         type: 3}

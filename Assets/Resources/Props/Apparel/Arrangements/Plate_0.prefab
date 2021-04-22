@@ -70,6 +70,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bedefa2c4f13344fa99972a412863ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OutfitArrangementType: -1
+  ColorableMeshes:
+  - {fileID: 5962049530905190323}
 --- !u!1001 &478158016208876264
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1443,6 +1446,12 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 7e600c4317e594c268bbf68fdf2d2aa3, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 29bfb0a4276ff5b49b3d0397a2af0b05, type: 3}
+--- !u!137 &5962049530905190323 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 13700000, guid: 29bfb0a4276ff5b49b3d0397a2af0b05,
+    type: 3}
+  m_PrefabInstance: {fileID: 5962049530893587475}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5962049530893717137 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400002, guid: 29bfb0a4276ff5b49b3d0397a2af0b05,

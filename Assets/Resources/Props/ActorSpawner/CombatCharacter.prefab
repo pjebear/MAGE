@@ -102,15 +102,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Resources:
-    mResources:
-    - Current: 0
-      Max: 0
-    - Current: 0
-      Max: 0
-    - Current: 0
-      Max: 0
-    - Current: 0
-      Max: 0
+    mResources: []
 --- !u!114 &8088295270064144529
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -151,6 +143,19 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Extents.z
       value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5819418552379925060, guid: 03dc169a6a6892c4a9586fd3fe5e5823,
+        type: 3}
+      propertyPath: m_WarningMessage
+      value: "\nBinding warning: Some generic clip(s) animate transforms that are
+        already bound by a Humanoid avatar. These transforms can only be changed
+        by Humanoid clips.\n\tTransform 'EyeR'\n\tTransform 'EyeL'\n\tTransform 'EyeR'\n\tTransform
+        'EyeL'\n\tTransform 'EyeR'\n\tTransform 'EyeL'\n\tFrom animation clip 'BowShoot_R_01_Aim'\n\tFrom
+        animation clip 'BowShoot_R_01_Setup'\n\tFrom animation clip 'Attack01a'\n\tFrom
+        animation clip 'Attack01b'\n\tFrom animation clip 'Attack02a'\n\tFrom animation
+        clip 'Attack02b'\n\tFrom animation clip 'Attack03a'\n\tFrom animation clip
+        'Attack03b'\n\tFrom animation clip 'CastSpell01'\n\tFrom animation clip 'CastSpell02'\n\tand
+        more ..."
       objectReference: {fileID: 0}
     - target: {fileID: 7933654599530242102, guid: 03dc169a6a6892c4a9586fd3fe5e5823,
         type: 3}

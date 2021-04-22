@@ -29,7 +29,7 @@ namespace MAGE.GameModes.Combat
         {
             CombatCharacter combatCharacter = Owner.GetComponent<CombatCharacter>();
 
-            bool hasResources = combatCharacter.Character.HasResourcesForAction(ActionInfo.ActionCost);
+            bool hasResources = combatCharacter.GetComponent<ResourcesControl>().HasResourcesForAction(ActionInfo.ActionCost);
 
             bool isBlocked = false;
             if (ActionInfo.ActionSource == ActionSource.Weapon)

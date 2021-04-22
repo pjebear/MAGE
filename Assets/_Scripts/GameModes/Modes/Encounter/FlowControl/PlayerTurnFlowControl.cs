@@ -218,7 +218,7 @@ namespace MAGE.GameModes.Encounter
                     {
                         ActionProposal proposal = new ActionProposal(mCurrentCharacter.GetComponent<CombatEntity>(), new Target(hit.point), mSelectedAction.ActionInfo.ActionId);
                         GameModel.Encounter.mActionQueue.Enqueue(proposal);
-                        GameModel.Encounter.HasActed = true;
+                        mCurrentCharacter.GetComponent<ResourcesControl>().OnActionPerformed(mActionInfo.ActionCost);
                         SendFlowMessage("actionChosen");
                     }
                     else if (target != null)
@@ -229,7 +229,7 @@ namespace MAGE.GameModes.Encounter
                         {
                             ActionProposal proposal = new ActionProposal(mCurrentCharacter.GetComponent<CombatEntity>(), new Target(target), mSelectedAction.ActionInfo.ActionId);
                             GameModel.Encounter.mActionQueue.Enqueue(proposal);
-                            GameModel.Encounter.HasActed = true;
+                            mCurrentCharacter.GetComponent<ResourcesControl>().OnActionPerformed(mActionInfo.ActionCost);
                             SendFlowMessage("actionChosen");
                         }
                             
@@ -241,8 +241,6 @@ namespace MAGE.GameModes.Encounter
                 // Move to character
                 if (mCurrentTarget != null)
                 {
-                    GameModel.Encounter.HasMoved = true;
-
                     // Move to an ally
                     if (mCurrentTarget.GetComponent<CombatEntity>().TeamSide == mCurrentCharacter.GetComponent<CombatEntity>().TeamSide)
                     {
@@ -250,7 +248,7 @@ namespace MAGE.GameModes.Encounter
                         {
                             SetState(State.Moving);
 
-                            GameModel.Encounter.HasMoved = true;
+                            mCurrentCharacter.GetComponent<ResourcesControl>().OnMovementPerformed(mCurrentCharacter.GetComponent<ResourcesControl>().GetAvailableMovementRange());
                             mCurrentCharacter.GetComponent<ActorMotor>().MoveToPoint(mCurrentMoveToPoint, () =>
                             {
                                 SendFlowMessage("actionChosen");
@@ -266,7 +264,7 @@ namespace MAGE.GameModes.Encounter
                 else
                 {
                     SetState(State.Moving);
-                    GameModel.Encounter.HasMoved = true;
+                    mCurrentCharacter.GetComponent<ResourcesControl>().OnMovementPerformed(mCurrentCharacter.GetComponent<ResourcesControl>().GetAvailableMovementRange());
 
                     mCurrentCharacter.GetComponent<ActorMotor>().MoveToPoint(mCurrentMoveToPoint, () =>
                     {
@@ -297,7 +295,7 @@ namespace MAGE.GameModes.Encounter
 
                     if (mState == State.Idle)
                     {
-                        if (!GameModel.Encounter.HasActed)
+                        if (mCurrentCharacter.GetComponent<ResourcesControl>().GetNumAvailableActions() > 0)
                         {
                             foreach (ActionComposerBase action in mAvailableActions)
                             {
@@ -342,10 +340,11 @@ namespace MAGE.GameModes.Encounter
                         if (mState == State.Idle)
                         {
                             ListInteractionInfo listInteractionInfo = interactionInfo as ListInteractionInfo;
-                            if (GameModel.Encounter.HasActed || listInteractionInfo.ListIdx >= mAvailableActions.Count)
+                            if (mCurrentCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Actions].Current == 0 
+                                || listInteractionInfo.ListIdx >= mAvailableActions.Count)
                             {
-                                GameModel.Encounter.HasActed = true;
-                                GameModel.Encounter.HasMoved = true;
+                                // Wait selected
+                                GameModel.Encounter.TurnComplete = true;
                                 SendFlowMessage("actionChosen");
                             }
                             else
@@ -400,7 +399,7 @@ namespace MAGE.GameModes.Encounter
                     }
                     else
                     {
-                        if (!GameModel.Encounter.HasActed)
+                        if (mCurrentCharacter.GetComponent<ResourcesControl>().GetNumAvailableActions() > 0)
                         {
                             updatedCursorType = CursorControl.CursorType.Combat_Near;
                         }

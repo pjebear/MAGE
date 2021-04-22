@@ -124,7 +124,9 @@ namespace MAGE.GameSystems.Characters
                AttributeUtil.ResourceFromAttribtues(ResourceType.Health, mCurrentAttributes),
                AttributeUtil.ResourceFromAttribtues(ResourceType.Mana, mCurrentAttributes),
                AttributeUtil.ResourceFromAttribtues(ResourceType.Endurance, mCurrentAttributes),
-               AttributeUtil.ResourceFromAttribtues(ResourceType.Clock, mCurrentAttributes));
+               AttributeUtil.ResourceFromAttribtues(ResourceType.Clock, mCurrentAttributes),
+               AttributeUtil.ResourceFromAttribtues(ResourceType.Actions, mCurrentAttributes),
+               AttributeUtil.ResourceFromAttribtues(ResourceType.MovementRange, mCurrentAttributes));
 
             OnCharacterStateChanged();
         }

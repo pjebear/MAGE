@@ -1,5 +1,8 @@
-﻿using MAGE.GameSystems;
+﻿using MAGE.GameModes.Combat;
+using MAGE.GameSystems;
 using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.Items;
+using MAGE.GameSystems.Stats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +14,88 @@ namespace MAGE.GameSystems.Actions
 {
     static class InteractionUtil
     {
+        public static void GetAvoidanceAttributesForCharacter(CombatCharacter combatCharacter, out float dodgeChance, out float blockChance, out float parryChance, RelativeOrientation relativeOrientation = RelativeOrientation.Front)
+        {
+            blockChance = 0;
+            dodgeChance = 0;
+            parryChance = 0;
+
+            EquipmentControl equipmentControl = combatCharacter.GetComponent<EquipmentControl>();
+            if (equipmentControl != null)
+            {
+                Equipment.Slot parryEquippableSlot = Equipment.Slot.INVALID;
+                Equipment.Slot blockEquippableSlot = Equipment.Slot.INVALID;
+
+                // Calculate evasion from equipment
+                if (relativeOrientation == RelativeOrientation.Behind) // target can only dodge
+                {
+
+                }
+                else if (relativeOrientation == RelativeOrientation.Right)
+                {
+                    HeldEquippable heldEquippable = equipmentControl.Equipment[Equipment.Slot.RightHand] as HeldEquippable;
+                    if (heldEquippable.ParryChance != 0)
+                    {
+                        parryEquippableSlot = Equipment.Slot.RightHand;
+                    }
+                    if (heldEquippable.BlockChance != 0)
+                    {
+                        blockEquippableSlot = Equipment.Slot.RightHand;
+                    }
+                }
+                else if (relativeOrientation == RelativeOrientation.Left)
+                {
+                    HeldEquippable heldEquippable = equipmentControl.Equipment[Equipment.Slot.LeftHand] as HeldEquippable;
+                    if (heldEquippable.ParryChance != 0)
+                    {
+                        parryEquippableSlot = Equipment.Slot.LeftHand;
+                    }
+                    if (heldEquippable.BlockChance != 0)
+                    {
+                        blockEquippableSlot = Equipment.Slot.LeftHand;
+                    }
+                }
+                else // can block/parry with either weapon
+                {
+                    HeldEquippable leftEquippable = equipmentControl.Equipment[Equipment.Slot.LeftHand] as HeldEquippable;
+                    HeldEquippable rightEquippable = equipmentControl.Equipment[Equipment.Slot.RightHand] as HeldEquippable;
+                    if (leftEquippable.ParryChance != 0 || rightEquippable.ParryChance != 0)
+                    {
+                        parryEquippableSlot = leftEquippable.ParryChance > rightEquippable.ParryChance ? Equipment.Slot.LeftHand : Equipment.Slot.RightHand;
+                    }
+
+                    if (leftEquippable.BlockChance != 0 || rightEquippable.BlockChance != 0)
+                    {
+                        blockEquippableSlot = leftEquippable.BlockChance > rightEquippable.BlockChance ? Equipment.Slot.LeftHand : Equipment.Slot.RightHand;
+                    }
+                }
+
+                if (parryEquippableSlot != Equipment.Slot.INVALID)
+                {
+                    parryChance = (equipmentControl.Equipment[parryEquippableSlot] as HeldEquippable).ParryChance;
+                }
+
+                if (blockEquippableSlot != Equipment.Slot.INVALID)
+                {
+                    blockChance = (equipmentControl.Equipment[blockEquippableSlot] as HeldEquippable).BlockChance;
+                }
+            }
+
+            StatsControl targetStatControl = combatCharacter.GetComponent<StatsControl>();
+            if (targetStatControl != null)
+            {
+                dodgeChance = targetStatControl.Attributes[TertiaryStat.Dodge];
+                if (blockChance > 0)
+                {
+                    blockChance += targetStatControl.Attributes[TertiaryStat.Block];
+                }
+                if (parryChance > 0)
+                {
+                    parryChance += targetStatControl.Attributes[TertiaryStat.Parry];
+                }
+            }
+        }
+
         public static InteractionResultType GetOwnerResultTypeFromResults(List<InteractionResult> results)
         {
             InteractionResultType interactionResultType = InteractionResultType.Miss;

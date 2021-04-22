@@ -33,7 +33,7 @@ namespace MAGE.GameModes.Combat
                 Character = characterService.GetCharacter(characterId);
 
                 GetComponent<StatsControl>().SetAttributes(Character.CurrentAttributes);
-                // Updates Resources Automatically
+                GetComponent<ResourcesControl>().InitResourcesFromAttributes();
                 GetComponent<ActionsControl>().Actions = Character.GetActionIds();
                 GetComponent<EquipmentControl>().Equipment = Character.Equipment;
 
@@ -65,6 +65,13 @@ namespace MAGE.GameModes.Combat
             {
                 GetComponent<CombatTarget>().ApplyStateChange(stateChange);
             }
+
+            GetComponent<ResourcesControl>().Resources[ResourceType.Mana]
+                .Modify((int)(GetComponent<ResourcesControl>().Resources[ResourceType.Mana].Max 
+                * GetComponent<StatsControl>().Attributes[SecondaryStat.Attunement] / 100
+                / 2f));
+            GetComponent<ResourcesControl>().Resources[ResourceType.Actions].SetCurrentToMax();
+            GetComponent<ResourcesControl>().Resources[ResourceType.MovementRange].SetCurrentToMax();
         }
     }
 }

@@ -109,23 +109,42 @@ namespace MAGE.GameSystems.Characters.Internal
 
             // Attributes
             PrimaryStat primaryStat = PrimaryStat.Might;
+            int speed = 5;
+            int fortitude = 50;
+            int attunement = 50;
             switch (createParams.currentSpecialization)
             {
                 case SpecializationType.Archer:
                 {
                     primaryStat = PrimaryStat.Finese;
+                    fortitude = 40;
+                    attunement = 40;
+                    speed = 6;
                 }
                 break;
                 case SpecializationType.Bear:
                 case SpecializationType.Footman:
+                {
+                    primaryStat = PrimaryStat.Might;
+                    fortitude = 60;
+                    attunement = 40;
+                    speed = 5;
+                }
+                break;
                 case SpecializationType.Paladin:
                 {
                     primaryStat = PrimaryStat.Might;
+                    fortitude = 60;
+                    attunement = 50;
+                    speed = 5;
                 }
                 break;
                 case SpecializationType.Monk:
                 {
                     primaryStat = PrimaryStat.Magic;
+                    speed = 4;
+                    fortitude = 40;
+                    attunement = 60;
                 }
                 break;
             }
@@ -133,11 +152,11 @@ namespace MAGE.GameSystems.Characters.Internal
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.PrimaryStat].Attributes[(int)PrimaryStat.Might] = primaryStat == PrimaryStat.Might ? 20 : 10;
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.PrimaryStat].Attributes[(int)PrimaryStat.Finese] = primaryStat == PrimaryStat.Finese ? 20 : 10;
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.PrimaryStat].Attributes[(int)PrimaryStat.Magic] = primaryStat == PrimaryStat.Magic ? 20 : 10;
-            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.SecondaryStat].Attributes[(int)SecondaryStat.Fortitude] = 60;
-            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.SecondaryStat].Attributes[(int)SecondaryStat.Attunement] = 40;
-            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.TertiaryStat].Attributes[(int)TertiaryStat.Movement] = 4;
-            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.TertiaryStat].Attributes[(int)TertiaryStat.Jump] = 2;
-            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.TertiaryStat].Attributes[(int)TertiaryStat.Speed] = 7;
+            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.SecondaryStat].Attributes[(int)SecondaryStat.Fortitude] = fortitude;
+            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.SecondaryStat].Attributes[(int)SecondaryStat.Attunement] = attunement;
+            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.TertiaryStat].Attributes[(int)TertiaryStat.Movement] = 7;
+            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.TertiaryStat].Attributes[(int)TertiaryStat.Actions] = 1;
+            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.TertiaryStat].Attributes[(int)TertiaryStat.Speed] = speed;
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.TertiaryStat].Attributes[(int)TertiaryStat.MaxClockGuage] = 100;
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Resource].Attributes[(int)ResourceType.Health] = 15;
         }

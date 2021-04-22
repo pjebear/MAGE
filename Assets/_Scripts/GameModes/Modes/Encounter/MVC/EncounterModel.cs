@@ -21,8 +21,7 @@ namespace MAGE.GameModes.Encounter
         public List<CombatCharacter> TurnQueue = new List<CombatCharacter>();
 
         public CombatCharacter CurrentTurn = null;
-        public bool HasActed = false;
-        public bool HasMoved = false;
+        public bool TurnComplete = false;
     }
 }
 

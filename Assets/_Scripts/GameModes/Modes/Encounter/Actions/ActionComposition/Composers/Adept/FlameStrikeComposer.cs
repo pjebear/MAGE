@@ -26,7 +26,7 @@ namespace MAGE.GameModes.Encounter
 
             actionInfo.ActionId = ActionId.FlameStrike;
             actionInfo.AnimationInfo.AnimationId = GameSystems.AnimationId.Cast;
-            actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, 0);
+            actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -15);
             actionInfo.ActionRange = ActionRange.Projectile;
             actionInfo.ActionSource = ActionSource.Cast;
 
