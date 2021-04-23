@@ -23,6 +23,11 @@ namespace MAGE.GameModes.FlowControl
         {
             Name = name;
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
     abstract class FlowGraph : FlowNode

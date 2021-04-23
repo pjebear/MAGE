@@ -29,8 +29,8 @@ namespace MAGE.GameSystems
         void RegisterForCharacterUpdates(object listener, DB.DBUpdateCB<int> cb);
         void RemoveCharacter(int characterId);
         void UnRegisterForCharacterUpdates(object listener);
-        DB.DBCharacter WriteCharacter(DB.DBCharacter character, TeamSide teamSide = TeamSide.INVALID);
-        DB.DBCharacter WriteNewCharacter(DB.DBCharacter character, TeamSide teamSide = TeamSide.INVALID);
+        DB.DBCharacter WriteCharacter(DB.DBCharacter character);
+        DB.DBCharacter WriteNewCharacter(DB.DBCharacter character);
         // Character - End
 
         // Cinematic
@@ -82,7 +82,7 @@ namespace MAGE.GameSystems
         // Scenario - End
 
         // Specialization
-        DB.DBSpecialization LoadSpecialization(MAGE.GameSystems.Characters.SpecializationType specializationType);
+        DB.DBSpecialization LoadSpecialization(Characters.SpecializationType specializationType);
         void UpdateSpecializationDB();
         void WriteSpecialization(DB.DBSpecialization dBSpecialization);
         // Specialization - End
@@ -92,12 +92,6 @@ namespace MAGE.GameSystems
         void UpdateStoryDB();
         void WriteStoryArcInfo(int storyArcId, DB.DBStoryArcInfo storyArcInfo);
         // Story - End
-
-        // Team 
-        void AddToTeam(int characterId, TeamSide teamSide);
-        void ClearTeam(TeamSide teamSide);
-        List<int> LoadTeam(TeamSide teamSide);
-        // Team - End
 
         // Save Load
         void Load(string path);

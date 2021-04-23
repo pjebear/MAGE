@@ -1,4 +1,8 @@
-﻿using MAGE.UI;
+﻿using MAGE.GameModes.SceneElements;
+using MAGE.GameSystems;
+using MAGE.GameSystems.Characters;
+using MAGE.Messaging;
+using MAGE.UI;
 using MAGE.UI.Views;
 using System;
 using System.Collections.Generic;
@@ -9,40 +13,62 @@ using UnityEngine;
 
 namespace MAGE.GameModes.FlowControl
 {
-    class PartyOutfiterViewControl : UIContainerControl
+    class PartyOutfiterViewControl : FlowControlBase, UIContainerControl
     {
-        private Transform mCharacterSpawnPoint;
+        enum OutfitState
+        {
+            INVALID,
 
-        private ICharacterOutfiter mSpecOutfiter = new SpecializationOutfiterViewControl();
-        private ICharacterOutfiter mEquipmentOutfiter = new EquipmentOutfiterViewControl();
+            Equip,
+            Specialize,
+
+            NUM
+        }
+        private OutfitState mState = OutfitState.INVALID;
 
         private ICharacterOutfiter mOutfiter;
-        public int mOutfiterIdx = 0;
 
         private List<int> mCharacterIds = new List<int>();
         private int mCharacterIdx = 0;
-        private MAGE.GameSystems.Characters.Character mOutfitingCharacter = null;
 
-        public void Init(Transform characterSpawnPoint)
+        private ActorSpawner mSpawner = null;
+
+        public override FlowControlId GetFlowControlId()
         {
-            mCharacterSpawnPoint = characterSpawnPoint;
+            return FlowControlId.ExplorationOutfiterFlowControl;
         }
 
-        public void Start()
+        protected override void Setup()
         {
+            mSpawner = LevelManagementService.Get().GetLoadedLevel().Player.GetComponentInChildren<ActorSpawner>();
+            mSpawner.GetComponentInChildren<ActorOutfitter>().UpdateHeldApparelState(HumanoidActorConstants.HeldApparelState.Held);
+
+            Camera.main.GetComponent<Cameras.CameraController>().SetTarget(mSpawner.transform, Cameras.CameraType.Outfitter);
+
             mCharacterIds = MAGE.GameSystems.WorldService.Get().GetCharactersInParty();
-            mCharacterIdx = 0;
 
-            mOutfitingCharacter = MAGE.GameSystems.CharacterService.Get().GetCharacter(mCharacterIds[mCharacterIdx]);
-            SpawnCharacter();
+            mCharacterIdx = mCharacterIds.IndexOf(GameSystems.WorldService.Get().GetPartyAvatarId());
 
-            SetOutfiter(mEquipmentOutfiter);
+            RefreshOutfittedCharacter();
+
+            SetOutfiter(OutfitState.Equip);
 
             UIManager.Instance.PostContainer(UIContainerId.OutfiterSelectView, this);
         }
 
-        public void Cleanup()
+        protected override void Cleanup()
         {
+            if (mOutfiter != null)
+            {
+                mOutfiter.Cleanup();
+            }
+
+            Camera.main.GetComponent<Cameras.CameraController>().SetTarget(mSpawner.transform, Cameras.CameraType.ThirdPerson);
+
+            mSpawner.GetComponentInChildren<ActorOutfitter>().UpdateHeldApparelState(HumanoidActorConstants.HeldApparelState.Holstered);
+            mSpawner.GetComponent<CharacterPickerControl>().CharacterPicker.SetRootCharacterId(WorldService.Get().GetPartyAvatarId());
+            mSpawner.Refresh();
+
             UIManager.Instance.RemoveOverlay(UIContainerId.OutfiterSelectView);
         }
 
@@ -69,24 +95,18 @@ namespace MAGE.GameModes.FlowControl
                             break;
                             case (int)OutfiterSelectView.ComponentId.ExitBtn:
                             {
-                                //GameModesModule.Instance.Explore();
+                                SendFlowMessage("advance");
                             }
                             break;
                             case (int)OutfiterSelectView.ComponentId.EquipBtn:
                             {
-                                if (mOutfiter != mEquipmentOutfiter)
-                                {
-                                    SetOutfiter(mEquipmentOutfiter);
-                                }
+                                SetOutfiter(OutfitState.Equip);    
                             }
                             break;
 
                             case (int)OutfiterSelectView.ComponentId.SpecBtn:
                             {
-                                if (mOutfiter != mSpecOutfiter)
-                                {
-                                    SetOutfiter(mSpecOutfiter);
-                                }
+                                SetOutfiter(OutfitState.Specialize);
                             }
                             break;
                         }
@@ -105,21 +125,33 @@ namespace MAGE.GameModes.FlowControl
         {
             OutfiterSelectView.DataProvider dataProvider = new OutfiterSelectView.DataProvider();
 
-            dataProvider.character = mOutfitingCharacter.Name;
+            Character character = CharacterService.Get().GetCharacter(mCharacterIds[mCharacterIdx]);
+
+            dataProvider.character = character.Name;
 
             return dataProvider;
         }
 
-        private void SetOutfiter(ICharacterOutfiter outfiter)
+        private void SetOutfiter(OutfitState state)
         {
-            if (mOutfiter != null)
+            if (mState != state)
             {
-                mOutfiter.Cleanup();
+                mState = state;
+
+                if (mOutfiter != null)
+                {
+                    mOutfiter.Cleanup();
+                }
+
+                switch (mState)
+                {
+                    case OutfitState.Equip: mOutfiter = new EquipmentOutfiterViewControl(); break;
+                    case OutfitState.Specialize: mOutfiter = new SpecializationOutfiterViewControl(); break;
+                }
+
+                mOutfiter.SetCharacter(GetCurrentCharacterId());
+                mOutfiter.BeginOutfitting();
             }
-
-            mOutfiter = outfiter;
-
-            mOutfiter.BeginOutfitting(mOutfitingCharacter, () => { SpawnCharacter(); });
         }
 
         private void CycleCharacter(int direction)
@@ -131,26 +163,40 @@ namespace MAGE.GameModes.FlowControl
             if (newIdx != mCharacterIdx)
             {
                 mCharacterIdx = newIdx;
-                mOutfitingCharacter = MAGE.GameSystems.CharacterService.Get().GetCharacter(mCharacterIds[mCharacterIdx]);
 
-                mOutfiter.Cleanup();
+                RefreshOutfittedCharacter();
 
-                mOutfiter.BeginOutfitting(mOutfitingCharacter, () => { SpawnCharacter(); });
-
-                SpawnCharacter();
+                mOutfiter.SetCharacter(GetCurrentCharacterId());
             }
 
             UIManager.Instance.Publish(UIContainerId.OutfiterSelectView);
         }
 
-        private void SpawnCharacter()
+        private int GetCurrentCharacterId()
         {
-            if (mCharacterSpawnPoint.childCount > 0)
-            {
-                GameObject.Destroy(mCharacterSpawnPoint.GetChild(0).gameObject);
-            }
+            return mCharacterIds[mCharacterIdx];
+        }
 
-            //ActorLoader.Instance.LoadActor(mOutfitingCharacter.GetAppearance(), mCharacterSpawnPoint);
+        private void RefreshOutfittedCharacter()
+        {
+            mSpawner.GetComponent<CharacterPickerControl>().CharacterPicker.SetRootCharacterId(GetCurrentCharacterId());
+            mSpawner.Refresh();
+        }
+
+        public override void HandleMessage(MessageInfoBase eventInfoBase)
+        {
+            switch (eventInfoBase.MessageId)
+            {
+                case CharacterMessage.Id:
+                {
+                    CharacterMessage message = eventInfoBase as CharacterMessage;
+                    if (message.Type == CharacterMessage.MessageType.CharacterUpdated && message.Arg<int>() == GetCurrentCharacterId())
+                    {
+                        mOutfiter.Refresh();
+                    }
+                }
+                break;
+            }
         }
     }
 }

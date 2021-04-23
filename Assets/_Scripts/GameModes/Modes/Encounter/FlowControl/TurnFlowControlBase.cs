@@ -66,15 +66,12 @@ namespace MAGE.GameModes.Encounter
             mMovementRangeRenderer.gameObject.SetActive(false);
             mMovementRangeRenderer.useWorldSpace = true;
 
-            foreach (CombatCharacter combatCharacter in GameModel.Encounter.Players)
+            foreach (CombatCharacter combatCharacter in GameModel.Encounter.AlivePlayers)
             {
-                if (combatCharacter.GetComponent<ResourcesControl>().IsAlive())
-                {
-                    NavMeshObstacle obstacle = EncounterPrefabLoader.Obstacle;
-                    obstacle.transform.SetParent(combatCharacter.transform);
-                    obstacle.transform.localPosition = Vector3.zero;
-                    mMovementObstacles.Add(combatCharacter, obstacle);
-                }
+                NavMeshObstacle obstacle = EncounterPrefabLoader.Obstacle;
+                obstacle.transform.SetParent(combatCharacter.transform);
+                obstacle.transform.localPosition = Vector3.zero;
+                mMovementObstacles.Add(combatCharacter, obstacle);
             }
 
             SetCurrentCharacter(GameModel.Encounter.CurrentTurn);

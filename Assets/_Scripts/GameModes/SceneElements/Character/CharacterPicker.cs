@@ -13,22 +13,28 @@ namespace MAGE.GameModes.SceneElements
     [Serializable]
     class CharacterPicker
     {
-        public int RootCharacterId = -1;
+        [SerializeField]
+        private int RootCharacterId = -1;
 
-        public CharacterType CharacterType = CharacterType.INVALID;
+        [SerializeField]
+        private CharacterType CharacterType = CharacterType.INVALID;
 
-        // Create Character
-        public int CreateCharacterId = CharacterConstants.INVALID_ID;
+        [SerializeField]
+        private int CreateCharacterId = CharacterConstants.INVALID_ID;
 
         // Story Character
-        public StoryCharacterId StoryCharacterId = StoryCharacterId.INVALID;
+        [SerializeField]
+        private StoryCharacterId StoryCharacterId = StoryCharacterId.INVALID;
 
         // Scenario Character
-        public ScenarioId ScenarioId = ScenarioId.INVALID;
-        public int ScenarioCharacterOffset = 0;
+        [SerializeField]
+        private ScenarioId ScenarioId = ScenarioId.INVALID;
+        [SerializeField]
+        private int ScenarioCharacterOffset = 0;
 
         // PropId
-        public NPCPropId NPCId = NPCPropId.None;
+        [SerializeField]
+        private NPCPropId NPCId = NPCPropId.None;
 
         public virtual Appearance GetAppearance()
         {
@@ -126,6 +132,28 @@ namespace MAGE.GameModes.SceneElements
             CreateCharacterId = CharacterConstants.INVALID_ID;
 
             NPCId = NPCPropId.None;
+        }
+
+        public void Set(NPCPropId id)
+        {
+            Debug.Assert(id != NPCPropId.None);
+            Reset();
+            NPCId = id;
+        }
+
+        public void Set(StoryCharacterId id)
+        {
+            Debug.Assert(id != StoryCharacterId.INVALID);
+            Reset();
+            CharacterType = CharacterType.Story;
+            StoryCharacterId = id;
+        }
+
+        public void SetRootCharacterId(int rootCharacterId)
+        {
+            Debug.Assert(rootCharacterId != -1);
+            Reset();
+            RootCharacterId = rootCharacterId;
         }
     }
 }

@@ -14,9 +14,6 @@ namespace MAGE.GameSystems
         // Conversation - End
 
         // Encounter
-        World.EncounterContext GetEncounterContext();
-        EncounterCreateParams GetEncounterParams();
-        void PrepareEncounter(EncounterCreateParams encounterParams);
         void UpdateOnEncounterEnd(EncounterResultInfo resultInfo);
         // Encounter - End
 

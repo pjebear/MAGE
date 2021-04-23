@@ -17,7 +17,10 @@ namespace MAGE.GameModes.Encounter
         public Queue<ActionProposal> mActionQueue = new Queue<ActionProposal>();
         public Dictionary<ActionProposal, int> mDelayedActions = new Dictionary<ActionProposal, int>();
 
-        public List<CombatCharacter> Players = new List<CombatCharacter>();
+        public Dictionary<TeamSide, List<CombatCharacter>> Teams = new Dictionary<TeamSide, List<CombatCharacter>>();
+        public Dictionary<int, CombatCharacter> Players = new Dictionary<int, CombatCharacter>();
+        public IEnumerable<CombatCharacter> AlivePlayers { get { return Players.Values.Where(x => x.GetComponent<ResourcesControl>().IsAlive()); } }
+        
         public List<CombatCharacter> TurnQueue = new List<CombatCharacter>();
 
         public CombatCharacter CurrentTurn = null;

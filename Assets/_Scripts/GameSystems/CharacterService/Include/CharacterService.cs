@@ -19,9 +19,7 @@ namespace MAGE.GameSystems
         Characters.Character GetCharacter(int characterId);
         List<int> GetCharactersOfType(Characters.CharacterType characterType);
         List<int> ResetTalentPoints(int characterId);
-        void RegisterForCharacterChanges(int characterId, Characters.ICharacterUpdateListener characterUpdateListener);
         List<int> UnEquipCharacter(int characterId, Items.Equipment.Slot inSlot);
-        void UnRegisterForCharacterChanges(int characterId, Characters.ICharacterUpdateListener characterUpdateListener);
         // Debug 
         void Debug_MaxOutTalents(int characterId);
     }

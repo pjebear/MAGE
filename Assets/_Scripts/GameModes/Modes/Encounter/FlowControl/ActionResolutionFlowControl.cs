@@ -57,26 +57,23 @@ namespace MAGE.GameModes.Encounter
             {
                 mActionTimeline = null;
 
-                foreach (CombatCharacter character in GameModel.Encounter.Players)
+                foreach (CombatCharacter character in GameModel.Encounter.Players.Values.Where(x => x.GetComponent<ResourcesControl>().IsAlive()))
                 {
-                    if (character.GetComponent<ResourcesControl>().IsAlive())
+                    foreach (ActionResponseBase actionResponseBase in character.GetComponent<ActionsControl>().RespondToAction(mComposition.ActionResults))
                     {
-                        foreach (ActionResponseBase actionResponseBase in character.GetComponent<ActionsControl>().RespondToAction(mComposition.ActionResults))
+                        switch (actionResponseBase.ResponseType)
                         {
-                            switch (actionResponseBase.ResponseType)
+                            case ActionResponseType.ActionProposal:
                             {
-                                case ActionResponseType.ActionProposal:
-                                {
-                                    GameModel.Encounter.mActionQueue.Enqueue((actionResponseBase as ActionProposalResponse).Response);
-                                }
-                                break;
-                                case ActionResponseType.StateChange:
-                                {
-                                    StateChangeResponse stateChangeResponse = actionResponseBase as StateChangeResponse;
-                                    character.GetComponent<CombatTarget>().ApplyStateChange(stateChangeResponse.Response);
-                                }
-                                break;
+                                GameModel.Encounter.mActionQueue.Enqueue((actionResponseBase as ActionProposalResponse).Response);
                             }
+                            break;
+                            case ActionResponseType.StateChange:
+                            {
+                                StateChangeResponse stateChangeResponse = actionResponseBase as StateChangeResponse;
+                                character.GetComponent<CombatTarget>().ApplyStateChange(stateChangeResponse.Response);
+                            }
+                            break;
                         }
                     }
                 }

@@ -13,7 +13,6 @@ namespace MAGE.GameSystems.Characters.Internal
     class CharacterServiceImpl : ICharacterService
     {
         private readonly string TAG = "CharacterServiceImpl";
-        private Dictionary<int, HashSet<ICharacterUpdateListener>> mCharacterUpdateListeners = new Dictionary<int, HashSet<ICharacterUpdateListener>>();
 
         public void Init()
         {
@@ -28,13 +27,7 @@ namespace MAGE.GameSystems.Characters.Internal
         // DB Updates
         public void OnCharacterDBUpdated(int characterId)
         {
-            if (mCharacterUpdateListeners.ContainsKey(characterId))
-            {
-                foreach (ICharacterUpdateListener listener in new HashSet<ICharacterUpdateListener>(mCharacterUpdateListeners[characterId]))
-                {
-                    listener.OnCharacterUpdated(characterId);
-                }
-            }
+            Messaging.MessageRouter.Instance.NotifyMessage(new CharacterMessage(CharacterMessage.MessageType.CharacterUpdated, characterId));
         }
 
         public void AssignExperience(int characterId, int experience)
@@ -160,19 +153,6 @@ namespace MAGE.GameSystems.Characters.Internal
             return unequippedItems;
         }
 
-        public void RegisterForCharacterChanges(int characterId, ICharacterUpdateListener characterUpdateListener)
-        {
-            if (!mCharacterUpdateListeners.ContainsKey(characterId))
-            {
-                mCharacterUpdateListeners.Add(characterId, new HashSet<ICharacterUpdateListener>());
-            }
-            Logger.Assert(!mCharacterUpdateListeners[characterId].Contains(characterUpdateListener), LogTag.Character, TAG, "::RegisterForCharacterChanges() - Duplicate Listener Registered");
-            if (!mCharacterUpdateListeners[characterId].Contains(characterUpdateListener))
-            {
-                mCharacterUpdateListeners[characterId].Add(characterUpdateListener);
-            }
-        }
-
         public List<int> UnEquipCharacter(int characterId, Equipment.Slot inSlot)
         {
             List<int> unequippedItems = new List<int>();
@@ -189,14 +169,6 @@ namespace MAGE.GameSystems.Characters.Internal
             WriteCharacter(toUnEquip.GetInfo());
 
             return unequippedItems;
-        }
-
-        public void UnRegisterForCharacterChanges(int characterId, ICharacterUpdateListener characterUpdateListener)
-        {
-            if (mCharacterUpdateListeners.ContainsKey(characterId))
-            {
-                mCharacterUpdateListeners[characterId].Remove(characterUpdateListener);
-            }
         }
 
         // Debug

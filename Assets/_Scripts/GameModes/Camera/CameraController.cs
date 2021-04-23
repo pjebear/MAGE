@@ -11,6 +11,7 @@ namespace MAGE.GameModes.Cameras
     {
         ThirdPerson,
         TopDown,
+        Outfitter,
         NUM
     }
 
@@ -23,6 +24,8 @@ namespace MAGE.GameModes.Cameras
         public float TopDownCamera_ScrollSpeed = 10;
 
         public Cinemachine.CinemachineFreeLook rThirdPersonCamera;
+
+        public Cinemachine.CinemachineFreeLook rOutfitterCamera;
 
         public void SetTarget(Transform target, CameraType cameraType)
         {
@@ -38,19 +41,34 @@ namespace MAGE.GameModes.Cameras
             {
                 case CameraType.TopDown:
                 {
+                    rThirdPersonCamera.gameObject.SetActive(false);
+                    rOutfitterCamera.gameObject.SetActive(false);
+
                     rTopDownCamera.gameObject.SetActive(true);
                     rTopDownCamera.Follow = Focus;
                     rTopDownCamera.LookAt = Focus;
-                    rThirdPersonCamera.gameObject.SetActive(false);
                 }
                 break;
 
                 case CameraType.ThirdPerson:
                 {
                     rTopDownCamera.gameObject.SetActive(false);
+                    rOutfitterCamera.gameObject.SetActive(false);
+
                     rThirdPersonCamera.gameObject.SetActive(true);
                     rThirdPersonCamera.Follow = Focus;
                     rThirdPersonCamera.LookAt = Focus;
+                }
+                break;
+
+                case CameraType.Outfitter:
+                {
+                    rTopDownCamera.gameObject.SetActive(false);
+                    rThirdPersonCamera.gameObject.SetActive(false);
+
+                    rOutfitterCamera.gameObject.SetActive(true);
+                    rOutfitterCamera.Follow = Focus;
+                    rOutfitterCamera.LookAt = Focus;
                 }
                 break;
             }

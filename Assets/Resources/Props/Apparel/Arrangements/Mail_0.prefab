@@ -62,7 +62,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bedefa2c4f13344fa99972a412863ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OutfitArrangementType: -1
+  OutfitArrangementType: 17
   ColorableMeshes:
   - {fileID: 6729258077200459237}
   - {fileID: 6380151529460718601}

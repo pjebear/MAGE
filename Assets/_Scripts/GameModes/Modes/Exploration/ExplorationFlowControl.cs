@@ -39,7 +39,7 @@ namespace MAGE.GameModes
 
             player.gameObject.SetActive(true);
 
-            player.GetComponent<CharacterPickerControl>().CharacterPicker.RootCharacterId = WorldService.Get().GetPartyAvatarId();
+            player.GetComponent<CharacterPickerControl>().CharacterPicker.SetRootCharacterId(WorldService.Get().GetPartyAvatarId());
             player.GetComponent<ActorSpawner>().Refresh();
             GameModel.Exploration.PartyAvatar = player;
 
@@ -50,7 +50,7 @@ namespace MAGE.GameModes
             mAmbientSoundSource.loop = true;
             mAmbientSoundSource.spatialBlend = 0; // global volume
                                                   //mAmbientSoundSource.Play();
-            //AudioManager.Instance.FadeInTrack(mAmbientSoundSource, 5, .5f);
+            AudioManager.Instance.FadeInTrack(mAmbientSoundSource, 5, .5f);
         }
 
         protected override void Cleanup()

@@ -41,40 +41,6 @@ enum TeamSide
     NUM
 }
 
-class Teams
-{
-    List<int>[] mTeams = null;
-
-    public List<int> this[TeamSide side]
-    {
-        get
-        {
-            return mTeams[(int)side];
-        }
-
-        set
-        {
-            Debug.Assert(value != null);
-            mTeams[(int)side] = value;
-        }
-    }
-
-    public Teams()
-    {
-        mTeams = new List<int>[(int)TeamSide.NUM];
-        for (int i = 0; i < mTeams.Count(); ++i)
-        {
-            mTeams[i] = new List<int>();
-        }
-    }
-}
-
-struct EncounterCreateParams
-{
-    public LevelId LevelId;
-    public EncounterScenarioId ScenarioId;
-}
-
 class EncounterResultInfo
 {
     public EncounterScenarioId EncounterScenarioId = EncounterScenarioId.Random;

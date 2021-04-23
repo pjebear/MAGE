@@ -54,7 +54,7 @@ namespace MAGE.GameModes
                     animationName = "attack1Right";
                     break;
                 case AnimationId.BowDraw:
-                    animationName = "bowShoot1Right";
+                    animationName = "bowShoot1Left";
                     break;
                 case AnimationId.Block:
                     animationName = "blockLeft";

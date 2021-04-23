@@ -35,7 +35,7 @@ namespace MAGE.GameModes.Combat
                 GetComponent<StatsControl>().SetAttributes(Character.CurrentAttributes);
                 GetComponent<ResourcesControl>().InitResourcesFromAttributes();
                 GetComponent<ActionsControl>().Actions = Character.GetActionIds();
-                GetComponent<EquipmentControl>().Equipment = Character.Equipment;
+                GetComponent<EquipmentControl>().SetEquipment(Character.Equipment);
 
                 // Responders
                 List<ActionResponseId> responseIds = new List<ActionResponseId>()

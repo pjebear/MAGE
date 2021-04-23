@@ -67,7 +67,7 @@ namespace MAGE.GameModes.FlowControl
                     break;
                     case (int)ExplorationMenuView.ComponentId.OutfiterBtn:
                     {
-                        //GameModesModule.Instance.Outfit();
+                        SendFlowMessage("outfit");
                     }
                     break;
                     case (int)ExplorationMenuView.ComponentId.RandomEncounter:

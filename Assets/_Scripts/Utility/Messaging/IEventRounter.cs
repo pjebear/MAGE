@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,7 @@ namespace MAGE.Messaging
         Exploration,
         Flow,
         Level,
+        Character,
         Story,
         Appearance
     }
@@ -85,12 +87,18 @@ namespace MAGE.Messaging
         {
             if (async)
             {
-                mPendingMessages.Add(eventInfo);
+                StartCoroutine(_NotifyMessage(eventInfo));
             }
             else
             {
                 NotifyListeners(eventInfo);
             }
+        }
+
+        private IEnumerator _NotifyMessage(MessageInfoBase eventInfo)
+        {
+            yield return new WaitForFixedUpdate();
+            NotifyListeners(eventInfo);
         }
 
         private void NotifyListeners(MessageInfoBase eventInfo)
@@ -102,7 +110,7 @@ namespace MAGE.Messaging
             }
         }
 
-        private void LateUpdate()
+        private void Update()
         {
             if (mPendingMessages.Count > 0)
             {

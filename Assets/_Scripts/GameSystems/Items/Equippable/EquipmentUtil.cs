@@ -59,9 +59,11 @@ namespace MAGE.GameSystems
                     break;
 
                 case EquippableCategory.Shield:
+                    fits = slot == Equipment.Slot.LeftHand;
+                    break;
                 case EquippableCategory.TwoHandWeapon:
                 case EquippableCategory.OneHandWeapon:
-                    fits = slot == Equipment.Slot.LeftHand || slot == Equipment.Slot.RightHand;
+                    fits = slot == Equipment.Slot.RightHand;
                     break;
             }
 

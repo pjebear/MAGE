@@ -137,35 +137,6 @@ namespace MAGE.DB.Internal
                 
                   // Nodes
                 {
-                    // TODO: Lothar under attack
-                    { // Find Lothar
-                        DBStoryNodeInfo storyNode = StoryDBUtil.CreateViewCinematicStoryNode(
-                            ""
-                            , ""
-                            , (int)CinematicId.LotharUnderAttack);
-
-                        storyArcInfo.StoryArc.Add(storyNode);
-                    }
-
-                    { // Save Lothar
-                        DBStoryNodeInfo storyNode = StoryDBUtil.CreateCompleteEncounterStoryNode(
-                            ""
-                            , ""
-                            , (int)EncounterScenarioId.Demo_LotharUnderAttack);
-
-                        storyArcInfo.StoryArc.Add(storyNode);
-                    }
-
-                    { // Talk to Lothar
-                        DBStoryNodeInfo storyNode = StoryDBUtil.CreateViewCinematicStoryNode(
-                            ""
-                            , ""
-                            , (int)CinematicId.LotharSaved);
-
-                        storyArcInfo.StoryArc.Add(storyNode);
-                    }
-
-
                     { // Opening Cinematic
                           DBStoryNodeInfo storyNode = StoryDBUtil.CreateViewCinematicStoryNode(
                               ""
@@ -196,11 +167,22 @@ namespace MAGE.DB.Internal
                       }
 
                       { // Talk with captain to trigger tutorial battle
-                          storyArcInfo.StoryArc.Add(StoryDBUtil.CreateConversationStoryNode(
+                            DBStoryNodeInfo storyNode = StoryDBUtil.CreateConversationStoryNode(
                               "One last training session"
                               , "Talk with Balgrid and run the recruits through the paces"
                               , (int)ConversationId.Demo_TrainingTime
-                              , (int)NPCPropId.DemoLevel_Captain));
+                              , (int)NPCPropId.DemoLevel_Captain);
+                        storyNode.OnActivateChanges.Add(StoryDBUtil.ToDB(StoryMutatorParams.PropMutateParams(
+                            (int)NPCPropId.DemoLevel_Captain,
+                            (int)PropMutateType.Activate,
+                            MutatorConstants.TRUE)));
+                        storyNode.OnCompleteChanges.Add(StoryDBUtil.ToDB(StoryMutatorParams.PropMutateParams(
+                            (int)NPCPropId.DemoLevel_Captain,
+                            (int)PropMutateType.Activate,
+                            MutatorConstants.FALSE)));
+
+
+                        storyArcInfo.StoryArc.Add(storyNode);
                       }
 
                       { // Training Battles
@@ -210,9 +192,41 @@ namespace MAGE.DB.Internal
                               , (int)EncounterScenarioId.Demo_TrainingGrounds));
                       }
 
-                    // TODO: Post Training
+                    { // Lothar is under attack!
+                        DBStoryNodeInfo storyNode = StoryDBUtil.CreateViewCinematicStoryNode(
+                            ""
+                            , ""
+                            , (int)CinematicId.PostTraining);
 
-                   
+                        storyArcInfo.StoryArc.Add(storyNode);
+                    }
+
+                    { // Talk to Lothar
+                        DBStoryNodeInfo storyNode = StoryDBUtil.CreateViewCinematicStoryNode(
+                            ""
+                            , ""
+                            , (int)CinematicId.LotharUnderAttack);
+
+                        storyArcInfo.StoryArc.Add(storyNode);
+                    }
+
+                    { // Save Lothar
+                        DBStoryNodeInfo storyNode = StoryDBUtil.CreateCompleteEncounterStoryNode(
+                            ""
+                            , ""
+                            , (int)EncounterScenarioId.Demo_LotharUnderAttack);
+
+                        storyArcInfo.StoryArc.Add(storyNode);
+                    }
+
+                    { // Talk to Lothar
+                        DBStoryNodeInfo storyNode = StoryDBUtil.CreateViewCinematicStoryNode(
+                            ""
+                            , ""
+                            , (int)CinematicId.LotharSaved);
+
+                        storyArcInfo.StoryArc.Add(storyNode);
+                    }
                     // TODO: Lothar saved
                     // 
 

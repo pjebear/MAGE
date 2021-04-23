@@ -19,8 +19,7 @@ namespace MAGE.GameModes.SceneElements.Encounters
         {
             Init();
             
-            GetComponent<CharacterPickerControl>().CharacterPicker.Reset();
-            GetComponent<CharacterPickerControl>().CharacterPicker.RootCharacterId = GetCharacterId();
+            GetComponent<CharacterPickerControl>().CharacterPicker.SetRootCharacterId(GetCharacterId());
             GetComponent<ActorSpawner>().Refresh();
         }
 

@@ -47,6 +47,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bedefa2c4f13344fa99972a412863ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OutfitArrangementType: 14
+  ColorableMeshes: []
 --- !u!1001 &2361358339622018913
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -24,8 +24,6 @@ namespace MAGE.DB.Internal
         SpecializationDB mSpecializationDB = new SpecializationDB();
         StoryDB mStoryDB = new StoryDB();
 
-        TeamDB mTeamDB = new TeamDB();
-
         public DBServiceImpl()
         {
             
@@ -130,31 +128,26 @@ namespace MAGE.DB.Internal
             mCharacterDB.UnRegisterUpdateListener(listener);
         }
 
-        public DBCharacter WriteCharacter(DBCharacter character, TeamSide teamSide = TeamSide.INVALID)
+        public DBCharacter WriteCharacter(DBCharacter character)
         {
             Logger.Assert(character.Id != -1, LogTag.DB, TAG, "::WriteCharacter() - Attempting to write character with invalid Id", LogLevel.Error);
             if (character.Id == -1)
             {
-                WriteNewCharacter(character, teamSide);
+                WriteNewCharacter(character);
             }
             else
             {
                 mCharacterDB.Write(character.Id, character);
-
-                if (teamSide != TeamSide.INVALID)
-                {
-                    AddToTeam(character.Id, teamSide);
-                }
             }
 
             return character;
         }
 
-        public DBCharacter WriteNewCharacter(DBCharacter character, TeamSide teamSide = TeamSide.INVALID)
+        public DBCharacter WriteNewCharacter(DBCharacter character)
         {
             character.Id = sNewCharacterId++;
 
-            WriteCharacter(character, teamSide);
+            WriteCharacter(character);
 
             return character;
         }
@@ -342,48 +335,6 @@ namespace MAGE.DB.Internal
             mStoryDB.Write(storyArcId, storyArcInfo);
         }
         // Story - End
-
-        // Team
-        public void AddToTeam(int characterId, TeamSide teamSide)
-        {
-            if (mTeamDB.ContainsEntry(teamSide))
-            {
-                DBTeam team = mTeamDB.Load(teamSide);
-                Logger.Assert(!team.CharacterIds.Contains(characterId), LogTag.DB, TAG, string.Format("::AddToTeam() - Team {0} already contains character {1}", teamSide.ToString(), characterId), LogLevel.Warning);
-                if (!team.CharacterIds.Contains(characterId))
-                {
-                    team.CharacterIds.Add(characterId);
-                    mTeamDB.Write(teamSide, team);
-                }
-            }
-            else
-            {
-                DBTeam team = mTeamDB.EmptyEntry();
-                team.CharacterIds.Add(characterId);
-                mTeamDB.Write(teamSide, team);
-            }
-        }
-
-        public List<int> LoadTeam(TeamSide teamSide)
-        {
-            List<int> team = new List<int>();
-
-            if (mTeamDB.ContainsEntry(teamSide))
-            {
-                team = mTeamDB.Load(teamSide).CharacterIds;
-            }
-
-            return team;
-        }
-
-        public void ClearTeam(TeamSide teamSide)
-        {
-            if (mTeamDB.ContainsEntry(teamSide))
-            {
-                mTeamDB.Clear(teamSide);
-            }
-        }
-        // Team - End
 
         // Save Load
         public void Save(string path)

@@ -179,6 +179,7 @@ namespace MAGE.GameSystems.Characters.Internal
 
                 dbTalent.TalentId = (int)talent.Key;
                 dbTalent.AssignedPoints = talent.Value.PointsAssigned;
+                dbTalent.MaxPoints = talent.Value.MaxPoints;
 
                 toDB.Talents.Add(dbTalent);
             }

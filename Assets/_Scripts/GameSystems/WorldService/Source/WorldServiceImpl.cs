@@ -11,14 +11,12 @@ namespace MAGE.GameSystems.World.Internal
     {
         private LocationSystem mLocationSystem;
         private PartySystem mPartySystem;
-        private EncounterSystem mEncounterSystem;
         private LootTable mLootTable;
 
         public WorldServiceImpl()
         {
             mLocationSystem = new LocationSystem();
             mPartySystem = new PartySystem();
-            mEncounterSystem = new EncounterSystem();
             mLootTable = new LootTable();
         }
 
@@ -48,26 +46,9 @@ namespace MAGE.GameSystems.World.Internal
         // Conversation - End
 
         // Encounter
-        public EncounterContext GetEncounterContext()
-        {
-            return mEncounterSystem.GetEncounterContext();
-        }
-
-        public EncounterCreateParams GetEncounterParams()
-        {
-            return mEncounterSystem.GetParams();
-        }
-
-        public void PrepareEncounter(EncounterCreateParams encounterParams)
-        {
-            mPartySystem.PrepareForEncounter(encounterParams);
-            mEncounterSystem.PrepareEncounter(encounterParams);
-        }
-
         public void UpdateOnEncounterEnd(EncounterResultInfo resultInfo)
         {
             mPartySystem.UpdateOnEncounterEnd(resultInfo);
-            mEncounterSystem.CleanupEncounter();
 
             StoryService.Get().NotifyStoryEvent(new Story.StoryEventBase(resultInfo.EncounterScenarioId));
         }

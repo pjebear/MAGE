@@ -9,6 +9,13 @@ namespace MAGE.GameSystems.Characters
     static class SpecializationConstants
     {
         public static readonly int LEVEL_UP_THRESHOLD = 100;
+
+        public static readonly List<SpecializationType> MULTI_SPECIALIZATIONS = new List<SpecializationType>()
+        {
+            SpecializationType.Archer
+            ,SpecializationType.Footman
+            ,SpecializationType.Monk
+        };
     }
 
     class SpecializationProgress
@@ -53,11 +60,7 @@ namespace MAGE.GameSystems.Characters
         // Summons
         Bear,
 
-        NUM,
-
-        MULTI_SPECIALIZATION_FIRST = Archer,
-        MULTI_SPECIALIZATION_LAST = Monk,
-        MULTI_SEPCIALIZATION_NUM = MULTI_SPECIALIZATION_LAST - MULTI_SPECIALIZATION_FIRST + 1,
+        NUM
     }
 
     enum SpecializationRole

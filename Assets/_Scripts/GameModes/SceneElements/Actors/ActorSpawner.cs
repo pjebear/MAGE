@@ -124,6 +124,22 @@ namespace MAGE.GameModes.SceneElements
                     }
                 }
                 break;
+                case CharacterMessage.Id:
+                {
+                    CharacterMessage message = messageInfoBase as CharacterMessage;
+                    switch (message.Type)
+                    {
+                        case CharacterMessage.MessageType.CharacterUpdated:
+                        {
+                            if (message.Arg<int>() == GetComponent<CharacterPickerControl>().CharacterPicker.GetCharacterId())
+                            {
+                                Refresh();
+                            }
+                        }
+                        break;
+                    }
+                }
+                break;
             }
         }
 

@@ -19,9 +19,9 @@ namespace MAGE.GameSystems.Characters
             }
             else if (characterClass == CharacterClass.MultiSpecialization)
             {
-                for (int i = 0; i < (int)SpecializationType.MULTI_SEPCIALIZATION_NUM; ++i)
+                foreach (SpecializationType specializationType in SpecializationConstants.MULTI_SPECIALIZATIONS)
                 {
-                    specializationTypes.Add((SpecializationType)((int)SpecializationType.MULTI_SPECIALIZATION_FIRST + i));
+                    specializationTypes.Add(specializationType);
                 }
             }
             else

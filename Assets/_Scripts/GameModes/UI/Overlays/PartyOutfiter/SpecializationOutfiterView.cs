@@ -14,7 +14,8 @@ namespace MAGE.UI.Views
         public enum ComponentId
         {
             ResetTalentsBtn,
-            TalentBtns
+            TalentBtns,
+            SpecializationBtns,
         }
 
         public class TalentDP
@@ -30,8 +31,10 @@ namespace MAGE.UI.Views
             public int AvailableTalentPts;
             public string SpecializationName;
             public List<TalentDP> TalentDPs = new List<TalentDP>();
+            public List<UIButton.DataProvider> SpecializationDPS = new List<UIButton.DataProvider>();
         }
 
+        public UIList SpecializationBtns;
         public UIList TalentBtns;
         public UIText AvailablePointsTxt;
         public UIText SpecializationTxt;
@@ -42,6 +45,7 @@ namespace MAGE.UI.Views
             DataProvider dp = dataProvider as DataProvider;
 
             { // Talent btns
+                AvailablePointsTxt.Publish(new UIText.DataProvider(dp.AvailableTalentPts.ToString()));
                 List<IDataProvider> talentStrings = new List<IDataProvider>();
                 foreach (TalentDP talentDP in dp.TalentDPs)
                 {
@@ -51,14 +55,16 @@ namespace MAGE.UI.Views
                 TalentBtns.Publish(new UIList.DataProvider(talentStrings));
             }
 
-            AvailablePointsTxt.Publish(new UIText.DataProvider(dp.SpecializationName));
-            AvailablePointsTxt.Publish(new UIText.DataProvider(dp.AvailableTalentPts.ToString()));
-            SpecializationTxt.Publish(new UIText.DataProvider(dp.SpecializationName));
+            { // Specialization btns
+                SpecializationTxt.Publish(new UIText.DataProvider(dp.SpecializationName));
+                SpecializationBtns.Publish(new UIList.DataProvider(dp.SpecializationDPS.Select(x => x as IDataProvider).ToList()));
+            }
         }
 
         protected override void InitChildren()
         {
             TalentBtns.Init((int)ComponentId.TalentBtns, this);
+            SpecializationBtns.Init((int)ComponentId.SpecializationBtns, this);
             ResetTalentsBtn.Init((int)ComponentId.ResetTalentsBtn, this);
         }
     }

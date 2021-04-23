@@ -1,4 +1,5 @@
-﻿using MAGE.Messaging;
+﻿using MAGE.GameModes.Combat;
+using MAGE.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,8 @@ namespace MAGE.GameModes.SceneElements
 
         public Transform Enemies;
         public Transform Allys;
+        public Transform WinConditions;
+        public Transform LoseConditions;
 
         private bool mIsEncounterPending = false;
         private bool mIsEncounterVisible = true;
@@ -96,6 +99,11 @@ namespace MAGE.GameModes.SceneElements
             {
                 transform.GetChild(i).gameObject.SetActive(enable);
             }
+        }
+
+        void Update()
+        {
+            
         }
     }
 }

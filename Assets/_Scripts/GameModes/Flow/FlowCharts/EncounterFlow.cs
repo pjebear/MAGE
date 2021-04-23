@@ -13,8 +13,8 @@ namespace MAGE.GameModes.FlowControl
         {
             Transitions = new Dictionary<string, string>()
             {
-                { "cinematicAvailable", "FadeOut" }
-                ,{ "encounterAvailable", "FadeOut" }
+                { "forceWin", "FadeOut" }
+                ,{ "forceLoss", "FadeOut" }
             };
 
             OnEnterActions = new List<FlowActionBase>()
@@ -29,7 +29,15 @@ namespace MAGE.GameModes.FlowControl
 
             States = new List<FlowNode>()
             {
-                new WaitState("FadeIn", "fadeIn", "fadeComplete")
+                new WaitState("PrepareEncounter", "prepareEncounter", "encounterPrepared")
+                {
+                    ExternalTransitions = new Dictionary<string, string>()
+                    {
+                        { OutAdvance, "FadeIn" }
+                    }
+                }
+
+                ,new WaitState("FadeIn", "fadeIn", "fadeComplete")
                 {
                     ExternalTransitions = new Dictionary<string, string>()
                     {

@@ -31,13 +31,6 @@ namespace MAGE.GameModes.SceneElements.Encounters
                 if (MobId == MobId.INVALID) MobId = MobId.DEMO_Bandit;
 
                 mCreateCharacterId = characterService.CreateMob(MobId, 1);
-
-
-                if (GetComponent<CharacterPickerControl>() != null)
-                {
-                    GetComponent<CharacterPickerControl>().CharacterPicker.Reset();
-                    GetComponent<CharacterPickerControl>().CharacterPicker.RootCharacterId = mCreateCharacterId;
-                }
             }
         }
 

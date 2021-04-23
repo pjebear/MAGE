@@ -11,6 +11,7 @@ namespace MAGE.GameModes.DebugFlow
     class DebugSettings : MonoBehaviour
     {
         public bool SkipMainMenu = false;
+        public bool MuteMusic = false;
         public LevelId OverrideLevelId = LevelId.INVALID;
     }
 }

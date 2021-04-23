@@ -24,6 +24,7 @@ namespace MAGE.GameModes.FlowControl
         ExplorationInteractionFlowControl,
         ExplorationMenuFlowControl,
         ExplorationRoamFlowControl,
+        ExplorationOutfiterFlowControl,
         Level,
         MainMenu,
         Map,

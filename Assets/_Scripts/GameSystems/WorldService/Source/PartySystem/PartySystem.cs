@@ -122,18 +122,8 @@ namespace MAGE.GameSystems.World.Internal
             }
         }
 
-        public void PrepareForEncounter(EncounterCreateParams createParams)
-        {
-            foreach (int characterId in mPartyInfo.CharacterIds)
-            {
-                DBService.Get().AddToTeam(characterId, TeamSide.AllyHuman);
-            }
-        }
-
         public void UpdateOnEncounterEnd(EncounterResultInfo resultInfo)
         {
-            DBService.Get().ClearTeam(TeamSide.AllyHuman);
-
             foreach (int characterId in resultInfo.PlayersInEncounter)
             {
                 CharacterService.Get().AssignExperience(characterId, CharacterConstants.LEVEL_UP_THRESHOLD);

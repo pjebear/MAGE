@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MAGE.GameModes.DebugFlow;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,6 +49,9 @@ class AudioManager : MonoBehaviour
             mAudioLoader = new AssetLoader<AudioClip>("Audio");
             mAudioLoader.LoadAssets("SFX");
             mAudioLoader.LoadAssets("Tracks");
+
+            DebugSettings settings = FindObjectOfType<DebugSettings>();
+            mMuteMusic = settings.MuteMusic;
 
             Instance = this;
         }

@@ -7,6 +7,7 @@ using MAGE.GameSystems;
 using MAGE.GameSystems.Actions;
 using MAGE.GameSystems.Characters;
 using MAGE.GameSystems.Stats;
+using MAGE.GameSystems.World;
 using MAGE.UI;
 using MAGE.UI.Views;
 using System;
@@ -47,12 +48,11 @@ namespace MAGE.GameModes.Encounter
                 return;
             }
 
-            List<CombatTarget> enemies = GameModel.Encounter.Players
-                .Select(x => x.GetComponent<CombatEntity>())
-                .Where(x => x.TeamSide != mCurrentCharacter.GetComponent<CombatEntity>().TeamSide)
-                .Select(x => x.GetComponent<ResourcesControl>())
-                .Where(x => x.IsAlive())
+            TeamSide teamSide = mCurrentCharacter.GetComponent<CombatEntity>().TeamSide;
+            List<CombatTarget> enemies = GameModel.Encounter.AlivePlayers
+                .Where(x => x.GetComponent<CombatEntity>().TeamSide != teamSide)
                 .Select(x => x.GetComponent<CombatTarget>()).ToList();
+
             enemies.Sort((x, y) => Vector3.Distance(x.transform.position, mCurrentCharacter.transform.position)
                 .CompareTo(Vector3.Distance(y.transform.position, mCurrentCharacter.transform.position)));
 

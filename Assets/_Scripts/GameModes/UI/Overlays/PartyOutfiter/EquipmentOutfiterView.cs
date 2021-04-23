@@ -39,7 +39,7 @@ namespace MAGE.UI.Views
             public bool WornSelected;
 
             public bool CanUnequip;
-            public List<EquipableDP> EquipableOptions;
+            public List<EquipableDP> EquipableOptions = new List<EquipableDP>();
         }
 
         public Image LeftHighlightImage;

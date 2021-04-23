@@ -52,6 +52,7 @@ namespace MAGE.GameModes.FlowControl
                     ,Transitions = new Dictionary<string, string>()
                     {
                         { "interact", "InteractionFlow" }
+                        ,{ "outfit", "OutfitFlow" }
                     }
                 }
                 , new FlowNode("InteractionFlow")
@@ -67,6 +68,21 @@ namespace MAGE.GameModes.FlowControl
                     ,Transitions = new Dictionary<string, string>()
                     {
                         { "back", "RoamFlow" }
+                    }
+                }
+                , new FlowNode("OutfitFlow")
+                {
+                    OnEnterActions = new List<FlowActionBase>()
+                    {
+                        new LoadFlowControl(FlowControlId.ExplorationOutfiterFlowControl)
+                    }
+                    , OnExitActions= new List<FlowActionBase>()
+                    {
+                        new UnLoadFlowControl(FlowControlId.ExplorationOutfiterFlowControl)
+                    }
+                    ,Transitions = new Dictionary<string, string>()
+                    {
+                        { "advance", "RoamFlow" }
                     }
                 }
                 , new WaitState("FadeOut", "fadeOut", "fadeComplete")

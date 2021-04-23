@@ -14,6 +14,7 @@ namespace MAGE.GameSystems.Appearances
 
             Appearance fromDB = new Appearance();
 
+            fromDB.AppearanceId             = dbAppearance.Id;
             fromDB.PortraitSpriteId         = (PortraitSpriteId)dbAppearance.PortraitSpriteId;
             fromDB.BodyType                 = (BodyType)dbAppearance.BodyType;
             fromDB.OutfitType               = (ApparelAssetId)dbAppearance.OutfitType;
@@ -31,6 +32,7 @@ namespace MAGE.GameSystems.Appearances
         {
             DB.DBAppearance toDB = new DB.DBAppearance();
 
+            toDB.Id = (int)appearance.AppearanceId;
             toDB.PortraitSpriteId = (int)appearance.PortraitSpriteId;
             toDB.BodyType = (int)appearance.BodyType;
             toDB.OutfitType = (int)appearance.OutfitType;

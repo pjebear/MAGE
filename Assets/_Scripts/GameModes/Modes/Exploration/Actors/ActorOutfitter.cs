@@ -56,9 +56,16 @@ namespace MAGE.GameModes.SceneElements
                 Destroy(mOutfit.gameObject);
                 mOutfit = null;
             }
-            if (mOutfit == null && appearance.OutfitType != ApparelAssetId.NONE)
+            if (mOutfit == null)
             {
-                SetOutfit(appearance.OutfitType);
+                if (appearance.OutfitType != ApparelAssetId.NONE)
+                {
+                    SetOutfit(appearance.OutfitType);
+                }
+                else
+                {
+                    SetOutfit(ApparelAssetId.Default);
+                }
             }
 
             // Skin Tone

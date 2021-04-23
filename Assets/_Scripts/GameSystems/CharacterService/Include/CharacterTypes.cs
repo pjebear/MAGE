@@ -23,11 +23,6 @@ namespace MAGE.GameSystems.Characters
         public const int SCENARIO_CHARACTER_ID_OFFSET =     Common.GameConstants.CHARACTER_ID_OFFSET + CHARACTER_ID_RANGE * (int)CharacterType.Scenario;   
     }
 
-    interface ICharacterUpdateListener
-    {
-        void OnCharacterUpdated(int characterId);
-    }
-
     enum StoryCharacterId
     {
         INVALID = -1,

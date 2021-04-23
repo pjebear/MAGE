@@ -84,19 +84,9 @@ namespace MAGE.GameSystems.Characters.Internal
             return new List<int>();
         }
 
-        public void RegisterForCharacterChanges(int characterId, ICharacterUpdateListener characterUpdateListener)
-        {
-            // Empty
-        }
-
         public List<int> UnEquipCharacter(int characterId, Equipment.Slot inSlot)
         {
             return new List<int>();
-        }
-
-        public void UnRegisterForCharacterChanges(int characterId, ICharacterUpdateListener characterUpdateListener)
-        {
-            // Empty
         }
 
         // Debug

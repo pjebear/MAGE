@@ -133,7 +133,7 @@ namespace MAGE.GameModes.Tests
                     //Spawners[i].SetInCombat(inCombat);
                     int index = offset + i;
                     index = index % 4;
-                    Spawners[i].GetComponent<CharacterPickerControl>().CharacterPicker.StoryCharacterId = StoryCharacterIds[index];
+                    Spawners[i].GetComponent<CharacterPickerControl>().CharacterPicker.Set(StoryCharacterIds[index]);
                     Spawners[i].Refresh();
                     Actors[i].GetComponentInChildren<ActorAnimator>().SetInCombat(inCombat);
                 }
