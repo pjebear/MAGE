@@ -222,6 +222,7 @@ namespace MAGE.GameModes.FlowControl
                     case FlowControlId.EncounterActionDirector: flowControlBase = gameObject.AddComponent<Encounter.ActionResolutionFlowControl>(); break;
                     case FlowControlId.EncounterAITurnFlowControl: flowControlBase = gameObject.AddComponent<Encounter.AITurnFlowControl>(); break;
                     case FlowControlId.EncounterPlayerTurnFlowControl: flowControlBase = gameObject.AddComponent<Encounter.PlayerTurnFlowControl>(); break;
+                    case FlowControlId.EncounterResultsFlowControl: flowControlBase = gameObject.AddComponent<Encounter.EncounterResultsFlowControl>(); break;
                     case FlowControlId.Exploration: flowControlBase = gameObject.AddComponent<ExplorationFlowControl>(); break;
                     case FlowControlId.ExplorationOutfiterFlowControl: flowControlBase = gameObject.AddComponent<PartyOutfiterViewControl>(); break;
                     case FlowControlId.ExplorationRoamFlowControl: flowControlBase = gameObject.AddComponent<Exploration.RoamFlowControl>(); break;

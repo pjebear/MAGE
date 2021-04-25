@@ -1,4 +1,5 @@
 ﻿using MAGE.GameSystems.Appearances;
+using MAGE.GameSystems.Stats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -78,6 +79,17 @@ namespace MAGE.GameSystems.Characters
         public List<EquippableId> currentEquipment = EMPTY_EQUIPMENT;
     }
 
+    struct CharacterGrowthInfo
+    {
+        public int CharacterId;
+        public int Xp;
+        public int CharacterLevel;
+
+        public int SpecializationXp;
+        public int SpecializationLvl;
+
+        public List<AttributeModifier> AttributeModifiers;
+    }
 }
 
 

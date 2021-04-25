@@ -243,6 +243,8 @@ namespace MAGE.GameModes.LevelManagement.Internal
         private void OnLevelLoaded()
         {
             mLoadedLevel = FindObjectOfType<Level>();
+            AudioManager.Instance.PlayTrack(mLoadedLevel.TrackId);
+
             Messaging.MessageRouter.Instance.NotifyMessage(new LevelMessage(MessageType.LevelLoaded));
             SendFlowMessage("levelLoaded");
         }
@@ -251,6 +253,8 @@ namespace MAGE.GameModes.LevelManagement.Internal
         {
             if (mLoadedLevel != null)
             {
+                AudioManager.Instance.StopAllTracks();
+
                 Destroy(mLoadedLevel.gameObject);
                 mLoadedLevel = null;
             }

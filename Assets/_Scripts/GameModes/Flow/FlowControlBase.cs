@@ -17,6 +17,7 @@ namespace MAGE.GameModes.FlowControl
         Encounter,
         EncounterActionDirector,
         EncounterIntroFlowControl,
+        EncounterResultsFlowControl,
         EncounterUnitPlacementFlowControl,
         EncounterPlayerTurnFlowControl,
         EncounterAITurnFlowControl,

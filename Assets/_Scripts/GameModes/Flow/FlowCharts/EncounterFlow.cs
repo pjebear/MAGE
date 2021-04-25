@@ -13,8 +13,8 @@ namespace MAGE.GameModes.FlowControl
         {
             Transitions = new Dictionary<string, string>()
             {
-                { "forceWin", "FadeOut" }
-                ,{ "forceLoss", "FadeOut" }
+                { "forceWin", "ResultsFlow" }
+                ,{ "forceLoss", "ResultsFlow" }
             };
 
             OnEnterActions = new List<FlowActionBase>()
@@ -81,7 +81,7 @@ namespace MAGE.GameModes.FlowControl
                             {
                                 { "playerTurnFlow", "TurnFlow" }
                                 ,{ "actionResolution", "ActionResolution" }
-                                ,{ "encounterComplete", "FadeOut" }
+                                ,{ "encounterComplete", "ResultsFlow" }
                             }
                         }
                         , new FlowNode("TurnFlow")
@@ -146,6 +146,21 @@ namespace MAGE.GameModes.FlowControl
                         }
                     }
                 }
+                , new FlowNode("ResultsFlow")
+                {
+                    OnEnterActions = new List<FlowActionBase>()
+                    {
+                        new LoadFlowControl(FlowControlId.EncounterResultsFlowControl)
+                    }
+                    , OnExitActions = new List<FlowActionBase>()
+                    {
+                        new UnLoadFlowControl(FlowControlId.EncounterResultsFlowControl)
+                    }
+                    , Transitions = new Dictionary<string, string>()
+                    {
+                        { "advance", "FadeOut" }
+                    }
+                 }
                 , new WaitState("FadeOut", "fadeOut", "fadeComplete")
                 {
                     ExternalTransitions = new Dictionary<string, string>()

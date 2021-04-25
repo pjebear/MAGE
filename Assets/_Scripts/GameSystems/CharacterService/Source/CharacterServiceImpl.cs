@@ -30,13 +30,18 @@ namespace MAGE.GameSystems.Characters.Internal
             Messaging.MessageRouter.Instance.NotifyMessage(new CharacterMessage(CharacterMessage.MessageType.CharacterUpdated, characterId));
         }
 
-        public void AssignExperience(int characterId, int experience)
+        public CharacterGrowthInfo AssignExperience(int characterId, int experience)
         {
+            CharacterGrowthInfo characterGrowthInfo = new CharacterGrowthInfo();
+            characterGrowthInfo.CharacterId = characterId;
+
             CharacterInfo characterInfo = GetCharacterInfo(characterId);
 
             // Character experience
+            characterGrowthInfo.Xp = experience;
+            characterGrowthInfo.AttributeModifiers = new List<AttributeModifier>();
             characterInfo.Experience += experience;
-            if (characterInfo.Experience >= CharacterConstants.LEVEL_UP_THRESHOLD)
+            while (characterInfo.Experience >= CharacterConstants.LEVEL_UP_THRESHOLD)
             {
                 characterInfo.Experience -= CharacterConstants.LEVEL_UP_THRESHOLD;
                 characterInfo.Level++;
@@ -47,19 +52,26 @@ namespace MAGE.GameSystems.Characters.Internal
                     Logger.Assert(modifier.ModifierType == ModifierType.Increment, LogTag.GameSystems, TAG,
                         string.Format("Invalid Levelup modifier for Specialization [{0}] - {1}", characterInfo.CurrentSpecializationType.ToString(), modifier.ToString()), LogLevel.Warning);
 
+                    characterGrowthInfo.AttributeModifiers.Add(modifier);
                     characterInfo.Attributes.Modify(modifier);
                 }
             }
+            characterGrowthInfo.CharacterLevel = characterInfo.Level;
 
             // Specialization experience
             // Update specialization
+            characterGrowthInfo.SpecializationXp = SpecializationConstants.LEVEL_UP_THRESHOLD;
             characterInfo.CurrentSpecializationProgress.Experience += SpecializationConstants.LEVEL_UP_THRESHOLD;
-            if (characterInfo.CurrentSpecializationProgress.Experience >= SpecializationConstants.LEVEL_UP_THRESHOLD)
+            while (characterInfo.CurrentSpecializationProgress.Experience >= SpecializationConstants.LEVEL_UP_THRESHOLD)
             {
                 characterInfo.CurrentSpecializationProgress.Level++;
+                characterInfo.CurrentSpecializationProgress.Experience -= SpecializationConstants.LEVEL_UP_THRESHOLD;
             }
+            characterGrowthInfo.SpecializationLvl = characterInfo.CurrentSpecializationProgress.Level++;
 
             WriteCharacter(characterInfo);
+
+            return characterGrowthInfo;
         }
 
         public void AssignTalentPoint(int characterId, TalentId talentId)

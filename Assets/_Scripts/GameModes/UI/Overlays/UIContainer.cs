@@ -23,7 +23,7 @@ namespace MAGE.UI.Views
             return interactionInfo;
         }
 
-        public void HandleInteraction(UIInteractionInfo interactionInfo)
+        public virtual void HandleInteraction(UIInteractionInfo interactionInfo)
         {
             UIInteractionInfo modifiedInfo = ModifyInteractionInfo(interactionInfo);
 

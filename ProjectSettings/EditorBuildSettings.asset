@@ -8,15 +8,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Scenes/MainMenu.unity
     guid: fe6a2835e53f14144ae86c9084d6ce5e
-  - enabled: 1
-    path: Assets/_Scenes/Exploration.unity
-    guid: 75d311d7b2e3f7e4fb02c9a00b09e3ec
-  - enabled: 1
-    path: Assets/_Scenes/Encounter.unity
-    guid: 109929d6cc38c5e40bd2a859049d6ae7
-  - enabled: 1
-    path: Assets/_Scenes/PartyOutfiter.unity
-    guid: b9c5e98e0bba5664fac413ddc7073045
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 1
     path: Assets/_Scenes/Levels/Demo.unity
     guid: edb869d74ae79a640b8c095e7ffd27d9
@@ -26,4 +26,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Scenes/Levels/Forest.unity
     guid: 78cc519f2c448c544b2205d5ecb83633
+  - enabled: 1
+    path: Assets/_Scenes/Levels/EncounterSandbox.unity
+    guid: fc8e2ea361fac664189fbbf19883f980
   m_configObjects: {}

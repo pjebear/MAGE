@@ -10,7 +10,6 @@ namespace MAGE.GameSystems.Loot
     class LootTable
     {
         public Dictionary<LevelId, TableEntry> LevelLoot = new Dictionary<LevelId, TableEntry>();
-        public Dictionary<EncounterScenarioId, TableEntry> EncounterLoot = new Dictionary<EncounterScenarioId, TableEntry>();
         public Dictionary<Mobs.MobId, TableEntry> MobLoot = new Dictionary<Mobs.MobId, TableEntry>();
 
         public LootTable()
@@ -21,20 +20,23 @@ namespace MAGE.GameSystems.Loot
         public ClaimLootInfo CheckoutLoot(ClaimLootParams claimLootParams)
         {
             ClaimLootInfo lootResult = new ClaimLootInfo();
-            if (claimLootParams.LevelId != LevelId.INVALID)
-            {
 
+            // Temp
+            AddCurrencyToLoot(500, ref lootResult);
+
+            AddCurrencyToLoot(claimLootParams.Coins, ref lootResult);
+            foreach (ItemId item in claimLootParams.Items)
+            {
+                AddItemToLoot((int)item, 1, ref lootResult);
             }
 
-            if (claimLootParams.EncounterId != EncounterScenarioId.INVALID 
-                || claimLootParams.EncounterId != EncounterScenarioId.Random)
+            if (claimLootParams.LevelId != LevelId.INVALID)
             {
 
             }
 
             foreach (Mobs.MobId mobId in claimLootParams.Mobs)
             {
-                Debug.Assert(MobLoot.ContainsKey(mobId));
                 if (MobLoot.ContainsKey(mobId))
                 {
                     TableEntry tableEntry = MobLoot[mobId];
@@ -59,21 +61,29 @@ namespace MAGE.GameSystems.Loot
                 {
                     case LootType.Currency:
                     {
-                        out_result.Currency += numGranted;
+                        AddCurrencyToLoot(numGranted, ref out_result);
                     }
                     break;
                     case LootType.Item:
                     {
-                        int itemId = lootInfo.Value;
-
-                        if (!out_result.Items.ContainsKey(itemId))
-                            out_result.Items.Add(itemId, numGranted);
-                        else
-                            out_result.Items[itemId] += numGranted;
+                        AddItemToLoot(lootInfo.Value, numGranted, ref out_result);
                     }
                     break;
                 }
             }
+        }
+
+        private void AddCurrencyToLoot(int currency, ref ClaimLootInfo out_result)
+        {
+            out_result.Currency += currency;
+        }
+
+        private void AddItemToLoot(int itemId, int count, ref ClaimLootInfo out_result)
+        {
+            if (!out_result.Items.ContainsKey(itemId))
+                out_result.Items.Add(itemId, count);
+            else
+                out_result.Items[itemId] += count;
         }
 
         private int GetNumGranted(LootInfo info)
@@ -193,7 +203,8 @@ namespace MAGE.GameSystems.Loot
     class ClaimLootParams
     {
         public LevelId LevelId = LevelId.INVALID;
-        public EncounterScenarioId EncounterId = EncounterScenarioId.INVALID;
+        public int Coins = 0;
+        public List<ItemId> Items = new List<ItemId>();
         public List<Mobs.MobId> Mobs = new List<Mobs.MobId>();
     }
 

@@ -10,8 +10,6 @@ namespace MAGE.GameModes
     class ExplorationFlowControl
         : FlowControl.FlowControlBase
     {
-        private AudioSource mAmbientSoundSource;
-
         public override FlowControlId GetFlowControlId()
         {
             return FlowControlId.Exploration;
@@ -44,13 +42,6 @@ namespace MAGE.GameModes
             GameModel.Exploration.PartyAvatar = player;
 
             Camera.main.GetComponent<Cameras.CameraController>().SetTarget(player.transform, Cameras.CameraType.ThirdPerson);
-
-            mAmbientSoundSource = gameObject.AddComponent<AudioSource>();
-            mAmbientSoundSource.clip = AudioManager.Instance.GetTrack(TrackId.Explore);
-            mAmbientSoundSource.loop = true;
-            mAmbientSoundSource.spatialBlend = 0; // global volume
-                                                  //mAmbientSoundSource.Play();
-            AudioManager.Instance.FadeInTrack(mAmbientSoundSource, 5, .5f);
         }
 
         protected override void Cleanup()

@@ -68,7 +68,7 @@ namespace MAGE.GameModes.Encounter
                             mCurrentMoveToPoint = hit.point;
                             if (mCurrentTarget != null && mCurrentTarget != mCurrentCharacter)
                             {
-                                float range = 1.5f;
+                                float range = 2f;
                                 if (mCurrentTarget.GetComponent<CombatEntity>().TeamSide != mCurrentCharacter.GetComponent<CombatEntity>().TeamSide)
                                 {
                                     AttackComposer attackComposer = new AttackComposer(mCurrentCharacter.GetComponent<CombatEntity>());

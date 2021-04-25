@@ -9,7 +9,7 @@ namespace MAGE.GameSystems
 {
     interface ICharacterService : Services.IService
     {
-        void AssignExperience(int characterId, int experience);
+        Characters.CharacterGrowthInfo AssignExperience(int characterId, int experience);
         void AssignTalentPoint(int characterId, Characters.TalentId talentId);
         List<int> ChangeSpecialization(int characterId, Characters.SpecializationType specializationType);
         int CreateCharacter(Characters.CharacterCreateParams createParams);

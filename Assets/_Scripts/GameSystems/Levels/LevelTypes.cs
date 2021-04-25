@@ -12,8 +12,9 @@ namespace MAGE.GameSystems
         INVALID = -1,
 
         Demo,
-        
+
         // Sandbox
+        EncounterSandbox,
         Town,
         Forest,
 

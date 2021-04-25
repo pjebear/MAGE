@@ -1,4 +1,5 @@
-﻿using MAGE.GameSystems.Loot;
+﻿using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.Loot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,11 +47,22 @@ namespace MAGE.GameSystems.World.Internal
         // Conversation - End
 
         // Encounter
-        public void UpdateOnEncounterEnd(EncounterResultInfo resultInfo)
+        public EncounterEndInfo UpdateOnEncounterEnd(EncounterEndParams resultParams)
         {
-            mPartySystem.UpdateOnEncounterEnd(resultInfo);
+            EncounterEndInfo encounterEndInfo = new EncounterEndInfo();
+            encounterEndInfo.Won = resultParams.DidUserWin;
 
-            StoryService.Get().NotifyStoryEvent(new Story.StoryEventBase(resultInfo.EncounterScenarioId));
+            encounterEndInfo.CharacterGrowth = new Dictionary<int, CharacterGrowthInfo>();
+            foreach (int characterId in resultParams.PlayersInEncounter)
+            {
+                encounterEndInfo.CharacterGrowth.Add(characterId, CharacterService.Get().AssignExperience(characterId, CharacterConstants.LEVEL_UP_THRESHOLD));
+            }
+
+            encounterEndInfo.Rewards = mLootTable.CheckoutLoot(resultParams.LootParams);
+
+            StoryService.Get().NotifyStoryEvent(new Story.StoryEventBase(resultParams.EncounterScenarioId));
+
+            return encounterEndInfo;
         }
         // Encounter - End
 
@@ -76,16 +88,6 @@ namespace MAGE.GameSystems.World.Internal
         // Location - End
 
         // Loot 
-        public void ClaimLoot(ClaimLootInfo loot)
-        {
-            mPartySystem.ClaimLoot(loot);
-        }
-
-        public ClaimLootInfo GetLoot(ClaimLootParams claimParams)
-        {
-            return mLootTable.CheckoutLoot(claimParams);
-        }
-
         public Loot.LootTable DEBUG_GetLootTable()
         {
             return mLootTable;

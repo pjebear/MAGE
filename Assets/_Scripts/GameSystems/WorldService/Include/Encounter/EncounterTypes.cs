@@ -1,5 +1,6 @@
 ﻿using MAGE.GameModes.SceneElements;
 using MAGE.GameSystems;
+using MAGE.GameSystems.Characters;
 using MAGE.GameSystems.Loot;
 using MAGE.GameSystems.Mobs;
 using System;
@@ -23,6 +24,7 @@ enum EncounterScenarioId
 
     Random,
     Scenario,
+    SandBox,
 
     // Demo Level
     Demo_TrainingGrounds,
@@ -41,12 +43,20 @@ enum TeamSide
     NUM
 }
 
-class EncounterResultInfo
+class EncounterEndParams
 {
     public EncounterScenarioId EncounterScenarioId = EncounterScenarioId.Random;
+
+    public ClaimLootParams LootParams = new ClaimLootParams();
     public List<int> PlayersInEncounter = new List<int>();
     public bool DidUserWin = false;
-    public ClaimLootInfo Rewards = new ClaimLootInfo();
+}
+
+struct EncounterEndInfo
+{
+    public bool Won;
+    public Dictionary<int, CharacterGrowthInfo> CharacterGrowth;
+    public ClaimLootInfo Rewards;
 }
 
 class EncounterInfo

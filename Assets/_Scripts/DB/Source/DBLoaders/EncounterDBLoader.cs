@@ -11,6 +11,18 @@ namespace MAGE.DB.Internal
     {
         public static void LoadDB()
         {
+            { // Sandbox
+                EncounterScenarioId encounterId = EncounterScenarioId.SandBox;
+
+                DBEncounterInfo encounterInfo = new DBEncounterInfo();
+                encounterInfo.Id = (int)encounterId;
+                encounterInfo.Name = encounterId.ToString();
+                encounterInfo.IsVisible = true;
+                encounterInfo.IsActive = true;
+
+                DBService.Get().WriteEncounterInfo(encounterInfo.Id, encounterInfo);
+            }
+
             { // Training Grounds
                 EncounterScenarioId encounterId = EncounterScenarioId.Demo_TrainingGrounds;
 

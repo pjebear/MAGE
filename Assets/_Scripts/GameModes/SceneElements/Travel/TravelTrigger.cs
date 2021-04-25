@@ -1,4 +1,5 @@
 ﻿using MAGE.GameSystems;
+using MAGE.Utility.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,8 @@ namespace MAGE.GameModes.SceneElements
 {
     class TravelTrigger : TriggerVolumeBase<ThirdPersonActorController>
     {
-        public LevelId LevelId = LevelId.INVALID;
+        [SerializeField] private string _Destination;
+        public LevelId Destination { get { return EnumUtil.StringToEnum<LevelId>(_Destination); } }
         public int SpawnPoint = 0;
 
         protected override int GetLayer()
@@ -20,11 +22,12 @@ namespace MAGE.GameModes.SceneElements
 
         protected override void HandleTriggerEntered(ThirdPersonActorController entered)
         {
-            Debug.Assert(LevelId != LevelId.INVALID);
-            if (LevelId != LevelId.INVALID)
+            LevelId destination = Destination;
+            Debug.Assert(destination != LevelId.INVALID);
+            if (destination != LevelId.INVALID)
             {
                 GameSystems.World.PartyLocation newLocation = new GameSystems.World.PartyLocation();
-                newLocation.SetLevel(LevelId);
+                newLocation.SetLevel(destination);
                 newLocation.SetPosition(SpawnPoint);
 
                 Exploration.ExplorationMessage travelMessage = new Exploration.ExplorationMessage(Exploration.ExplorationMessage.EventType.TravelTriggered, newLocation);

@@ -1,6 +1,7 @@
 ﻿using MAGE.GameModes.SceneElements;
 using MAGE.GameSystems;
 using MAGE.GameSystems.Actions;
+using MAGE.Utility.Enums;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,11 @@ namespace MAGE.GameModes.SceneElements
 {
     class Level : MonoBehaviour
     {
-        public LevelId LevelId;
+        [SerializeField] string _LevelId;
+        public LevelId LevelId { get { return EnumUtil.StringToEnum<LevelId>(_LevelId); } }
+
+        [SerializeField] string _TrackId;       
+        public TrackId TrackId { get { return EnumUtil.StringToEnum<TrackId>(_TrackId); } }
 
         public Terrain Terrain = null;
         public Transform SpawnPointContainer;

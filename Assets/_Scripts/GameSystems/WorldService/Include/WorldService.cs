@@ -14,7 +14,7 @@ namespace MAGE.GameSystems
         // Conversation - End
 
         // Encounter
-        void UpdateOnEncounterEnd(EncounterResultInfo resultInfo);
+        EncounterEndInfo UpdateOnEncounterEnd(EncounterEndParams resultInfo);
         // Encounter - End
 
         // Flow
@@ -27,8 +27,6 @@ namespace MAGE.GameSystems
         // Location - End
 
         // Loot
-        void ClaimLoot(Loot.ClaimLootInfo toClaim);
-        Loot.ClaimLootInfo GetLoot(Loot.ClaimLootParams claimParams);
         Loot.LootTable DEBUG_GetLootTable();
         // Loot - End
 

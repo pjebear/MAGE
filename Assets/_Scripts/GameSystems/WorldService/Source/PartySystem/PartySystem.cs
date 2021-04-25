@@ -78,16 +78,6 @@ namespace MAGE.GameSystems.World.Internal
             mPartyInfo.Inventory.Add(itemId, count);
         }
 
-        public void ClaimLoot(ClaimLootInfo loot)
-        {
-            AddCurrency(loot.Currency);
-
-            foreach (var itemCountPair in loot.Items)
-            {
-                AddToInventory(itemCountPair.Key, itemCountPair.Value);
-            }
-        }
-
         public void RemoveFromInventory(int itemId, int num = 1)
         {
             mPartyInfo.Inventory.Remove(itemId, num);
@@ -121,17 +111,6 @@ namespace MAGE.GameSystems.World.Internal
                 mPartyInfo.Inventory.Add(itemId);
             }
         }
-
-        public void UpdateOnEncounterEnd(EncounterResultInfo resultInfo)
-        {
-            foreach (int characterId in resultInfo.PlayersInEncounter)
-            {
-                CharacterService.Get().AssignExperience(characterId, CharacterConstants.LEVEL_UP_THRESHOLD);
-            }
-
-            ClaimLoot(resultInfo.Rewards);
-        }
-
         //! Characters
 
         // Character End

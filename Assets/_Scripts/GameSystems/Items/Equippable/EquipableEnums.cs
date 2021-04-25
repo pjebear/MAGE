@@ -99,6 +99,7 @@ namespace MAGE.GameSystems
 
         // Accessories
         Relic,
+        Relic_1,
 
         END = Relic
     }

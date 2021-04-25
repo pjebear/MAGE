@@ -1,4 +1,6 @@
 ﻿using MAGE.GameModes.Combat;
+using MAGE.GameSystems;
+using MAGE.GameSystems.Mobs;
 using MAGE.Messaging;
 using System;
 using System.Collections.Generic;
@@ -13,12 +15,17 @@ namespace MAGE.GameModes.SceneElements
         : MonoBehaviour
         , Messaging.IMessageHandler
     {
+        // potential new script
         public EncounterScenarioId EncounterScenarioId = EncounterScenarioId.INVALID;
+        public List<MobId> MobsInEncounter = new List<MobId>();
+        public List<ItemId> ItemRewards = new List<ItemId>();
+        public int CoinReward = 0;
 
         public Transform Enemies;
         public Transform Allys;
         public Transform WinConditions;
         public Transform LoseConditions;
+        
 
         private bool mIsEncounterPending = false;
         private bool mIsEncounterVisible = true;

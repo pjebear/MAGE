@@ -29,9 +29,9 @@ namespace MAGE.GameSystems.Characters.Internal
             // Empty
         }
 
-        public void AssignExperience(int characterId, int experience)
+        public CharacterGrowthInfo AssignExperience(int characterId, int experience)
         {
-            // Empty
+            return new CharacterGrowthInfo();
         }
 
         public void AssignTalentPoint(int characterId, TalentId talentId)

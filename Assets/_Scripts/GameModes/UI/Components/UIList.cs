@@ -20,6 +20,7 @@ namespace MAGE.UI.Views
         public GameObject ElementPrefab;
         public Transform ElementContainer;
         public Vector2 ListDirection = Vector2.right;
+        public Vector2 ListWrapDirection = Vector2.right;
         public float Padding = 10f;
 
         public List<UIComponentBase> Elements = new List<UIComponentBase>();
@@ -65,6 +66,7 @@ namespace MAGE.UI.Views
             Vector2 ElementDimensions = new Vector2(elementRect.width, elementRect.height) + Vector2.one * Padding;
 
             int elementIdx = Elements.Count;
+
             Vector2 localPos = Vector2.zero;
             if (ListDirection == Vector2.left || ListDirection == Vector2.right)
             {

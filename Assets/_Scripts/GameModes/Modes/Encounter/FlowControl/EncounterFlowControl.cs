@@ -23,8 +23,6 @@ namespace MAGE.GameModes.Encounter
         private string TAG = "EncounterFlowControl";
 
         private EncounterModel mEncounterModel;
-        private List<EncounterCondition> mWinConditions = new List<EncounterCondition>();
-        private List<EncounterCondition> mLoseConditions = new List<EncounterCondition>();
 
         private AudioSource mAmbientSoundSource;
 
@@ -93,13 +91,13 @@ namespace MAGE.GameModes.Encounter
                 PrepareScenarioEncounter(activeEncounter);
             }
 
-            mWinConditions = activeEncounter.WinConditions.GetComponents<EncounterCondition>().ToList();
-            Debug.Assert(mWinConditions.Count > 0);
-            mLoseConditions = activeEncounter.LoseConditions.GetComponents<EncounterCondition>().ToList();
-            Debug.Assert(mLoseConditions.Count > 0);
-
             mEncounterModel = new EncounterModel();
             GameModel.Encounter = mEncounterModel;
+
+            mEncounterModel.mWinConditions = activeEncounter.WinConditions.GetComponents<EncounterCondition>().ToList();
+            Debug.Assert(mEncounterModel.mWinConditions.Count > 0);
+            mEncounterModel.mLoseConditions = activeEncounter.LoseConditions.GetComponents<EncounterCondition>().ToList();
+            Debug.Assert(mEncounterModel.mLoseConditions.Count > 0);
 
             mEncounterModel.Teams.Add(TeamSide.AllyHuman, activeEncounter.Allys.GetComponentsInChildren<CombatCharacter>().ToList());
             foreach (CombatCharacter character in mEncounterModel.Teams[TeamSide.AllyHuman])
@@ -121,31 +119,18 @@ namespace MAGE.GameModes.Encounter
 
             UIManager.Instance.PostContainer(UIContainerId.EncounterStatusView, this);
 
-            mAmbientSoundSource = gameObject.AddComponent<AudioSource>();
-            mAmbientSoundSource.clip = AudioManager.Instance.GetTrack(TrackId.Encounter);
-            mAmbientSoundSource.loop = true;
-            mAmbientSoundSource.spatialBlend = 0; // global volume
-                                                  //mAmbientSoundSource.Play();
-            AudioManager.Instance.FadeInTrack(mAmbientSoundSource, 5, .5f);
+            AudioManager.Instance.PlayTrack(TrackId.Encounter);
         }
 
         protected override void Cleanup()
         {
             UIManager.Instance.RemoveOverlay(UIContainerId.EncounterStatusView);
 
+            AudioManager.Instance.StopTrack(TrackId.Encounter);
+
             Level level = LevelManagementService.Get().GetLoadedLevel();
             EncounterContainer activeEncounter = level.GetActiveEncounter();
             Destroy(activeEncounter.gameObject);
-
-            EncounterResultInfo result = new EncounterResultInfo();
-            result.EncounterScenarioId = activeEncounter.EncounterScenarioId;
-            result.PlayersInEncounter = mEncounterModel.Teams[TeamSide.AllyHuman]
-                .Select(x=> x.Character.Id)
-                .ToList();
-
-            result.DidUserWin = IsEncounterWon();
-
-            WorldService.Get().UpdateOnEncounterEnd(result);
         }
 
         public override bool Notify(string notifyEvent)
@@ -168,7 +153,6 @@ namespace MAGE.GameModes.Encounter
                     handled = true;
                 }
                 break;
-
             }
 
             return handled;
@@ -182,7 +166,7 @@ namespace MAGE.GameModes.Encounter
             {
                 case "encounterFlowState":
                 {
-                    if (IsEncounterOver())
+                    if (mEncounterModel.IsEncounterOver())
                     {
                         result = "encounterComplete";
                     }
@@ -224,27 +208,6 @@ namespace MAGE.GameModes.Encounter
             }
 
             return result;
-        }
-
-        private bool IsEncounterLost()
-        {
-            bool isLost = true;
-
-            isLost = mLoseConditions.Where(x => x.IsConditionMet(mEncounterModel)).Count() > 0;
-
-            return isLost;
-        }
-
-        private bool IsEncounterWon()
-        {
-            bool isWon = mWinConditions.Where(x => x.IsConditionMet(mEncounterModel)).Count() > 0;
-
-            return isWon;
-        }
-
-        private bool IsEncounterOver()
-        {
-            return IsEncounterLost() || IsEncounterWon();
         }
 
         private bool AreActionsPending()
@@ -322,8 +285,8 @@ namespace MAGE.GameModes.Encounter
 
         void PopulateTurnQueue()
         {
-            Debug.Assert(!IsEncounterOver());
-            if (!IsEncounterOver())
+            Debug.Assert(!mEncounterModel.IsEncounterOver());
+            if (!mEncounterModel.IsEncounterOver())
             {
                 while (mEncounterModel.TurnQueue.Count == 0)
                 {

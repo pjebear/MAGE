@@ -14653,7 +14653,7 @@ PrefabInstance:
     - target: {fileID: 7422207205507131340, guid: 3f6480e09f0648244a0358635b57117c,
         type: 3}
       propertyPath: EncounterScenarioId
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7997101437540289608, guid: 3f6480e09f0648244a0358635b57117c,
         type: 3}
@@ -14877,17 +14877,17 @@ PrefabInstance:
     - target: {fileID: 3719071087411164772, guid: f82338a43ca32bc459b33a7a345d738d,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.00000029802325
+      value: -0.00000032782552
       objectReference: {fileID: 0}
     - target: {fileID: 3719071087411164772, guid: f82338a43ca32bc459b33a7a345d738d,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.000000005587936
+      value: 0.0000000074505797
       objectReference: {fileID: 0}
     - target: {fileID: 3719071087411164772, guid: f82338a43ca32bc459b33a7a345d738d,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9995406
+      value: 0.99954057
       objectReference: {fileID: 0}
     - target: {fileID: 3719071087411164772, guid: f82338a43ca32bc459b33a7a345d738d,
         type: 3}
@@ -38298,7 +38298,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b20c885ba65616443bf71491dbda9779, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LevelId: 1
+  _Destination: Town
   SpawnPoint: 1
 --- !u!65 &1435297474
 BoxCollider:
@@ -51913,8 +51913,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c615b91137cc0444a9116d7c2209600a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LevelId: 2
-  Terrain: {fileID: 0}
+  _LevelId: Forest
+  _TrackId: Forest
+  Terrain: {fileID: 1814465533}
   SpawnPointContainer: {fileID: 292718554}
   CinematicContainer: {fileID: 677656120}
   EncounterContainer: {fileID: 956271778}
@@ -52212,6 +52213,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EncounterScenarioId: 2
+  MobsInEncounter: 
+  ItemRewards: 
+  CoinReward: 0
   Enemies: {fileID: 0}
   Allys: {fileID: 0}
   WinConditions: {fileID: 0}

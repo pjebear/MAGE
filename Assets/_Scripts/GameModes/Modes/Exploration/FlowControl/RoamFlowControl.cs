@@ -230,18 +230,14 @@ namespace MAGE.GameModes.Exploration
             Collider[] overlapped = Physics.OverlapSphere(enemy.transform.position, 15f);
             List<MobControl> mobsInRange = overlapped.Select(x => x.GetComponent<MobControl>()).Where(x => x != null && x.gameObject.activeSelf).ToList();
 
-            ClaimLootParams claimLootParams = new ClaimLootParams();
             foreach (MobControl mob in mobsInRange)
             {
                 mob.gameObject.SetActive(false);
-                claimLootParams.Mobs.Add(mob.GetComponent<MobCharacterControl>().MobId);
+                randomEncounter.MobsInEncounter.Add(mob.GetComponent<MobCharacterControl>().MobId);
 
                 CombatCharacter player = level.CreateCombatCharacter(mob.transform.position, mob.transform.rotation, randomEncounter.Enemies);
                 player.GetComponent<CharacterPickerControl>().CharacterPicker.SetRootCharacterId(mob.GetComponent<CharacterPickerControl>().CharacterPicker.GetCharacterId());
             }
-
-            ClaimLootInfo lootInfo = WorldService.Get().GetLoot(claimLootParams);
-            WorldService.Get().ClaimLoot(lootInfo);
 
             Vector3 partyToEnemy = enemy.transform.position - mPlayer.transform.position;
             partyToEnemy.y = 0;
