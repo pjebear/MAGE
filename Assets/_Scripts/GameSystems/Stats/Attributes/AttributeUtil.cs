@@ -56,5 +56,27 @@ namespace MAGE.GameSystems.Stats
 
             return (int)resourceValue;
         }
+
+        public static Resource.ScaleType GetScaleTypeForResource(ResourceType resourceType)
+        {
+            Resource.ScaleType scaleType = Resource.ScaleType.Scale;
+
+            switch (resourceType)
+            {
+                case ResourceType.MovementRange:
+                case ResourceType.Actions:
+                {
+                    scaleType = Resource.ScaleType.Flat;
+                }
+                break;
+                default:
+                {
+                    scaleType = Resource.ScaleType.Scale;
+                }
+                break;
+            }
+
+            return scaleType;
+        }
     }
 }

@@ -32,7 +32,7 @@ namespace MAGE.GameModes.Combat
                     ActionProposal proposal = new ActionProposal(
                         mResponder,
                         new Target(actionResult.Initiator.GetComponent<CombatTarget>()), 
-                        ActionId.MeeleWeaponAttack);
+                        ActionId.WeaponAttack);
 
                     responses.Add(new ActionProposalResponse(proposal));
                 }

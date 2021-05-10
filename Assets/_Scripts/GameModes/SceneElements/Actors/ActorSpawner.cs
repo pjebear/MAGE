@@ -66,7 +66,16 @@ namespace MAGE.GameModes.SceneElements
 
         public void Refresh()
         {
-            Appearance = GetComponent<CharacterPickerControl>().CharacterPicker.GetAppearance();
+            CharacterPickerControl characterPickerControl = GetComponent<CharacterPickerControl>();
+            if (characterPickerControl.IsNPC())
+            {
+                Appearance = LevelManagementService.Get().GetNPCAppearance((NPCPropId)characterPickerControl.GetCharacterId());
+            }
+            else
+            {
+                Appearance = CharacterService.Get().GetCharacter(characterPickerControl.GetCharacterId()).GetAppearance();
+            }
+            
 
             if (Appearance != null)
             {
@@ -92,7 +101,7 @@ namespace MAGE.GameModes.SceneElements
                 }
             }
             
-            Name = GetComponent<CharacterPickerControl>().CharacterPicker.GetActorName();
+            Name = GetComponent<CharacterPickerControl>().GetActorName();
             gameObject.name = Name;
 
             NotifyRefresh();
@@ -110,7 +119,7 @@ namespace MAGE.GameModes.SceneElements
                     {
                         case LevelManagement.MessageType.AppearanceUpdated:
                         {
-                            if (message.Arg<int>() == GetComponent<CharacterPickerControl>().CharacterPicker.GetCharacterId())
+                            if (message.Arg<int>() == GetComponent<CharacterPickerControl>().GetCharacterId())
                             {
                                 Refresh();
                             }
@@ -131,7 +140,7 @@ namespace MAGE.GameModes.SceneElements
                     {
                         case CharacterMessage.MessageType.CharacterUpdated:
                         {
-                            if (message.Arg<int>() == GetComponent<CharacterPickerControl>().CharacterPicker.GetCharacterId())
+                            if (message.Arg<int>() == GetComponent<CharacterPickerControl>().GetCharacterId())
                             {
                                 Refresh();
                             }

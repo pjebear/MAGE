@@ -10,6 +10,12 @@ namespace MAGE.GameSystems.Stats
     [Serializable]
     class Resource
     {
+        public enum ScaleType
+        {
+            Flat,
+            Scale,
+        }
+
         public ResourceType ResourceType;
         public int Current;
         public int Max;
@@ -31,11 +37,30 @@ namespace MAGE.GameSystems.Stats
             Max = max;
         }
 
-        public void SetMax(int max)
+        public void SetMax(int max, ScaleType scaleType = ScaleType.Scale)
         {
-            float currentRatio = Ratio;
-            Max = max;
-            Current = (int)(Max * currentRatio);
+            switch (scaleType)
+            {
+                case ScaleType.Scale:
+                {
+                    float currentRatio = Ratio;
+                    Max = max;
+                    Current = (int)(Max * currentRatio);
+                }
+                break;
+                case ScaleType.Flat:
+                {
+                    int delta = max - Max;
+                    Max += delta;
+                    Current += delta;
+                }
+                break;
+                default:
+                    Debug.Assert(false);
+                    break;
+            }
+
+            
         }
 
         public void SetCurrentToMax()

@@ -120,6 +120,12 @@ namespace MAGE.GameSystems.Actions
         Protection,
         MightyBlow,
 
+        // Footman
+        Defend,
+        DoubleTime,
+        ShieldBash,
+        Swipe,
+
         //Paladin
         Smite,
         Shackle,
@@ -136,12 +142,10 @@ namespace MAGE.GameSystems.Actions
         ChainLightning,
         Regen,
 
-        MeeleWeaponAttack,
-        RangedWeaponAttack,
+        WeaponAttack,
 
         // Followup
         Riptose,
-        ShieldBash,
         ExplodeOnDeath,
 
         NUM

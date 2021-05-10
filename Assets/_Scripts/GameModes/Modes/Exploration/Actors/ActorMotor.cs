@@ -17,6 +17,7 @@ namespace MAGE.GameModes.SceneElements.Navigation
         private NavMeshAgent rNavMeshAgent { get { return GetComponent<NavMeshAgent>(); } }
         private bool mIsMoving = false;
         private UnityAction mOnMoveComplete = null;
+        private Vector3 mMoveToPoint;
 
         private void Awake()
         {
@@ -28,6 +29,7 @@ namespace MAGE.GameModes.SceneElements.Navigation
             mOnMoveComplete = moveCompleteCB;
             mIsMoving = true;
             rNavMeshAgent.SetDestination(point);
+            mMoveToPoint = point;
         }
 
         public void Stop()
@@ -88,6 +90,7 @@ namespace MAGE.GameModes.SceneElements.Navigation
 
             if (mOnMoveComplete != null)
             {
+                transform.position = mMoveToPoint;
                 UnityAction onMoveComplete = mOnMoveComplete;
                 mOnMoveComplete = null;
                 onMoveComplete();   

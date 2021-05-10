@@ -157,6 +157,7 @@ namespace MAGE.GameSystems.Characters.Internal
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.TertiaryStat].Attributes[(int)TertiaryStat.Movement] = 7;
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.TertiaryStat].Attributes[(int)TertiaryStat.Actions] = 1;
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.TertiaryStat].Attributes[(int)TertiaryStat.Speed] = speed;
+            dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.TertiaryStat].Attributes[(int)TertiaryStat.ResourceRecovery] = 1;
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.TertiaryStat].Attributes[(int)TertiaryStat.MaxClockGuage] = 100;
             dbCharacter.CharacterInfo.Attributes[(int)AttributeCategory.Resource].Attributes[(int)ResourceType.Health] = 15;
         }

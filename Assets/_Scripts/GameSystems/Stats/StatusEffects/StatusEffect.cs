@@ -14,6 +14,7 @@ namespace MAGE.GameSystems.Stats
         public int StackCount;
         public UI.StatusIconSpriteId SpriteId { get { return mStatusEffectInfo.SpriteId; } }
         public bool Beneficial { get { return mStatusEffectInfo.Beneficial; } }
+        public int MaxDuration { get { return mStatusEffectInfo.Duration; } }
         protected int mCurrentDuration;
         protected StatusEffectInfo mStatusEffectInfo;
 
@@ -57,13 +58,18 @@ namespace MAGE.GameSystems.Stats
 
         public bool HasExpired()
         {
-            if (mStatusEffectInfo.Duration == StatusEffectConstants.PERMANENT_DURATION)
+            switch (mStatusEffectInfo.Duration)
             {
-                return false;
-            }
-            else
-            {
-                return mCurrentDuration >= mStatusEffectInfo.Duration;
+                case StatusEffectConstants.PERMANENT_DURATION:
+                case StatusEffectConstants.UNTIL_NEXT_TURN:
+                {
+                    return false;
+                }
+
+                default:
+                {
+                    return mCurrentDuration >= mStatusEffectInfo.Duration;
+                }
             }
         }
 
@@ -119,6 +125,76 @@ namespace MAGE.GameSystems.Stats
 
             modifiers.Add(new AttributeModifier(PrimaryStat.Might, ModifierType.Multiply, StackCount * StackCountToAttributeMultiplier));
             modifiers.Add(new AttributeModifier(PrimaryStat.Magic, ModifierType.Multiply, StackCount * StackCountToAttributeMultiplier));
+
+            return modifiers;
+        }
+
+        public override StateChange GetTurnStartStateChange()
+        {
+            return StateChange.Empty;
+        }
+    }
+
+    class DefendEffect : StatusEffect
+    {
+        public float AvoidanceMultiple = 1f; 
+
+        public override List<AttributeModifier> GetAttributeModifiers()
+        {
+            List<AttributeModifier> modifiers = new List<AttributeModifier>();
+
+            modifiers.Add(new AttributeModifier(TertiaryStat.AvoidanceMultiplier, ModifierType.Increment, AvoidanceMultiple));
+
+            return modifiers;
+        }
+
+        public override StateChange GetTurnStartStateChange()
+        {
+            return StateChange.Empty;
+        }
+    }
+
+    class DazeEffect : StatusEffect
+    {
+        public override List<AttributeModifier> GetAttributeModifiers()
+        {
+            List<AttributeModifier> modifiers = new List<AttributeModifier>();
+
+            modifiers.Add(new AttributeModifier(TertiaryStat.ResourceRecovery, ModifierType.Increment, -.5f));
+
+            return modifiers;
+        }
+
+        public override StateChange GetTurnStartStateChange()
+        {
+            return StateChange.Empty;
+        }
+    }
+
+    class DoubleTimeEffect : StatusEffect
+    {
+        public override List<AttributeModifier> GetAttributeModifiers()
+        {
+            List<AttributeModifier> modifiers = new List<AttributeModifier>();
+
+            modifiers.Add(new AttributeModifier(TertiaryStat.Movement, ModifierType.Multiply, 1));
+
+            return modifiers;
+        }
+
+        public override StateChange GetTurnStartStateChange()
+        {
+            return StateChange.Empty;
+        }
+    }
+
+    class HamstringEffect : StatusEffect
+    {
+        public override List<AttributeModifier> GetAttributeModifiers()
+        {
+            List<AttributeModifier> modifiers = new List<AttributeModifier>();
+
+            modifiers.Add(new AttributeModifier(TertiaryStat.Movement, ModifierType.Multiply, -.5f));
 
             return modifiers;
         }

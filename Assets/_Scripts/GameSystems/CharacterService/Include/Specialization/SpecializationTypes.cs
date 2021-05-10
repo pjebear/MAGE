@@ -12,7 +12,8 @@ namespace MAGE.GameSystems.Characters
 
         public static readonly List<SpecializationType> MULTI_SPECIALIZATIONS = new List<SpecializationType>()
         {
-            SpecializationType.Archer
+            SpecializationType.Adept
+            ,SpecializationType.Archer
             ,SpecializationType.Footman
             ,SpecializationType.Monk
         };
@@ -35,7 +36,7 @@ namespace MAGE.GameSystems.Characters
         Footman,
         Monk,
         Paladin,
-        //Adept,
+        Adept,
         ////Footman Tree
         //ShieldWall,
         //Duelist,

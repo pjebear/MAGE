@@ -1,4 +1,5 @@
-﻿using MAGE.GameSystems.Appearances;
+﻿using MAGE.GameSystems;
+using MAGE.GameSystems.Appearances;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +14,25 @@ namespace MAGE.GameModes.SceneElements
     {
         private void Start()
         {
-            Appearance appearance = GetComponent<CharacterPickerControl>().CharacterPicker.GetAppearance();
+            Appearance appearance = null;
+            CharacterPickerControl characterPickerControl = GetComponent<CharacterPickerControl>();
+            int characterId = characterPickerControl.GetCharacterId();
+            if (characterPickerControl.IsNPC())
+            {
+                appearance = LevelManagementService.Get().GetNPCAppearance((NPCPropId)characterId);
+            }
+            else
+            {
+                appearance = CharacterService.Get().GetCharacter(characterId).GetAppearance();
+            }
+            
 
             if (GetComponent<ActorOutfitter>() != null)
             {
                 GetComponent<ActorOutfitter>().UpdateAppearance(appearance);
             }
 
-            gameObject.name = GetComponent<CharacterPickerControl>().CharacterPicker.GetActorName();
+            gameObject.name = GetComponent<CharacterPickerControl>().GetActorName();
         }
     }
 }

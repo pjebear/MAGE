@@ -24,6 +24,25 @@ namespace MAGE.GameModes.Encounter
         : FlowControl.FlowControlBase
         
     {
+        protected class HoverInfo
+        {
+            public List<Vector3> mMoveToPath = new List<Vector3>();
+            public bool mIsMoveToInRange = false;
+            public Vector3 mHoveredTerrainPos = Vector3.zero;
+            public CombatEntity mHoveredEntity = null;
+            public NavMeshObstacle mHoveredObstacle = null;
+
+            public void Reset()
+            {
+                mMoveToPath.Clear();
+                mIsMoveToInRange = false;
+                mHoveredTerrainPos = Vector3.zero;
+                mHoveredEntity = null;
+                mHoveredObstacle = null;
+            }
+        }
+        protected HoverInfo mHoverInfo = new HoverInfo();
+
         protected enum State
         {
             Idle,
@@ -33,19 +52,22 @@ namespace MAGE.GameModes.Encounter
         protected State mState = State.Idle;
         protected ActionComposerBase mSelectedAction = null;
         protected ActionInfo mActionInfo = null;
+        protected ActionInfo mWeaponAttackInfo = null;
         // Private 
         protected CombatCharacter mCurrentCharacter;
         protected List<ActionComposerBase> mAvailableActions;
         protected CombatCharacter mCurrentTarget;
-        protected Vector3 mCurrentMoveToPoint = Vector3.zero;
 
         protected LineRenderer mAbilityRangeRenderer = null;
         protected LineRenderer mAbilityEffectRenderer = null;
+        protected LineRenderer mMovementPathRenderer = null;
         protected LineRenderer mMovementRangeRenderer = null;
+        protected LineRenderer mTargetBoundaryRenderer = null;
 
         protected int mCircleSegments = 32;
+        protected float mCharacterEmptyRadius = 1f;
 
-        protected Dictionary<CombatCharacter, NavMeshObstacle> mMovementObstacles = new Dictionary<CombatCharacter, NavMeshObstacle>();
+        protected HashSet<NavMeshObstacle> mMovementObstacles = new HashSet<NavMeshObstacle>();
 
         protected override void Setup()
         {
@@ -61,17 +83,30 @@ namespace MAGE.GameModes.Encounter
             mAbilityEffectRenderer.positionCount = mCircleSegments + 1;
             mAbilityEffectRenderer.useWorldSpace = true;
 
+            mTargetBoundaryRenderer = EncounterPrefabLoader.RangeRenderer;
+            mTargetBoundaryRenderer.transform.SetParent(transform);
+            mTargetBoundaryRenderer.gameObject.SetActive(false);
+            mTargetBoundaryRenderer.positionCount = mCircleSegments + 1;
+            mTargetBoundaryRenderer.useWorldSpace = true;
+
             mMovementRangeRenderer = EncounterPrefabLoader.RangeRenderer;
             mMovementRangeRenderer.transform.SetParent(transform);
             mMovementRangeRenderer.gameObject.SetActive(false);
+            mMovementRangeRenderer.positionCount = mCircleSegments + 1;
             mMovementRangeRenderer.useWorldSpace = true;
+
+            mMovementPathRenderer = EncounterPrefabLoader.RangeRenderer;
+            mMovementPathRenderer.transform.SetParent(transform);
+            mMovementPathRenderer.gameObject.SetActive(false);
+            mMovementPathRenderer.useWorldSpace = true;
 
             foreach (CombatCharacter combatCharacter in GameModel.Encounter.AlivePlayers)
             {
                 NavMeshObstacle obstacle = EncounterPrefabLoader.Obstacle;
                 obstacle.transform.SetParent(combatCharacter.transform);
                 obstacle.transform.localPosition = Vector3.zero;
-                mMovementObstacles.Add(combatCharacter, obstacle);
+                mCharacterEmptyRadius = obstacle.radius * 2;
+                mMovementObstacles.Add(obstacle);
             }
 
             SetCurrentCharacter(GameModel.Encounter.CurrentTurn);
@@ -81,9 +116,9 @@ namespace MAGE.GameModes.Encounter
 
         protected override void Cleanup()
         {
-            foreach (var obstaclePair in mMovementObstacles)
+            foreach (var obstacle in mMovementObstacles)
             {
-                Destroy(obstaclePair.Value.gameObject);
+                Destroy(obstacle.gameObject);
             }
             mMovementObstacles.Clear();
         }
@@ -97,8 +132,9 @@ namespace MAGE.GameModes.Encounter
             {
                 mAvailableActions.Add(ActionComposerFactory.CheckoutAction(mCurrentCharacter.GetComponent<CombatEntity>(), actionId));
             }
-            
-            mMovementObstacles[combatCharacter].enabled = false;
+            combatCharacter.GetComponentInChildren<NavMeshObstacle>().enabled = false;
+
+            mWeaponAttackInfo = ActionComposerFactory.CheckoutAction(mCurrentCharacter.GetComponent<CombatEntity>(), ActionId.WeaponAttack).ActionInfo;
 
             Camera.main.GetComponent<Cameras.CameraController>().SetTarget(mCurrentCharacter.transform, Cameras.CameraType.TopDown);
         }
@@ -109,22 +145,16 @@ namespace MAGE.GameModes.Encounter
             if (mCurrentCharacter.GetComponent<ResourcesControl>().GetNumAvailableActions() > 0)
             {
                 attackQueued = true;
-                mCurrentCharacter.GetComponent<ResourcesControl>().OnActionPerformed(StateChange.Empty);
-
-                ActionProposal proposal = new ActionProposal(
-                mCurrentCharacter.GetComponent<CombatEntity>(),
-                new Target(mCurrentTarget.GetComponent<CombatTarget>()),
-                ActionId.MeeleWeaponAttack);
-
-                GameModel.Encounter.mActionQueue.Enqueue(proposal);
+                QueueAttack();
             }
-
-            if ((mCurrentTarget.transform.position - mCurrentCharacter.transform.position).magnitude > 1.5f)
+            
+            if (mHoverInfo.mMoveToPath.Count > 0)
             {
                 SetState(State.Moving);
 
-                mCurrentCharacter.GetComponent<ResourcesControl>().OnMovementPerformed(mCurrentCharacter.GetComponent<ResourcesControl>().GetAvailableMovementRange());
-                mCurrentCharacter.GetComponent<ActorMotor>().MoveToPoint(mCurrentMoveToPoint, () =>
+                float pathLength = mHoverInfo.mMoveToPath.Count;
+                mCurrentCharacter.GetComponent<ResourcesControl>().OnMovementPerformed(Mathf.CeilToInt(pathLength));
+                mCurrentCharacter.GetComponent<ActorMotor>().MoveToPoint(mHoverInfo.mMoveToPath[mHoverInfo.mMoveToPath.Count - 1], () =>
                 {
                     SendFlowMessage("actionChosen");
                 });
@@ -135,25 +165,37 @@ namespace MAGE.GameModes.Encounter
             }
         }
 
+        protected void QueueAttack()
+        {
+            mCurrentCharacter.GetComponent<ResourcesControl>().OnActionPerformed(StateChange.Empty);
+
+            ActionProposal proposal = new ActionProposal(
+            mCurrentCharacter.GetComponent<CombatEntity>(),
+            new Target(mCurrentTarget.GetComponent<CombatTarget>()),
+            ActionId.WeaponAttack);
+
+            GameModel.Encounter.mActionQueue.Enqueue(proposal);
+        }
+
         protected virtual void SetState(State state)
         {
             mState = state;
 
             if (state == State.Idle)
             {
-                mMovementRangeRenderer.gameObject.SetActive(mCurrentCharacter.GetComponent<ResourcesControl>().GetAvailableMovementRange() > 0);
+                mMovementPathRenderer.gameObject.SetActive(mCurrentCharacter.GetComponent<ResourcesControl>().GetAvailableMovementRange() > 0);
                 mAbilityRangeRenderer.gameObject.SetActive(false);
                 mAbilityEffectRenderer.gameObject.SetActive(false);
             }
             else if (state == State.TargetSelect)
             {
-                mMovementRangeRenderer.gameObject.SetActive(false);
+                mMovementPathRenderer.gameObject.SetActive(false);
                 mAbilityRangeRenderer.gameObject.SetActive(true);
                 mAbilityEffectRenderer.gameObject.SetActive(true);
             }
             else if (state == State.Moving)
             {
-                mMovementRangeRenderer.gameObject.SetActive(false);
+                mMovementPathRenderer.gameObject.SetActive(false);
                 mAbilityRangeRenderer.gameObject.SetActive(false);
                 mAbilityEffectRenderer.gameObject.SetActive(false);
             }
@@ -343,17 +385,84 @@ namespace MAGE.GameModes.Encounter
 
         protected void DisplayMovementRange(Vector3 destination)
         {
-            mMovementRangeRenderer.gameObject.SetActive(true);
+            mMovementPathRenderer.gameObject.SetActive(true);
 
             NavMeshPath path = new NavMeshPath();
             NavMesh.CalculatePath(mCurrentCharacter.transform.position, destination, NavMesh.AllAreas, path);
-
-            mMovementRangeRenderer.positionCount = path.corners.Length + 1;
-            mMovementRangeRenderer.SetPosition(0, mCurrentCharacter.transform.position + Vector3.up * .1f);
-            for (int i = 0; i < path.corners.Length; i++)
-            {
-                mMovementRangeRenderer.SetPosition(i + 1, path.corners[i]);
+            if (path.corners.Length > 0)
+            {  
+                mMovementPathRenderer.positionCount = path.corners.Length + 1;
+                mMovementPathRenderer.SetPosition(0, mCurrentCharacter.transform.position + Vector3.up * .1f);
+                for (int i = 0; i < path.corners.Length; i++)
+                {
+                    mMovementPathRenderer.SetPosition(i + 1, path.corners[i]);
+                }
             }
+        }
+
+        protected Vector3 GetPointAlongPathAtMaxRange(Vector3[] path, float maxRange)
+        {
+            return Vector3.zero;
+        }
+
+
+        protected float GetPathLength(List<Vector3> path)
+        {
+            return GetPathLength(path.ToArray());
+        }
+        protected float GetPathLength(Vector3[] path)
+        {
+            float length = 0;
+            Debug.Assert(path != null && path.Length > 0);
+            if (path != null && path.Length > 0)
+            {
+                for (int i = 1; i < path.Length; ++i)
+                {
+                    Vector3 lineSegmentStart = path[i - 1];
+                    Vector3 lineSegmentEnd = path[i];
+
+                    length += Vector3.Distance(lineSegmentStart, lineSegmentEnd);
+                }
+            }
+
+            return length;
+        }
+
+        protected Vector3[] TrimPathToSize(Vector3[] path, float size)
+        {
+            List<Vector3> updatedPath = new List<Vector3>();
+
+            if (path.Length > 0)
+            {
+                updatedPath.Add(path[0]);
+                if (size > 0)
+                {
+                    float pathLength = 0;
+                    for (int i = 1; i < path.Length; ++i)
+                    {
+                        Vector3 lineSegmentStart = path[i - 1];
+                        Vector3 lineSegmentEnd = path[i];
+
+                        float segmentLength = Vector3.Distance(lineSegmentStart, lineSegmentEnd);
+                        if (pathLength + segmentLength > size)
+                        {
+                            float remainingLength = size - pathLength;
+
+                            Vector3 finalPoint = lineSegmentStart + (lineSegmentEnd - lineSegmentStart).normalized * remainingLength;
+
+                            updatedPath.Add(finalPoint);
+                            break;
+                        }
+                        else
+                        {
+                            pathLength += segmentLength;
+                            updatedPath.Add(lineSegmentEnd);
+                        }
+                    }
+                }
+            }
+
+            return updatedPath.ToArray();
         }
 
         protected Vector3 GetPointAlongPathInRangeOf(Vector3[] path, Vector3 destination, float range)

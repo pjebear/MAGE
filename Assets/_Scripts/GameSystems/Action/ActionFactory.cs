@@ -97,7 +97,7 @@ namespace MAGE.GameSystems.Actions
                 }
                 break;
 
-                case (ActionId.MeeleWeaponAttack):
+                case (ActionId.WeaponAttack):
                 {
                     WeaponEquippable weapon = (WeaponEquippable)character.Equipment[Equipment.Slot.RightHand];
 

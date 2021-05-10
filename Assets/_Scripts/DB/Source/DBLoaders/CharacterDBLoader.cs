@@ -157,7 +157,7 @@ namespace MAGE.DB.Internal
                 createParams.characterType = CharacterType.Create;
                 createParams.characterClass = CharacterClass.MultiSpecialization;
                 createParams.name = "Ingrid";
-                createParams.currentSpecialization = SpecializationType.Monk;
+                createParams.currentSpecialization = SpecializationType.Adept;
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.ClothArmor_0, EquippableId.INVALID, EquippableId.Staff_0, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {

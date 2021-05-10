@@ -234,9 +234,27 @@ namespace MAGE.GameSystems.Characters
         {
             List<int> unequippedItems = new List<int>();
 
-            bool fitsInSlot = EquipmentUtil.FitsInSlot(equippable.EquipmentTag.Category, inSlot);
-            bool hasProficiency = EquipmentUtil.HasProficiencyFor(GetProficiencies(), equippable);
+            bool fitsInSlot = false;
+            if (equippable.EquipmentId == EquippableId.Fists_0 
+                && (inSlot == Equipment.Slot.LeftHand || inSlot == Equipment.Slot.RightHand))
+            {
+                fitsInSlot = true;
+            }
+            else
+            {
+                fitsInSlot = EquipmentUtil.FitsInSlot(equippable.EquipmentTag.Category, inSlot); 
+            }
 
+            bool hasProficiency = false;
+            if (equippable.EquipmentId == EquippableId.Fists_0)
+            {
+                hasProficiency = true;
+            }
+            else
+            {
+                hasProficiency = EquipmentUtil.HasProficiencyFor(GetProficiencies(), equippable);
+            }
+                
             Logger.Assert(fitsInSlot && hasProficiency, LogTag.Character, TAG, string.Format("EquipCharacter() - Item [{0}] doesn't fit in slot [{1}].", equippable.EquipmentId.ToString(), inSlot.ToString()));
             if (fitsInSlot && hasProficiency)
             {

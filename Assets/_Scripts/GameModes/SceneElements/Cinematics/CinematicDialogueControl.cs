@@ -1,4 +1,5 @@
 ﻿using MAGE.GameModes.Exploration;
+using MAGE.GameSystems;
 using MAGE.GameSystems.Appearances;
 using MAGE.UI;
 using MAGE.UI.Views;
@@ -77,8 +78,9 @@ namespace MAGE.GameModes.SceneElements
                 Debug.Assert(mDialogueIdx < Dialogue.Count);
                 if (mDialogueIdx < Dialogue.Count)
                 {
-                    dp.Name = Speakers[Dialogue[mDialogueIdx].SpeakerIdx].CharacterPicker.GetActorName();
-                    dp.PortraitAssetName = Speakers[Dialogue[mDialogueIdx].SpeakerIdx].CharacterPicker.GetAppearance().PortraitSpriteId.ToString();
+                    CharacterPickerControl characterPickerControl = Speakers[Dialogue[mDialogueIdx].SpeakerIdx];
+                    dp.Name = characterPickerControl.GetActorName();
+                    dp.PortraitAssetName = ((PortraitSpriteId)DBService.Get().LoadAppearance(characterPickerControl.GetCharacterId()).PortraitSpriteId).ToString();
                     dp.Content = Dialogue[mDialogueIdx].Content;
                 }
 

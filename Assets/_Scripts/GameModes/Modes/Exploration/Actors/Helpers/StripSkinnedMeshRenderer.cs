@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace MAGE.GameModes.SceneElements.Editor
+namespace MAGE.GameModes.SceneElements.Editors
 {
     class StripSkinnedMeshRenderer : MonoBehaviour
     {

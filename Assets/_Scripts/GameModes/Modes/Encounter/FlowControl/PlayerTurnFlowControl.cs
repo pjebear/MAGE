@@ -25,6 +25,8 @@ namespace MAGE.GameModes.Encounter
         , UIContainerControl
 
     {
+       
+
         public override FlowControlId GetFlowControlId()
         {
             return FlowControlId.EncounterPlayerTurnFlowControl;
@@ -50,127 +52,106 @@ namespace MAGE.GameModes.Encounter
         private void Update()
         {
             Input.InputManager input = Input.InputManager.Instance;
-            if (input != null)
+            if (input == null) return;
+
+            Input.MouseInfo mouseInfo = input.GetMouseInfo();
+            if (!mouseInfo.IsOverWindow) return;
+
+            UpdateHoverInfo(mouseInfo);
+
+            if (mState == State.Idle)
             {
-                Input.MouseInfo mouseInfo = input.GetMouseInfo();
-                if (mouseInfo.IsOverWindow)
+                float movementRange = mCurrentCharacter.GetComponent<ResourcesControl>().GetAvailableMovementRange();
+                if (movementRange > 0)
                 {
-                    if (mState == State.Idle)
+                    UpdateMovementPath();
+                    if (mMovementPathRenderer.enabled = mHoverInfo.mMoveToPath.Count > 0)
                     {
-                        Ray ray = Camera.main.ScreenPointToRay(mouseInfo.ScreenPosCurr);
-                        RaycastHit hit;
-
-                        int layerMask = 1 << (int)RayCastLayer.Terrain;
-                        if (Physics.Raycast(ray, out hit, 100, layerMask))
-                        {
-                            mMovementRangeRenderer.enabled = true;
-
-                            mCurrentMoveToPoint = hit.point;
-                            if (mCurrentTarget != null && mCurrentTarget != mCurrentCharacter)
-                            {
-                                float range = 2f;
-                                if (mCurrentTarget.GetComponent<CombatEntity>().TeamSide != mCurrentCharacter.GetComponent<CombatEntity>().TeamSide)
-                                {
-                                    AttackComposer attackComposer = new AttackComposer(mCurrentCharacter.GetComponent<CombatEntity>());
-
-                                    range = attackComposer.ActionInfo.CastRange.MaxRange;
-                                }
-
-                                NavMeshPath path = new NavMeshPath();
-                                NavMesh.CalculatePath(mCurrentCharacter.transform.position, mCurrentTarget.transform.position, NavMesh.AllAreas, path);
-                                if (path.corners.Length > 0)
-                                {
-                                    mCurrentMoveToPoint = GetPointAlongPathInRangeOf(path.corners, mCurrentTarget.transform.position, range);
-                                }
-                                else
-                                {
-                                    mCurrentMoveToPoint = mCurrentTarget.transform.position;
-                                }
-                            }
-                            DisplayMovementRange(mCurrentMoveToPoint);
-                        }
-                        else
-                        {
-                            mMovementRangeRenderer.enabled = false;
-                        }
+                        DisplayMovementRange(mHoverInfo.mMoveToPath[mHoverInfo.mMoveToPath.Count - 1]);
+                        mMovementPathRenderer.enabled = true;
                     }
-                    else if (mState == State.TargetSelect)
+                    else
                     {
-                        Vector3 cursorTerrainPos = Vector3.zero;
-                        if (CursorToTerrainPos(ref cursorTerrainPos))
-                        {
-                            DisplayEffectRange(mCurrentCharacter.transform.position, cursorTerrainPos, mActionInfo.EffectRange);
-                        }
-                        else
-                        {
-                            HideEffectRange();
-                        }
-                        
+                        mMovementPathRenderer.enabled = false;
                     }
-
-                    if (mouseInfo.KeyStates[(int)MouseKey.Left] == InputState.Down)
-                    {
-                        OnLeftClick(mouseInfo.ScreenPosCurr);
-                    }
-                    else if (mouseInfo.KeyStates[(int)MouseKey.Left] == InputState.Held)
-                    {
-                        Vector2 dragDelta = mouseInfo.ScreenPosCurr - mouseInfo.ScreenPosPrev;
-                        OnLeftClickDrag(dragDelta);
-                    }
-
-                    if (mouseInfo.KeyStates[(int)MouseKey.Right] == InputState.Down)
-                    {
-                        OnRightClick(mouseInfo.ScreenPosCurr);
-                    }
-                    else if (mouseInfo.KeyStates[(int)MouseKey.Right] == InputState.Held)
-                    {
-                        Vector2 dragDelta = mouseInfo.ScreenPosCurr - mouseInfo.ScreenPosPrev;
-                        OnRightClickDrag(dragDelta);
-                    }
-
-                    if (mouseInfo.ScrollDelta != 0)
-                    {
-                        OnMouseScroll(mouseInfo.ScrollDelta);
-                    }
-
-                    //if (mouseInfo.KeyStates[(int)MouseKey.Middle] == InputState.Down)
-                    //{
-                    //    OnMiddleClick(mouseInfo.ScreenPosCurr);
-                    //}
-                    //else if (mouseInfo.KeyStates[(int)MouseKey.Middle] == InputState.Held)
-                    //{
-                    //    Vector2 dragDelta = mouseInfo.ScreenPosCurr - mouseInfo.ScreenPosPrev;
-                    //    OnMiddleClickDrag(dragDelta);
-                    //}
+                }
+                else
+                {
+                    mMovementPathRenderer.enabled = false;
                 }
             }
+            else if (mState == State.TargetSelect)
+            {
+                Vector3 cursorTerrainPos = Vector3.zero;
+                if (CursorToTerrainPos(ref cursorTerrainPos))
+                {
+                    DisplayEffectRange(mCurrentCharacter.transform.position, cursorTerrainPos, mActionInfo.EffectRange);
+                }
+                else
+                {
+                    HideEffectRange();
+                }
+                        
+            }
+
+            if (mouseInfo.KeyStates[(int)MouseKey.Left] == InputState.Down)
+            {
+                OnLeftClick(mouseInfo.ScreenPosCurr);
+            }
+            else if (mouseInfo.KeyStates[(int)MouseKey.Left] == InputState.Held)
+            {
+                Vector2 dragDelta = mouseInfo.ScreenPosCurr - mouseInfo.ScreenPosPrev;
+                OnLeftClickDrag(dragDelta);
+            }
+
+            if (mouseInfo.KeyStates[(int)MouseKey.Right] == InputState.Down)
+            {
+                OnRightClick(mouseInfo.ScreenPosCurr);
+            }
+            else if (mouseInfo.KeyStates[(int)MouseKey.Right] == InputState.Held)
+            {
+                Vector2 dragDelta = mouseInfo.ScreenPosCurr - mouseInfo.ScreenPosPrev;
+                OnRightClickDrag(dragDelta);
+            }
+
+            if (mouseInfo.ScrollDelta != 0)
+            {
+                OnMouseScroll(mouseInfo.ScrollDelta);
+            }
+
+            //if (mouseInfo.KeyStates[(int)MouseKey.Middle] == InputState.Down)
+            //{
+            //    OnMiddleClick(mouseInfo.ScreenPosCurr);
+            //}
+            //else if (mouseInfo.KeyStates[(int)MouseKey.Middle] == InputState.Held)
+            //{
+            //    Vector2 dragDelta = mouseInfo.ScreenPosCurr - mouseInfo.ScreenPosPrev;
+            //    OnMiddleClickDrag(dragDelta);
+            //}
+                
+            
         }
 
         public override void OnMouseHoverChange(GameObject gameObject)
         {
             CombatCharacter previousTarget = mCurrentTarget;
 
-            if (mCurrentTarget != null)
-            {
-                if (mState == State.Idle && mCurrentTarget != mCurrentCharacter)
-                {
-                    mMovementObstacles[mCurrentTarget].enabled = true;
-                }
-
-                mCurrentTarget = null;
-            }
-
+            CombatCharacter updatedTarget = null;
+            // Highlighting a character
             if (gameObject != null)
             {
-                mCurrentTarget = gameObject.GetComponent<CombatCharacter>();
-                if (mCurrentTarget != null)
+                if (gameObject.GetComponent<CombatCharacter>() != null)
                 {
-                    if (mState == State.Idle && mCurrentTarget != mCurrentCharacter)
-                    {
-                        mMovementObstacles[mCurrentTarget].enabled = false;
-                    }
+                    updatedTarget = gameObject.GetComponent<CombatCharacter>();
                 }
             }
+
+            if (updatedTarget == mCurrentTarget)
+            {
+                return;
+            }
+
+            mCurrentTarget = updatedTarget;
 
             if (mCurrentTarget != null)
             {
@@ -244,12 +225,12 @@ namespace MAGE.GameModes.Encounter
                     // Move to an ally
                     if (mCurrentTarget.GetComponent<CombatEntity>().TeamSide == mCurrentCharacter.GetComponent<CombatEntity>().TeamSide)
                     {
-                        if ((mCurrentTarget.transform.position - mCurrentCharacter.transform.position).magnitude > 1.5f)
+                        if (mHoverInfo.mMoveToPath.Count > 0)
                         {
                             SetState(State.Moving);
 
-                            mCurrentCharacter.GetComponent<ResourcesControl>().OnMovementPerformed(mCurrentCharacter.GetComponent<ResourcesControl>().GetAvailableMovementRange());
-                            mCurrentCharacter.GetComponent<ActorMotor>().MoveToPoint(mCurrentMoveToPoint, () =>
+                            mCurrentCharacter.GetComponent<ResourcesControl>().OnMovementPerformed(Mathf.CeilToInt(GetPathLength(mHoverInfo.mMoveToPath)));
+                            mCurrentCharacter.GetComponent<ActorMotor>().MoveToPoint(mHoverInfo.mMoveToPath[mHoverInfo.mMoveToPath.Count - 1], () =>
                             {
                                 SendFlowMessage("actionChosen");
                             });
@@ -261,12 +242,12 @@ namespace MAGE.GameModes.Encounter
                         MoveAttack();
                     }
                 }
-                else
+                else if (mHoverInfo.mMoveToPath.Count > 0)
                 {
                     SetState(State.Moving);
-                    mCurrentCharacter.GetComponent<ResourcesControl>().OnMovementPerformed(mCurrentCharacter.GetComponent<ResourcesControl>().GetAvailableMovementRange());
+                    mCurrentCharacter.GetComponent<ResourcesControl>().OnMovementPerformed(Mathf.RoundToInt(GetPathLength(mHoverInfo.mMoveToPath)));
 
-                    mCurrentCharacter.GetComponent<ActorMotor>().MoveToPoint(mCurrentMoveToPoint, () =>
+                    mCurrentCharacter.GetComponent<ActorMotor>().MoveToPoint(mHoverInfo.mMoveToPath[mHoverInfo.mMoveToPath.Count - 1], () =>
                     {
                         SendFlowMessage("actionChosen");
                     });
@@ -282,6 +263,114 @@ namespace MAGE.GameModes.Encounter
         void OnMouseScroll(float delta)
         {
             // empty
+        }
+
+        void UpdateHoverInfo(Input.MouseInfo mouseInfo)
+        {
+            if (mHoverInfo.mHoveredObstacle != null)
+            {
+                mHoverInfo.mHoveredObstacle.enabled = true;
+                mHoverInfo.mHoveredObstacle = null;
+            }
+
+            mHoverInfo.Reset();
+
+            Ray ray = Camera.main.ScreenPointToRay(mouseInfo.ScreenPosCurr);
+            RaycastHit[] hits = Physics.RaycastAll(ray, 100);
+            if (hits.Length > 0)
+            {
+                mMovementPathRenderer.enabled = true;
+
+                for (int i = hits.Length - 1; i >= 0; --i)
+                {
+                    RaycastHit hit = hits[i];
+
+                    if (hit.collider.GetComponent<Terrain>())
+                    {
+                        mHoverInfo.mHoveredTerrainPos = hit.point;
+                        break;
+                    }
+                    else if (mHoverInfo.mHoveredEntity == null && hit.collider.GetComponent<CombatEntity>())
+                    {
+                        mHoverInfo.mHoveredEntity = hit.collider.GetComponent<CombatEntity>();
+                    }
+                    else if (mHoverInfo.mHoveredObstacle == null 
+                        && hit.collider.GetComponentInParent<NavMeshObstacle>()
+                        && hit.collider.GetComponentInParent<CombatCharacter>() != mCurrentCharacter)
+                    {
+                        mHoverInfo.mHoveredObstacle = hit.collider.GetComponentInParent<NavMeshObstacle>();
+                    }
+                }
+
+                if (mHoverInfo.mHoveredEntity != null)
+                {
+                    Debug.LogFormat("Hovering {0}", mHoverInfo.mHoveredEntity.gameObject.name);
+
+                    if (mHoverInfo.mHoveredEntity != mCurrentCharacter.GetComponent<CombatEntity>())
+                    {
+                        mHoverInfo.mHoveredObstacle = mHoverInfo.mHoveredEntity.GetComponentInChildren<NavMeshObstacle>();
+                        mHoverInfo.mHoveredObstacle.enabled = false;
+                    }
+                }
+            }
+        }
+
+        private void UpdateMovementPath()
+        {
+            Vector3 moveToPoint = Vector3.zero;
+            if (mHoverInfo.mHoveredEntity != null)
+            {
+                moveToPoint = mHoverInfo.mHoveredEntity.transform.position;
+
+                NavMeshPath path = new NavMeshPath();
+                NavMesh.CalculatePath(mCurrentCharacter.transform.position, moveToPoint, NavMesh.AllAreas, path);
+                if (path.corners.Length > 0)
+                {
+                    if (mHoverInfo.mHoveredEntity.TeamSide != mCurrentCharacter.GetComponent<CombatEntity>().TeamSide)
+                    {
+                        float weaponRange = mWeaponAttackInfo.CastRange.MaxRange;
+                        if (weaponRange < mCharacterEmptyRadius)
+                        {
+                            weaponRange = mCharacterEmptyRadius;
+                        }
+                        moveToPoint = GetPointAlongPathInRangeOf(path.corners, moveToPoint, weaponRange);
+                    }
+                    else
+                    {
+                        moveToPoint = GetPointAlongPathInRangeOf(path.corners, moveToPoint, mCharacterEmptyRadius);
+                    }
+                }
+            }
+            else if (mHoverInfo.mHoveredObstacle != null && mHoverInfo.mHoveredObstacle.GetComponentInParent<CombatCharacter>() != mCurrentCharacter)
+            {
+                Vector3 currTargetToMovePoint = mHoverInfo.mHoveredTerrainPos - mHoverInfo.mHoveredObstacle.transform.position;
+                moveToPoint = mHoverInfo.mHoveredObstacle.transform.position + (currTargetToMovePoint.normalized * mCharacterEmptyRadius);
+            }
+            else
+            {
+                moveToPoint = mHoverInfo.mHoveredTerrainPos;
+            }
+
+            if (moveToPoint != Vector3.zero)
+            {
+                NavMeshPath pathToPoint = new NavMeshPath();
+                NavMesh.CalculatePath(mCurrentCharacter.transform.position, moveToPoint, NavMesh.AllAreas, pathToPoint);
+                if (pathToPoint.corners.Length > 0)
+                {
+                    float pathLength = GetPathLength(pathToPoint.corners);
+                    float availableMovement = mCurrentCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.MovementRange].Current;
+                    if (pathLength > availableMovement)
+                    {
+                        mHoverInfo.mMoveToPath = TrimPathToSize(pathToPoint.corners, availableMovement).ToList();
+                        mHoverInfo.mIsMoveToInRange = false;
+                    }
+                    else
+                    {
+                        mHoverInfo.mMoveToPath = pathToPoint.corners.ToList();
+                        mHoverInfo.mIsMoveToInRange = true;
+                    }
+                }
+            }
         }
 
         public IDataProvider Publish(int containerId)
@@ -351,9 +440,25 @@ namespace MAGE.GameModes.Encounter
                             {
                                 mSelectedAction = mAvailableActions[listInteractionInfo.ListIdx];
                                 mActionInfo = mSelectedAction.ActionInfo;
-                                DisplayAbilityRange(mCurrentCharacter.transform.position, mActionInfo.CastRange);
 
-                                SetState(State.TargetSelect);
+                                // TODO: Move this when a 'Confirm Target' prompt is added
+                                if (mActionInfo.IsSelfCast && mActionInfo.EffectRange.AreaType == AreaType.Point)
+                                {
+                                    ActionProposal proposal = new ActionProposal(
+                                        mCurrentCharacter.GetComponent<CombatEntity>(), 
+                                        new Target(mCurrentCharacter.GetComponent<CombatTarget>()), 
+                                        mSelectedAction.ActionInfo.ActionId);
+
+                                    GameModel.Encounter.mActionQueue.Enqueue(proposal);
+                                    mCurrentCharacter.GetComponent<ResourcesControl>().OnActionPerformed(mActionInfo.ActionCost);
+                                    SendFlowMessage("actionChosen");
+                                }
+                                else
+                                {
+                                    DisplayAbilityRange(mCurrentCharacter.transform.position, mActionInfo.CastRange);
+
+                                    SetState(State.TargetSelect);
+                                }
                             }
                         }
                         else if (mState == State.TargetSelect)

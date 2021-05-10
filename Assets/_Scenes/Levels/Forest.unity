@@ -9430,7 +9430,7 @@ PrefabInstance:
     - target: {fileID: 7626904381759437928, guid: 6325b616a415bf647b60f3626af1b244,
         type: 3}
       propertyPath: Appearance.PortraitSpriteId
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 7626904381759437928, guid: 6325b616a415bf647b60f3626af1b244,
         type: 3}
@@ -14877,17 +14877,17 @@ PrefabInstance:
     - target: {fileID: 3719071087411164772, guid: f82338a43ca32bc459b33a7a345d738d,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.00000032782552
+      value: -0.00000029802325
       objectReference: {fileID: 0}
     - target: {fileID: 3719071087411164772, guid: f82338a43ca32bc459b33a7a345d738d,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.0000000074505797
+      value: 0.000000005587936
       objectReference: {fileID: 0}
     - target: {fileID: 3719071087411164772, guid: f82338a43ca32bc459b33a7a345d738d,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.99954057
+      value: 0.9995406
       objectReference: {fileID: 0}
     - target: {fileID: 3719071087411164772, guid: f82338a43ca32bc459b33a7a345d738d,
         type: 3}
@@ -19596,7 +19596,7 @@ PrefabInstance:
     - target: {fileID: 7626904381759437928, guid: 6325b616a415bf647b60f3626af1b244,
         type: 3}
       propertyPath: Appearance.PortraitSpriteId
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 7626904381759437928, guid: 6325b616a415bf647b60f3626af1b244,
         type: 3}
@@ -28724,7 +28724,7 @@ PrefabInstance:
     - target: {fileID: 7626904381759437928, guid: 6325b616a415bf647b60f3626af1b244,
         type: 3}
       propertyPath: Appearance.PortraitSpriteId
-      value: 9
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7626904381759437928, guid: 6325b616a415bf647b60f3626af1b244,
         type: 3}
@@ -43035,7 +43035,7 @@ PrefabInstance:
     - target: {fileID: 7626904381759437928, guid: 6325b616a415bf647b60f3626af1b244,
         type: 3}
       propertyPath: Appearance.PortraitSpriteId
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 7626904381759437928, guid: 6325b616a415bf647b60f3626af1b244,
         type: 3}

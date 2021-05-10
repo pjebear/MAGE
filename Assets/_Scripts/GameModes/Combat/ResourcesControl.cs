@@ -46,7 +46,11 @@ namespace MAGE.GameModes.Combat
 
         public void OnMovementPerformed(int movementRange)
         {
-            Debug.Assert(GetAvailableMovementRange() >= movementRange);
+            if (GetAvailableMovementRange() < movementRange)
+            {
+                Debug.LogWarningFormat("CombatCharacter::OnMovementPerformed() - Max Range {0} less than movementPerformed {1}", GetAvailableMovementRange(), movementRange);
+                movementRange = GetAvailableMovementRange();
+            }
 
             Resources[ResourceType.MovementRange].Modify(-movementRange);
         }
@@ -57,7 +61,10 @@ namespace MAGE.GameModes.Combat
             for (int i = 0; i < (int)ResourceType.NUM; ++i)
             {
                 ResourceType resource = (ResourceType)i;
-                Resources[resource].SetMax(AttributeUtil.ResourceFromAttribtues(resource, attributes));
+
+                Resources[resource].SetMax(
+                    AttributeUtil.ResourceFromAttribtues(resource, attributes)
+                    , AttributeUtil.GetScaleTypeForResource(resource));
             }
         }
 

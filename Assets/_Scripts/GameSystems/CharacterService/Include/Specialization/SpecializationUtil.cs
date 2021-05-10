@@ -38,6 +38,7 @@ namespace MAGE.GameSystems.Characters
 
             switch (specializationType)
             {
+                case SpecializationType.Adept:      portraitSpriteId = PortraitSpriteId.Adept; break;
                 case SpecializationType.Archer:     portraitSpriteId = PortraitSpriteId.Archer; break;
                 case SpecializationType.Bear:       portraitSpriteId = PortraitSpriteId.Bear; break;
                 case SpecializationType.Footman:    portraitSpriteId = PortraitSpriteId.Footman; break;
@@ -55,6 +56,7 @@ namespace MAGE.GameSystems.Characters
 
             switch (specializationType)
             {
+                case SpecializationType.Adept:              role = SpecializationRole.Range; break;
                 case SpecializationType.Archer:             role = SpecializationRole.Range; break;
                 case SpecializationType.Bear:               role = SpecializationRole.Tank; break;
                 case SpecializationType.Footman:            role = SpecializationRole.Tank; break;

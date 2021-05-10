@@ -27,6 +27,7 @@ namespace MAGE.GameModes.Encounter
         {
             CharacterDisplay,
             MovementDisplay,
+            Move,
             Action,
             NUM
         }
@@ -57,25 +58,48 @@ namespace MAGE.GameModes.Encounter
                 .CompareTo(Vector3.Distance(y.transform.position, mCurrentCharacter.transform.position)));
 
             mCurrentTarget = enemies[0].GetComponent<CombatCharacter >();
+            mCurrentTarget.GetComponentInChildren<NavMeshObstacle>().gameObject.SetActive(false);
 
-            mMovementObstacles[mCurrentTarget].gameObject.SetActive(false);
-
-            mCurrentMoveToPoint = mCurrentTarget.transform.position;
-
-            mSelectedAction = ActionComposerFactory.CheckoutAction(mCurrentCharacter.GetComponent<CombatEntity>(), ActionId.MeeleWeaponAttack);
+            mSelectedAction = ActionComposerFactory.CheckoutAction(mCurrentCharacter.GetComponent<CombatEntity>(), ActionId.WeaponAttack);
             mActionInfo = mSelectedAction.ActionInfo;
 
+            Invoke("FinalizeTarget", .5f);
+        }
+
+        private void FinalizeTarget()
+        {
             if (mCurrentTarget != null && mCurrentTarget != mCurrentCharacter)
             {
-                NavMeshPath path = new NavMeshPath();
-                NavMesh.CalculatePath(mCurrentCharacter.transform.position, mCurrentTarget.transform.position, NavMesh.AllAreas, path);
-                if (path.corners.Length > 0)
+                float weaponRange = mWeaponAttackInfo.CastRange.MaxRange;
+                if (weaponRange < mCharacterEmptyRadius)
                 {
-                    mCurrentMoveToPoint = GetPointAlongPathInRangeOf(path.corners, mCurrentTarget.transform.position, mActionInfo.CastRange.MaxRange);
+                    weaponRange = mCharacterEmptyRadius;
                 }
-                else
+
+                if (Vector3.Distance(mCurrentTarget.transform.position, mCurrentCharacter.transform.position) > weaponRange)
                 {
-                    mCurrentMoveToPoint = mCurrentTarget.transform.position;
+                    NavMeshPath path = new NavMeshPath();
+                    NavMesh.CalculatePath(mCurrentCharacter.transform.position, mCurrentTarget.transform.position, NavMesh.AllAreas, path);
+                    if (path.corners.Length > 0)
+                    {
+                        Vector3 updatedPosition = GetPointAlongPathInRangeOf(path.corners, mCurrentTarget.transform.position, weaponRange);
+                        NavMesh.CalculatePath(mCurrentCharacter.transform.position, updatedPosition, NavMesh.AllAreas, path);
+
+                        Vector3[] corners = path.corners;
+                        float pathLength = GetPathLength(path.corners);
+                        float availableRange = mCurrentCharacter.GetComponent<ResourcesControl>().GetAvailableMovementRange();
+                        if (pathLength > availableRange)
+                        {
+                            mHoverInfo.mMoveToPath = TrimPathToSize(corners, availableRange).ToList();
+                            mHoverInfo.mIsMoveToInRange = false;
+                        }
+                        else
+                        {
+                            mHoverInfo.mIsMoveToInRange = true;
+                            mHoverInfo.mMoveToPath = corners.ToList();
+                        }
+                    }
+                    
                 }
             }
 
@@ -106,7 +130,14 @@ namespace MAGE.GameModes.Encounter
                 {
                     UIManager.Instance.PostContainer(UIContainerId.EncounterCharacterInfoLeftView, this);
 
-                    mFlowState = AIFlowState.MovementDisplay;
+                    if (mHoverInfo.mMoveToPath.Count > 0)
+                    {
+                        mFlowState = AIFlowState.MovementDisplay;
+                    }
+                    else
+                    {
+                        mFlowState = AIFlowState.Action;
+                    }
                     
                     Invoke("ProgressFlow", 1f);
                 }
@@ -115,16 +146,35 @@ namespace MAGE.GameModes.Encounter
                 {
                     UIManager.Instance.RemoveOverlay(UIContainerId.EncounterCharacterInfoLeftView);
 
-                    DisplayMovementRange(mCurrentMoveToPoint);
+                    DisplayMovementRange(mHoverInfo.mMoveToPath[mHoverInfo.mMoveToPath.Count -1]);
 
-                    mFlowState = AIFlowState.Action;
+                    mFlowState = AIFlowState.Move;
                     Invoke("ProgressFlow", .5f);
+                }
+                break;
+                case AIFlowState.Move:
+                {
+                    mMovementPathRenderer.gameObject.SetActive(false);
+                    mCurrentCharacter.GetComponent<ResourcesControl>().OnMovementPerformed(Mathf.CeilToInt(GetPathLength(mHoverInfo.mMoveToPath)));
+                    mCurrentCharacter.GetComponent<ActorMotor>().MoveToPoint(mHoverInfo.mMoveToPath[mHoverInfo.mMoveToPath.Count - 1], () =>
+                    {
+                        mFlowState = AIFlowState.Action;
+                        Invoke("ProgressFlow", 0);
+                    });
                 }
                 break;
                 case AIFlowState.Action:
                 {
-                    mMovementRangeRenderer.gameObject.SetActive(false);
-                    MoveAttack();
+                    if (mHoverInfo.mIsMoveToInRange)
+                    {
+                        QueueAttack();
+                    }
+                    else 
+                    {
+                        GameModel.Encounter.TurnComplete = true;
+                    }
+
+                    SendFlowMessage("actionChosen");
                 }
                 break;
                 default:

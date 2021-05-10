@@ -25,6 +25,38 @@ namespace MAGE.GameSystems.Stats
                     effect = new AvengerEffect();
                     break;
 
+                case StatusEffectId.Daze:
+                    info.Duration = StatusEffectConstants.MEDIUM_DURATION;
+                    info.Beneficial = false;
+                    info.SpriteId = UI.StatusIconSpriteId.Disarm;
+                    info.MaxStackCount = 1;
+                    effect = new DazeEffect();
+                    break;
+
+                case StatusEffectId.Defend:
+                    info.Duration = StatusEffectConstants.UNTIL_NEXT_TURN;
+                    info.Beneficial = true;
+                    info.SpriteId = UI.StatusIconSpriteId.Protection;
+                    info.MaxStackCount = 1;
+                    effect = new DefendEffect();
+                    break;
+
+                case StatusEffectId.Hamstring:
+                    info.Duration = StatusEffectConstants.MEDIUM_DURATION;
+                    info.Beneficial = false;
+                    info.SpriteId = UI.StatusIconSpriteId.Disarm;
+                    info.MaxStackCount = 1;
+                    effect = new HamstringEffect();
+                    break;
+
+                case StatusEffectId.DoubleTime:
+                    info.Duration = StatusEffectConstants.UNTIL_NEXT_TURN;
+                    info.Beneficial = true;
+                    info.SpriteId = UI.StatusIconSpriteId.Protection;
+                    info.MaxStackCount = 1;
+                    effect = new DoubleTimeEffect();
+                    break;
+
                 case StatusEffectId.Poison:
                     info.Duration = StatusEffectConstants.MEDIUM_DURATION;
                     info.Beneficial = false;

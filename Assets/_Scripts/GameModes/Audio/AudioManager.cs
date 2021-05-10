@@ -101,6 +101,8 @@ class AudioManager : MonoBehaviour
     {
         Debug.LogFormat("AudioManager() - PlayTrack [{0}] CurrentTrack [{1}]", trackId.ToString(), CurrentTrack.ToString());
 
+        if (mMuteMusic) return;
+
         StopAllCoroutines();
 
         if (CurrentTrack != TrackId.INVALID)

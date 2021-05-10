@@ -150,8 +150,13 @@ namespace MAGE.GameModes.Encounter
         public Transform Parent;
 
         public EffectSpawnElement(EffectType type, SFXId sfxId, Vector3 atPosition, Transform parent = null)
-            : base(30, 90)
+            : base(0, 0)
         {
+            if (sfxId != SFXId.INVALID)
+            {
+                SyncedFrame = 30;
+                NumFrames = 90;
+            }
             EffectType = type;
             AtPosition = atPosition;
             SFXId = sfxId;
@@ -160,18 +165,21 @@ namespace MAGE.GameModes.Encounter
 
         public override void Trigger()
         {
-            GameObject effect = GameObject.Instantiate(UnityEngine.Resources.Load<GameObject>("VFX/" + EffectType.ToString()));
-            effect.transform.position = AtPosition;
-            
-            if (Parent != null)
+            if (EffectType != EffectType.INVALID)
             {
-                effect.transform.rotation = Parent.transform.rotation;
-            }
+                GameObject effect = GameObject.Instantiate(UnityEngine.Resources.Load<GameObject>("VFX/" + EffectType.ToString()));
+                effect.transform.position = AtPosition;
 
-            if (SFXId != SFXId.INVALID)
-            {
-                AudioClip clip = AudioManager.Instance.GetSFXClip(SFXId);
-                effect.gameObject.AddComponent<AudioSource>().PlayOneShot(clip);
+                if (Parent != null)
+                {
+                    effect.transform.rotation = Parent.transform.rotation;
+                }
+
+                if (SFXId != SFXId.INVALID)
+                {
+                    AudioClip clip = AudioManager.Instance.GetSFXClip(SFXId);
+                    effect.gameObject.AddComponent<AudioSource>().PlayOneShot(clip);
+                }
             }
         }
     }
@@ -686,17 +694,25 @@ namespace MAGE.GameModes.Encounter
         }
     }
 
-    class WeaponStateChangeCalculator : IDeferredVar<StateChange>
+    class WeaponEffectivenessCalculator : IDeferredVar<int>
     {
         public IDeferredVar<CombatEntity> DeferredCombatEntity;
-        private StateChange mCachedStateChange = null;
+        private Optional<int> mCachedEffectiveness;
+        private float mBaseEffectiveness = 0;
+        private float mMultiplier = 0;
+        private Equipment.Slot mEquipmentSlot = Equipment.Slot.RightHand;
 
-        public StateChange Get()
+        public WeaponEffectivenessCalculator(Equipment.Slot equipmentSlot, float baseEffectiveness = 0, float multiplier = 1)
         {
-            if (mCachedStateChange == null)
-            {
-                mCachedStateChange = StateChange.Empty;
+            mBaseEffectiveness = baseEffectiveness;
+            mEquipmentSlot = equipmentSlot;
+            mMultiplier = multiplier;
+        }
 
+        public int Get()
+        {
+            if (!mCachedEffectiveness.HasValue)
+            {
                 CombatEntity combatEntity = DeferredCombatEntity.Get();
                 UnityEngine.Debug.Assert(combatEntity != null);
                 if (combatEntity != null)
@@ -704,19 +720,20 @@ namespace MAGE.GameModes.Encounter
                     EquipmentControl attackerEquipment = combatEntity.GetComponent<EquipmentControl>();
                     StatsControl attackerStats = combatEntity.GetComponent<StatsControl>();
 
-                    HeldEquippable heldEquippable = (attackerEquipment.Equipment[Equipment.Slot.RightHand] as HeldEquippable);
+                    HeldEquippable heldEquippable = (attackerEquipment.Equipment[mEquipmentSlot] as HeldEquippable);
 
-                    float baseDamage = 0;
+                    float damage = mBaseEffectiveness;
                     foreach (AttributeScalar scalar in heldEquippable.EffectivenessScalars)
                     {
-                        baseDamage += scalar.GetScalar(attackerStats.Attributes);
+                        damage += scalar.GetScalar(attackerStats.Attributes);
                     }
+                    damage *= mMultiplier;
 
-                    mCachedStateChange.healthChange = -(int)baseDamage;
+                    mCachedEffectiveness = -(int)damage;
                 }
             }
 
-            return mCachedStateChange;
+            return mCachedEffectiveness.Value;
         }
     }
 

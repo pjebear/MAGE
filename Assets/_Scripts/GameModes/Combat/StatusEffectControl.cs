@@ -57,6 +57,19 @@ namespace MAGE.GameModes.Combat
             GetComponent<StatsControl>().RemoveAttributeModifiers(removedModifiers);
         }
 
+        public List<StatusEffect> GetSingleTurnStatusEffects()
+        {
+            List<StatusEffect> statusEffects = new List<StatusEffect>();
+            foreach (StatusEffect effect in StatusEffects)
+            {
+                if (effect.MaxDuration == StatusEffectConstants.UNTIL_NEXT_TURN)
+                {
+                    statusEffects.Add(effect);
+                }
+            }
+            return statusEffects;
+        }
+
         public List<StateChange> GetTurnStartStateChanges()
         {
             List<StateChange> stateChanges = new List<StateChange>();

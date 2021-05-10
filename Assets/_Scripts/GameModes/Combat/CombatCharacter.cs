@@ -25,7 +25,7 @@ namespace MAGE.GameModes.Combat
         public Character Character = null;
         private void Start()
         {
-            int characterId = GetComponent<CharacterPickerControl>().CharacterPicker.GetCharacterId();
+            int characterId = GetComponent<CharacterPickerControl>().GetCharacterId();
 
             ICharacterService characterService = CharacterService.Get();
             if (characterService != null)
@@ -60,16 +60,22 @@ namespace MAGE.GameModes.Combat
 
         public void OnTurnStart()
         {
-            List<StateChange> turnStateStateChanges = GetComponent<StatusEffectControl>().GetTurnStartStateChanges();
+            StatusEffectControl statusEffectControl = GetComponent<StatusEffectControl>();
+            statusEffectControl.RemoveStatusEffects(statusEffectControl.GetSingleTurnStatusEffects());
+
+            List<StateChange> turnStateStateChanges = statusEffectControl.GetTurnStartStateChanges();
             foreach (StateChange stateChange in turnStateStateChanges)
             {
                 GetComponent<CombatTarget>().ApplyStateChange(stateChange);
             }
 
+            float maxMana = GetComponent<ResourcesControl>().Resources[ResourceType.Mana].Max;
+            float attunementModifier = GetComponent<StatsControl>().Attributes[SecondaryStat.Attunement] / 100f;
+            float resourceRecoverModifier = Mathf.Max(GetComponent<StatsControl>().Attributes[TertiaryStat.ResourceRecovery], 0);
+            float tuningModifer = .5f;
             GetComponent<ResourcesControl>().Resources[ResourceType.Mana]
-                .Modify((int)(GetComponent<ResourcesControl>().Resources[ResourceType.Mana].Max 
-                * GetComponent<StatsControl>().Attributes[SecondaryStat.Attunement] / 100
-                / 2f));
+                .Modify((int)( maxMana * attunementModifier * resourceRecoverModifier * tuningModifer));
+
             GetComponent<ResourcesControl>().Resources[ResourceType.Actions].SetCurrentToMax();
             GetComponent<ResourcesControl>().Resources[ResourceType.MovementRange].SetCurrentToMax();
         }

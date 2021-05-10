@@ -14,6 +14,49 @@ namespace MAGE.DB.Internal
     {
         public static void LoadDB()
         {
+            // Adept
+            {
+                DB.DBSpecialization dbSpecialization = new DB.DBSpecialization();
+
+                // Type
+                dbSpecialization.SpecializationType = (int)SpecializationType.Adept;
+
+                // Proficiencies
+                dbSpecialization.Proficiencies = new List<int>()
+            {
+                (int)ProficiencyType.Fists,
+                (int)ProficiencyType.Staff,
+                (int)ProficiencyType.Cloth,
+                (int)ProficiencyType.Accessorys
+            };
+
+                // Level up modifiers
+                dbSpecialization.LevelUpModifiers = new List<DB.DBAttribute>()
+            {
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Value = 1},
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Finese, Value = 1},
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Magic, Value = 5},
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.SecondaryStat, AttributeId = (int)SecondaryStat.Fortitude, Value = 1},
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.SecondaryStat, AttributeId = (int)SecondaryStat.Attunement, Value = 5}
+            };
+
+                // talents
+                dbSpecialization.TalentIds = new List<int>()
+            {
+                (int)TalentId.MagicIncrease,
+            };
+
+                // Actions
+                dbSpecialization.ActionIds = new List<int>()
+            {
+                (int)ActionId.FireBall,
+                (int)ActionId.ChainLightning,
+                (int)ActionId.FlameStrike,
+            };
+
+                DBService.Get().WriteSpecialization(dbSpecialization);
+            }
+
             // Archer
             {
                 DB.DBSpecialization dbSpecialization = new DB.DBSpecialization();
@@ -149,7 +192,10 @@ namespace MAGE.DB.Internal
                 // Actions
                 dbSpecialization.ActionIds = new List<int>()
             {
-                //(int)ActionId.MightyBlow
+                (int)ActionId.Defend,
+                (int)ActionId.DoubleTime,
+                (int)ActionId.ShieldBash,
+                (int)ActionId.Swipe,
             };
                 // none
 

@@ -48,6 +48,7 @@ namespace MAGE.GameSystems.Stats
         Block,
         Parry,
         Dodge,
+        AvoidanceMultiplier,  // 0-1
 
         PhysicalResistance,
         MagicalResistance,
@@ -60,7 +61,7 @@ namespace MAGE.GameSystems.Stats
         PhysicalMultiplier, // 0.1f = 10 percent increase
         MagicalMultiplier,
         CastSpeed, // 0 = regular cast speed, 1 * (1 + castSpeed) ticks removed per charge cycle 
-        EnduranceRecovery, // .10 = 10 percent of max endurance per turn
+        ResourceRecovery, // .10 = 10 percent of max resource per turn
 
        NUM
     }

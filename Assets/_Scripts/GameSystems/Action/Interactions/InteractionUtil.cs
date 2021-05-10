@@ -84,14 +84,18 @@ namespace MAGE.GameSystems.Actions
             StatsControl targetStatControl = combatCharacter.GetComponent<StatsControl>();
             if (targetStatControl != null)
             {
+                float avoidanceMultiplier = 1 + targetStatControl.Attributes[TertiaryStat.AvoidanceMultiplier];
                 dodgeChance = targetStatControl.Attributes[TertiaryStat.Dodge];
+                dodgeChance *= avoidanceMultiplier;
                 if (blockChance > 0)
                 {
                     blockChance += targetStatControl.Attributes[TertiaryStat.Block];
+                    blockChance *= avoidanceMultiplier;
                 }
                 if (parryChance > 0)
                 {
                     parryChance += targetStatControl.Attributes[TertiaryStat.Parry];
+                    parryChance *= avoidanceMultiplier;
                 }
             }
         }

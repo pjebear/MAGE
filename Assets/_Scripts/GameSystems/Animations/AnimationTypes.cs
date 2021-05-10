@@ -12,6 +12,7 @@ namespace MAGE.GameSystems
 
         BowDraw,
         SwordSwing,
+        Cleave,
         Block,
         Dodge,
         Parry,

@@ -43,7 +43,7 @@ namespace MAGE.GameModes.SceneElements
         NUM
     }
 
-    enum NPCPropId
+    public enum NPCPropId
     {
         None = -1,
 

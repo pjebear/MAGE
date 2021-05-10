@@ -8,11 +8,9 @@ using UnityEngine;
 
 namespace MAGE.GameModes.SceneElements
 {
+    [RequireComponent(typeof(TrackPickerControl))]
     class AudioTriggerVolume : TriggerVolumeBase<ThirdPersonActorController>
     {
-        [SerializeField] string _TrackId;
-        public TrackId TrackId { get { return EnumUtil.StringToEnum<TrackId>(_TrackId); } }
-
         protected override int GetLayer()
         {
             return (int)Layer.Default;
@@ -20,7 +18,7 @@ namespace MAGE.GameModes.SceneElements
 
         protected override void HandleTriggerEntered(ThirdPersonActorController partyAvatar)
         {
-            TrackId trackId = TrackId;
+            TrackId trackId = EnumUtil.StringToEnum<TrackId>(GetComponent<TrackPickerControl>().TrackIdPicker.PickedOption);
             Debug.Assert(trackId != TrackId.INVALID);
             if (trackId  != TrackId.INVALID)
             {
@@ -30,7 +28,7 @@ namespace MAGE.GameModes.SceneElements
 
         protected override void HandleTriggerExited(ThirdPersonActorController partyAvatar)
         {
-            TrackId trackId = TrackId;
+            TrackId trackId = EnumUtil.StringToEnum<TrackId>(GetComponent<TrackPickerControl>().TrackIdPicker.PickedOption);
             Debug.Assert(trackId != TrackId.INVALID);
             if (trackId != TrackId.INVALID)
             {

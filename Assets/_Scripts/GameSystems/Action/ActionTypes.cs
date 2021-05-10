@@ -24,6 +24,7 @@ namespace MAGE.GameSystems.Actions
         //Line,
         Cross,
         Expanding,
+        MultiLine,
 
         NUM
     }

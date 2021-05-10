@@ -31,6 +31,7 @@ namespace MAGE.GameModes
                 }
                 break;
                 case AnimationId.Block:
+                case AnimationId.Cleave:
                 case AnimationId.Parry:
                 
                     numFrames = 75;
@@ -52,6 +53,9 @@ namespace MAGE.GameModes
             {
                 case AnimationId.SwordSwing:
                     animationName = "attack1Right";
+                    break;
+                case AnimationId.Cleave:
+                    animationName = "parryRight";
                     break;
                 case AnimationId.BowDraw:
                     animationName = "bowShoot1Left";
@@ -77,6 +81,7 @@ namespace MAGE.GameModes
             switch (id)
             {
                 case AnimationId.SwordSwing: sFXId = SFXId.WeaponSwing; break;
+                case AnimationId.Cleave: sFXId = SFXId.WeaponSwing; break;
                 case AnimationId.Block: sFXId = SFXId.ShieldBlock; break;
                 case AnimationId.Dodge: sFXId = SFXId.Dodge; break;
                 case AnimationId.Parry: sFXId = SFXId.Parry; break;

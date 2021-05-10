@@ -23,13 +23,13 @@ namespace MAGE.GameModes.SceneElements.Encounters
             if (Unit == null)
                 return false;
 
-            Debug.Assert(model.Players.ContainsKey(Unit.CharacterPicker.GetCharacterId()));
+            Debug.Assert(model.Players.ContainsKey(Unit.GetCharacterId()));
 
             float healthPercent = 0;
 
-            if (model.Players.ContainsKey(Unit.CharacterPicker.GetCharacterId()))
+            if (model.Players.ContainsKey(Unit.GetCharacterId()))
             {
-                healthPercent = model.Players[Unit.CharacterPicker.GetCharacterId()].GetComponent<ResourcesControl>().Resources[ResourceType.Health].Ratio;
+                healthPercent = model.Players[Unit.GetCharacterId()].GetComponent<ResourcesControl>().Resources[ResourceType.Health].Ratio;
             }
 
             return Condition.Compare(healthPercent, mHealthPercent, Operator);

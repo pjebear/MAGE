@@ -111,6 +111,8 @@ namespace MAGE.GameModes.SceneElements
                     }
 
                     coneDirection = coneDirection - castPoint.transform.position;
+                    coneDirection.y = 0;
+                    coneDirection.Normalize();
 
                     combatTargets = Physics.OverlapSphere(castPoint.transform.position, targetSelection.SelectionRange.MaxRange)
                         .Select(x => x.gameObject.GetComponent<Combat.CombatTarget>())
@@ -119,8 +121,11 @@ namespace MAGE.GameModes.SceneElements
 
                     combatTargets = combatTargets.Where(x =>
                     {
-                        Vector3 toTarget = x.transform.position - castPoint.transform.position;
+                        
+                        Vector3 toTarget = (x.transform.position - castPoint.transform.position).normalized;
+                        toTarget.y = 0;
                         float angleBetween = Vector3.SignedAngle(coneDirection, toTarget, Vector3.up);
+                        Debug.LogFormat("ToTarget {0} ConeDirection {1} Angle {2}", toTarget, coneDirection, angleBetween);
                         return angleBetween >= -22.5f && angleBetween <= 22.5f;
                     }).ToList();
                     
@@ -177,6 +182,26 @@ namespace MAGE.GameModes.SceneElements
                     
                 }
                 break;
+
+                case AreaType.MultiLine:
+                {
+                    Vector3 centerPoint = Vector3.zero;
+                    if (targetSelection.FocalTarget.TargetType == TargetSelectionType.Point)
+                    {
+                        centerPoint = targetSelection.FocalTarget.PointTarget;
+                    }
+                    else if (targetSelection.FocalTarget.TargetType == TargetSelectionType.Focal)
+                    {
+                        centerPoint = targetSelection.FocalTarget.FocalTarget.transform.position;
+                    }
+
+                    combatTargets = Physics.OverlapSphere(centerPoint, targetSelection.SelectionRange.MaxRange)
+                        .Select(x => x.gameObject.GetComponent<Combat.CombatTarget>())
+                        .Where(x => x != null).ToList();
+                    combatTargets = FilterTargetsByTargetType(castPoint, targetSelection.SelectionRange.TargetingType, combatTargets);
+                }
+                break;
+
                 default:
                     Debug.Assert(false);
                     break;

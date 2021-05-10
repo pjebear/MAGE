@@ -28,6 +28,7 @@ namespace MAGE.GameSystems.Appearances
         Maric,
 
         // Professions
+        Adept,
         Archer,
         Bear,
         Footman,
