@@ -18029,22 +18029,22 @@ PrefabInstance:
     - target: {fileID: 7626904381759437928, guid: 6325b616a415bf647b60f3626af1b244,
         type: 3}
       propertyPath: SpecializationType
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7626904381759437928, guid: 6325b616a415bf647b60f3626af1b244,
         type: 3}
       propertyPath: LeftHeld
-      value: 17
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 7626904381759437928, guid: 6325b616a415bf647b60f3626af1b244,
         type: 3}
       propertyPath: RightHeld
-      value: 6
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 7626904381759437928, guid: 6325b616a415bf647b60f3626af1b244,
         type: 3}
       propertyPath: Worn
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7626904381759437928, guid: 6325b616a415bf647b60f3626af1b244,
         type: 3}
@@ -22621,6 +22621,14 @@ PrefabInstance:
     - target: {fileID: 1501854622, guid: 797b084f564fbc14d8c4bd08f32963f0, type: 3}
       propertyPath: CharacterPicker.CreateCharacterId
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1501854622, guid: 797b084f564fbc14d8c4bd08f32963f0, type: 3}
+      propertyPath: mCharacterTypePicker._PickedOptionStr
+      value: Story
+      objectReference: {fileID: 0}
+    - target: {fileID: 1501854622, guid: 797b084f564fbc14d8c4bd08f32963f0, type: 3}
+      propertyPath: mStoryCharacterPicker._PickedOptionStr
+      value: Balgrid
       objectReference: {fileID: 0}
     - target: {fileID: 4058031841741901824, guid: 797b084f564fbc14d8c4bd08f32963f0,
         type: 3}
@@ -37125,7 +37133,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mTrackIdPicker:
-    _PickedOption: Explore
+    _PickedOptionStr: 
 --- !u!1001 &1756567375
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -41539,6 +41547,16 @@ PrefabInstance:
         'Attack03b'\n\tFrom animation clip 'CastSpell01'\n\tFrom animation clip 'CastSpell02'\n\tand
         more ..."
       objectReference: {fileID: 0}
+    - target: {fileID: 4056168242952094749, guid: c7b1819487e256e4fa281298d07508ed,
+        type: 3}
+      propertyPath: mCharacterTypePicker._PickedOptionStr
+      value: Story
+      objectReference: {fileID: 0}
+    - target: {fileID: 4056168242952094749, guid: c7b1819487e256e4fa281298d07508ed,
+        type: 3}
+      propertyPath: mStoryCharacterPicker._PickedOptionStr
+      value: Rheinhardt
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c7b1819487e256e4fa281298d07508ed, type: 3}
 --- !u!114 &1756567376 stripped
@@ -41589,7 +41607,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TestPicker:
-    _PickedOption: 
+    _PickedOptionStr: 
 --- !u!4 &1885677539
 Transform:
   m_ObjectHideFlags: 0

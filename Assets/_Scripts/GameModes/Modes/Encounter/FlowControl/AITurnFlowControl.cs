@@ -38,9 +38,18 @@ namespace MAGE.GameModes.Encounter
             return FlowControlId.EncounterAITurnFlowControl;
         }
 
+        protected override void Cleanup()
+        {
+            base.Cleanup();
+
+            UIManager.Instance.RemoveOverlay(UIContainerId.EncounterCharacterInfoLeftView);
+        }
+
         protected override void Setup()
         {
             base.Setup();
+
+            UIManager.Instance.PostContainer(UIContainerId.EncounterCharacterInfoLeftView, this);
 
             if (mCurrentCharacter.GetComponent<ResourcesControl>().GetNumAvailableActions() == 0)
             {
@@ -99,7 +108,10 @@ namespace MAGE.GameModes.Encounter
                             mHoverInfo.mMoveToPath = corners.ToList();
                         }
                     }
-                    
+                }
+                else
+                {
+                    mHoverInfo.mIsMoveToInRange = true;
                 }
             }
 
@@ -128,8 +140,6 @@ namespace MAGE.GameModes.Encounter
             {
                 case AIFlowState.CharacterDisplay:
                 {
-                    UIManager.Instance.PostContainer(UIContainerId.EncounterCharacterInfoLeftView, this);
-
                     if (mHoverInfo.mMoveToPath.Count > 0)
                     {
                         mFlowState = AIFlowState.MovementDisplay;

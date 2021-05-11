@@ -28,6 +28,7 @@ namespace MAGE.GameModes.SceneElements.Navigation
         {
             mOnMoveComplete = moveCompleteCB;
             mIsMoving = true;
+            rNavMeshAgent.enabled = true;
             rNavMeshAgent.SetDestination(point);
             mMoveToPoint = point;
         }
@@ -73,15 +74,10 @@ namespace MAGE.GameModes.SceneElements.Navigation
         {
             this.enabled = enabled;
 
-            if (enabled)
+            if (!enabled)
             {
-                rNavMeshAgent.enabled = true;
-            }
-            else
-            {
-                rNavMeshAgent.enabled = false;
                 Stop();
-            }  
+            }
         }
 
         private void OnMoveComplete()
@@ -90,6 +86,7 @@ namespace MAGE.GameModes.SceneElements.Navigation
 
             if (mOnMoveComplete != null)
             {
+                rNavMeshAgent.enabled = false;
                 transform.position = mMoveToPoint;
                 UnityAction onMoveComplete = mOnMoveComplete;
                 mOnMoveComplete = null;

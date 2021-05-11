@@ -61,24 +61,7 @@ namespace MAGE.GameModes.Encounter
 
             if (mState == State.Idle)
             {
-                float movementRange = mCurrentCharacter.GetComponent<ResourcesControl>().GetAvailableMovementRange();
-                if (movementRange > 0)
-                {
-                    UpdateMovementPath();
-                    if (mMovementPathRenderer.enabled = mHoverInfo.mMoveToPath.Count > 0)
-                    {
-                        DisplayMovementRange(mHoverInfo.mMoveToPath[mHoverInfo.mMoveToPath.Count - 1]);
-                        mMovementPathRenderer.enabled = true;
-                    }
-                    else
-                    {
-                        mMovementPathRenderer.enabled = false;
-                    }
-                }
-                else
-                {
-                    mMovementPathRenderer.enabled = false;
-                }
+                UpdateIdleState();
             }
             else if (mState == State.TargetSelect)
             {
@@ -130,6 +113,41 @@ namespace MAGE.GameModes.Encounter
             //}
                 
             
+        }
+
+        protected void UpdateIdleState()
+        {
+            if (mCurrentTarget != null
+                   && mCurrentTarget.GetComponent<CombatEntity>().TeamSide != mCurrentCharacter.GetComponent<CombatEntity>().TeamSide)
+            {
+                float rangeToTarget = Vector3.Distance(mCurrentCharacter.transform.position, mCurrentTarget.transform.position);
+                if (rangeToTarget < mWeaponAttackInfo.CastRange.MaxRange)
+                {
+                    mHoverInfo.mMoveToPath.Clear();
+                    mHoverInfo.mIsMoveToInRange = true;
+                    mMovementPathRenderer.enabled = false;
+                    return;
+                }
+            }
+
+            float movementRange = mCurrentCharacter.GetComponent<ResourcesControl>().GetAvailableMovementRange();
+            if (movementRange > 0)
+            {
+                UpdateMovementPath();
+                if (mMovementPathRenderer.enabled = mHoverInfo.mMoveToPath.Count > 0)
+                {
+                    DisplayMovementRange(mHoverInfo.mMoveToPath[mHoverInfo.mMoveToPath.Count - 1]);
+                    mMovementPathRenderer.enabled = true;
+                }
+                else
+                {
+                    mMovementPathRenderer.enabled = false;
+                }
+            }
+            else
+            {
+                mMovementPathRenderer.enabled = false;
+            }
         }
 
         public override void OnMouseHoverChange(GameObject gameObject)

@@ -52,8 +52,6 @@ namespace MAGE.GameModes.SceneElements
                 characterId = CharacterIdOffset;
             }
 
-            Debug.Assert(characterId != -1);
-
             return characterId;
         }
 

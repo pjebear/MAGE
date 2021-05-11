@@ -101,8 +101,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99b67668dd8d0c64ab8160eceb7cbebd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Resources:
-    mResources: []
 --- !u!114 &8088295270064144529
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,6 +154,11 @@ PrefabInstance:
         clip 'Attack02b'\n\tFrom animation clip 'Attack03a'\n\tFrom animation clip
         'Attack03b'\n\tFrom animation clip 'CastSpell01'\n\tFrom animation clip 'CastSpell02'\n\tand
         more ..."
+      objectReference: {fileID: 0}
+    - target: {fileID: 7933654599530242098, guid: 03dc169a6a6892c4a9586fd3fe5e5823,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7933654599530242102, guid: 03dc169a6a6892c4a9586fd3fe5e5823,
         type: 3}

@@ -64,7 +64,13 @@ namespace MAGE.GameModes.SceneElements
         public void Refresh()
         {
             CharacterPickerControl characterPickerControl = GetComponent<CharacterPickerControl>();
-            Appearance = LevelManagementService.Get().GetAppearance(characterPickerControl.GetCharacterId());
+            int characterId = characterPickerControl.GetCharacterId();
+            if (characterId == -1)
+            {
+                return;
+            }
+
+            Appearance = LevelManagementService.Get().GetAppearance(characterId);
 
             if (Appearance != null)
             {
