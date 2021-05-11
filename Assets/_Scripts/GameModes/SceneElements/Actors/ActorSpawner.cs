@@ -23,10 +23,7 @@ namespace MAGE.GameModes.SceneElements
             void OnActorRefresh();
         }
 
-        public bool RefreshOnStart = true;
-
         public Appearance Appearance;
-        public string Name;
 
         private HashSet<IRefreshListener> mRefreshListeners = new HashSet<IRefreshListener>();
 
@@ -58,7 +55,7 @@ namespace MAGE.GameModes.SceneElements
                 Logger.Log(LogTag.Level, "ActorSpawner", "MessageRouter not initialized", LogLevel.Warning);
             }
 
-            if (RefreshOnStart)
+            if (LevelManagementService.Get() != null)
             {
                 Refresh();
             }
@@ -67,15 +64,7 @@ namespace MAGE.GameModes.SceneElements
         public void Refresh()
         {
             CharacterPickerControl characterPickerControl = GetComponent<CharacterPickerControl>();
-            if (characterPickerControl.IsNPC())
-            {
-                Appearance = LevelManagementService.Get().GetNPCAppearance((NPCPropId)characterPickerControl.GetCharacterId());
-            }
-            else
-            {
-                Appearance = CharacterService.Get().GetCharacter(characterPickerControl.GetCharacterId()).GetAppearance();
-            }
-            
+            Appearance = LevelManagementService.Get().GetAppearance(characterPickerControl.GetCharacterId());
 
             if (Appearance != null)
             {
@@ -89,7 +78,12 @@ namespace MAGE.GameModes.SceneElements
                     {
                         case BodyType.HumanoidMale: bodyPath += "Humanoid/HumanoidMale"; break;
                         case BodyType.Bear_0: bodyPath += "Bear/Bear_0"; break;
-
+                        default:
+                        {
+                            Debug.Assert(false);
+                            bodyPath += "Humanoid/HumanoidMale";
+                        }    
+                        break;
                     }
                     Body newBody = Instantiate(Resources.Load<Body>(bodyPath), transform);
                 }
@@ -100,9 +94,6 @@ namespace MAGE.GameModes.SceneElements
                     GetComponentInChildren<ActorOutfitter>().UpdateAppearance(Appearance);
                 }
             }
-            
-            Name = GetComponent<CharacterPickerControl>().GetActorName();
-            gameObject.name = Name;
 
             NotifyRefresh();
         }

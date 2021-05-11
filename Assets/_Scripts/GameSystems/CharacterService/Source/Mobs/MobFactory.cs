@@ -24,7 +24,7 @@ namespace MAGE.GameSystems.Characters.Internal
                     createParams.name = "Grizzly Bear";
                     createParams.appearanceOverrides = new Appearance();
                     createParams.appearanceOverrides.BodyType = BodyType.Bear_0;
-                    createParams.appearanceOverrides.PortraitSpriteId = PortraitSpriteId.Bear;
+                    createParams.appearanceOverrides.OverridePortraitSpriteId = PortraitSpriteId.Bear;
                 }
                 break;
 
@@ -32,7 +32,7 @@ namespace MAGE.GameSystems.Characters.Internal
                 {
                     createParams.name = "Bandit";
                     createParams.appearanceOverrides = new Appearance();
-                    createParams.appearanceOverrides.PortraitSpriteId = PortraitSpriteId.Bandit_0;
+                    createParams.appearanceOverrides.OverridePortraitSpriteId = PortraitSpriteId.Bandit_0;
 
                     createParams.currentEquipment[(int)Equipment.Slot.Armor] = EquippableId.LeatherArmor_0;
 

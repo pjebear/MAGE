@@ -97,20 +97,25 @@ namespace MAGE.GameSystems.Characters.Internal
             // Refresh the characters appearance to reflect new specialization
             WriteCharacter(toSpecialize);
 
+            Appearance appearance = GetCharacterAppearance(characterId);
+            UpdateCharacterAppearance(toSpecialize, appearance);
+            DBService.Get().WriteAppearance(characterId, AppearanceUtil.ToDB(appearance));
+
             return unequippedItems;
         }
 
         public int CreateCharacter(CharacterCreateParams createParams)
         {
             DB.DBCharacter dbCharacter;
-            DB.DBAppearance dbAppearance;
-            CharacterCreator.CreateCharacter(createParams, out dbCharacter, out dbAppearance);
+            CharacterCreator.CreateCharacter(createParams, out dbCharacter);
 
             CharacterInfo characterInfo = CharacterDBUtil.FromDB(dbCharacter);
             WriteCharacter(characterInfo);
 
-            Appearance appearance = AppearanceUtil.FromDB(dbAppearance);
-            DBService.Get().WriteAppearance(characterInfo.AppearanceId, AppearanceUtil.ToDB(appearance));
+            Appearance appearance = createParams.appearanceOverrides;
+            UpdateCharacterAppearance(characterInfo, appearance);
+
+            DBService.Get().WriteAppearance(characterInfo.Id, AppearanceUtil.ToDB(appearance));
 
             return characterInfo.Id;
         }
@@ -129,7 +134,12 @@ namespace MAGE.GameSystems.Characters.Internal
             List<int> unequippedItems = toEquip.Equip(equipable, inSlot);
 
             // Update Appearance after changing items
-            WriteCharacter(toEquip.GetInfo());
+            CharacterInfo characterInfo = toEquip.GetInfo();
+            WriteCharacter(characterInfo);
+
+            Appearance appearance = GetCharacterAppearance(characterId);
+            UpdateCharacterAppearance(characterInfo, appearance);
+            DBService.Get().WriteAppearance(characterId, AppearanceUtil.ToDB(appearance));
 
             return unequippedItems;
         }
@@ -162,6 +172,11 @@ namespace MAGE.GameSystems.Characters.Internal
             // Refresh Appearance in case talents modified appearance, and to reflect any unequipped items
             WriteCharacter(toReset);
 
+            // Update Appearance after changing items
+            Appearance appearance = GetCharacterAppearance(characterId);
+            UpdateCharacterAppearance(toReset, appearance);
+            DBService.Get().WriteAppearance(characterId, AppearanceUtil.ToDB(appearance));
+
             return unequippedItems;
         }
 
@@ -178,7 +193,12 @@ namespace MAGE.GameSystems.Characters.Internal
             }
 
             // Refresh DB
-            WriteCharacter(toUnEquip.GetInfo());
+            CharacterInfo characterInfo = toUnEquip.GetInfo();
+            WriteCharacter(characterInfo);
+
+            Appearance appearance = GetCharacterAppearance(characterId);
+            UpdateCharacterAppearance(characterInfo, appearance);
+            DBService.Get().WriteAppearance(characterId, AppearanceUtil.ToDB(appearance));
 
             return unequippedItems;
         }
@@ -200,6 +220,34 @@ namespace MAGE.GameSystems.Characters.Internal
             DB.DBCharacter dbCharacter = DBService.Get().LoadCharacter(characterId);
 
             return CharacterDBUtil.FromDB(dbCharacter);
+        }
+
+        private Appearance GetCharacterAppearance(int characterId)
+        {
+            DB.DBAppearance dbAppearance = DBService.Get().LoadAppearance(characterId);
+
+            return AppearanceUtil.FromDB(dbAppearance);
+        }
+
+        private void UpdateCharacterAppearance(CharacterInfo character, Appearance appearance)
+        {
+            // Portrait
+            appearance.BasePortraitSpriteId = SpecializationUtil.GetPortraitSpriteIdForSpecialization(character.CurrentSpecializationType);
+            
+            // Update Equipment
+            for (int equipmentSlotIdx = 0; equipmentSlotIdx < (int)Equipment.Slot.NUM; ++equipmentSlotIdx)
+            {
+                EquippableId equipmentId = character.EquippedItems[equipmentSlotIdx];
+                ApparelAssetId prefabId = equipmentId == EquippableId.INVALID ? ApparelAssetId.NONE : ItemFactory.LoadEquipable(equipmentId).PrefabId;
+
+                switch ((Equipment.Slot)equipmentSlotIdx)
+                {
+                    case Equipment.Slot.Accessory:      /* empty */ break;
+                    case Equipment.Slot.Armor:          appearance.OverrideOutfitType       = prefabId; break;
+                    case Equipment.Slot.LeftHand:       appearance.OverrideLeftHeldAssetId  = prefabId; break;
+                    case Equipment.Slot.RightHand:      appearance.OverrideRightHeldAssetId = prefabId; break;
+                }
+            }
         }
 
         private void WriteCharacter(CharacterInfo character)

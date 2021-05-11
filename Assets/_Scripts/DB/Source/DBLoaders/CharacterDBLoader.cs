@@ -28,7 +28,7 @@ namespace MAGE.DB.Internal
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Mace_0, EquippableId.Relic };
                 createParams.appearanceOverrides = new Appearance()
                 {
-                    PortraitSpriteId = PortraitSpriteId.Rheinhardt,
+                    OverridePortraitSpriteId = PortraitSpriteId.Rheinhardt,
 
                     BodyType = BodyType.HumanoidMale,
                     FacialHairType = FacialHairType.ShortBeard,
@@ -52,7 +52,7 @@ namespace MAGE.DB.Internal
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.ClothArmor_0, EquippableId.INVALID, EquippableId.Staff_0, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {
-                    PortraitSpriteId = PortraitSpriteId.Asmund,
+                    OverridePortraitSpriteId = PortraitSpriteId.Asmund,
 
                     BodyType = BodyType.HumanoidMale,
                     FacialHairType = FacialHairType.LongBeard,
@@ -75,7 +75,7 @@ namespace MAGE.DB.Internal
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.INVALID, EquippableId.Bow_0, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {
-                    PortraitSpriteId = PortraitSpriteId.Lothar,
+                    OverridePortraitSpriteId = PortraitSpriteId.Lothar,
 
                     BodyType = BodyType.HumanoidMale,
                     FacialHairType = FacialHairType.None,
@@ -98,7 +98,7 @@ namespace MAGE.DB.Internal
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {
-                    PortraitSpriteId = PortraitSpriteId.Balgrid,
+                    OverridePortraitSpriteId = PortraitSpriteId.Balgrid,
 
                     BodyType = BodyType.HumanoidMale,
                     FacialHairType = FacialHairType.None,
@@ -121,7 +121,7 @@ namespace MAGE.DB.Internal
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {
-                    PortraitSpriteId = PortraitSpriteId.Maric,
+                    OverridePortraitSpriteId = PortraitSpriteId.Maric,
 
                     BodyType = BodyType.HumanoidMale,
                     FacialHairType = FacialHairType.None,
@@ -198,7 +198,7 @@ namespace MAGE.DB.Internal
                 createParams.name = "BanditLeader";
                 createParams.currentSpecialization = SpecializationType.Footman;
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
-                createParams.appearanceOverrides = new Appearance() { PortraitSpriteId = PortraitSpriteId.BanditLeader };
+                createParams.appearanceOverrides = new Appearance() { OverridePortraitSpriteId = PortraitSpriteId.BanditLeader };
 
                 characterService.CreateCharacter(createParams);
             }
@@ -212,7 +212,7 @@ namespace MAGE.DB.Internal
                 createParams.name = "Bandit";
                 createParams.currentSpecialization = SpecializationType.Footman;
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
-                createParams.appearanceOverrides = new Appearance() { PortraitSpriteId = PortraitSpriteId.Bandit_0 };
+                createParams.appearanceOverrides = new Appearance() { OverridePortraitSpriteId = PortraitSpriteId.Bandit_0 };
 
                 characterService.CreateCharacter(createParams);
             }
@@ -226,7 +226,7 @@ namespace MAGE.DB.Internal
                 createParams.name = "Bandit";
                 createParams.currentSpecialization = SpecializationType.Footman;
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
-                createParams.appearanceOverrides = new Appearance() { PortraitSpriteId = PortraitSpriteId.Bandit_0 };
+                createParams.appearanceOverrides = new Appearance() { OverridePortraitSpriteId = PortraitSpriteId.Bandit_0 };
 
                 characterService.CreateCharacter(createParams);
             }

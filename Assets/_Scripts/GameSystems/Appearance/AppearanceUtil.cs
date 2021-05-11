@@ -11,19 +11,27 @@ namespace MAGE.GameSystems.Appearances
         // Appearance
         public static Appearance FromDB(DB.DBAppearance dbAppearance)
         {
-
             Appearance fromDB = new Appearance();
 
             fromDB.AppearanceId             = dbAppearance.Id;
-            fromDB.PortraitSpriteId         = (PortraitSpriteId)dbAppearance.PortraitSpriteId;
+
+            fromDB.BasePortraitSpriteId         = (PortraitSpriteId)dbAppearance.BasePortraitSpriteId;
+            fromDB.OverridePortraitSpriteId         = (PortraitSpriteId)dbAppearance.OverridePortraitSpriteId;
+
+            fromDB.BaseOutfitType = (ApparelAssetId)dbAppearance.BaseOutfitType;
+            fromDB.OverrideOutfitType = (ApparelAssetId)dbAppearance.OverrideOutfitType;
+
+            fromDB.BaseLeftHeldAssetId = (ApparelAssetId)dbAppearance.BaseLeftHeldAssetId;
+            fromDB.OverrideLeftHeldAssetId = (ApparelAssetId)dbAppearance.OverrideLeftHeldAssetId;
+
+            fromDB.BaseRightHeldAssetId = (ApparelAssetId)dbAppearance.BaseRightHeldAssetId;
+            fromDB.OverrideRightHeldAssetId = (ApparelAssetId)dbAppearance.OverrideRightHeldAssetId;
+
             fromDB.BodyType                 = (BodyType)dbAppearance.BodyType;
-            fromDB.OutfitType               = (ApparelAssetId)dbAppearance.OutfitType;
             fromDB.SkinToneType             = (SkinToneType)dbAppearance.SkinToneType;
             fromDB.HairType                 = (HairType)dbAppearance.HairType;
             fromDB.FacialHairType           = (FacialHairType)dbAppearance.FacialHairType;
             fromDB.HairColor                = (HairColor)dbAppearance.HairColor;
-            fromDB.LeftHeldAssetId          = (ApparelAssetId)dbAppearance.LeftHeldAssetId;
-            fromDB.RightHeldAssetId         = (ApparelAssetId)dbAppearance.RightHeldAssetId;
 
             return fromDB;
         }
@@ -33,15 +41,25 @@ namespace MAGE.GameSystems.Appearances
             DB.DBAppearance toDB = new DB.DBAppearance();
 
             toDB.Id = (int)appearance.AppearanceId;
-            toDB.PortraitSpriteId = (int)appearance.PortraitSpriteId;
+
+            toDB.BasePortraitSpriteId = (int)appearance.BasePortraitSpriteId;
+            toDB.OverridePortraitSpriteId = (int)appearance.OverridePortraitSpriteId;
+
+            toDB.BaseOutfitType = (int)appearance.BaseOutfitType;
+            toDB.OverrideOutfitType = (int)appearance.OverrideOutfitType;
+
+            toDB.BaseLeftHeldAssetId = (int)appearance.BaseLeftHeldAssetId;
+            toDB.OverrideLeftHeldAssetId = (int)appearance.OverrideLeftHeldAssetId;
+
+            toDB.BaseRightHeldAssetId = (int)appearance.BaseRightHeldAssetId;
+            toDB.OverrideRightHeldAssetId = (int)appearance.OverrideRightHeldAssetId;
+
             toDB.BodyType = (int)appearance.BodyType;
-            toDB.OutfitType = (int)appearance.OutfitType;
             toDB.SkinToneType = (int)appearance.SkinToneType;
             toDB.HairType = (int)appearance.HairType;
             toDB.FacialHairType = (int)appearance.FacialHairType;
             toDB.HairColor = (int)appearance.HairColor;
-            toDB.LeftHeldAssetId = (int)appearance.LeftHeldAssetId;
-            toDB.RightHeldAssetId = (int)appearance.RightHeldAssetId;
+            
 
             return toDB;
         }

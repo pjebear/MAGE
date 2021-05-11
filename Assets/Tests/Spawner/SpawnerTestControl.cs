@@ -37,49 +37,49 @@ namespace MAGE.GameModes.Tests
         {
             {
                 Appearance appearance = new Appearance();
-                appearance.OutfitType = ApparelAssetId.Cloth_0;
+                appearance.BaseOutfitType = ApparelAssetId.Cloth_0;
                 appearance.SkinToneType = SkinToneType.Pale;
                 appearance.HairType = HairType.MaleLong;
                 appearance.FacialHairType = FacialHairType.LongBeard;
                 appearance.HairColor = HairColor.Grey;
-                appearance.RightHeldAssetId = ApparelAssetId.Staff_0;
+                appearance.OverrideRightHeldAssetId = ApparelAssetId.Staff_0;
 
                 Appearances[0] = appearance;
             }
             {
                 Appearance appearance = new Appearance();
-                appearance.OutfitType = ApparelAssetId.Leather_0;
+                appearance.BaseOutfitType = ApparelAssetId.Leather_0;
                 appearance.SkinToneType = SkinToneType.Tan;
                 appearance.HairType = HairType.MaleShort;
                 appearance.FacialHairType = FacialHairType.None;
                 appearance.HairColor = HairColor.Dark;
-                appearance.LeftHeldAssetId = ApparelAssetId.Axe_0;
-                appearance.RightHeldAssetId = ApparelAssetId.Axe_0;
+                appearance.OverrideLeftHeldAssetId = ApparelAssetId.Axe_0;
+                appearance.OverrideRightHeldAssetId = ApparelAssetId.Axe_0;
 
                 Appearances[1] = appearance;
             }
             {
                 Appearance appearance = new Appearance();
-                appearance.OutfitType = ApparelAssetId.Mail_0;
+                appearance.BaseOutfitType = ApparelAssetId.Mail_0;
                 appearance.SkinToneType = SkinToneType.Base;
                 appearance.HairType = HairType.MaleShort;
                 appearance.FacialHairType = FacialHairType.None;
                 appearance.HairColor = HairColor.Blonde;
-                appearance.LeftHeldAssetId = ApparelAssetId.Shield_0;
-                appearance.RightHeldAssetId = ApparelAssetId.Sword_0;
+                appearance.OverrideLeftHeldAssetId = ApparelAssetId.Shield_0;
+                appearance.OverrideRightHeldAssetId = ApparelAssetId.Sword_0;
 
                 Appearances[2] = appearance;
             }
 
             {
                 Appearance appearance = new Appearance();
-                appearance.OutfitType = ApparelAssetId.Plate_0;
+                appearance.BaseOutfitType = ApparelAssetId.Plate_0;
                 appearance.SkinToneType = SkinToneType.Base;
                 appearance.HairType = HairType.MaleShort;
                 appearance.FacialHairType = FacialHairType.ShortBeard;
                 appearance.HairColor = HairColor.Brunette;
-                appearance.LeftHeldAssetId = ApparelAssetId.TowerShield_0;
-                appearance.RightHeldAssetId = ApparelAssetId.Mace_0;
+                appearance.OverrideLeftHeldAssetId = ApparelAssetId.TowerShield_0;
+                appearance.OverrideRightHeldAssetId = ApparelAssetId.Mace_0;
 
                 Appearances[3] = appearance;
             }

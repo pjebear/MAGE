@@ -66,10 +66,9 @@ namespace MAGE.GameSystems.Characters.Internal
             return emptyCharacter;
         }
 
-        public static void CreateCharacter(CharacterCreateParams createParams, out DB.DBCharacter dbCharacter, out DB.DBAppearance dbAppearance)
+        public static void CreateCharacter(CharacterCreateParams createParams, out DB.DBCharacter dbCharacter)
         {
             dbCharacter = CreateEmptyDBCharacter();
-            dbAppearance = new DB.DBAppearance();
 
             // Info
             if (createParams.id == -1)
@@ -87,10 +86,6 @@ namespace MAGE.GameSystems.Characters.Internal
 
             // Appearance
             dbCharacter.AppearanceId = dbCharacter.Id;
-
-            dbAppearance = AppearanceUtil.ToDB(createParams.appearanceOverrides);
-
-            dbAppearance.Id = dbCharacter.Id;
 
             // Equipment
             for (int i = 0; i < (int)Equipment.Slot.NUM; ++i)

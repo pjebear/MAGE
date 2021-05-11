@@ -226,7 +226,7 @@ namespace MAGE.GameModes.Encounter
             Character toPublish = combatCharacter.Character;
 
             dp.IsAlly = combatCharacter.GetComponent<CombatEntity>().TeamSide == TeamSide.AllyHuman;
-            dp.PortraitAsset = toPublish.GetAppearance().PortraitSpriteId.ToString();
+            dp.PortraitAsset = toPublish.Appearance.PortraitSpriteId.ToString();
             dp.Name = toPublish.Name;
             dp.Level = toPublish.Level;
             dp.Exp = toPublish.Experience;

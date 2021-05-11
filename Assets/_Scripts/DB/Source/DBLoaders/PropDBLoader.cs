@@ -14,43 +14,30 @@ namespace MAGE.DB.Internal
     {
         public static void LoadDB()
         {
-            int guardAppearanceId = 0;
+            Appearance guardAppearance = new Appearance()
             {
-                Appearance appearance = new Appearance()
-                {
-                    AppearanceId = guardAppearanceId,
-                    PortraitSpriteId = PortraitSpriteId.Guard_0,
-                    BodyType = BodyType.HumanoidMale,
-                    FacialHairType = FacialHairType.ShortBeard,
-                    HairColor = HairColor.Brunette,
-                    HairType = HairType.MaleShort,
-                    SkinToneType = SkinToneType.Base,
-                    OutfitType = ApparelAssetId.Mail_0,
-                    LeftHeldAssetId = ApparelAssetId.Shield_0,
-                    RightHeldAssetId = ApparelAssetId.Sword_0
-                };
+                BasePortraitSpriteId = PortraitSpriteId.Guard_0,
+                BodyType = BodyType.HumanoidMale,
+                FacialHairType = FacialHairType.ShortBeard,
+                HairColor = HairColor.Brunette,
+                HairType = HairType.MaleShort,
+                SkinToneType = SkinToneType.Base,
+                BaseOutfitType = ApparelAssetId.Mail_0,
+                BaseLeftHeldAssetId = ApparelAssetId.Shield_0,
+                BaseRightHeldAssetId = ApparelAssetId.Sword_0
+            };
 
-                DBService.Get().WriteAppearance(appearance.AppearanceId, AppearanceUtil.ToDB(appearance));
-            }
-
-            int vendorAppearanceId = 1;
+            Appearance vendorAppearance = new Appearance()
             {
-                Appearance appearance = new Appearance()
-                {
-                    AppearanceId = vendorAppearanceId,
-                    PortraitSpriteId = PortraitSpriteId.Vendor,
-                    BodyType = BodyType.HumanoidMale,
-                    FacialHairType = FacialHairType.LongBeard,
-                    HairColor = HairColor.Grey,
-                    HairType = HairType.MaleLong,
-                    SkinToneType = SkinToneType.Dark,
-                    OutfitType = ApparelAssetId.Cloth_0
-                };
-                
-
-                DBService.Get().WriteAppearance(appearance.AppearanceId, AppearanceUtil.ToDB(appearance));
-            }
-
+                BasePortraitSpriteId = PortraitSpriteId.Vendor,
+                BodyType = BodyType.HumanoidMale,
+                FacialHairType = FacialHairType.LongBeard,
+                HairColor = HairColor.Grey,
+                HairType = HairType.MaleLong,
+                SkinToneType = SkinToneType.Dark,
+                BaseOutfitType = ApparelAssetId.Cloth_0
+            };
+            
             // Containers
             {
                 { // Field Container
@@ -75,7 +62,7 @@ namespace MAGE.DB.Internal
                     DBPropInfo dBPropInfo = new DBPropInfo();
                     dBPropInfo.Id = (int)propId;
                     dBPropInfo.Name = propId.ToString();
-                    dBPropInfo.AppearanceId = vendorAppearanceId;
+                    dBPropInfo.AppearanceId = (int)propId;
                     dBPropInfo.IsInteractable = true;
                     dBPropInfo.IsActive = true;
                     dBPropInfo.Conversations = new List<int>() { };
@@ -91,6 +78,7 @@ namespace MAGE.DB.Internal
                         ,(int)EquippableId.PlateArmor_0
                     };
 
+                    DBService.Get().WriteAppearance(dBPropInfo.AppearanceId, AppearanceUtil.ToDB(vendorAppearance));
                     DBService.Get().WritePropInfo(dBPropInfo.Id, dBPropInfo);
                 }
 
@@ -101,7 +89,7 @@ namespace MAGE.DB.Internal
                     DBPropInfo dBPropInfo = new DBPropInfo();
                     dBPropInfo.Id = (int)propId;
                     dBPropInfo.Name = propId.ToString();
-                    dBPropInfo.AppearanceId = vendorAppearanceId;
+                    dBPropInfo.AppearanceId = (int)propId;
                     dBPropInfo.IsInteractable = true;
                     dBPropInfo.IsActive = true;
                     dBPropInfo.Conversations = new List<int>() { };
@@ -117,6 +105,7 @@ namespace MAGE.DB.Internal
                         ,(int)EquippableId.PlateArmor_0
                     };
 
+                    DBService.Get().WriteAppearance(dBPropInfo.AppearanceId, AppearanceUtil.ToDB(vendorAppearance));
                     DBService.Get().WritePropInfo(dBPropInfo.Id, dBPropInfo);
                 }
 
@@ -126,10 +115,11 @@ namespace MAGE.DB.Internal
                     DBPropInfo dBPropInfo = new DBPropInfo();
                     dBPropInfo.Id = (int)propId;
                     dBPropInfo.Name = propId.ToString();
-                    dBPropInfo.AppearanceId = guardAppearanceId;
+                    dBPropInfo.AppearanceId = dBPropInfo.Id;
                     dBPropInfo.IsInteractable = false;
                     dBPropInfo.IsActive = true;
 
+                    DBService.Get().WriteAppearance(dBPropInfo.AppearanceId, AppearanceUtil.ToDB(guardAppearance));
                     DBService.Get().WritePropInfo(dBPropInfo.Id, dBPropInfo);
                 }
 
@@ -139,10 +129,11 @@ namespace MAGE.DB.Internal
                     DBPropInfo dBPropInfo = new DBPropInfo();
                     dBPropInfo.Id = (int)propId;
                     dBPropInfo.Name = propId.ToString();
-                    dBPropInfo.AppearanceId = guardAppearanceId;
+                    dBPropInfo.AppearanceId = (int)propId;
                     dBPropInfo.IsInteractable = false;
                     dBPropInfo.IsActive = true;
 
+                    DBService.Get().WriteAppearance(dBPropInfo.AppearanceId, AppearanceUtil.ToDB(guardAppearance));
                     DBService.Get().WritePropInfo(dBPropInfo.Id, dBPropInfo);
                 }
 
@@ -161,13 +152,13 @@ namespace MAGE.DB.Internal
                     Appearance appearance = new Appearance()
                     {
                         AppearanceId = (int)propId,
-                        PortraitSpriteId = PortraitSpriteId.GuildLeader,
+                        BasePortraitSpriteId = PortraitSpriteId.GuildLeader,
                         BodyType = BodyType.HumanoidMale,
                         FacialHairType = FacialHairType.None,
                         HairColor = HairColor.Dark,
                         HairType = HairType.MaleShort,
                         SkinToneType = SkinToneType.Tan,
-                        OutfitType = ApparelAssetId.Cloth_0
+                        BaseOutfitType = ApparelAssetId.Cloth_0
                     };
 
                     DBService.Get().WriteAppearance(appearance.AppearanceId, AppearanceUtil.ToDB(appearance));
@@ -188,13 +179,13 @@ namespace MAGE.DB.Internal
                     Appearance appearance = new Appearance()
                     {
                         AppearanceId = (int)propId,
-                        PortraitSpriteId = PortraitSpriteId.Magistrate,
+                        BasePortraitSpriteId = PortraitSpriteId.Magistrate,
                         BodyType = BodyType.HumanoidMale,
                         FacialHairType = FacialHairType.None,
                         HairColor = HairColor.Blonde,
                         HairType = HairType.MaleBuzz,
                         SkinToneType = SkinToneType.Base,
-                        OutfitType = ApparelAssetId.Cloth_0
+                        BaseOutfitType = ApparelAssetId.Cloth_0
                     };
 
                     DBService.Get().WriteAppearance(appearance.AppearanceId, AppearanceUtil.ToDB(appearance));
@@ -233,7 +224,7 @@ namespace MAGE.DB.Internal
                     DBPropInfo dBPropInfo = new DBPropInfo();
                     dBPropInfo.Id = (int)propId;
                     dBPropInfo.Name = propId.ToString();
-                    dBPropInfo.AppearanceId = vendorAppearanceId;
+                    dBPropInfo.AppearanceId = (int)propId;
                     dBPropInfo.IsInteractable = true;
                     dBPropInfo.IsActive = true;
                     dBPropInfo.Conversations = new List<int>() { };
@@ -249,6 +240,7 @@ namespace MAGE.DB.Internal
                         ,(int)EquippableId.PlateArmor_0
                     };
 
+                    DBService.Get().WriteAppearance(dBPropInfo.AppearanceId, AppearanceUtil.ToDB(vendorAppearance));
                     DBService.Get().WritePropInfo(dBPropInfo.Id, dBPropInfo);
                 }
             }

@@ -352,7 +352,7 @@ namespace MAGE.GameModes.FlowControl
             {
                 int partyAvatarId = WorldService.Get().GetPartyAvatarId();
                 Character character = CharacterService.Get().GetCharacter(partyAvatarId);
-                Appearance appearance = character.GetAppearance();
+                Appearance appearance = character.Appearance;
                 speakerName = character.Name;
                 assetName = appearance.PortraitSpriteId.ToString();
             }

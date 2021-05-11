@@ -110,7 +110,7 @@ namespace MAGE.GameModes.Encounter
 
                     CharacterGrowth.DataProvider growthDP = new CharacterGrowth.DataProvider();
                     growthDP.Name = character.Name;
-                    growthDP.PortraitAsset = character.GetAppearance().PortraitSpriteId.ToString();
+                    growthDP.PortraitAsset = character.Appearance.PortraitSpriteId.ToString();
 
                     growthDP.LevelGrowth.Level = character.Level;
                     growthDP.LevelGrowth.Current = character.Experience;

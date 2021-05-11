@@ -28,11 +28,6 @@ namespace MAGE.GameModes.SceneElements
         [HideInInspector] [SerializeField] NPCEnumPicker mNPCPicker = new NPCEnumPicker();
         public IEditorEnumPicker NPCPicker { get { return mNPCPicker; } }
 
-        public bool IsNPC()
-        {
-            return mNPCPicker.PickedOption != "";
-        }
-
         public virtual int GetCharacterId()
         {
             int characterId = -1;
@@ -60,24 +55,6 @@ namespace MAGE.GameModes.SceneElements
             Debug.Assert(characterId != -1);
 
             return characterId;
-        }
-
-        public virtual string GetActorName()
-        {
-            string actorName = "NONE";
-
-            int characterId = GetCharacterId();
-
-            if (mCharacterTypePicker.PickedOption != "" || CharacterIdOffset != -1)
-            {
-                actorName = CharacterService.Get().GetCharacter(characterId).Name;
-            }
-            else if (mNPCPicker.PickedOption != "")
-            {
-                actorName = LevelManagementService.Get().GetPropInfo(characterId).Name;
-            }
-
-            return actorName;
         }
 
         public void Reset()

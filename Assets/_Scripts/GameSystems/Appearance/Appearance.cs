@@ -14,18 +14,29 @@ namespace MAGE.GameSystems.Appearances
         public static int NO_ASSET = -1;
 
         public int AppearanceId = -1;
+        public int LinkedAppearanceId = -1;
 
-        public PortraitSpriteId PortraitSpriteId = PortraitSpriteId.INVALID;
+        public PortraitSpriteId BasePortraitSpriteId = PortraitSpriteId.INVALID;
+        public PortraitSpriteId OverridePortraitSpriteId = PortraitSpriteId.INVALID;
+        public PortraitSpriteId PortraitSpriteId { get { return OverridePortraitSpriteId != PortraitSpriteId.INVALID ? OverridePortraitSpriteId : BasePortraitSpriteId; } }
+
+        public ApparelAssetId BaseOutfitType = ApparelAssetId.NONE;
+        public ApparelAssetId OverrideOutfitType = ApparelAssetId.NONE;
+        public ApparelAssetId OutfitType { get { return OverrideOutfitType != ApparelAssetId.NONE ? OverrideOutfitType : BaseOutfitType; } }
+
+        public ApparelAssetId BaseLeftHeldAssetId = ApparelAssetId.NONE;
+        public ApparelAssetId OverrideLeftHeldAssetId = ApparelAssetId.NONE;
+        public ApparelAssetId LeftHeldAssetId { get { return OverrideLeftHeldAssetId != ApparelAssetId.NONE ? OverrideLeftHeldAssetId : BaseLeftHeldAssetId; } }
+
+        public ApparelAssetId BaseRightHeldAssetId = ApparelAssetId.NONE;
+        public ApparelAssetId OverrideRightHeldAssetId = ApparelAssetId.NONE;
+        public ApparelAssetId RightHeldAssetId { get { return OverrideRightHeldAssetId != ApparelAssetId.NONE ? OverrideRightHeldAssetId : BaseRightHeldAssetId; } }
 
         public BodyType BodyType = BodyType.HumanoidMale;
-
-        public ApparelAssetId OutfitType = ApparelAssetId.NONE;
         public SkinToneType SkinToneType = SkinToneType.Base;
         public HairType HairType = HairType.MaleBuzz;
         public FacialHairType FacialHairType = FacialHairType.None;
         public HairColor HairColor = HairColor.Brunette;
-        public ApparelAssetId LeftHeldAssetId = ApparelAssetId.NONE;
-        public ApparelAssetId RightHeldAssetId = ApparelAssetId.NONE;
     }
 }
 

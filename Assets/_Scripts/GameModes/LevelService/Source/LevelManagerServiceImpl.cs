@@ -1,4 +1,5 @@
-﻿using MAGE.GameModes.FlowControl;
+﻿using MAGE.Common;
+using MAGE.GameModes.FlowControl;
 using MAGE.GameModes.SceneElements;
 using MAGE.GameSystems;
 using MAGE.GameSystems.Appearances;
@@ -184,6 +185,11 @@ namespace MAGE.GameModes.LevelManagement.Internal
 
         public Appearance GetAppearance(int apperanceId)
         {
+            if (apperanceId >= GameConstants.PROP_ID_OFFSET)
+            {
+                apperanceId = GetPropInfo(apperanceId).AppearanceId;
+            }
+            
             return AppearanceUtil.FromDB(DBService.Get().LoadAppearance(apperanceId));
         }
 
@@ -204,16 +210,7 @@ namespace MAGE.GameModes.LevelManagement.Internal
 
         public Appearance GetNPCAppearance(NPCPropId npcId)
         {
-            // I don't like this..
-            int appearanceId = GetPropInfo((int)npcId).AppearanceId;
-            if (CharacterUtil.GetCharacterTypeFromId(appearanceId) == CharacterType.Story)
-            {
-                return CharacterService.Get().GetCharacter(appearanceId).GetAppearance();
-            }
-            else
-            {
-                return AppearanceUtil.FromDB(DBService.Get().LoadAppearance(appearanceId));
-            }
+            return AppearanceUtil.FromDB(DBService.Get().LoadAppearance((int)npcId));
         }
 
         public PropInfo GetPropInfo(int propId)

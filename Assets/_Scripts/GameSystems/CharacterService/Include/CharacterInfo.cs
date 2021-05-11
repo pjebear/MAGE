@@ -54,7 +54,7 @@ namespace MAGE.GameSystems.Characters
         protected Resources mCurrentResources = null;
         public Resources CurrentResources { get { return mCurrentResources; } }
 
-        protected Appearance mBaseAppearance = new Appearance();
+        public Appearance Appearance = new Appearance();
 
         public List<Character> Children = new List<Character>(); 
         public List<Character> Parents = new List<Character>(); 
@@ -75,8 +75,7 @@ namespace MAGE.GameSystems.Characters
                 characterInfo.SpecializationsProgress.Add(specializationPair.Key, specializationPair.Value.GetProgress());
             }
 
-            // Appearance Overrides
-            characterInfo.AppearanceId = mBaseAppearance.AppearanceId;
+            characterInfo.AppearanceId = Appearance.AppearanceId;
 
             // Equipment
             for (int i = 0; i < (int)Equipment.Slot.NUM; ++i)
@@ -108,9 +107,9 @@ namespace MAGE.GameSystems.Characters
                 Specializations.Add(specializationPair.Key,
                     Internal.SpecializationFactory.CheckoutSpecialization(specializationPair.Key, specializationPair.Value));
             }
-            
-            // Appearance Overrides
-            mBaseAppearance = AppearanceUtil.FromDB(DBService.Get().LoadAppearance(characterInfo.AppearanceId));
+
+            // Appearance 
+            Appearance = AppearanceUtil.FromDB(DBService.Get().LoadAppearance(characterInfo.AppearanceId));
 
             // Assorted things
             ActionResponders = GetActionResponseIds();
@@ -558,36 +557,6 @@ namespace MAGE.GameSystems.Characters
                 ResourceType resource = (ResourceType)i;
                 mCurrentResources[resource].SetMax(AttributeUtil.ResourceFromAttribtues(resource, mCurrentAttributes));
             }
-        }
-
-        public Appearance GetAppearance()
-        {
-            Appearance appearance = new Appearance();
-
-            appearance = mBaseAppearance;
-            
-            // Portrait
-            if (appearance.PortraitSpriteId == PortraitSpriteId.INVALID)
-            {
-                appearance.PortraitSpriteId = SpecializationUtil.GetPortraitSpriteIdForSpecialization(CurrentSpecializationType);
-            }
-
-            // Update Equipment
-            for (int equipmentSlotIdx = 0; equipmentSlotIdx < (int)Equipment.Slot.NUM; ++equipmentSlotIdx)
-            {
-                Equipment.Slot slot = (Equipment.Slot)equipmentSlotIdx;
-                ApparelAssetId prefabId = Equipment[slot] == Equipment.NO_EQUIPMENT ? ApparelAssetId.NONE : Equipment[slot].PrefabId;
-
-                switch (slot)
-                {
-                    case Equipment.Slot.Accessory:      /* empty */ break;
-                    case Equipment.Slot.Armor: appearance.OutfitType = prefabId; break;
-                    case Equipment.Slot.LeftHand: appearance.LeftHeldAssetId = prefabId; break;
-                    case Equipment.Slot.RightHand: appearance.RightHeldAssetId = prefabId; break;
-                }
-            }
-
-            return appearance;
         }
     }
 }

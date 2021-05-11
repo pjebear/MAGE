@@ -17,22 +17,13 @@ namespace MAGE.GameModes.SceneElements
             Appearance appearance = null;
             CharacterPickerControl characterPickerControl = GetComponent<CharacterPickerControl>();
             int characterId = characterPickerControl.GetCharacterId();
-            if (characterPickerControl.IsNPC())
-            {
-                appearance = LevelManagementService.Get().GetNPCAppearance((NPCPropId)characterId);
-            }
-            else
-            {
-                appearance = CharacterService.Get().GetCharacter(characterId).GetAppearance();
-            }
             
+            appearance = LevelManagementService.Get().GetAppearance(characterId);
 
             if (GetComponent<ActorOutfitter>() != null)
             {
                 GetComponent<ActorOutfitter>().UpdateAppearance(appearance);
             }
-
-            gameObject.name = GetComponent<CharacterPickerControl>().GetActorName();
         }
     }
 }

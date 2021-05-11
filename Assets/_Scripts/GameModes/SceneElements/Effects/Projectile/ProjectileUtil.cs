@@ -69,11 +69,11 @@ namespace MAGE.GameModes.Encounter
             linearParams.InitialVelocity = LINEAR_VELOCITY;
             linearParams.EndPoint = endPosition;
 
-            linearParams.CollisionWith = RaycastUtil.GetObjectAtPosition(endPosition);
-            if (linearParams.CollisionWith != null)
-            {
-                linearParams.EndPoint = linearParams.CollisionWith.transform.position;
-            }
+            //linearParams.CollisionWith = RaycastUtil.GetObjectAtPosition(endPosition);
+            //if (linearParams.CollisionWith != null)
+            //{
+            //    linearParams.EndPoint = linearParams.CollisionWith.transform.position;
+            //}
 
             linearParams.FlightDuration = (linearParams.EndPoint - linearParams.SpawnPoint).magnitude / linearParams.InitialVelocity;
 
