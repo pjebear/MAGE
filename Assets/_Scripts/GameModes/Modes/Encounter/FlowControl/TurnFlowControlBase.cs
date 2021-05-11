@@ -209,6 +209,7 @@ namespace MAGE.GameModes.Encounter
             {
                 GameModel.Encounter.mChargingActions.Add(mCurrentCharacter, proposal);
             }
+            mCurrentCharacter.GetComponent<ResourcesControl>().ActionChosen();
         }
 
         protected IDataProvider PublishCharacterInfoPanelRight()

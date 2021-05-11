@@ -30,12 +30,15 @@ namespace MAGE.GameModes.Combat
             return Resources[ResourceType.Actions].Current;
         }
 
-        public void OnActionPerformed(StateChange actionCost)
+        public void ActionChosen()
         {
             Debug.Assert(GetNumAvailableActions() > 0);
 
             Resources[ResourceType.Actions].Modify(-1);
+        }
 
+        public void OnActionPerformed(StateChange actionCost)
+        {
             ApplyStateChange(actionCost);
         }
 

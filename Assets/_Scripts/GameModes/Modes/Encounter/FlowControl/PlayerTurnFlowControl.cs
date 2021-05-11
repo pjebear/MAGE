@@ -407,7 +407,8 @@ namespace MAGE.GameModes.Encounter
                                 foreach (ActionComposerBase action in mAvailableActions)
                                 {
                                     string actionName = action.ActionInfo.ActionId.ToString();
-                                    actionList.Add(new UIButton.DataProvider(actionName + "[Charge]", true));
+                                    actionList.Add(new UIButton.DataProvider(actionName 
+                                        + (action.AreActionRequirementsMet() ? "" : "[Charge]"), true));
                                 }
                             }
                         }
