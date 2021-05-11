@@ -13,11 +13,8 @@ using UnityEngine;
 
 namespace MAGE.GameModes.Encounter
 {
-    class FireBallComposer : AOESpellComposerBase
+    class FireBallComposer : ProjectileSpellComposerBase
     {
-        public ConcreteVar<CombatEntity> Caster = new ConcreteVar<CombatEntity>();
-        public ConcreteVar<CombatTarget> Target = new ConcreteVar<CombatTarget>();
-
         public FireBallComposer(CombatEntity owner) : base(owner)
         {
             Caster.Set(owner);
@@ -47,18 +44,6 @@ namespace MAGE.GameModes.Encounter
             };
 
             return actionInfo;
-        }
-
-        protected override IDeferredVar<StateChange> GetStateChange()
-        {
-            SpellEffectivenessCalculator calculator = new SpellEffectivenessCalculator();
-            calculator.BaseEffectiveness = ActionInfo.Effectiveness;
-            calculator.DeferredCaster = new MonoConversion<CombatEntity, StatsControl>(Caster);
-            calculator.IsBeneficial = false;
-
-            DeferredStateChange deferredStateChange = new DeferredStateChange();
-            deferredStateChange.HealthChange = calculator;
-            return deferredStateChange;
         }
     }
 }

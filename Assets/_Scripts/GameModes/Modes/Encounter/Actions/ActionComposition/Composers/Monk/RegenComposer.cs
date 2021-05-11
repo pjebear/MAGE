@@ -27,6 +27,7 @@ namespace MAGE.GameModes.Encounter
             actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -5);
             actionInfo.ActionRange = ActionRange.Projectile;
             actionInfo.ActionSource = ActionSource.Cast;
+            actionInfo.CanGroundTarget = true;
 
             actionInfo.EffectInfo.EffectId = EffectType.Regen;
 

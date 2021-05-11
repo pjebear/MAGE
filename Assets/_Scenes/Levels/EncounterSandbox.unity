@@ -22624,11 +22624,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1501854622, guid: 797b084f564fbc14d8c4bd08f32963f0, type: 3}
       propertyPath: mCharacterTypePicker._PickedOptionStr
-      value: Story
+      value: Create
       objectReference: {fileID: 0}
     - target: {fileID: 1501854622, guid: 797b084f564fbc14d8c4bd08f32963f0, type: 3}
       propertyPath: mStoryCharacterPicker._PickedOptionStr
-      value: Balgrid
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1501854622, guid: 797b084f564fbc14d8c4bd08f32963f0, type: 3}
+      propertyPath: CharacterIdOffset
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4058031841741901824, guid: 797b084f564fbc14d8c4bd08f32963f0,
         type: 3}

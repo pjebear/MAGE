@@ -14,9 +14,9 @@ namespace MAGE.GameSystems.Actions
     {
         public CombatEntity Proposer;
         public Target Target;
-        public ActionId Action;
+        public ActionComposerBase Action;
 
-        public ActionProposal(CombatEntity proposer, Target target, ActionId action)
+        public ActionProposal(CombatEntity proposer, Target target, ActionComposerBase action)
         {
             Action = action;
             Proposer = proposer;

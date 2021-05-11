@@ -1,4 +1,5 @@
-﻿using MAGE.GameSystems;
+﻿using MAGE.GameModes.Encounter;
+using MAGE.GameSystems;
 using MAGE.GameSystems.Actions;
 using MAGE.GameSystems.Characters;
 using System;
@@ -32,7 +33,7 @@ namespace MAGE.GameModes.Combat
                     ActionProposal proposal = new ActionProposal(
                         mResponder,
                         new Target(actionResult.Initiator.GetComponent<CombatTarget>()), 
-                        ActionId.WeaponAttack);
+                        ActionComposerFactory.CheckoutAction(mResponder, ActionId.WeaponAttack));
 
                     responses.Add(new ActionProposalResponse(proposal));
                 }

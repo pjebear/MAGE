@@ -17,24 +17,27 @@ namespace MAGE.GameSystems.Stats
         }
 
         public ResourceType ResourceType;
-        public int Current;
-        public int Max;
 
-        public float Ratio { get { return Max == 0 ? 1 : Current / (float)Max; } }
+        public float mCurrent;
+        public float mMax;
+
+        public float Ratio { get { return mMax == 0 ? 1 : mCurrent / mMax; } }
+        public int Current { get { return Mathf.CeilToInt(mCurrent); } }
+        public int Max { get { return Mathf.CeilToInt(mMax); } }
 
         public Resource(ResourceType resourceType, int max)
         {
             ResourceType = resourceType;
-            Current = max;
-            Max = max;
+            mCurrent = max;
+            mMax = max;
         }
 
         public void Set(int current, int max)
         {
             UnityEngine.Debug.Assert(current <= max && max > 0);
             current = Mathf.Clamp(current, 0, max);
-            Current = current;
-            Max = max;
+            mCurrent = current;
+            mMax = max;
         }
 
         public void SetMax(int max, ScaleType scaleType = ScaleType.Scale)
@@ -44,15 +47,15 @@ namespace MAGE.GameSystems.Stats
                 case ScaleType.Scale:
                 {
                     float currentRatio = Ratio;
-                    Max = max;
-                    Current = (int)(Max * currentRatio);
+                    mMax = max;
+                    mCurrent = (int)(mMax * currentRatio);
                 }
                 break;
                 case ScaleType.Flat:
                 {
-                    int delta = max - Max;
-                    Max += delta;
-                    Current += delta;
+                    float delta = max - mMax;
+                    mMax += delta;
+                    mCurrent += delta;
                 }
                 break;
                 default:
@@ -65,19 +68,24 @@ namespace MAGE.GameSystems.Stats
 
         public void SetCurrentToMax()
         {
-            Current = Max;
+            mCurrent = mMax;
         }
 
-        public void Modify(int delta)
+        public void SetCurrentToZero()
         {
-            Current += delta;
-            if (Current > Max) Current = Max;
-            if (Current < 0) Current = 0;
+            mCurrent = 0;
+        }
+
+        public void Modify(float delta)
+        {
+            mCurrent += delta;
+            if (mCurrent > mMax) mCurrent = mMax;
+            if (mCurrent < 0) mCurrent = 0;
         }
 
         public override string ToString()
         {
-            return string.Format("{0}: {1}/{2}", ResourceType.ToString(), Current, Max);
+            return string.Format("{0}: {1}/{2}", ResourceType.ToString(), mCurrent, mMax);
         }
     }
 

@@ -4,6 +4,7 @@ using MAGE.GameModes.SceneElements;
 using MAGE.GameModes.SceneElements.Encounters;
 using MAGE.GameModes.SceneElements.Navigation;
 using MAGE.GameSystems;
+using MAGE.GameSystems.Actions;
 using MAGE.GameSystems.Characters;
 using MAGE.GameSystems.Loot;
 using MAGE.GameSystems.World;
@@ -25,26 +26,6 @@ namespace MAGE.GameModes.Encounter
         private EncounterModel mEncounterModel;
 
         private AudioSource mAmbientSoundSource;
-
-        enum FlowState
-        {
-            Intro,
-            //UnitPlacement,
-            //Init,
-
-            CoreLoopBegin,
-            StatusIncrement = CoreLoopBegin,
-            StatusCheck,
-            ActionIncrement,
-            ActionResolution,
-            TurnIncrement,
-            TurnResolution,
-            CoreLoopEnd,
-
-            Outro,
-
-            NUM
-        }
 
         public override FlowControlId GetFlowControlId()
         {
@@ -146,13 +127,6 @@ namespace MAGE.GameModes.Encounter
                     handled = true;
                 }
                 break;
-
-                case "progressTurnFlow":
-                {
-                    ProgressTurnFlow();
-                    handled = true;
-                }
-                break;
             }
 
             return handled;
@@ -170,13 +144,36 @@ namespace MAGE.GameModes.Encounter
                     {
                         result = "encounterComplete";
                     }
-                    else if (AreActionsPending())
-                    {
-                        result = "actionResolution";
-                    }
                     else
                     {
-                        result = "playerTurnFlow";
+                        ProgressTurnFlow();
+
+                        int safetyCatch = 100;
+                        while(result == "" && (--safetyCatch > 0))
+                        {
+                            if (AreActionsPending())
+                            {
+                                result = "actionResolution";
+                            }
+                            else if (mEncounterModel.CurrentTurn != null)
+                            {
+                                result = "playerTurnFlow";
+                            }
+                            else if (mEncounterModel.TurnQueue.Count > 0)
+                            {
+                                mEncounterModel.CurrentTurn = mEncounterModel.TurnQueue[0];
+                                mEncounterModel.CurrentTurn.OnTurnStart();
+                                mEncounterModel.CurrentTurn.GetComponent<ActorMotor>().Enable(true);
+                                mEncounterModel.TurnQueue.RemoveAt(0);
+
+                                result = "playerTurnFlow";
+                            }
+                            else
+                            {
+                                ProgressClock();
+                            }
+                        }
+                        Debug.Assert(safetyCatch > 0);
                     }
                 }
                 break;
@@ -215,6 +212,27 @@ namespace MAGE.GameModes.Encounter
             return mEncounterModel.mActionQueue.Count > 0;
         }
 
+        private void ProgressClock()
+        {
+            foreach (CombatCharacter combatCharacter in mEncounterModel.AlivePlayers)
+            {
+                combatCharacter.OnTurnTick();
+
+                if (mEncounterModel.mChargingActions.ContainsKey(combatCharacter))
+                {
+                    ActionProposal actionProposal = mEncounterModel.mChargingActions[combatCharacter];
+                    if (actionProposal.Action.AreActionRequirementsMet())
+                    {
+                        mEncounterModel.mActionQueue.Enqueue(actionProposal);
+                        mEncounterModel.mChargingActions.Remove(combatCharacter);
+                    }
+                }
+            }
+            
+            mEncounterModel.TurnQueue = mEncounterModel.AlivePlayers.Where(x =>
+                x.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Clock].Ratio == 1).ToList();
+        }
+
         private void ProgressTurnFlow()
         {
             if (mEncounterModel.CurrentTurn != null)
@@ -229,7 +247,7 @@ namespace MAGE.GameModes.Encounter
 
                     mEncounterModel.CurrentTurn.GetComponent<ActorMotor>().Enable(false);
 
-                    mEncounterModel.CurrentTurn.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Clock].Current = 0;
+                    mEncounterModel.CurrentTurn.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Clock].SetCurrentToZero();
 
                     mEncounterModel.CurrentTurn = null;
                 }
@@ -242,16 +260,16 @@ namespace MAGE.GameModes.Encounter
                 {
                     mEncounterModel.TurnQueue = mEncounterModel.TurnQueue.Where(x => x.GetComponent<ResourcesControl>().IsAlive()).ToList();
                 }
+            }
 
-                if (mEncounterModel.TurnQueue.Count == 0)
+            // Clean up action queue
+            List<CombatCharacter> charactersCharing = mEncounterModel.mChargingActions.Keys.ToList();
+            foreach (CombatCharacter character in charactersCharing)
+            {
+                if (!character.GetComponent<ResourcesControl>().IsAlive())
                 {
-                    PopulateTurnQueue();
+                    mEncounterModel.mChargingActions.Remove(character);
                 }
-
-                mEncounterModel.CurrentTurn = mEncounterModel.TurnQueue[0];
-                mEncounterModel.CurrentTurn.OnTurnStart();
-                mEncounterModel.CurrentTurn.GetComponent<ActorMotor>().Enable(true);
-                mEncounterModel.TurnQueue.RemoveAt(0);
             }
         }
 
@@ -290,17 +308,9 @@ namespace MAGE.GameModes.Encounter
             {
                 while (mEncounterModel.TurnQueue.Count == 0)
                 {
-                    foreach (CombatCharacter combatCharacter in mEncounterModel.AlivePlayers)
-                    {
-                        ResourcesControl resourcesControl = combatCharacter.GetComponent<ResourcesControl>();
-                        StatsControl statsControl = combatCharacter.GetComponent<StatsControl>();
-                        
-                        resourcesControl.Resources[GameSystems.Stats.ResourceType.Clock].Modify((int)statsControl.Attributes[GameSystems.Stats.TertiaryStat.Speed]);
-                        if (resourcesControl.Resources[GameSystems.Stats.ResourceType.Clock].Ratio == 1)
-                        {
-                            mEncounterModel.TurnQueue.Add(combatCharacter);
-                        }
-                    }
+                    
+
+
                 }
             }
         }

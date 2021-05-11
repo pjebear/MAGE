@@ -18,8 +18,8 @@ namespace MAGE.GameModes.Encounter
         public List<EncounterCondition> mWinConditions = new List<EncounterCondition>();
         public List<EncounterCondition> mLoseConditions = new List<EncounterCondition>();
 
+        public Dictionary<CombatCharacter, ActionProposal> mChargingActions = new Dictionary<CombatCharacter, ActionProposal>();
         public Queue<ActionProposal> mActionQueue = new Queue<ActionProposal>();
-        public Dictionary<ActionProposal, int> mDelayedActions = new Dictionary<ActionProposal, int>();
 
         public Dictionary<TeamSide, List<CombatCharacter>> Teams = new Dictionary<TeamSide, List<CombatCharacter>>();
         public Dictionary<int, CombatCharacter> Players = new Dictionary<int, CombatCharacter>();

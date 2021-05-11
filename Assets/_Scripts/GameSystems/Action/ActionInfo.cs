@@ -25,6 +25,7 @@ namespace MAGE.GameSystems.Actions
         public ActionChainInfo ChainInfo = new ActionChainInfo();
         public ActionSummonInfo SummonInfo = new ActionSummonInfo();
         public bool IsSelfCast = false;
+        public bool CanGroundTarget = false;
 
         public abstract StateChange GetTargetStateChange(Character caster, Character target);
 

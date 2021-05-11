@@ -25,7 +25,7 @@ namespace MAGE.GameModes.Encounter
 
             actionInfo.ActionId = ActionId.ShieldBash;
             actionInfo.AnimationInfo.AnimationId = AnimationId.Block;
-            actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -5);
+            actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -8);
             actionInfo.ActionRange = ActionRange.Meele;
             actionInfo.ActionSource = ActionSource.Weapon;
             actionInfo.EffectInfo.EffectId = EffectType.INVALID;

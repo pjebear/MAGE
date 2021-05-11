@@ -167,14 +167,12 @@ namespace MAGE.GameModes.Encounter
 
         protected void QueueAttack()
         {
-            mCurrentCharacter.GetComponent<ResourcesControl>().OnActionPerformed(StateChange.Empty);
-
             ActionProposal proposal = new ActionProposal(
-            mCurrentCharacter.GetComponent<CombatEntity>(),
-            new Target(mCurrentTarget.GetComponent<CombatTarget>()),
-            ActionId.WeaponAttack);
+                mCurrentCharacter.GetComponent<CombatEntity>(),
+                new Target(mCurrentTarget.GetComponent<CombatTarget>()),
+                ActionComposerFactory.CheckoutAction(mCurrentCharacter.GetComponent<CombatEntity>(), ActionId.WeaponAttack));
 
-            GameModel.Encounter.mActionQueue.Enqueue(proposal);
+            QueueAction(proposal);
         }
 
         protected virtual void SetState(State state)
@@ -198,6 +196,18 @@ namespace MAGE.GameModes.Encounter
                 mMovementPathRenderer.gameObject.SetActive(false);
                 mAbilityRangeRenderer.gameObject.SetActive(false);
                 mAbilityEffectRenderer.gameObject.SetActive(false);
+            }
+        }
+
+        protected void QueueAction(ActionProposal proposal)
+        {
+            if (proposal.Action.AreActionRequirementsMet())
+            {
+                GameModel.Encounter.mActionQueue.Enqueue(proposal);
+            }
+            else
+            {
+                GameModel.Encounter.mChargingActions.Add(mCurrentCharacter, proposal);
             }
         }
 

@@ -30,6 +30,7 @@ namespace MAGE.GameModes.Encounter
             actionInfo.ActionRange = ActionRange.Projectile;
             actionInfo.ActionSource = ActionSource.Cast;
             actionInfo.EffectInfo.EffectId = EffectType.FlameStrike;
+            actionInfo.CanGroundTarget = true;
 
             actionInfo.CastRange = new RangeInfo()
             {

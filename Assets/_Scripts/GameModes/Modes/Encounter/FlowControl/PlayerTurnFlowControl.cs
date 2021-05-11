@@ -68,7 +68,12 @@ namespace MAGE.GameModes.Encounter
                 Vector3 cursorTerrainPos = Vector3.zero;
                 if (CursorToTerrainPos(ref cursorTerrainPos))
                 {
-                    DisplayEffectRange(mCurrentCharacter.transform.position, cursorTerrainPos, mActionInfo.EffectRange);
+                    Vector3 castPoint = cursorTerrainPos;
+                    if (mHoverInfo.mHoveredEntity != null)
+                    {
+                        castPoint = mHoverInfo.mHoveredEntity.transform.position;
+                    }
+                    DisplayEffectRange(mCurrentCharacter.transform.position, castPoint, mActionInfo.EffectRange);
                 }
                 else
                 {
@@ -204,35 +209,24 @@ namespace MAGE.GameModes.Encounter
 
         void OnRightClick(Vector2 screenPos)
         {
-            Ray ray = Camera.main.ScreenPointToRay(screenPos);
-            RaycastHit hit;
-
             if (mState == State.TargetSelect)
             {
-                if (Physics.Raycast(ray, out hit, 100))
+                if (mCurrentTarget == null && mActionInfo.CanGroundTarget)
                 {
-                    CombatTarget target = hit.collider.gameObject.GetComponent<CombatTarget>();
-
-                    if (target == null && mActionInfo.EffectRange.AreaType != AreaType.Point)
+                    ActionProposal proposal = new ActionProposal(mCurrentCharacter.GetComponent<CombatEntity>(), new Target(mHoverInfo.mHoveredTerrainPos), mSelectedAction);
+                    QueueAction(proposal);
+                    SendFlowMessage("actionChosen");
+                }
+                else if (mCurrentTarget != null)
+                {
+                    if (mActionInfo.EffectRange.TargetingType == TargetingType.Any
+                        || mActionInfo.EffectRange.TargetingType == TargetingType.Allies && mCurrentTarget.GetComponent<CombatEntity>().TeamSide == TeamSide.AllyHuman
+                        || mActionInfo.EffectRange.TargetingType == TargetingType.Enemies && mCurrentTarget.GetComponent<CombatEntity>().TeamSide == TeamSide.EnemyAI)
                     {
-                        ActionProposal proposal = new ActionProposal(mCurrentCharacter.GetComponent<CombatEntity>(), new Target(hit.point), mSelectedAction.ActionInfo.ActionId);
-                        GameModel.Encounter.mActionQueue.Enqueue(proposal);
-                        mCurrentCharacter.GetComponent<ResourcesControl>().OnActionPerformed(mActionInfo.ActionCost);
+                        ActionProposal proposal = new ActionProposal(mCurrentCharacter.GetComponent<CombatEntity>(), new Target(mCurrentTarget.GetComponent<CombatTarget>()), mSelectedAction);
+                        QueueAction(proposal);
                         SendFlowMessage("actionChosen");
-                    }
-                    else if (target != null)
-                    {
-                        if (mActionInfo.EffectRange.TargetingType == TargetingType.Any
-                            || mActionInfo.EffectRange.TargetingType == TargetingType.Allies && target.GetComponent<CombatEntity>().TeamSide == TeamSide.AllyHuman
-                            || mActionInfo.EffectRange.TargetingType == TargetingType.Enemies && target.GetComponent<CombatEntity>().TeamSide == TeamSide.EnemyAI)
-                        {
-                            ActionProposal proposal = new ActionProposal(mCurrentCharacter.GetComponent<CombatEntity>(), new Target(target), mSelectedAction.ActionInfo.ActionId);
-                            GameModel.Encounter.mActionQueue.Enqueue(proposal);
-                            mCurrentCharacter.GetComponent<ResourcesControl>().OnActionPerformed(mActionInfo.ActionCost);
-                            SendFlowMessage("actionChosen");
-                        }
-                            
-                    }
+                    }           
                 }
             }
             else if (mState == State.Idle)
@@ -404,11 +398,17 @@ namespace MAGE.GameModes.Encounter
                     {
                         if (mCurrentCharacter.GetComponent<ResourcesControl>().GetNumAvailableActions() > 0)
                         {
-                            foreach (ActionComposerBase action in mAvailableActions)
+                            if (GameModel.Encounter.mChargingActions.ContainsKey(mCurrentCharacter))
                             {
-                                string actionName = action.ActionInfo.ActionId.ToString();
-                                bool canCast = action.AreActionRequirementsMet();
-                                actionList.Add(new UIButton.DataProvider(actionName, canCast));
+                                actionList.Add(new UIButton.DataProvider("Cancel Charging Action", true));
+                            }
+                            else
+                            {
+                                foreach (ActionComposerBase action in mAvailableActions)
+                                {
+                                    string actionName = action.ActionInfo.ActionId.ToString();
+                                    actionList.Add(new UIButton.DataProvider(actionName + "[Charge]", true));
+                                }
                             }
                         }
 
@@ -447,14 +447,27 @@ namespace MAGE.GameModes.Encounter
                         if (mState == State.Idle)
                         {
                             ListInteractionInfo listInteractionInfo = interactionInfo as ListInteractionInfo;
-                            if (mCurrentCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Actions].Current == 0 
+                            if (GameModel.Encounter.mChargingActions.ContainsKey(mCurrentCharacter))
+                            {
+                                if (listInteractionInfo.ListIdx == 0)
+                                {
+                                    GameModel.Encounter.mChargingActions.Remove(mCurrentCharacter);
+                                    Publish((int)UIContainerId.ActorActionsView);
+                                }
+                                else
+                                {
+                                    GameModel.Encounter.TurnComplete = true;
+                                    SendFlowMessage("actionChosen");
+                                }
+                            }
+                            else if (mCurrentCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Actions].Current == 0 
                                 || listInteractionInfo.ListIdx >= mAvailableActions.Count)
                             {
                                 // Wait selected
                                 GameModel.Encounter.TurnComplete = true;
                                 SendFlowMessage("actionChosen");
                             }
-                            else
+                            else 
                             {
                                 mSelectedAction = mAvailableActions[listInteractionInfo.ListIdx];
                                 mActionInfo = mSelectedAction.ActionInfo;
@@ -463,12 +476,10 @@ namespace MAGE.GameModes.Encounter
                                 if (mActionInfo.IsSelfCast && mActionInfo.EffectRange.AreaType == AreaType.Point)
                                 {
                                     ActionProposal proposal = new ActionProposal(
-                                        mCurrentCharacter.GetComponent<CombatEntity>(), 
-                                        new Target(mCurrentCharacter.GetComponent<CombatTarget>()), 
-                                        mSelectedAction.ActionInfo.ActionId);
-
-                                    GameModel.Encounter.mActionQueue.Enqueue(proposal);
-                                    mCurrentCharacter.GetComponent<ResourcesControl>().OnActionPerformed(mActionInfo.ActionCost);
+                                        mCurrentCharacter.GetComponent<CombatEntity>(),
+                                        new Target(mCurrentCharacter.GetComponent<CombatTarget>()),
+                                        mSelectedAction);
+                                    QueueAction(proposal);
                                     SendFlowMessage("actionChosen");
                                 }
                                 else

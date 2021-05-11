@@ -42,8 +42,9 @@ namespace MAGE.GameModes.Encounter
 
         void BeginNextAction(ActionProposal nextAction)
         {
-            ActionComposerBase actionComposer = ActionComposerFactory.CheckoutAction(nextAction.Proposer, nextAction.Action);
-            mComposition = actionComposer.Compose(nextAction.Target);
+            nextAction.Proposer.GetComponent<ResourcesControl>().OnActionPerformed(nextAction.Action.ActionInfo.ActionCost);
+            mComposition = nextAction.Action.Compose(nextAction.Target);
+
 
             mActionTimeline = new Timeline<TimelineElement>(mComposition.ActionTimeline);
 

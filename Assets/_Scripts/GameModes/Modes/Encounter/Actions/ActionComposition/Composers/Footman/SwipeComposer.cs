@@ -31,6 +31,7 @@ namespace MAGE.GameModes.Encounter
             actionInfo.ActionSource = ActionSource.Weapon;
             actionInfo.EffectInfo.EffectId = EffectType.INVALID;
             actionInfo.Effectiveness = 5;
+            actionInfo.CanGroundTarget = true;
 
             actionInfo.CastRange = new RangeInfo()
             {

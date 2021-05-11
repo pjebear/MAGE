@@ -58,6 +58,19 @@ namespace MAGE.GameModes.Combat
             GetComponent<Actor>().SetInCombat(true);
         }
 
+        public void OnTurnTick()
+        {
+            float maxMana = GetComponent<ResourcesControl>().Resources[ResourceType.Mana].Max;
+            float attunementModifier = GetComponent<StatsControl>().Attributes[SecondaryStat.Attunement] / 100f;
+            float resourceRecoverModifier = Mathf.Max(GetComponent<StatsControl>().Attributes[TertiaryStat.ResourceRecovery], 0);
+            float tuningModifer = .04f;
+            GetComponent<ResourcesControl>().Resources[ResourceType.Mana]
+                .Modify(maxMana * attunementModifier * resourceRecoverModifier * tuningModifer);
+
+            GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Clock].Modify(
+                GetComponent<StatsControl>().Attributes[GameSystems.Stats.TertiaryStat.Speed]);
+        }
+
         public void OnTurnStart()
         {
             StatusEffectControl statusEffectControl = GetComponent<StatusEffectControl>();
@@ -68,13 +81,6 @@ namespace MAGE.GameModes.Combat
             {
                 GetComponent<CombatTarget>().ApplyStateChange(stateChange);
             }
-
-            float maxMana = GetComponent<ResourcesControl>().Resources[ResourceType.Mana].Max;
-            float attunementModifier = GetComponent<StatsControl>().Attributes[SecondaryStat.Attunement] / 100f;
-            float resourceRecoverModifier = Mathf.Max(GetComponent<StatsControl>().Attributes[TertiaryStat.ResourceRecovery], 0);
-            float tuningModifer = .5f;
-            GetComponent<ResourcesControl>().Resources[ResourceType.Mana]
-                .Modify((int)( maxMana * attunementModifier * resourceRecoverModifier * tuningModifer));
 
             GetComponent<ResourcesControl>().Resources[ResourceType.Actions].SetCurrentToMax();
             GetComponent<ResourcesControl>().Resources[ResourceType.MovementRange].SetCurrentToMax();

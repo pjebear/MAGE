@@ -80,17 +80,26 @@ namespace MAGE.GameModes.FlowControl
                             , Transitions = new Dictionary<string, string>()
                             {
                                 { "playerTurnFlow", "TurnFlow" }
+                                ,{ "progressClock", "ProgressClock" }
                                 ,{ "actionResolution", "ActionResolution" }
                                 ,{ "encounterComplete", "ResultsFlow" }
                             }
                         }
-                        , new FlowNode("TurnFlow")
+                        , new FlowNode("ProgressClock")
                         {
                             OnEnterActions = new List<FlowActionBase>()
                             {
-                                new Notify("progressTurnFlow")
+                                new Notify("progressClock")
+                                , new Invoke("advance")
                             }
                             ,Transitions = new Dictionary<string, string>()
+                            {
+                                { "advance", "QueryFlowState" }
+                            }
+                        }
+                        , new FlowNode("TurnFlow")
+                        {
+                            Transitions = new Dictionary<string, string>()
                             {
                                 { "actionChosen", "QueryFlowState" }
                             }

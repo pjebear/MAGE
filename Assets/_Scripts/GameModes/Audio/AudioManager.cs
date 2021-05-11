@@ -128,7 +128,7 @@ class AudioManager : MonoBehaviour
 
     public void StopTrack(TrackId trackId)
     {
-        Debug.Assert(trackId == CurrentTrack);
+        Debug.Assert(mMuteMusic || trackId == CurrentTrack);
         if (CurrentTrack == trackId)
         {
             StopTrack();
