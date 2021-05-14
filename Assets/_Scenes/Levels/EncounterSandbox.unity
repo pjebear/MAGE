@@ -27019,8 +27019,29 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1501854621, guid: 797b084f564fbc14d8c4bd08f32963f0, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 797b084f564fbc14d8c4bd08f32963f0, type: 3}
+--- !u!1 &674108336 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4058031841742392646, guid: 797b084f564fbc14d8c4bd08f32963f0,
+    type: 3}
+  m_PrefabInstance: {fileID: 674108335}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &674108337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 674108336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77ee0743c8dc81f4aa18532cb31be5a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mStoryCharacterPicker:
+    _PickedOptionStr: Balgrid
 --- !u!1 &678444345
 GameObject:
   m_ObjectHideFlags: 0
@@ -31806,17 +31827,17 @@ PrefabInstance:
     - target: {fileID: 3719071087411164772, guid: f82338a43ca32bc459b33a7a345d738d,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.03030805
+      value: -0.030308058
       objectReference: {fileID: 0}
     - target: {fileID: 3719071087411164772, guid: f82338a43ca32bc459b33a7a345d738d,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.000000059604638
+      value: -0.000000119209275
       objectReference: {fileID: 0}
     - target: {fileID: 3719071087411164772, guid: f82338a43ca32bc459b33a7a345d738d,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0000000027939675
+      value: -0.0000000018626449
       objectReference: {fileID: 0}
     - target: {fileID: 3719071087411164772, guid: f82338a43ca32bc459b33a7a345d738d,
         type: 3}

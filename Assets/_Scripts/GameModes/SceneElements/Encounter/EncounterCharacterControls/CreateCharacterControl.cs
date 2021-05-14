@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace MAGE.GameModes.SceneElements.Encounters
 {
-    class CreateCharacterControl : CharacterControl
+    class CreateCharacterControl : CreateCharacterControlBase
     {
         public string NameOverride = "";
         public SpecializationType SpecializationType;

@@ -66,7 +66,7 @@ namespace MAGE.GameModes.FlowControl
             Camera.main.GetComponent<Cameras.CameraController>().SetTarget(mSpawner.transform, Cameras.CameraType.ThirdPerson);
 
             mSpawner.GetComponentInChildren<ActorOutfitter>().UpdateHeldApparelState(HumanoidActorConstants.HeldApparelState.Holstered);
-            mSpawner.GetComponent<CharacterPickerControl>().SetRootCharacterId(WorldService.Get().GetPartyAvatarId());
+            mSpawner.GetComponent<CharacterPickerControl>().CharacterId = WorldService.Get().GetPartyAvatarId();
             mSpawner.Refresh();
 
             UIManager.Instance.RemoveOverlay(UIContainerId.OutfiterSelectView);
@@ -179,7 +179,7 @@ namespace MAGE.GameModes.FlowControl
 
         private void RefreshOutfittedCharacter()
         {
-            mSpawner.GetComponent<CharacterPickerControl>().SetRootCharacterId(GetCurrentCharacterId());
+            mSpawner.GetComponent<CharacterPickerControl>().CharacterId = GetCurrentCharacterId();
             mSpawner.Refresh();
         }
 

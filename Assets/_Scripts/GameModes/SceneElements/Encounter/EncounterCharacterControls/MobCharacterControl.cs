@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace MAGE.GameModes.SceneElements.Encounters
 {
-    class MobCharacterControl : CharacterControl
+    class MobCharacterControl : CreateCharacterControlBase
     {
         public MobId MobId = MobId.INVALID;
 

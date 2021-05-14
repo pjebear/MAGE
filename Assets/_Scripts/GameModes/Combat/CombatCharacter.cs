@@ -25,7 +25,7 @@ namespace MAGE.GameModes.Combat
         public Character Character = null;
         private void Start()
         {
-            int characterId = GetComponent<CharacterPickerControl>().GetCharacterId();
+            int characterId = GetComponent<CharacterPickerControl>().CharacterId;
 
             ICharacterService characterService = CharacterService.Get();
             if (characterService != null)

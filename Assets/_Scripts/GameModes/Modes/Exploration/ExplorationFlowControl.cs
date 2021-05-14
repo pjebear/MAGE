@@ -37,7 +37,7 @@ namespace MAGE.GameModes
 
             player.gameObject.SetActive(true);
 
-            player.GetComponent<CharacterPickerControl>().SetRootCharacterId(WorldService.Get().GetPartyAvatarId());
+            player.GetComponent<CharacterPickerControl>().CharacterId = WorldService.Get().GetPartyAvatarId();
             player.GetComponent<ActorSpawner>().Refresh();
             GameModel.Exploration.PartyAvatar = player;
 

@@ -183,16 +183,6 @@ namespace MAGE.GameModes.LevelManagement.Internal
             mLevelLoader.LoadAssets();
         }
 
-        public Appearance GetAppearance(int apperanceId)
-        {
-            if (apperanceId >= GameConstants.PROP_ID_OFFSET)
-            {
-                apperanceId = GetPropInfo(apperanceId).AppearanceId;
-            }
-            
-            return AppearanceUtil.FromDB(DBService.Get().LoadAppearance(apperanceId));
-        }
-
         public CinematicInfo GetCinematicInfo(int cinematicId)
         {
             return CinematicUtil.FromDB(DBService.Get().LoadCinematicInfo(cinematicId));
@@ -206,11 +196,6 @@ namespace MAGE.GameModes.LevelManagement.Internal
         public Level GetLoadedLevel()
         {
             return mLoadedLevel;
-        }
-
-        public Appearance GetNPCAppearance(NPCPropId npcId)
-        {
-            return AppearanceUtil.FromDB(DBService.Get().LoadAppearance((int)npcId));
         }
 
         public PropInfo GetPropInfo(int propId)

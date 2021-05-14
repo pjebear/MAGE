@@ -1,5 +1,18 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &2123305008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2204191048805085757}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bd4ec6cf47b4cf44bd02e6f7338689e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NPCId: 220007
 --- !u!114 &2123305009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14,7 +27,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InteractionType: 2
   InteractionRange: 0
---- !u!114 &2123305008
+--- !u!114 &8373737007799431788
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -23,10 +36,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2204191048805085757}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5bd4ec6cf47b4cf44bd02e6f7338689e, type: 3}
+  m_Script: {fileID: 11500000, guid: 6182cc8622d66204fad36abbf2631faa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NPCId: 220007
+  mNPCEnumPicker:
+    _PickedOptionStr: 
 --- !u!1001 &8110099773269971466
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -34,6 +48,19 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5819418552379925060, guid: 03dc169a6a6892c4a9586fd3fe5e5823,
+        type: 3}
+      propertyPath: m_WarningMessage
+      value: "\nBinding warning: Some generic clip(s) animate transforms that are
+        already bound by a Humanoid avatar. These transforms can only be changed
+        by Humanoid clips.\n\tTransform 'EyeR'\n\tTransform 'EyeL'\n\tTransform 'EyeR'\n\tTransform
+        'EyeL'\n\tTransform 'EyeR'\n\tTransform 'EyeL'\n\tFrom animation clip 'BowShoot_R_01_Aim'\n\tFrom
+        animation clip 'BowShoot_R_01_Setup'\n\tFrom animation clip 'Attack01a'\n\tFrom
+        animation clip 'Attack01b'\n\tFrom animation clip 'Attack02a'\n\tFrom animation
+        clip 'Attack02b'\n\tFrom animation clip 'Attack03a'\n\tFrom animation clip
+        'Attack03b'\n\tFrom animation clip 'CastSpell01'\n\tFrom animation clip 'CastSpell02'\n\tand
+        more ..."
+      objectReference: {fileID: 0}
     - target: {fileID: 6678684578594446405, guid: 03dc169a6a6892c4a9586fd3fe5e5823,
         type: 3}
       propertyPath: CharacterPicker.NPCId

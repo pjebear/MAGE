@@ -608,12 +608,40 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 628637695}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &309758386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 309758385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77ee0743c8dc81f4aa18532cb31be5a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mStoryCharacterPicker:
+    _PickedOptionStr: Balgrid
 --- !u!1 &329735143 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4058031841742392646, guid: 797b084f564fbc14d8c4bd08f32963f0,
     type: 3}
   m_PrefabInstance: {fileID: 1752646150}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &329735144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 329735143}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77ee0743c8dc81f4aa18532cb31be5a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mStoryCharacterPicker:
+    _PickedOptionStr: Asmund
 --- !u!1001 &332673227
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14837,22 +14865,22 @@ PrefabInstance:
     - target: {fileID: 3719071087390727053, guid: f82338a43ca32bc459b33a7a345d738d,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.006020222
+      value: 0.006020221
       objectReference: {fileID: 0}
     - target: {fileID: 3719071087390727053, guid: f82338a43ca32bc459b33a7a345d738d,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.0000002682209
+      value: -0.00000032782555
       objectReference: {fileID: 0}
     - target: {fileID: 3719071087390727053, guid: f82338a43ca32bc459b33a7a345d738d,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.000000017695129
+      value: 0.000000018626451
       objectReference: {fileID: 0}
     - target: {fileID: 3719071087390727053, guid: f82338a43ca32bc459b33a7a345d738d,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9999819
+      value: 0.99998194
       objectReference: {fileID: 0}
     - target: {fileID: 3719071087390727053, guid: f82338a43ca32bc459b33a7a345d738d,
         type: 3}
@@ -38039,12 +38067,32 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 1270457269}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1270457271}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1ef6a91834f5d504391ad26f6adb62e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1270457271 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4058031841742392646, guid: 797b084f564fbc14d8c4bd08f32963f0,
+    type: 3}
+  m_PrefabInstance: {fileID: 1270457269}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1270457272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1270457271}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77ee0743c8dc81f4aa18532cb31be5a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mStoryCharacterPicker:
+    _PickedOptionStr: Lothar
 --- !u!1 &1316345982
 GameObject:
   m_ObjectHideFlags: 0
@@ -51946,6 +51994,20 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1633782922}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1798256369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1798256368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77ee0743c8dc81f4aa18532cb31be5a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mStoryCharacterPicker:
+    _PickedOptionStr: Rheinhardt
 --- !u!1001 &1798298678
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -52326,7 +52388,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkipMainMenu: 1
   MuteMusic: 0
-  OverrideLevelId: 2
+  OverrideLevelId: 3
 --- !u!1 &1925424974
 GameObject:
   m_ObjectHideFlags: 0

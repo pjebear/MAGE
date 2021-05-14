@@ -46,7 +46,7 @@ namespace MAGE.GameModes.Encounter
                 foreach (CharacterPickerControl character in allies)
                 {
                     CombatCharacter combatCharacter = level.CreateCombatCharacter(character.transform.position, character.transform.rotation, activeContainer.Allys);
-                    combatCharacter.GetComponent<CharacterPickerControl>().SetRootCharacterId(character.GetCharacterId());
+                    combatCharacter.GetComponent<CharacterPickerControl>().CharacterId = character.CharacterId;
                     character.gameObject.SetActive(false);
                 }
             }
@@ -56,7 +56,7 @@ namespace MAGE.GameModes.Encounter
                 foreach (CharacterPickerControl character in enemies)
                 {
                     CombatCharacter combatCharacter = level.CreateCombatCharacter(character.transform.position, character.transform.rotation, activeContainer.Enemies);
-                    combatCharacter.GetComponent<CharacterPickerControl>().SetRootCharacterId(character.GetCharacterId());
+                    combatCharacter.GetComponent<CharacterPickerControl>().CharacterId = character.CharacterId;
                     character.gameObject.SetActive(false);
                 }
             }
@@ -83,7 +83,7 @@ namespace MAGE.GameModes.Encounter
             mEncounterModel.Teams.Add(TeamSide.AllyHuman, activeEncounter.Allys.GetComponentsInChildren<CombatCharacter>().ToList());
             foreach (CombatCharacter character in mEncounterModel.Teams[TeamSide.AllyHuman])
             {
-                mEncounterModel.Players.Add(character.GetComponent<CharacterPickerControl>().GetCharacterId(), character);
+                mEncounterModel.Players.Add(character.GetComponent<CharacterPickerControl>().CharacterId, character);
                 character.GetComponent<ActorMotor>().Enable(false);
                 character.GetComponent<CombatEntity>().TeamSide = TeamSide.AllyHuman;
             }
@@ -91,7 +91,7 @@ namespace MAGE.GameModes.Encounter
             mEncounterModel.Teams.Add(TeamSide.EnemyAI, activeEncounter.Enemies.GetComponentsInChildren<CombatCharacter>().ToList());
             foreach (CombatCharacter character in mEncounterModel.Teams[TeamSide.EnemyAI])
             {
-                mEncounterModel.Players.Add(character.GetComponent<CharacterPickerControl>().GetCharacterId(), character);
+                mEncounterModel.Players.Add(character.GetComponent<CharacterPickerControl>().CharacterId, character);
                 character.GetComponent<ActorMotor>().Enable(false);
                 character.GetComponent<CombatEntity>().TeamSide = TeamSide.EnemyAI;
 

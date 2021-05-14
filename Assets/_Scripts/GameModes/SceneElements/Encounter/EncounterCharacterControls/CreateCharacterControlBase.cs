@@ -11,7 +11,7 @@ namespace MAGE.GameModes.SceneElements.Encounters
 {
     [RequireComponent(typeof(ActorSpawner))]
     [RequireComponent(typeof(CharacterPickerControl))]
-    abstract class CharacterControl : MonoBehaviour
+    abstract class CreateCharacterControlBase : MonoBehaviour
     {
         protected ActorSpawner ActorSpawner;
 
@@ -19,8 +19,7 @@ namespace MAGE.GameModes.SceneElements.Encounters
         {
             Init();
             
-            GetComponent<CharacterPickerControl>().SetRootCharacterId(GetCharacterId());
-            GetComponent<ActorSpawner>().Refresh();
+            GetComponent<CharacterPickerControl>().CharacterId = GetCharacterId();
         }
 
         protected abstract void Init();

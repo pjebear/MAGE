@@ -343,10 +343,14 @@ namespace MAGE.GameModes.FlowControl
             int speakerId = mConversation.SpeakerIds[currentDialogue.SpeakerIdx];
             if (speakerId == ConversationConstants.CONVERSATION_OWNER_ID)
             {
-                PropInfo propInfo = LevelManagementService.Get().GetPropInfo(mInteractingWith.GetPropId());
-                Appearance appearance = LevelManagementService.Get().GetAppearance(propInfo.AppearanceId);
-                assetName = appearance.PortraitSpriteId.ToString();
-                speakerName = propInfo.Name;
+                NPCProp npc = mInteractingWith as NPCProp;
+                if (npc != null)
+                {
+                    PropInfo propInfo = LevelManagementService.Get().GetPropInfo(mInteractingWith.GetPropId());
+                    Appearance appearance = npc.GetComponent<CharacterPickerControl>().Appearance;
+                    assetName = appearance.PortraitSpriteId.ToString();
+                    speakerName = propInfo.Name;
+                }
             }
             else if (speakerId == ConversationConstants.PARTY_AVATAR_ID)
             {
@@ -370,8 +374,7 @@ namespace MAGE.GameModes.FlowControl
 
             PropInfo propInfo = LevelManagementService.Get().GetPropInfo(mInteractingWith.GetPropId());
             dataProvider.Name = propInfo.Name;
-            Appearance appearance = LevelManagementService.Get().GetAppearance(propInfo.AppearanceId);
-            dataProvider.PortraitAssetName = appearance.PortraitSpriteId.ToString();
+            dataProvider.PortraitAssetName = mInteractingWith.GetComponent<CharacterPickerControl>().Appearance.PortraitSpriteId.ToString();
 
             mNPCActions.Clear();
             dataProvider.NPCActions = new List<string>();

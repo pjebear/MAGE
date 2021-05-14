@@ -55,22 +55,27 @@ namespace MAGE.GameModes.SceneElements
                 Logger.Log(LogTag.Level, "ActorSpawner", "MessageRouter not initialized", LogLevel.Warning);
             }
 
-            if (LevelManagementService.Get() != null)
-            {
-                Refresh();
-            }
+            //if (LevelManagementService.Get() != null)
+            //{
+            //    Refresh();
+            //}
+        }
+
+        public void OnCharacterChanged()
+        {
+            Refresh();
         }
 
         public void Refresh()
         {
             CharacterPickerControl characterPickerControl = GetComponent<CharacterPickerControl>();
-            int characterId = characterPickerControl.GetCharacterId();
+            int characterId = characterPickerControl.CharacterId;
             if (characterId == -1)
             {
                 return;
             }
 
-            Appearance = LevelManagementService.Get().GetAppearance(characterId);
+            Appearance = characterPickerControl.Appearance;
 
             if (Appearance != null)
             {
@@ -116,7 +121,7 @@ namespace MAGE.GameModes.SceneElements
                     {
                         case LevelManagement.MessageType.AppearanceUpdated:
                         {
-                            if (message.Arg<int>() == GetComponent<CharacterPickerControl>().GetCharacterId())
+                            if (message.Arg<int>() == GetComponent<CharacterPickerControl>().CharacterId)
                             {
                                 Refresh();
                             }
@@ -137,7 +142,7 @@ namespace MAGE.GameModes.SceneElements
                     {
                         case CharacterMessage.MessageType.CharacterUpdated:
                         {
-                            if (message.Arg<int>() == GetComponent<CharacterPickerControl>().GetCharacterId())
+                            if (message.Arg<int>() == GetComponent<CharacterPickerControl>().CharacterId)
                             {
                                 Refresh();
                             }

@@ -11,80 +11,27 @@ using UnityEngine;
 
 namespace MAGE.GameModes.SceneElements
 {
-    public class CharacterPickerControl : MonoBehaviour
+    class CharacterPickerControl : MonoBehaviour
     {
-        [SerializeField]
-        private int CharacterIdOffset = CharacterConstants.INVALID_ID;
-
-        [System.Serializable] class CharacterTypeEnumPicker : EditorEnumPicker<CharacterType> { }
-        [HideInInspector] [SerializeField] CharacterTypeEnumPicker mCharacterTypePicker = new CharacterTypeEnumPicker();
-        public IEditorEnumPicker CharacterTypePicker { get { return mCharacterTypePicker; } }
-
-        [System.Serializable] class StoryCharacterEnumPicker : EditorEnumPicker<StoryCharacterId> { }
-        [HideInInspector] [SerializeField] StoryCharacterEnumPicker mStoryCharacterPicker = new StoryCharacterEnumPicker();
-        public IEditorEnumPicker StoryCharacterPicker { get { return mStoryCharacterPicker; } }
-
-        [System.Serializable] class NPCEnumPicker : EditorEnumPicker<NPCPropId> { }
-        [HideInInspector] [SerializeField] NPCEnumPicker mNPCPicker = new NPCEnumPicker();
-        public IEditorEnumPicker NPCPicker { get { return mNPCPicker; } }
-
-        public virtual int GetCharacterId()
+        private int mCharacterId = -1;
+        public int CharacterId
         {
-            int characterId = -1;
-
-            if (mCharacterTypePicker.PickedOption != "")
+            get
             {
-                if (mStoryCharacterPicker.PickedOption != "")
-                {
-                    characterId = (int)mStoryCharacterPicker.Val;
-                }
-                else if (CharacterIdOffset != CharacterConstants.INVALID_ID)
-                {
-                    characterId = CharacterUtil.CreateIdToDBId(CharacterIdOffset);
-                }
+                return mCharacterId;
             }
-            else if (mNPCPicker.PickedOption != "")
+            set
             {
-                characterId = (int)mNPCPicker.Val;
+                mCharacterId = value;
+                BroadcastMessage("OnCharacterChanged", null, SendMessageOptions.DontRequireReceiver);
             }
-            else if (CharacterIdOffset != -1)
+        }
+        public Appearance Appearance
+        {
+            get
             {
-                characterId = CharacterIdOffset;
+                return AppearanceUtil.GetAppearance(mCharacterId);
             }
-
-            return characterId;
-        }
-
-        public void Reset()
-        {
-            CharacterIdOffset = CharacterConstants.INVALID_ID;
-
-            mCharacterTypePicker.PickedOption = "";
-            mStoryCharacterPicker.PickedOption = "";
-
-            mNPCPicker.PickedOption = "";
-        }
-
-        public void Set(NPCPropId id)
-        {
-            Debug.Assert(id != NPCPropId.None);
-            Reset();
-            mNPCPicker.PickedOption = id.ToString();
-        }
-
-        public void Set(StoryCharacterId id)
-        {
-            Debug.Assert(id != StoryCharacterId.INVALID);
-            Reset();
-            mCharacterTypePicker.PickedOption = CharacterType.Story.ToString();
-            mStoryCharacterPicker.PickedOption = id.ToString();
-        }
-
-        public void SetRootCharacterId(int rootCharacterId)
-        {
-            Debug.Assert(rootCharacterId != -1);
-            Reset();
-            CharacterIdOffset = rootCharacterId;
         }
     }
 }

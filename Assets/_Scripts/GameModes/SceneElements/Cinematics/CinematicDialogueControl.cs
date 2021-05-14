@@ -80,7 +80,7 @@ namespace MAGE.GameModes.SceneElements
                 {
                     CharacterPickerControl characterPickerControl = Speakers[Dialogue[mDialogueIdx].SpeakerIdx];
                     dp.Name = "TODO";
-                    dp.PortraitAssetName = AppearanceUtil.FromDB(DBService.Get().LoadAppearance(characterPickerControl.GetCharacterId())).PortraitSpriteId.ToString();
+                    dp.PortraitAssetName = characterPickerControl.Appearance.PortraitSpriteId.ToString();
                     dp.Content = Dialogue[mDialogueIdx].Content;
                 }
 

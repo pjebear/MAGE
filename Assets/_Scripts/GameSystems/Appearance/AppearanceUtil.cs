@@ -8,6 +8,11 @@ namespace MAGE.GameSystems.Appearances
 {
     static class AppearanceUtil
     {
+        public static Appearance GetAppearance(int characterId)
+        {
+            return FromDB(DBService.Get().LoadAppearance(characterId));
+        }
+
         // Appearance
         public static Appearance FromDB(DB.DBAppearance dbAppearance)
         {

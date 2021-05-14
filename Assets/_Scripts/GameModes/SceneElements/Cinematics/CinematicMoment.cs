@@ -83,7 +83,7 @@ namespace MAGE.GameModes.SceneElements
             mCinematic.gameObject.SetActive(true);
 
             int partyAvatarId = WorldService.Get().GetPartyAvatarId();
-            rPartyAvatarInCinematic = GetComponentsInChildren<CharacterPickerControl>().ToList().Find(x => x.GetCharacterId() == partyAvatarId)?.transform;
+            rPartyAvatarInCinematic = GetComponentsInChildren<CharacterPickerControl>().ToList().Find(x => x.CharacterId == partyAvatarId)?.transform;
 
             TimelineAsset timeline = mCinematic.playableAsset as TimelineAsset;
             foreach (PlayableBinding binding in timeline.outputs)

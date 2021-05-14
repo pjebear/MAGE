@@ -10,11 +10,9 @@ namespace MAGE.GameModes
 {
     interface ILevelManagerService : Services.IService
     {
-        Appearance GetAppearance(int appearanceId);
         CinematicInfo GetCinematicInfo(int cinematicId);
         EncounterInfo GetEncounterInfo(int encounterId);
         GameModes.SceneElements.Level GetLoadedLevel();
-        Appearance GetNPCAppearance(SceneElements.NPCPropId npcId);
         SceneElements.PropInfo GetPropInfo(int propId);
         void LoadLevel(GameSystems.LevelId levelId);
         void UnloadLevel();

@@ -11,21 +11,19 @@ namespace MAGE.GameModes.SceneElements
 {
     class NPCProp : PropBase
     {
+        [HideInInspector]
         public NPCPropId NPCId = NPCPropId.None;
-
-        private void Awake()
-        {
-            GetComponent<CharacterPickerControl>().SetRootCharacterId((int)NPCId);
-        }
-
-        public override void Start()
-        {
-            base.Start();
-        }
 
         public override int GetPropId()
         {
             return (int)NPCId;
+        }
+
+        protected override void Refresh()
+        {
+            base.Refresh();
+
+            GetComponent<CharacterPickerControl>().CharacterId = PropInfo.AppearanceId;
         }
 
         public override void OnInteractionEnd()
