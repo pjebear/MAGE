@@ -25,11 +25,14 @@ namespace MAGE.GameModes.Combat
             mRootComposition = PopulateComposition();
         }
 
+        public bool AreResourceRequirementsMet()
+        {
+            return Owner.GetComponent<ResourcesControl>().HasResourcesForAction(ActionInfo.ActionCost);
+        }
+
         public bool AreActionRequirementsMet()
         {
             CombatCharacter combatCharacter = Owner.GetComponent<CombatCharacter>();
-
-            bool hasResources = combatCharacter.GetComponent<ResourcesControl>().HasResourcesForAction(ActionInfo.ActionCost);
 
             bool isBlocked = false;
             if (ActionInfo.ActionSource == ActionSource.Weapon)
@@ -43,7 +46,7 @@ namespace MAGE.GameModes.Combat
                 isBlocked = statsControl.Attributes[StatusType.Silenced] == 1;
             }
 
-            return hasResources && !isBlocked;
+            return !isBlocked;
         }
 
         protected abstract ActionInfo PopulateActionInfo();

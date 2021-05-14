@@ -77,7 +77,9 @@ namespace MAGE.GameModes.Encounter
 
         private void FinalizeTarget()
         {
-            if (mCurrentTarget != null && mCurrentTarget != mCurrentCharacter)
+            if (mCurrentTarget != null 
+                && mCurrentTarget != mCurrentCharacter
+                && mSelectedAction.AreActionRequirementsMet())
             {
                 float weaponRange = mWeaponAttackInfo.CastRange.MaxRange;
                 if (weaponRange < mCharacterEmptyRadius)

@@ -44,7 +44,14 @@ namespace MAGE.GameModes.Combat
 
         public int GetAvailableMovementRange()
         {
-            return Resources[ResourceType.MovementRange].Current;
+            int range = 0;
+
+            if (GetComponent<StatsControl>().Attributes[StatusType.Rooted] == 0)
+            {
+                range = Resources[ResourceType.MovementRange].Current;
+            }
+
+            return range;
         }
 
         public void OnMovementPerformed(int movementRange)

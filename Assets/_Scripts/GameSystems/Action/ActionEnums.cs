@@ -137,6 +137,7 @@ namespace MAGE.GameSystems.Actions
         SummonBear,
 
         // spells
+        EntanglingRoots,
         FireBall,
         FlameStrike,
         ChainLightning,

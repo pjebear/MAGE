@@ -221,7 +221,12 @@ namespace MAGE.GameModes.Encounter
                 if (mEncounterModel.mChargingActions.ContainsKey(combatCharacter))
                 {
                     ActionProposal actionProposal = mEncounterModel.mChargingActions[combatCharacter];
-                    if (actionProposal.Action.AreActionRequirementsMet())
+
+                    if (!actionProposal.Action.AreActionRequirementsMet())
+                    {
+                        mEncounterModel.mChargingActions.Remove(combatCharacter);
+                    }
+                    else if (actionProposal.Action.AreResourceRequirementsMet())
                     {
                         mEncounterModel.mActionQueue.Enqueue(actionProposal);
                         mEncounterModel.mChargingActions.Remove(combatCharacter);

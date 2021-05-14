@@ -175,28 +175,6 @@ namespace MAGE.GameSystems.Characters
         }
 
         #region Actions
-        public ActionResponseInfo GetActionResponseInfo(ActionResponseId responseId)
-        {
-            ActionResponseInfo responseInfo = ActionFactory.CreateActionResponseInfoFromId(responseId);
-            
-            // todo: modify
-
-            return responseInfo;
-        }
-
-        //  ------------------------------------------------------------------------------
-        public ActionInfoBase GetActionInfo(ActionId actionId)
-        {
-            ActionInfoBase actionInfo = ActionFactory.CreateActionInfoFromId(actionId, this);
-
-            foreach (IActionModifier modifier in GetActionModifiers().Where(x => x.ActionId == actionId))
-            {
-                modifier.Modify(actionInfo);
-            }
-
-            return actionInfo;
-        }
-
         //  ------------------------------------------------------------------------------
         public List<ActionId> GetActionIds()
         {

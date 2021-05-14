@@ -17,9 +17,7 @@ namespace MAGE.GameSystems.Actions
 
         public void Modify(ActionInfoBase info)
         {
-            WeaponActionInfoBase meleeAttackInfo = (WeaponActionInfoBase)info;
-
-            meleeAttackInfo.Effectiveness += .5f;
+            info.Effectiveness += .5f;
         }
     }
 

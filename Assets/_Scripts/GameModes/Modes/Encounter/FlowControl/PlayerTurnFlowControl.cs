@@ -408,7 +408,8 @@ namespace MAGE.GameModes.Encounter
                                 {
                                     string actionName = action.ActionInfo.ActionId.ToString();
                                     actionList.Add(new UIButton.DataProvider(actionName 
-                                        + (action.AreActionRequirementsMet() ? "" : "[Charge]"), true));
+                                        + (action.AreResourceRequirementsMet() ? "" : "[Charge]"),
+                                        action.AreActionRequirementsMet()));
                                 }
                             }
                         }

@@ -241,7 +241,8 @@ namespace MAGE.DB.Internal
                 (int)ActionId.Heal,
                 (int)ActionId.Protection,
                 (int)ActionId.Regen,
-                (int)ActionId.Smite
+                (int)ActionId.Smite,
+                (int)ActionId.EntanglingRoots,
             };
 
                 DBService.Get().WriteSpecialization(dbSpecialization);
@@ -296,7 +297,7 @@ namespace MAGE.DB.Internal
                 dbSpecialization.ActionIds = new List<int>()
             {
                 (int)ActionId.Smite
-                //,(int)ActionId.Shackle
+                ,(int)ActionId.Shackle
                 ,(int)ActionId.Anvil
                 //,(int)ActionId.HolyLight
                 //,(int)ActionId.Raise

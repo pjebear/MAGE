@@ -22,6 +22,7 @@ namespace MAGE.GameModes.Encounter
                 case (ActionId.Anvil): { action = new AnvilComposer(owner); } break;
                 case (ActionId.Defend): { action = new DefendComposer(owner); } break;
                 case (ActionId.DoubleTime): { action = new DoubleTimeComposer(owner); } break;
+                case (ActionId.EntanglingRoots): { action = new EntanglingRootsComposer(owner); } break;
                 case (ActionId.WeaponAttack): { action = new AttackComposer(owner); } break;
                 case (ActionId.ChainLightning): { action = new ChainLightningComposer(owner); } break;
                 case (ActionId.FireBall): { action = new FireBallComposer(owner); } break;
@@ -29,6 +30,7 @@ namespace MAGE.GameModes.Encounter
                 case (ActionId.Heal): { action = new HealComposer(owner); } break;
                 case (ActionId.Protection): { action = new ProtectComposer(owner); } break;
                 case (ActionId.Regen): { action = new RegenComposer(owner); } break;
+                case (ActionId.Shackle): { action = new ShackleComposer(owner); } break;
                 case (ActionId.ShieldBash): { action = new ShieldBashComposer(owner); } break;
                 case (ActionId.Smite): { action = new SmiteComposer(owner); } break;
                 case (ActionId.Swipe): { action = new SwipeComposer(owner); } break;

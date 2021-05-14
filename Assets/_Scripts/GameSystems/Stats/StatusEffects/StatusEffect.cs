@@ -98,23 +98,6 @@ namespace MAGE.GameSystems.Stats
         }
     }
 
-    class ShackleEffect : StatusEffect
-    {
-        public override List<AttributeModifier> GetAttributeModifiers()
-        {
-            List<AttributeModifier> modifiers = new List<AttributeModifier>();
-
-            modifiers.Add(new AttributeModifier(new AttributeIndex(StatusType.Disarmed), ModifierType.Increment, 1));
-
-            return modifiers;
-        }
-
-        public override StateChange GetTurnStartStateChange()
-        {
-            return StateChange.Empty;
-        }
-    }
-
     class AvengerEffect : StatusEffect
     {
         public float StackCountToAttributeMultiplier = 0.01f; // 1 stack = 1 percent
@@ -161,6 +144,23 @@ namespace MAGE.GameSystems.Stats
             List<AttributeModifier> modifiers = new List<AttributeModifier>();
 
             modifiers.Add(new AttributeModifier(TertiaryStat.ResourceRecovery, ModifierType.Increment, -.5f));
+
+            return modifiers;
+        }
+
+        public override StateChange GetTurnStartStateChange()
+        {
+            return StateChange.Empty;
+        }
+    }
+
+    class DisarmEffect : StatusEffect
+    {
+        public override List<AttributeModifier> GetAttributeModifiers()
+        {
+            List<AttributeModifier> modifiers = new List<AttributeModifier>();
+
+            modifiers.Add(new AttributeModifier(StatusType.Disarmed, ModifierType.Increment, 1));
 
             return modifiers;
         }
@@ -257,6 +257,23 @@ namespace MAGE.GameSystems.Stats
             int healthChange = (int)(stackValue * (StackCount));
 
             return new StateChange(StateChangeType.StatusEffect, healthChange, 0);
+        }
+    }
+
+    class RootedEffect : StatusEffect
+    {
+        public override List<AttributeModifier> GetAttributeModifiers()
+        {
+            List<AttributeModifier> modifiers = new List<AttributeModifier>();
+
+            modifiers.Add(new AttributeModifier(StatusType.Rooted, ModifierType.Increment, 1));
+
+            return modifiers;
+        }
+
+        public override StateChange GetTurnStartStateChange()
+        {
+            return StateChange.Empty;
         }
     }
 

@@ -33,6 +33,14 @@ namespace MAGE.GameSystems.Stats
                     effect = new DazeEffect();
                     break;
 
+                case StatusEffectId.Disarm:
+                    info.Duration = StatusEffectConstants.MEDIUM_DURATION;
+                    info.Beneficial = false;
+                    info.SpriteId = UI.StatusIconSpriteId.Disarm;
+                    info.MaxStackCount = 1;
+                    effect = new DisarmEffect();
+                    break;
+
                 case StatusEffectId.Defend:
                     info.Duration = StatusEffectConstants.UNTIL_NEXT_TURN;
                     info.Beneficial = true;
@@ -92,11 +100,12 @@ namespace MAGE.GameSystems.Stats
                     effect = new RegenEffect();
                     break;
 
-                case StatusEffectId.Shackle:
-                    info.Duration = StatusEffectConstants.SHORT_DURATION;
+                case StatusEffectId.Root:
+                    info.Duration = StatusEffectConstants.MEDIUM_DURATION;
                     info.Beneficial = false;
                     info.SpriteId = UI.StatusIconSpriteId.Disarm;
-                    effect = new ShackleEffect();
+                    info.MaxStackCount = 1;
+                    effect = new RootedEffect();
                     break;
 
                 case StatusEffectId.Aura_RighteousGlory:
