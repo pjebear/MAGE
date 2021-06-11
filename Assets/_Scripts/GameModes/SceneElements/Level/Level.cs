@@ -87,9 +87,54 @@ namespace MAGE.GameModes.SceneElements
             return EncounterContainer.GetComponentInChildren<EncounterContainer>();
         }
 
-        public Combat.CombatCharacter CreateCombatCharacter(Vector3 position, Quaternion rotation, Transform parent)
+        public Combat.ControllableEntity CreateCombatCharacter(Vector3 position, Quaternion rotation, Transform parent)
         {
-            return Instantiate(Resources.Load<Combat.CombatCharacter>("Props/ActorSpawner/CombatCharacter"), position, rotation, parent);
+            return Instantiate(Resources.Load<Combat.ControllableEntity>("Props/ActorSpawner/CombatCharacter"), position, rotation, parent);
+        }
+
+        public List<Vector3> GetPointsAroundCircle(Vector3 center, float radius, int granularity)
+        {
+            List<Vector3> points = new List<Vector3>();
+
+            Debug.Assert(granularity > 0);
+            if (granularity > 0)
+            {
+                float degreesBetweenPoints = 360 / (float)granularity;
+                
+                for (int i = 0; i < granularity; ++i)
+                {
+                    Vector3 point = center + Quaternion.Euler(0, degreesBetweenPoints * i, 0) * (Vector3.forward * radius);
+
+                    Ray ray = new Ray(point + Vector3.up * 100, Vector3.down);
+                    RaycastHit hit;
+                    if (Physics.Raycast(ray, out hit, 500f, 1 << LayerMask.NameToLayer("Terrain")))
+                    {
+                        points.Add(hit.point);
+                    }
+                }
+            }
+
+            return points;
+        }
+
+        public List<Vector3> FilterEmptyPoints(List<Vector3> points, float radius)
+        {
+            List<Vector3> emptyPoints = new List<Vector3>();
+
+            foreach (Vector3 point in points)
+            {
+                if (!QueryObjectExistsAtPoint(point, radius))
+                {
+                    emptyPoints.Add(point);
+                }
+            }
+
+            return emptyPoints;
+        }
+
+        public bool QueryObjectExistsAtPoint(Vector3 point, float radius)
+        { 
+            return Physics.OverlapSphere(point, radius).Where(x => x.gameObject.GetComponent<Combat.CombatEntity>() != null).Count() > 0;
         }
 
         public List<Combat.CombatTarget> GetTargetsInRange(Combat.CombatEntity castPoint, TargetSelection targetSelection)

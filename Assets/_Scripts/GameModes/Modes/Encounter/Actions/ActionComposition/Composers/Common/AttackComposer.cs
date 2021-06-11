@@ -15,12 +15,8 @@ namespace MAGE.GameModes.Encounter
 {
     class AttackComposer : ActionComposerBase
     {
-        public ConcreteVar<CombatEntity> Caster = new ConcreteVar<CombatEntity>();
-        public ConcreteVar<CombatTarget> Target = new ConcreteVar<CombatTarget>();
-        
         public AttackComposer(CombatEntity owner) : base (owner)
         {
-            Caster.Set(owner);
         }
 
         protected override ActionInfo PopulateActionInfo()
@@ -43,11 +39,9 @@ namespace MAGE.GameModes.Encounter
         protected override InteractionSolverBase PopulateInteractionSolver()
         {
             WeaponInteractionSolver interactionSolver = new WeaponInteractionSolver();
-            interactionSolver.Attacker = Caster;
-            interactionSolver.Target = Target;
 
             DeferredStateChange deferredStateChange = new DeferredStateChange();
-            deferredStateChange.HealthChange = new WeaponEffectivenessCalculator(Equipment.Slot.RightHand) { DeferredCombatEntity = Caster };
+            deferredStateChange.HealthChange = new WeaponEffectivenessCalculator(Equipment.Slot.RightHand) { DeferredCombatEntity = DeferredOwner };
             interactionSolver.StateChange = deferredStateChange;
 
             return interactionSolver;
@@ -58,9 +52,9 @@ namespace MAGE.GameModes.Encounter
             CompositionNode composition = new AnimationComposer()
             {
                 // AnimationConstructor
-                ToAnimate = new MonoConversion<CombatEntity, ActorAnimator>(Caster)
+                ToAnimate = new MonoConversion<CombatEntity, ActorAnimator>(Owner)
                 ,
-                AnimationTarget = Target
+                AnimationTarget = new DeferredTargetPosition(Target)
                 ,
                 AnimationInfo = new ConcreteVar<AnimationInfo>(AnimationFactory.CheckoutAnimation(ActionInfo.AnimationInfo.AnimationId))
             };
@@ -70,8 +64,8 @@ namespace MAGE.GameModes.Encounter
                 composition.ChildComposers.Add(new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Start,
                     new ProjectileSpawnComposer()
                     {
-                        Caster = new DeferredTransform<CombatEntity>(Caster),
-                        Target = new DeferredTransform<CombatTarget>(Target),
+                        CasterPosition = new PositionConversion<CombatEntity>(Owner),
+                        Target = Target,
                         ProjectileType = ActionInfo.ProjectileInfo.ProjectileId,
 
                         ChildComposers = new List<CompositionLink<CompositionNode>>()
@@ -80,8 +74,8 @@ namespace MAGE.GameModes.Encounter
                                 new InteractionTargetComposer()
                                 {
                                     Target = Target,
-                                    Caster = Caster,
-                                    InteractionResult = mInteractionSolver.InteractionResult
+                                    Caster = DeferredOwner,
+                                    InteractionSolver = mInteractionSolver
                                 }
                             )
                         }
@@ -95,8 +89,8 @@ namespace MAGE.GameModes.Encounter
                         new InteractionTargetComposer()
                         {
                             Target = Target,
-                            Caster = Caster,
-                            InteractionResult = mInteractionSolver.InteractionResult
+                            Caster = DeferredOwner,
+                            InteractionSolver = mInteractionSolver
                         }
                     )
                 };
@@ -107,9 +101,6 @@ namespace MAGE.GameModes.Encounter
 
         public override ActionComposition Compose(Target target)
         {
-            Target.Set(target.FocalTarget);
-            mInteractionSolver.Solve();
-
             return base.Compose(target);
         }
     }

@@ -8,13 +8,18 @@ using UnityEngine;
 
 namespace MAGE.GameModes.Combat
 {
+    [RequireComponent(typeof(CombatDisplayable))]
     [RequireComponent(typeof(ResourcesControl))]
     class CombatTarget : MonoBehaviour
     {
         public void ApplyStateChange(StateChange stateChange)
         {
             // StatusEffects first
-            GetComponent<StatusEffectControl>().ApplyStatusEffects(stateChange.statusEffects);
+            if (GetComponent<StatusEffectControl>() != null)
+            {
+                GetComponent<StatusEffectControl>().ApplyStatusEffects(stateChange.statusEffects);
+            }
+            
             GetComponent<ResourcesControl>().ApplyStateChange(stateChange);
         }
     }

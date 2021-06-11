@@ -52,6 +52,8 @@ namespace MAGE.DB.Internal
                 (int)ActionId.FireBall,
                 (int)ActionId.ChainLightning,
                 (int)ActionId.FlameStrike,
+                (int)ActionId.EntanglingRoots,
+                (int)ActionId.Sprout,
             };
 
                 DBService.Get().WriteSpecialization(dbSpecialization);
@@ -97,7 +99,7 @@ namespace MAGE.DB.Internal
                 // Actions
                 dbSpecialization.ActionIds = new List<int>()
                 {
-                    //(int)ActionId.SummonBear
+                    (int)ActionId.SummonBear
                 };
                 // none
 
@@ -242,7 +244,6 @@ namespace MAGE.DB.Internal
                 (int)ActionId.Protection,
                 (int)ActionId.Regen,
                 (int)ActionId.Smite,
-                (int)ActionId.EntanglingRoots,
             };
 
                 DBService.Get().WriteSpecialization(dbSpecialization);

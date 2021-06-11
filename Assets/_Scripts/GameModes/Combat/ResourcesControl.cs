@@ -12,57 +12,29 @@ namespace MAGE.GameModes.Combat
 {
     class ResourcesControl : MonoBehaviour
     {
+        public int Health = -1;
         public Resources Resources = new Resources();
 
-        public void InitResourcesFromAttributes()
+        public void Awake()
         {
             Resources = new Resources(
-              AttributeUtil.ResourceFromAttribtues(ResourceType.Health, GetComponent<StatsControl>().Attributes),
-              AttributeUtil.ResourceFromAttribtues(ResourceType.Mana, GetComponent<StatsControl>().Attributes),
-              AttributeUtil.ResourceFromAttribtues(ResourceType.Endurance, GetComponent<StatsControl>().Attributes),
-              AttributeUtil.ResourceFromAttribtues(ResourceType.Clock, GetComponent<StatsControl>().Attributes),
-              AttributeUtil.ResourceFromAttribtues(ResourceType.Actions, GetComponent<StatsControl>().Attributes),
-              AttributeUtil.ResourceFromAttribtues(ResourceType.MovementRange, GetComponent<StatsControl>().Attributes));
+              Health,
+              0,
+              0,
+              0,
+              0,
+              0);
         }
 
-        public int GetNumAvailableActions()
+        public void InitResourcesFromAttributes(Attributes attributes)
         {
-            return Resources[ResourceType.Actions].Current;
-        }
-
-        public void ActionChosen()
-        {
-            Debug.Assert(GetNumAvailableActions() > 0);
-
-            Resources[ResourceType.Actions].Modify(-1);
-        }
-
-        public void OnActionPerformed(StateChange actionCost)
-        {
-            ApplyStateChange(actionCost);
-        }
-
-        public int GetAvailableMovementRange()
-        {
-            int range = 0;
-
-            if (GetComponent<StatsControl>().Attributes[StatusType.Rooted] == 0)
-            {
-                range = Resources[ResourceType.MovementRange].Current;
-            }
-
-            return range;
-        }
-
-        public void OnMovementPerformed(int movementRange)
-        {
-            if (GetAvailableMovementRange() < movementRange)
-            {
-                Debug.LogWarningFormat("CombatCharacter::OnMovementPerformed() - Max Range {0} less than movementPerformed {1}", GetAvailableMovementRange(), movementRange);
-                movementRange = GetAvailableMovementRange();
-            }
-
-            Resources[ResourceType.MovementRange].Modify(-movementRange);
+            Resources = new Resources(
+              AttributeUtil.ResourceFromAttribtues(ResourceType.Health, attributes),
+              AttributeUtil.ResourceFromAttribtues(ResourceType.Mana, attributes),
+              AttributeUtil.ResourceFromAttribtues(ResourceType.Endurance, attributes),
+              AttributeUtil.ResourceFromAttribtues(ResourceType.Clock, attributes),
+              AttributeUtil.ResourceFromAttribtues(ResourceType.Actions, attributes),
+              AttributeUtil.ResourceFromAttribtues(ResourceType.MovementRange, attributes));
         }
 
         public void OnStatsUpdated()
@@ -99,8 +71,6 @@ namespace MAGE.GameModes.Combat
             Resources[ResourceType.Mana].Modify(stateChange.resourceChange);
             Resources[ResourceType.Endurance].Modify(stateChange.resourceChange);
 
-           
-
             if (Resources[ResourceType.Health].Current <= 0)
             {
                 BroadcastMessage("OnDeath");
@@ -110,31 +80,6 @@ namespace MAGE.GameModes.Combat
         public bool IsAlive()
         {
             return Resources[GameSystems.Stats.ResourceType.Health].Current > 0;
-        }
-
-        public bool HasResourcesForAction(StateChange actionCost)
-        {
-            bool hasResources = true;
-
-            hasResources &= (Resources[ResourceType.Health].Current + actionCost.healthChange) > 0;
-            hasResources &= (Resources[ResourceType.Mana].Current + actionCost.resourceChange) >= 0;
-
-            foreach (StatusEffect statusEffect in actionCost.statusEffects)
-            {
-                int countRequirement = statusEffect.StackCount;
-                int hasCount = GetComponent<StatusEffectControl>().GetStackCountForStatus(statusEffect.EffectType, GetComponent<CombatCharacter>().Character.Id);
-
-                hasResources &= countRequirement >= hasCount;
-            }
-
-            return hasResources;
-        }
-
-        public void OnDeath()
-        {
-            GetComponent<AudioSource>().PlayOneShot(AudioManager.Instance.GetSFXClip(SFXId.MaleDeath));
-            GetComponent<ActorAnimator>().Trigger("die");
-            GetComponent<CapsuleCollider>().enabled = false;
         }
     }
 }

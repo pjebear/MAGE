@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MAGE.GameSystems.Stats;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,8 +8,11 @@ using UnityEngine;
 
 namespace MAGE.GameModes.Combat
 {
-    class CombatEntity : MonoBehaviour
+    abstract class CombatEntity : MonoBehaviour
     {
         public TeamSide TeamSide = TeamSide.AllyHuman;
+
+        public abstract void OnTurnTick();
+        public abstract void OnDeath();
     }
 }

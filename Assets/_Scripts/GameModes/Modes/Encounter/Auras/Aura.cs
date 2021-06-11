@@ -20,19 +20,19 @@ namespace MAGE.GameModes.Combat
         private Vector3 UnitRangeAuraScale;
 
         private AuraInfo mAuraInfo;
-        private CombatEntity mOwner;
+        private ControllableEntity mOwner;
 
         private void Awake()
         {
             UnitRangeAuraScale = Vector3.one;
         }
 
-        public void Initialize(AuraInfo info, CombatEntity owner)
+        public void Initialize(AuraInfo info, ControllableEntity owner)
         {
             mAuraInfo = info;
             mOwner = owner;
 
-            TriggerVolume.radius = info.Range / 2f;
+            TriggerVolume.radius = info.Range;
             AuraGraphic.localScale = UnitRangeAuraScale * (1 + info.Range);
         }
 

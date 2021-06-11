@@ -13,12 +13,9 @@ namespace MAGE.GameModes.Encounter
 {
     class DoubleTimeComposer : ActionComposerBase
     {
-        public ConcreteVar<CombatEntity> Caster = new ConcreteVar<CombatEntity>();
-        public ConcreteVar<CombatTarget> Target = new ConcreteVar<CombatTarget>();
-
         public DoubleTimeComposer(CombatEntity owner) : base(owner)
         {
-            Caster.Set(owner);
+            // empty
         }
 
         protected override ActionInfo PopulateActionInfo()
@@ -45,8 +42,6 @@ namespace MAGE.GameModes.Encounter
         protected override InteractionSolverBase PopulateInteractionSolver()
         {
             SpellInteractionSolver interactionSolver = new SpellInteractionSolver();
-            interactionSolver.Attacker = Caster;
-            interactionSolver.Target = Target;
 
             interactionSolver.StateChange = new ConcreteVar<StateChange>(new StateChange(StateChangeType.ActionTarget, StatusEffectFactory.CheckoutStatusEffect(StatusEffectId.DoubleTime)));
 
@@ -58,9 +53,9 @@ namespace MAGE.GameModes.Encounter
             CompositionNode composition = new AnimationComposer()
             {
                 // AnimationConstructor
-                ToAnimate = new MonoConversion<CombatEntity, ActorAnimator>(Caster)
+                ToAnimate = new DeferredMonoConversion<CombatEntity, ActorAnimator>(DeferredOwner)
                 ,
-                AnimationTarget = Target
+                AnimationTarget = new DeferredTargetPosition(Target)
                 ,
                 AnimationInfo = new ConcreteVar<AnimationInfo>(AnimationFactory.CheckoutAnimation(ActionInfo.AnimationInfo.AnimationId))
                 ,
@@ -70,8 +65,8 @@ namespace MAGE.GameModes.Encounter
                         new InteractionTargetComposer()
                         {
                             Target = Target,
-                            Caster = Caster,
-                            InteractionResult = mInteractionSolver.InteractionResult
+                            Caster = DeferredOwner,
+                            InteractionSolver = mInteractionSolver
                         }
                     )
                 }
@@ -82,9 +77,6 @@ namespace MAGE.GameModes.Encounter
 
         public override ActionComposition Compose(Target target)
         {
-            Target.Set(target.FocalTarget);
-            mInteractionSolver.Solve();
-
             return base.Compose(target);
         }
     }

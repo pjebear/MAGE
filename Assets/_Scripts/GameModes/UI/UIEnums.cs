@@ -16,6 +16,7 @@ namespace MAGE.UI
         BloodScent,
         Poison,
         RighteousGlory,
+        ScorchedEarth,
 
         NUM
     }

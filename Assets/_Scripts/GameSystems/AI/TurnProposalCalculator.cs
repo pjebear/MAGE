@@ -42,10 +42,10 @@ namespace MAGE.GameSystems.AI
         //        List<ActionId> possibleActions = character.GetActionIds();
         //        // TODO: Filter actions the user doesn't have resources for
 
-        //        List<ActionInfoBase> actionInfos = new List<ActionInfoBase>();
+        //        List<ActionInfo> actionInfos = new List<ActionInfo>();
         //        foreach (ActionId actionId in character.GetActionIds())
         //        {
-        //            ActionInfoBase actionInfo = character.GetActionInfo(actionId);
+        //            ActionInfo actionInfo = character.GetActionInfo(actionId);
         //            if (actionInfo.CanCast(character))
         //            {
         //                actionInfos.Add(actionInfo);
@@ -61,7 +61,7 @@ namespace MAGE.GameSystems.AI
 
         //            List<TileIdx> path = mapPathFinder.GetPathTo(tileIdx);
 
-        //            foreach (ActionInfoBase actionInfo in actionInfos)
+        //            foreach (ActionInfo actionInfo in actionInfos)
         //            {
         //                List<TileIdx> possibleCastPoints = new List<TileIdx>(); 
         //                if (actionInfo.IsSelfCast)

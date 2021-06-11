@@ -55,12 +55,12 @@ namespace MAGE.GameModes.Encounter
         //    return GenerateLinearProjectileParams(start.transform, end.transform);
         //}
 
-        public static ProjectileSpawnParams GenerateLinearProjectileParams(Transform start, Transform end)
+        public static ProjectileSpawnParams GenerateLinearProjectileParams(Vector3 start, Vector3 end)
         {
             ProjectileSpawnParams linearParams = new ProjectileSpawnParams();
 
-            Vector3 spawnPosition = start.position + VertOffset;
-            Vector3 endPosition = end.position + VertOffset;
+            Vector3 spawnPosition = start + VertOffset;
+            Vector3 endPosition = end + VertOffset;
 
             linearParams.PathType = ProjectilePathType.Linear;
             linearParams.SpawnPoint = spawnPosition;

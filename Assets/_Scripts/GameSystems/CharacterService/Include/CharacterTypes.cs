@@ -77,6 +77,7 @@ namespace MAGE.GameSystems.Characters
         public Appearance appearanceOverrides = new Appearance();
         public SpecializationType currentSpecialization = SpecializationType.INVALID;
         public List<EquippableId> currentEquipment = EMPTY_EQUIPMENT;
+        public int level = 1;
     }
 
     struct CharacterGrowthInfo

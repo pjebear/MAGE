@@ -12,14 +12,35 @@ namespace MAGE.GameModes.Combat
 {
     class AurasControl : MonoBehaviour
     {
+        [SerializeField]
+        private List<AuraType> DefaultAuras = new List<AuraType>();
         public List<Aura> Auras = new List<Aura>();
+
+        private void Start()
+        {
+            foreach (AuraType auraType in DefaultAuras)
+            {
+                ApplyAura(auraType);
+            }
+        }
 
         public void ApplyAura(AuraType auraType)
         {
             AuraInfo info = AuraFactory.CheckoutAuraInfo(auraType);
             
             Aura aura = Instantiate(EncounterPrefabLoader.LoadAuraPrefab(), transform);
-            aura.Initialize(info, GetComponent<CombatEntity>());
+
+            ControllableEntity controllableEntity = GetComponent<ControllableEntity>();
+            if (controllableEntity == null)
+            {
+                controllableEntity = GetComponent<SummonHeirarchy>().Owner?.GetComponent<ControllableEntity>();
+            }
+
+            Debug.Assert(controllableEntity != null);
+            if (controllableEntity != null)
+            {
+                aura.Initialize(info, controllableEntity);
+            }
         }
 
         public void OnDeath()

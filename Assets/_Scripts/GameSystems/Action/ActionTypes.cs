@@ -71,11 +71,22 @@ namespace MAGE.GameSystems.Actions
         public float ChainEffectFalloff = 0;
     }
 
+    public enum SummonType
+    {
+        INVALID = -1,
+
+        Bear,
+        ScorchedEarth,
+        Tree,
+
+        NUM
+    }
+
     class ActionSummonInfo
     {
-        public SpecializationType SummonType;
+        public SummonType SummonType;
         public int SummonCount = 1;
-        public int MaxSummonCount = 1;
+        public int MaxSummonCount = -1;
     }
 }
 

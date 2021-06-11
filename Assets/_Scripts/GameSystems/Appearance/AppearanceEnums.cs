@@ -43,6 +43,9 @@ namespace MAGE.GameSystems.Appearances
         Magistrate,
         Vendor,
 
+        // Summons
+        Sprout,
+
         NUM
     }
 

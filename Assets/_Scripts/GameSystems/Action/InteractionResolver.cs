@@ -26,7 +26,7 @@ namespace MAGE.GameSystems.Actions
             float dodgeChance = 0;
             float parryChance = 0;
 
-            InteractionUtil.GetAvoidanceAttributesForCharacter(target.GetComponent<CombatCharacter>(), out dodgeChance, out blockChance, out parryChance, relativeOrientation);
+            InteractionUtil.GetAvoidanceAttributesForEntity(target.GetComponent<CombatEntity>(), out dodgeChance, out blockChance, out parryChance, relativeOrientation);
 
             if (UnityEngine.Random.Range(0, 100) < parryChance)
             {

@@ -24,6 +24,8 @@ namespace MAGE.GameModes.Encounter
         {
             ActionInfo actionInfo = new ActionInfo();
 
+            actionInfo.Effectiveness = 10;
+
             actionInfo.ActionId = ActionId.Swipe;
             actionInfo.AnimationInfo.AnimationId = AnimationId.Cleave;
             actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -3);
@@ -51,7 +53,7 @@ namespace MAGE.GameModes.Encounter
         protected override IDeferredVar<StateChange> GetStateChange()
         {
             DeferredStateChange deferredStateChange = new DeferredStateChange();
-            deferredStateChange.HealthChange = new WeaponEffectivenessCalculator(Equipment.Slot.RightHand, ActionInfo.Effectiveness, 0.5f) { DeferredCombatEntity = Caster };
+            deferredStateChange.HealthChange = new WeaponEffectivenessCalculator(Equipment.Slot.RightHand, ActionInfo.Effectiveness, 0.5f) { DeferredCombatEntity = DeferredOwner };
             deferredStateChange.StatusEffects = new ConcreteVar<List<StatusEffectId>>( new List<StatusEffectId>() { StatusEffectId.Hamstring });
 
             return deferredStateChange;

@@ -25,6 +25,7 @@ namespace MAGE.DB.Internal
                 createParams.id = (int)StoryCharacterId.Rheinhardt;
                 createParams.name = StoryCharacterId.Rheinhardt.ToString();
                 createParams.currentSpecialization = SpecializationType.Paladin;
+                createParams.level = 3;
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Mace_0, EquippableId.Relic };
                 createParams.appearanceOverrides = new Appearance()
                 {
@@ -49,6 +50,7 @@ namespace MAGE.DB.Internal
                 createParams.id = (int)StoryCharacterId.Asmund;
                 createParams.name = StoryCharacterId.Asmund.ToString();
                 createParams.currentSpecialization = SpecializationType.Monk;
+                createParams.level = 2;
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.ClothArmor_0, EquippableId.INVALID, EquippableId.Staff_0, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {
@@ -72,6 +74,7 @@ namespace MAGE.DB.Internal
                 createParams.id = (int)StoryCharacterId.Lothar;
                 createParams.name = StoryCharacterId.Lothar.ToString();
                 createParams.currentSpecialization = SpecializationType.Archer;
+                createParams.level = 2;
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.INVALID, EquippableId.Bow_0, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {
@@ -95,6 +98,7 @@ namespace MAGE.DB.Internal
                 createParams.id = (int)StoryCharacterId.Balgrid;
                 createParams.name = StoryCharacterId.Balgrid.ToString();
                 createParams.currentSpecialization = SpecializationType.Footman;
+                createParams.level = 2;
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {
@@ -118,6 +122,7 @@ namespace MAGE.DB.Internal
                 createParams.id = (int)StoryCharacterId.Maric;
                 createParams.name = StoryCharacterId.Maric.ToString();
                 createParams.currentSpecialization = SpecializationType.Footman;
+                createParams.level = 2;
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {
@@ -140,6 +145,7 @@ namespace MAGE.DB.Internal
                 createParams.characterClass = CharacterClass.MultiSpecialization;
                 createParams.name = "Francious";
                 createParams.currentSpecialization = SpecializationType.Archer;
+                createParams.level = 1;
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.INVALID, EquippableId.Bow_0, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {
@@ -158,6 +164,7 @@ namespace MAGE.DB.Internal
                 createParams.characterClass = CharacterClass.MultiSpecialization;
                 createParams.name = "Ingrid";
                 createParams.currentSpecialization = SpecializationType.Adept;
+                createParams.level = 1;
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.ClothArmor_0, EquippableId.INVALID, EquippableId.Staff_0, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {
@@ -176,6 +183,7 @@ namespace MAGE.DB.Internal
                 createParams.characterClass = CharacterClass.MultiSpecialization;
                 createParams.name = "Thomas";
                 createParams.currentSpecialization = SpecializationType.Footman;
+                createParams.level = 1;
                 createParams.currentEquipment = new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {
@@ -187,49 +195,49 @@ namespace MAGE.DB.Internal
                 characterService.CreateCharacter(createParams);
             }
 
-            // Scenario Characters
-            int scenarioCharacterId = 0;
-            { // Bandit Leader
-                CharacterCreateParams createParams = new CharacterCreateParams();
+            //// Scenario Characters
+            //int scenarioCharacterId = 0;
+            //{ // Bandit Leader
+            //    CharacterCreateParams createParams = new CharacterCreateParams();
 
-                createParams.characterType = CharacterType.Scenario;
-                createParams.characterClass = CharacterClass.MultiSpecialization;
-                createParams.id = CharacterUtil.ScenarioIdToDBId(ScenarioId.TheGreatHoldUp, scenarioCharacterId++);
-                createParams.name = "BanditLeader";
-                createParams.currentSpecialization = SpecializationType.Footman;
-                createParams.currentEquipment = new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
-                createParams.appearanceOverrides = new Appearance() { OverridePortraitSpriteId = PortraitSpriteId.BanditLeader };
+            //    createParams.characterType = CharacterType.Scenario;
+            //    createParams.characterClass = CharacterClass.MultiSpecialization;
+            //    createParams.id = CharacterUtil.ScenarioIdToDBId(ScenarioId.TheGreatHoldUp, scenarioCharacterId++);
+            //    createParams.name = "BanditLeader";
+            //    createParams.currentSpecialization = SpecializationType.Footman;
+            //    createParams.currentEquipment = new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
+            //    createParams.appearanceOverrides = new Appearance() { OverridePortraitSpriteId = PortraitSpriteId.BanditLeader };
 
-                characterService.CreateCharacter(createParams);
-            }
+            //    characterService.CreateCharacter(createParams);
+            //}
 
-            { // Lacky 1
-                CharacterCreateParams createParams = new CharacterCreateParams();
+            //{ // Lacky 1
+            //    CharacterCreateParams createParams = new CharacterCreateParams();
 
-                createParams.characterType = CharacterType.Scenario;
-                createParams.characterClass = CharacterClass.MultiSpecialization;
-                createParams.id = CharacterUtil.ScenarioIdToDBId(ScenarioId.TheGreatHoldUp, scenarioCharacterId++);
-                createParams.name = "Bandit";
-                createParams.currentSpecialization = SpecializationType.Footman;
-                createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
-                createParams.appearanceOverrides = new Appearance() { OverridePortraitSpriteId = PortraitSpriteId.Bandit_0 };
+            //    createParams.characterType = CharacterType.Scenario;
+            //    createParams.characterClass = CharacterClass.MultiSpecialization;
+            //    createParams.id = CharacterUtil.ScenarioIdToDBId(ScenarioId.TheGreatHoldUp, scenarioCharacterId++);
+            //    createParams.name = "Bandit";
+            //    createParams.currentSpecialization = SpecializationType.Footman;
+            //    createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
+            //    createParams.appearanceOverrides = new Appearance() { OverridePortraitSpriteId = PortraitSpriteId.Bandit_0 };
 
-                characterService.CreateCharacter(createParams);
-            }
+            //    characterService.CreateCharacter(createParams);
+            //}
 
-            { // Lacky 2
-                CharacterCreateParams createParams = new CharacterCreateParams();
+            //{ // Lacky 2
+            //    CharacterCreateParams createParams = new CharacterCreateParams();
 
-                createParams.characterType = CharacterType.Scenario;
-                createParams.characterClass = CharacterClass.MultiSpecialization;
-                createParams.id = CharacterUtil.ScenarioIdToDBId(ScenarioId.TheGreatHoldUp, scenarioCharacterId++);
-                createParams.name = "Bandit";
-                createParams.currentSpecialization = SpecializationType.Footman;
-                createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
-                createParams.appearanceOverrides = new Appearance() { OverridePortraitSpriteId = PortraitSpriteId.Bandit_0 };
+            //    createParams.characterType = CharacterType.Scenario;
+            //    createParams.characterClass = CharacterClass.MultiSpecialization;
+            //    createParams.id = CharacterUtil.ScenarioIdToDBId(ScenarioId.TheGreatHoldUp, scenarioCharacterId++);
+            //    createParams.name = "Bandit";
+            //    createParams.currentSpecialization = SpecializationType.Footman;
+            //    createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
+            //    createParams.appearanceOverrides = new Appearance() { OverridePortraitSpriteId = PortraitSpriteId.Bandit_0 };
 
-                characterService.CreateCharacter(createParams);
-            }
+            //    characterService.CreateCharacter(createParams);
+            //}
         }
     }
 }

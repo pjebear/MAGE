@@ -11,11 +11,11 @@ namespace MAGE.GameSystems.Actions
     {
         public Character Initiator;
         public ActionId ActionId;
-        public ActionInfoBase ActionInfo;
+        public ActionInfo ActionInfo;
         public InteractionResult InitiatorResult;
         public Dictionary<Character, InteractionResult> TargetResults;
 
-        public ActionResult(Character initiator, ActionInfoBase actionInfo, InteractionResult initiatorResult, 
+        public ActionResult(Character initiator, ActionInfo actionInfo, InteractionResult initiatorResult, 
             Dictionary<Character, InteractionResult> targetResults)
         {
             Initiator = initiator;

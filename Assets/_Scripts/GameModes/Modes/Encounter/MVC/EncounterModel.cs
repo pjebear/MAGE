@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace MAGE.GameModes.Encounter
 {
@@ -18,16 +19,18 @@ namespace MAGE.GameModes.Encounter
         public List<EncounterCondition> mWinConditions = new List<EncounterCondition>();
         public List<EncounterCondition> mLoseConditions = new List<EncounterCondition>();
 
-        public Dictionary<CombatCharacter, ActionProposal> mChargingActions = new Dictionary<CombatCharacter, ActionProposal>();
+        public Dictionary<CombatEntity, ActionProposal> mChargingActions = new Dictionary<CombatEntity, ActionProposal>();
         public Queue<ActionProposal> mActionQueue = new Queue<ActionProposal>();
 
-        public Dictionary<TeamSide, List<CombatCharacter>> Teams = new Dictionary<TeamSide, List<CombatCharacter>>();
-        public Dictionary<int, CombatCharacter> Players = new Dictionary<int, CombatCharacter>();
-        public IEnumerable<CombatCharacter> AlivePlayers { get { return Players.Values.Where(x => x.GetComponent<ResourcesControl>().IsAlive()); } }
-        
-        public List<CombatCharacter> TurnQueue = new List<CombatCharacter>();
+        public HashSet<TemporaryEntity> mTemporaryEntities = new HashSet<TemporaryEntity>();
 
-        public CombatCharacter CurrentTurn = null;
+        public Dictionary<TeamSide, List<ControllableEntity>> Teams = new Dictionary<TeamSide, List<ControllableEntity>>();
+        public Dictionary<int, ControllableEntity> Players = new Dictionary<int, ControllableEntity>();
+        public IEnumerable<ControllableEntity> AlivePlayers { get { return Players.Values.Where(x => x.GetComponent<ResourcesControl>().IsAlive()); } }
+
+        public List<ControllableEntity> TurnQueue = new List<ControllableEntity>();
+
+        public ControllableEntity CurrentTurn = null;
         public bool TurnComplete = false;
 
         public bool IsEncounterLost()
@@ -49,6 +52,52 @@ namespace MAGE.GameModes.Encounter
         public bool IsEncounterOver()
         {
             return IsEncounterLost() || IsEncounterWon();
+        }
+
+        public void AddTemporaryEntity(TemporaryEntity temporaryEntity)
+        {
+            mTemporaryEntities.Add(temporaryEntity);
+        }
+
+        public void RemoveTemporaryEntity(TemporaryEntity temporaryEntity)
+        {
+            mTemporaryEntities.Remove(temporaryEntity);
+        }
+
+        public void AddPlayer(ControllableEntity player)
+        {
+            Players.Add(player.Id, player);
+
+            if (!Teams.ContainsKey(player.TeamSide)) Teams.Add(player.TeamSide, new List<ControllableEntity>());
+            Teams[player.TeamSide].Add(player);
+
+            if (player.TeamSide == TeamSide.EnemyAI)
+            {
+                player.GetComponentInChildren<ActorOutfitter>()?.SetOutfitColorization(GameSystems.Appearances.OutfitColorization.Enemy);
+            }
+        }
+
+        public void RemovePlayer(int playerId)
+        {
+            if (Players.ContainsKey(playerId))
+            {
+                ControllableEntity entity = Players[playerId];
+                Players.Remove(playerId);
+
+                Teams[entity.TeamSide].Remove(entity);
+
+                mActionQueue.ToList().RemoveAll(x => x.Proposer == entity);
+                mChargingActions.Remove(entity);
+                TurnQueue.Remove(entity);
+
+                if (CurrentTurn == entity)
+                {
+                    CurrentTurn = null;
+                    TurnComplete = false;
+                }
+
+                GameObject.Destroy(entity.gameObject);
+            }
         }
     }
 }

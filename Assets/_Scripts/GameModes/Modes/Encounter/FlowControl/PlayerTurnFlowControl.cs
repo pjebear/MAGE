@@ -73,7 +73,7 @@ namespace MAGE.GameModes.Encounter
                     {
                         castPoint = mHoverInfo.mHoveredEntity.transform.position;
                     }
-                    DisplayEffectRange(mCurrentCharacter.transform.position, castPoint, mActionInfo.EffectRange);
+                    DisplayEffectRange(mCurrentTurn.transform.position, castPoint, mActionInfo.EffectRange);
                 }
                 else
                 {
@@ -123,9 +123,9 @@ namespace MAGE.GameModes.Encounter
         protected void UpdateIdleState()
         {
             if (mCurrentTarget != null
-                   && mCurrentTarget.GetComponent<CombatEntity>().TeamSide != mCurrentCharacter.GetComponent<CombatEntity>().TeamSide)
+                   && mCurrentTarget.GetComponent<CombatEntity>().TeamSide != mCurrentTurn.TeamSide)
             {
-                float rangeToTarget = Vector3.Distance(mCurrentCharacter.transform.position, mCurrentTarget.transform.position);
+                float rangeToTarget = Vector3.Distance(mCurrentTurn.transform.position, mCurrentTarget.transform.position);
                 if (rangeToTarget < mWeaponAttackInfo.CastRange.MaxRange)
                 {
                     mHoverInfo.mMoveToPath.Clear();
@@ -135,7 +135,7 @@ namespace MAGE.GameModes.Encounter
                 }
             }
 
-            float movementRange = mCurrentCharacter.GetComponent<ResourcesControl>().GetAvailableMovementRange();
+            float movementRange = mCurrentTurn.GetComponent<ActionsControl>().GetAvailableMovementRange();
             if (movementRange > 0)
             {
                 UpdateMovementPath();
@@ -157,15 +157,15 @@ namespace MAGE.GameModes.Encounter
 
         public override void OnMouseHoverChange(GameObject gameObject)
         {
-            CombatCharacter previousTarget = mCurrentTarget;
+            CombatTarget previousTarget = mCurrentTarget;
 
-            CombatCharacter updatedTarget = null;
+            CombatTarget updatedTarget = null;
             // Highlighting a character
             if (gameObject != null)
             {
-                if (gameObject.GetComponent<CombatCharacter>() != null)
+                if (gameObject.GetComponent<CombatTarget>() != null)
                 {
-                    updatedTarget = gameObject.GetComponent<CombatCharacter>();
+                    updatedTarget = gameObject.GetComponent<CombatTarget>();
                 }
             }
 
@@ -194,7 +194,7 @@ namespace MAGE.GameModes.Encounter
 
             UpdateCursor();
 
-            Debug.Log(string.Format("HoverTargetChangedTo - {0}", mCurrentTarget != null ? mCurrentTarget.Character.Name : "NONE"));
+            Debug.Log(string.Format("HoverTargetChangedTo - {0}", mCurrentTarget != null ? mCurrentTarget.gameObject.name : "NONE"));
         }
 
         void OnLeftClick(Vector2 screenPos)
@@ -213,7 +213,7 @@ namespace MAGE.GameModes.Encounter
             {
                 if (mCurrentTarget == null && mActionInfo.CanGroundTarget)
                 {
-                    ActionProposal proposal = new ActionProposal(mCurrentCharacter.GetComponent<CombatEntity>(), new Target(mHoverInfo.mHoveredTerrainPos), mSelectedAction);
+                    ActionProposal proposal = new ActionProposal(mCurrentTurn, new Target(mHoverInfo.mHoveredTerrainPos), mSelectedAction);
                     QueueAction(proposal);
                     SendFlowMessage("actionChosen");
                 }
@@ -223,7 +223,7 @@ namespace MAGE.GameModes.Encounter
                         || mActionInfo.EffectRange.TargetingType == TargetingType.Allies && mCurrentTarget.GetComponent<CombatEntity>().TeamSide == TeamSide.AllyHuman
                         || mActionInfo.EffectRange.TargetingType == TargetingType.Enemies && mCurrentTarget.GetComponent<CombatEntity>().TeamSide == TeamSide.EnemyAI)
                     {
-                        ActionProposal proposal = new ActionProposal(mCurrentCharacter.GetComponent<CombatEntity>(), new Target(mCurrentTarget.GetComponent<CombatTarget>()), mSelectedAction);
+                        ActionProposal proposal = new ActionProposal(mCurrentTurn, new Target(mCurrentTarget.GetComponent<CombatTarget>()), mSelectedAction);
                         QueueAction(proposal);
                         SendFlowMessage("actionChosen");
                     }           
@@ -235,14 +235,14 @@ namespace MAGE.GameModes.Encounter
                 if (mCurrentTarget != null)
                 {
                     // Move to an ally
-                    if (mCurrentTarget.GetComponent<CombatEntity>().TeamSide == mCurrentCharacter.GetComponent<CombatEntity>().TeamSide)
+                    if (mCurrentTarget.GetComponent<CombatEntity>().TeamSide == mCurrentTurn.TeamSide)
                     {
                         if (mHoverInfo.mMoveToPath.Count > 0)
                         {
                             SetState(State.Moving);
 
-                            mCurrentCharacter.GetComponent<ResourcesControl>().OnMovementPerformed(Mathf.CeilToInt(GetPathLength(mHoverInfo.mMoveToPath)));
-                            mCurrentCharacter.GetComponent<ActorMotor>().MoveToPoint(mHoverInfo.mMoveToPath[mHoverInfo.mMoveToPath.Count - 1], () =>
+                            mCurrentTurn.GetComponent<ActionsControl>().OnMovementPerformed(Mathf.CeilToInt(GetPathLength(mHoverInfo.mMoveToPath)));
+                            mCurrentTurn.GetComponent<ActorMotor>().MoveToPoint(mHoverInfo.mMoveToPath[mHoverInfo.mMoveToPath.Count - 1], () =>
                             {
                                 SendFlowMessage("actionChosen");
                             });
@@ -257,9 +257,9 @@ namespace MAGE.GameModes.Encounter
                 else if (mHoverInfo.mMoveToPath.Count > 0)
                 {
                     SetState(State.Moving);
-                    mCurrentCharacter.GetComponent<ResourcesControl>().OnMovementPerformed(Mathf.RoundToInt(GetPathLength(mHoverInfo.mMoveToPath)));
+                    mCurrentTurn.GetComponent<ActionsControl>().OnMovementPerformed(Mathf.RoundToInt(GetPathLength(mHoverInfo.mMoveToPath)));
 
-                    mCurrentCharacter.GetComponent<ActorMotor>().MoveToPoint(mHoverInfo.mMoveToPath[mHoverInfo.mMoveToPath.Count - 1], () =>
+                    mCurrentTurn.GetComponent<ActorMotor>().MoveToPoint(mHoverInfo.mMoveToPath[mHoverInfo.mMoveToPath.Count - 1], () =>
                     {
                         SendFlowMessage("actionChosen");
                     });
@@ -308,7 +308,7 @@ namespace MAGE.GameModes.Encounter
                     }
                     else if (mHoverInfo.mHoveredObstacle == null 
                         && hit.collider.GetComponentInParent<NavMeshObstacle>()
-                        && hit.collider.GetComponentInParent<CombatCharacter>() != mCurrentCharacter)
+                        && hit.collider.GetComponentInParent<CombatEntity>() != mCurrentTurn)
                     {
                         mHoverInfo.mHoveredObstacle = hit.collider.GetComponentInParent<NavMeshObstacle>();
                     }
@@ -318,7 +318,7 @@ namespace MAGE.GameModes.Encounter
                 {
                     Debug.LogFormat("Hovering {0}", mHoverInfo.mHoveredEntity.gameObject.name);
 
-                    if (mHoverInfo.mHoveredEntity != mCurrentCharacter.GetComponent<CombatEntity>())
+                    if (mHoverInfo.mHoveredEntity != mCurrentTurn)
                     {
                         mHoverInfo.mHoveredObstacle = mHoverInfo.mHoveredEntity.GetComponentInChildren<NavMeshObstacle>();
                         mHoverInfo.mHoveredObstacle.enabled = false;
@@ -335,10 +335,10 @@ namespace MAGE.GameModes.Encounter
                 moveToPoint = mHoverInfo.mHoveredEntity.transform.position;
 
                 NavMeshPath path = new NavMeshPath();
-                NavMesh.CalculatePath(mCurrentCharacter.transform.position, moveToPoint, NavMesh.AllAreas, path);
+                NavMesh.CalculatePath(mCurrentTurn.transform.position, moveToPoint, NavMesh.AllAreas, path);
                 if (path.corners.Length > 0)
                 {
-                    if (mHoverInfo.mHoveredEntity.TeamSide != mCurrentCharacter.GetComponent<CombatEntity>().TeamSide)
+                    if (mHoverInfo.mHoveredEntity.TeamSide != mCurrentTurn.TeamSide)
                     {
                         float weaponRange = mWeaponAttackInfo.CastRange.MaxRange;
                         if (weaponRange < mCharacterEmptyRadius)
@@ -353,7 +353,7 @@ namespace MAGE.GameModes.Encounter
                     }
                 }
             }
-            else if (mHoverInfo.mHoveredObstacle != null && mHoverInfo.mHoveredObstacle.GetComponentInParent<CombatCharacter>() != mCurrentCharacter)
+            else if (mHoverInfo.mHoveredObstacle != null && mHoverInfo.mHoveredObstacle.GetComponentInParent<CombatEntity>() != mCurrentTurn)
             {
                 Vector3 currTargetToMovePoint = mHoverInfo.mHoveredTerrainPos - mHoverInfo.mHoveredObstacle.transform.position;
                 moveToPoint = mHoverInfo.mHoveredObstacle.transform.position + (currTargetToMovePoint.normalized * mCharacterEmptyRadius);
@@ -366,11 +366,11 @@ namespace MAGE.GameModes.Encounter
             if (moveToPoint != Vector3.zero)
             {
                 NavMeshPath pathToPoint = new NavMeshPath();
-                NavMesh.CalculatePath(mCurrentCharacter.transform.position, moveToPoint, NavMesh.AllAreas, pathToPoint);
+                NavMesh.CalculatePath(mCurrentTurn.transform.position, moveToPoint, NavMesh.AllAreas, pathToPoint);
                 if (pathToPoint.corners.Length > 0)
                 {
                     float pathLength = GetPathLength(pathToPoint.corners);
-                    float availableMovement = mCurrentCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.MovementRange].Current;
+                    float availableMovement = mCurrentTurn.GetComponent<ResourcesControl>().Resources[ResourceType.MovementRange].Current;
                     if (pathLength > availableMovement)
                     {
                         mHoverInfo.mMoveToPath = TrimPathToSize(pathToPoint.corners, availableMovement).ToList();
@@ -396,9 +396,9 @@ namespace MAGE.GameModes.Encounter
 
                     if (mState == State.Idle)
                     {
-                        if (mCurrentCharacter.GetComponent<ResourcesControl>().GetNumAvailableActions() > 0)
+                        if (mCurrentTurn.GetComponent<ActionsControl>().GetNumAvailableActions() > 0)
                         {
-                            if (GameModel.Encounter.mChargingActions.ContainsKey(mCurrentCharacter))
+                            if (GameModel.Encounter.mChargingActions.ContainsKey(mCurrentTurn))
                             {
                                 actionList.Add(new UIButton.DataProvider("Cancel Charging Action", true));
                             }
@@ -449,11 +449,11 @@ namespace MAGE.GameModes.Encounter
                         if (mState == State.Idle)
                         {
                             ListInteractionInfo listInteractionInfo = interactionInfo as ListInteractionInfo;
-                            if (GameModel.Encounter.mChargingActions.ContainsKey(mCurrentCharacter))
+                            if (GameModel.Encounter.mChargingActions.ContainsKey(mCurrentTurn))
                             {
                                 if (listInteractionInfo.ListIdx == 0)
                                 {
-                                    GameModel.Encounter.mChargingActions.Remove(mCurrentCharacter);
+                                    GameModel.Encounter.mChargingActions.Remove(mCurrentTurn);
                                     Publish((int)UIContainerId.ActorActionsView);
                                 }
                                 else
@@ -462,7 +462,7 @@ namespace MAGE.GameModes.Encounter
                                     SendFlowMessage("actionChosen");
                                 }
                             }
-                            else if (mCurrentCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Actions].Current == 0 
+                            else if (mCurrentTurn.GetComponent<ResourcesControl>().Resources[ResourceType.Actions].Current == 0 
                                 || listInteractionInfo.ListIdx >= mAvailableActions.Count)
                             {
                                 // Wait selected
@@ -478,15 +478,15 @@ namespace MAGE.GameModes.Encounter
                                 if (mActionInfo.IsSelfCast && mActionInfo.EffectRange.AreaType == AreaType.Point)
                                 {
                                     ActionProposal proposal = new ActionProposal(
-                                        mCurrentCharacter.GetComponent<CombatEntity>(),
-                                        new Target(mCurrentCharacter.GetComponent<CombatTarget>()),
+                                        mCurrentTurn,
+                                        new Target(mCurrentTurn.GetComponent<CombatTarget>()),
                                         mSelectedAction);
                                     QueueAction(proposal);
                                     SendFlowMessage("actionChosen");
                                 }
                                 else
                                 {
-                                    DisplayAbilityRange(mCurrentCharacter.transform.position, mActionInfo.CastRange);
+                                    DisplayAbilityRange(mCurrentTurn.transform.position, mActionInfo.CastRange);
 
                                     SetState(State.TargetSelect);
                                 }
@@ -526,20 +526,20 @@ namespace MAGE.GameModes.Encounter
             {
                 if (mCurrentTarget != null)
                 {
-                    if (mCurrentTarget.GetComponent<CombatEntity>().TeamSide == mCurrentCharacter.GetComponent<CombatEntity>().TeamSide)
+                    if (mCurrentTarget.GetComponent<CombatEntity>().TeamSide == mCurrentTurn.TeamSide)
                     {
-                        if ((mCurrentTarget.transform.position - mCurrentCharacter.transform.position).magnitude > 1.5f)
+                        if ((mCurrentTarget.transform.position - mCurrentTurn.transform.position).magnitude > 1.5f)
                         {
                             updatedCursorType = CursorControl.CursorType.Interact_Near;
                         }
                     }
                     else
                     {
-                        if (mCurrentCharacter.GetComponent<ResourcesControl>().GetNumAvailableActions() > 0)
+                        if (mCurrentTurn.GetComponent<ActionsControl>().GetNumAvailableActions() > 0)
                         {
                             updatedCursorType = CursorControl.CursorType.Combat_Near;
                         }
-                        else if ((mCurrentTarget.transform.position - mCurrentCharacter.transform.position).magnitude > 1.5f)
+                        else if ((mCurrentTarget.transform.position - mCurrentTurn.transform.position).magnitude > 1.5f)
                         {
                             updatedCursorType = CursorControl.CursorType.Interact_Near;
                         }

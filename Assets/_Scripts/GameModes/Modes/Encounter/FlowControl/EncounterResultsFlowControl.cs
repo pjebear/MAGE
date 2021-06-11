@@ -35,10 +35,13 @@ namespace MAGE.GameModes.Encounter
             Level level = LevelManagementService.Get().GetLoadedLevel();
             EncounterContainer activeEncounter = level.GetActiveEncounter();
 
+            List<int> party = WorldService.Get().GetCharactersInParty();
             EncounterEndParams result = new EncounterEndParams();
             result.EncounterScenarioId = activeEncounter.EncounterScenarioId;
             result.PlayersInEncounter = GameModel.Encounter.Teams[TeamSide.AllyHuman]
-                .Select(x => x.Character.Id)
+                .Where(x => x.GetComponent<ControllableEntity>() != null)
+                .Select(x => x.GetComponent<ControllableEntity>().Character.Id)
+                .Where(x=> party.Contains(x))
                 .ToList();
 
             result.DidUserWin = !GameModel.Encounter.IsEncounterLost();
@@ -105,7 +108,7 @@ namespace MAGE.GameModes.Encounter
                 {
                     CharacterGrowthInfo growth = growthInfoPair.Value;
 
-                    Character character = GameModel.Encounter.Players[growthInfoPair.Key].Character;
+                    Character character = GameModel.Encounter.Players[growthInfoPair.Key].GetComponent<ControllableEntity>().Character;
                     Character postCombatCharacter = CharacterService.Get().GetCharacter(growthInfoPair.Key);
 
                     CharacterGrowth.DataProvider growthDP = new CharacterGrowth.DataProvider();

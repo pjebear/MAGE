@@ -14,13 +14,13 @@ namespace MAGE.GameSystems.Actions
 {
     static class InteractionUtil
     {
-        public static void GetAvoidanceAttributesForCharacter(CombatCharacter combatCharacter, out float dodgeChance, out float blockChance, out float parryChance, RelativeOrientation relativeOrientation = RelativeOrientation.Front)
+        public static void GetAvoidanceAttributesForEntity(CombatEntity combatEntity, out float dodgeChance, out float blockChance, out float parryChance, RelativeOrientation relativeOrientation = RelativeOrientation.Front)
         {
             blockChance = 0;
             dodgeChance = 0;
             parryChance = 0;
 
-            EquipmentControl equipmentControl = combatCharacter.GetComponent<EquipmentControl>();
+            EquipmentControl equipmentControl = combatEntity.GetComponent<EquipmentControl>();
             if (equipmentControl != null)
             {
                 Equipment.Slot parryEquippableSlot = Equipment.Slot.INVALID;
@@ -81,7 +81,7 @@ namespace MAGE.GameSystems.Actions
                 }
             }
 
-            StatsControl targetStatControl = combatCharacter.GetComponent<StatsControl>();
+            StatsControl targetStatControl = combatEntity.GetComponent<StatsControl>();
             if (targetStatControl != null)
             {
                 float avoidanceMultiplier = 1 + targetStatControl.Attributes[TertiaryStat.AvoidanceMultiplier];

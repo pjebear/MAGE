@@ -25,6 +25,11 @@ namespace MAGE.GameSystems.Stats
                 case AuraType.RighteousGlory:
                     auraEffectType = StatusEffectId.Aura_RighteousGlory;
                     break;
+                case AuraType.ScorchedEarth:
+                    auraEffectType = StatusEffectId.ScorchedEarth;
+                    isBeneficial = false;
+                    range = 3;
+                    break;
 
                 default:
                     Debug.Assert(false);

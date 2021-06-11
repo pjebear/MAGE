@@ -142,6 +142,7 @@ namespace MAGE.GameSystems.Actions
         FlameStrike,
         ChainLightning,
         Regen,
+        Sprout,
 
         WeaponAttack,
 

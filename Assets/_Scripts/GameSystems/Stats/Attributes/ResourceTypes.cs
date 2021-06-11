@@ -34,7 +34,7 @@ namespace MAGE.GameSystems.Stats
 
         public void Set(int current, int max)
         {
-            UnityEngine.Debug.Assert(current <= max && max > 0);
+            UnityEngine.Debug.Assert(current <= max);//&& max > 0);
             current = Mathf.Clamp(current, 0, max);
             mCurrent = current;
             mMax = max;

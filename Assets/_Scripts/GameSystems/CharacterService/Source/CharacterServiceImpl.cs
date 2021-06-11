@@ -117,6 +117,12 @@ namespace MAGE.GameSystems.Characters.Internal
 
             DBService.Get().WriteAppearance(characterInfo.Id, AppearanceUtil.ToDB(appearance));
 
+            if (createParams.level > 1)
+            {
+                int experience = createParams.level * CharacterConstants.LEVEL_UP_THRESHOLD;
+                AssignExperience(characterInfo.Id, experience);
+            }
+
             return characterInfo.Id;
         }
 

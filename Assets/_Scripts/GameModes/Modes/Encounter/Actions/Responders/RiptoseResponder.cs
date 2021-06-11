@@ -25,7 +25,7 @@ namespace MAGE.GameModes.Combat
                 && WasResponderTargeted(actionResult))
             {
                 InteractionResult result = actionResult.TargetResults[mResponder.GetComponent<CombatTarget>()];
-                ActionInfoBase info = actionResult.ActionInfo;
+                ActionInfo info = actionResult.ActionInfo;
                 if (info.ActionRange == ActionRange.Meele
                     && info.ActionSource == ActionSource.Weapon
                     && result.InteractionResultType == InteractionResultType.Parry)

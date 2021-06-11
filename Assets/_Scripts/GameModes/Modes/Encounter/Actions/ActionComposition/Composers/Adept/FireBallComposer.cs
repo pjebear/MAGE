@@ -17,13 +17,14 @@ namespace MAGE.GameModes.Encounter
     {
         public FireBallComposer(CombatEntity owner) : base(owner)
         {
-            Caster.Set(owner);
+            // empty
         }
 
         protected override ActionInfo PopulateActionInfo()
         {
             ActionInfo actionInfo = new ActionInfo();
 
+            actionInfo.Effectiveness = 7;
             actionInfo.ActionId = ActionId.FireBall;
             actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -3);
             actionInfo.ActionRange = ActionRange.Projectile;

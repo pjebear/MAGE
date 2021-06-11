@@ -33,7 +33,7 @@ namespace MAGE.GameSystems.AI
     //{
     //    public static float PercentChangeToValue = ActionPolicyConstants.MEDIUM_WEIGHTING;
 
-    //    public static float CalculateActionValue(Character performingAction, CharacterPosition positioning, ActionInfoBase actionInfo, List<Character> actionTargets, Map map)
+    //    public static float CalculateActionValue(Character performingAction, CharacterPosition positioning, ActionInfo actionInfo, List<Character> actionTargets, Map map)
     //    {
     //        float value = 0;
 
@@ -65,7 +65,7 @@ namespace MAGE.GameSystems.AI
     //{
     //    public static float PercentToValue = ActionPolicyConstants.MEDIUM_WEIGHTING;
 
-    //    public static float CalculateActionValue(Character performingAction, CharacterPosition positioning, ActionInfoBase actionInfo, List<Character> actionTargets, Map map, bool highHealth)
+    //    public static float CalculateActionValue(Character performingAction, CharacterPosition positioning, ActionInfo actionInfo, List<Character> actionTargets, Map map, bool highHealth)
     //    {
     //        float value = 0;
 
@@ -87,7 +87,7 @@ namespace MAGE.GameSystems.AI
     //    public static float LateralReward = ActionPolicyConstants.MEDIUM_WEIGHTING / 2;
     //    public static float BehindReward = ActionPolicyConstants.MEDIUM_WEIGHTING;
 
-    //    public static float CalculateActionValue(Character performingAction, CharacterPosition positioning, ActionInfoBase actionInfo, List<Character> actionTargets, Map map)
+    //    public static float CalculateActionValue(Character performingAction, CharacterPosition positioning, ActionInfo actionInfo, List<Character> actionTargets, Map map)
     //    {
     //        float value = 0;
 
@@ -110,7 +110,7 @@ namespace MAGE.GameSystems.AI
 
     //static class FriendlyFirePolicy
     //{
-    //    public static float CalculateActionValue(Character performingAction, CharacterPosition positioning, ActionInfoBase actionInfo, List<Character> actionTargets, Map map)
+    //    public static float CalculateActionValue(Character performingAction, CharacterPosition positioning, ActionInfo actionInfo, List<Character> actionTargets, Map map)
     //    {
     //        float value = 0;
 
@@ -129,7 +129,7 @@ namespace MAGE.GameSystems.AI
 
     //static class SummonPolicy
     //{
-    //    public static float CalculateActionValue(Character performingAction, CharacterPosition positioning, ActionInfoBase actionInfo, List<Character> actionTargets, Map map)
+    //    public static float CalculateActionValue(Character performingAction, CharacterPosition positioning, ActionInfo actionInfo, List<Character> actionTargets, Map map)
     //    {
     //        float value = 0;
     //        if (actionInfo.SummonInfo.SummonType != SpecializationType.INVALID)

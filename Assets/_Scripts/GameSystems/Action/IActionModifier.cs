@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MAGE.GameSystems.Actions
 {
-    interface IActionModifier : IModifier<ActionInfoBase>
+    interface IActionModifier : IModifier<ActionInfo>
     {
         ActionId ActionId { get; }
     }
@@ -15,7 +15,7 @@ namespace MAGE.GameSystems.Actions
     {
         public ActionId ActionId { get { return ActionId.WeaponAttack; } }
 
-        public void Modify(ActionInfoBase info)
+        public void Modify(ActionInfo info)
         {
             info.Effectiveness += .5f;
         }
@@ -31,7 +31,7 @@ namespace MAGE.GameSystems.Actions
             HealAmp = healAmp;
         }
 
-        public void Modify(ActionInfoBase info)
+        public void Modify(ActionInfo info)
         {
             info.Effectiveness += HealAmp;
         }

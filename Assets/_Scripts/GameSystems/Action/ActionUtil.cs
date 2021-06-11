@@ -22,7 +22,7 @@ namespace MAGE.GameSystems.Actions
             return rangeInfo;
         }
 
-        public static void FromDB(DB.DBAction dbAction, ActionInfoBase fromDB)
+        public static void FromDB(DB.DBAction dbAction, ActionInfo fromDB)
         {
             fromDB.ActionId = (ActionId)dbAction.Id;
             fromDB.ActionRange = (ActionRange)dbAction.ActionRange;
@@ -36,7 +36,7 @@ namespace MAGE.GameSystems.Actions
             fromDB.EffectInfo.SFXId = (SFXId)dbAction.SFXId;
             fromDB.ChainInfo.NumChainTargets = dbAction.NumChainBounces;
             fromDB.ChainInfo.ChainEffectFalloff = dbAction.ChainFalloff;
-            fromDB.SummonInfo.SummonType = (SpecializationType)dbAction.SummonType;
+            fromDB.SummonInfo.SummonType = (SummonType)dbAction.SummonType;
             fromDB.SummonInfo.SummonCount = dbAction.SummonCount;
             fromDB.SummonInfo.MaxSummonCount = dbAction.MaxSummonCount;
             fromDB.IsSelfCast = dbAction.IsSelfCast;

@@ -26,6 +26,7 @@ namespace MAGE.GameSystems.Stats
         DoubleTime,
         Hamstring,
         Poison,
+        ScorchedEarth,
         Protection,
         Aura_Protection,
         Regen,

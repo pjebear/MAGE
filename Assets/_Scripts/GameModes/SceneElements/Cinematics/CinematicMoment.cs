@@ -22,7 +22,6 @@ namespace MAGE.GameModes.SceneElements
 
         private PlayableDirector mCinematic;
         private CinematicMomentTriggerVolume mTriggerVolume;
-        private Transform rPartyAvatarInCinematic;
         private bool mIsCinematicReady = false;
 
         private void Awake()
@@ -50,7 +49,9 @@ namespace MAGE.GameModes.SceneElements
 
         public Transform GetPartyAvatarInScene()
         {
-            return rPartyAvatarInCinematic;
+            int partyAvatarId = WorldService.Get().GetPartyAvatarId();
+
+            return GetComponentsInChildren<CharacterPickerControl>(true).ToList().Find(x => x.CharacterId == partyAvatarId)?.transform;
         }
 
         public void CinematicEnabled()
@@ -81,9 +82,6 @@ namespace MAGE.GameModes.SceneElements
         {
             mIsCinematicReady = false;
             mCinematic.gameObject.SetActive(true);
-
-            int partyAvatarId = WorldService.Get().GetPartyAvatarId();
-            rPartyAvatarInCinematic = GetComponentsInChildren<CharacterPickerControl>().ToList().Find(x => x.CharacterId == partyAvatarId)?.transform;
 
             TimelineAsset timeline = mCinematic.playableAsset as TimelineAsset;
             foreach (PlayableBinding binding in timeline.outputs)

@@ -72,6 +72,13 @@ namespace MAGE.GameSystems.Stats
                     effect = new PoisonEffect();
                     break;
 
+                case StatusEffectId.ScorchedEarth:
+                    info.Duration = StatusEffectConstants.PERMANENT_DURATION;
+                    info.Beneficial = false;
+                    info.SpriteId = UI.StatusIconSpriteId.ScorchedEarth;
+                    effect = new ScorchedEarth();
+                    break;
+
                 case StatusEffectId.Protection:
                     info.Duration = StatusEffectConstants.MEDIUM_DURATION;
                     info.Beneficial = true;

@@ -42,7 +42,7 @@ namespace MAGE.GameModes.Encounter
 
         void BeginNextAction(ActionProposal nextAction)
         {
-            nextAction.Proposer.GetComponent<ResourcesControl>().OnActionPerformed(nextAction.Action.ActionInfo.ActionCost);
+            nextAction.Proposer.GetComponent<ActionsControl>().OnActionPerformed(nextAction.Action.ActionInfo.ActionCost);
             mComposition = nextAction.Action.Compose(nextAction.Target);
 
 
@@ -58,7 +58,7 @@ namespace MAGE.GameModes.Encounter
             {
                 mActionTimeline = null;
 
-                foreach (CombatCharacter character in GameModel.Encounter.Players.Values.Where(x => x.GetComponent<ResourcesControl>().IsAlive()))
+                foreach (CombatEntity character in GameModel.Encounter.Players.Values.Where(x => x.GetComponent<ResourcesControl>().IsAlive()))
                 {
                     foreach (ActionResponseBase actionResponseBase in character.GetComponent<ActionsControl>().RespondToAction(mComposition.ActionResults))
                     {

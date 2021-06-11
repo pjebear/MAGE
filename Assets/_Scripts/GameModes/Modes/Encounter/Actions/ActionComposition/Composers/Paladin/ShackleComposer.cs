@@ -50,7 +50,7 @@ namespace MAGE.GameModes.Encounter
         {
             SpellEffectivenessCalculator calculator = new SpellEffectivenessCalculator();
             calculator.BaseEffectiveness = ActionInfo.Effectiveness;
-            calculator.DeferredCaster = new MonoConversion<CombatEntity, StatsControl>(Caster);
+            calculator.DeferredCaster = new DeferredMonoConversion<CombatEntity, StatsControl>(DeferredOwner);
             calculator.IsBeneficial = false;
 
             DeferredStateChange deferredStateChange = new DeferredStateChange();

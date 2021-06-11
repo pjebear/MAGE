@@ -16,7 +16,7 @@ namespace MAGE.UI.Views
 
         public void Publish(string barName, int numerator, int denominator)
         {
-            float fillRatio = numerator / (float)denominator;
+            float fillRatio = denominator > 0 ? numerator / (float)denominator : 0;
             Vector3 currentScale = FillBarImg.rectTransform.localScale;
             currentScale.x = fillRatio;
             FillBarImg.rectTransform.localScale = currentScale;

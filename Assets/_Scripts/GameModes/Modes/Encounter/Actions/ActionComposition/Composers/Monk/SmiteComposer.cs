@@ -22,6 +22,7 @@ namespace MAGE.GameModes.Encounter
         {
             ActionInfo actionInfo = new ActionInfo();
 
+            actionInfo.Effectiveness = 13;
             actionInfo.ActionId = ActionId.Smite;
             actionInfo.AnimationInfo.AnimationId = GameSystems.AnimationId.Cast;
             actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -10);
@@ -49,7 +50,7 @@ namespace MAGE.GameModes.Encounter
         {
             SpellEffectivenessCalculator calculator = new SpellEffectivenessCalculator();
             calculator.BaseEffectiveness = ActionInfo.Effectiveness;
-            calculator.DeferredCaster = new MonoConversion<CombatEntity, StatsControl>(Caster);
+            calculator.DeferredCaster = new DeferredMonoConversion<CombatEntity, StatsControl>(DeferredOwner);
             calculator.IsBeneficial = false;
 
             DeferredStateChange deferredStateChange = new DeferredStateChange();

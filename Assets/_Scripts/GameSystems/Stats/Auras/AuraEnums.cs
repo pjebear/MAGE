@@ -11,6 +11,7 @@ namespace MAGE.GameSystems.Stats
         Protection,
         Regen,
         RighteousGlory,
+        ScorchedEarth,
 
         NUM
     }

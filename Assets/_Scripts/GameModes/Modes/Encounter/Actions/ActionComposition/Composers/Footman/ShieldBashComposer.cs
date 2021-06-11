@@ -23,6 +23,7 @@ namespace MAGE.GameModes.Encounter
         {
             ActionInfo actionInfo = new ActionInfo();
 
+            actionInfo.Effectiveness = 5;
             actionInfo.ActionId = ActionId.ShieldBash;
             actionInfo.AnimationInfo.AnimationId = AnimationId.Block;
             actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -4);

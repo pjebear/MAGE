@@ -234,9 +234,7 @@ namespace MAGE.GameModes.Exploration
             {
                 mob.gameObject.SetActive(false);
                 randomEncounter.MobsInEncounter.Add(mob.GetComponent<MobCharacterControl>().MobId);
-
-                CombatCharacter player = level.CreateCombatCharacter(mob.transform.position, mob.transform.rotation, randomEncounter.Enemies);
-                player.GetComponent<CharacterPickerControl>().CharacterId = mob.GetComponent<CharacterPickerControl>().CharacterId;
+                mob.transform.SetParent(randomEncounter.Enemies);
             }
 
             Vector3 partyToEnemy = enemy.transform.position - mPlayer.transform.position;
@@ -247,7 +245,7 @@ namespace MAGE.GameModes.Exploration
             foreach (int partyCharacterId in WorldService.Get().GetCharactersInParty())
             //int partyCharacterId = WorldService.Get().GetPartyAvatarId();
             {
-                CombatCharacter player = level.CreateCombatCharacter(mPlayer.transform.position + characterCount++ * right, mPlayer.transform.rotation, randomEncounter.Allys);
+                ControllableEntity player = level.CreateCombatCharacter(mPlayer.transform.position + characterCount++ * right, mPlayer.transform.rotation, randomEncounter.Allys);
                 player.GetComponent<CharacterPickerControl>().CharacterId = partyCharacterId;
             }
         }

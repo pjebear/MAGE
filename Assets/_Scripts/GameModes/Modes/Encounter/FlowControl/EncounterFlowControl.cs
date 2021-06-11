@@ -45,8 +45,11 @@ namespace MAGE.GameModes.Encounter
                 List<CharacterPickerControl> allies = activeContainer.Allys.GetComponentsInChildren<CharacterPickerControl>(true).ToList();
                 foreach (CharacterPickerControl character in allies)
                 {
-                    CombatCharacter combatCharacter = level.CreateCombatCharacter(character.transform.position, character.transform.rotation, activeContainer.Allys);
+                    ControllableEntity combatCharacter = level.CreateCombatCharacter(character.transform.position, character.transform.rotation, activeContainer.Allys);
+
+                    // Triggers the addition to EncounterModel
                     combatCharacter.GetComponent<CharacterPickerControl>().CharacterId = character.CharacterId;
+
                     character.gameObject.SetActive(false);
                 }
             }
@@ -55,8 +58,11 @@ namespace MAGE.GameModes.Encounter
                 List<CharacterPickerControl> enemies = activeContainer.Enemies.GetComponentsInChildren<CharacterPickerControl>(true).ToList();
                 foreach (CharacterPickerControl character in enemies)
                 {
-                    CombatCharacter combatCharacter = level.CreateCombatCharacter(character.transform.position, character.transform.rotation, activeContainer.Enemies);
+                    ControllableEntity combatCharacter = level.CreateCombatCharacter(character.transform.position, character.transform.rotation, activeContainer.Enemies);
+
+                    // Triggers the addition to EncounterModel
                     combatCharacter.GetComponent<CharacterPickerControl>().CharacterId = character.CharacterId;
+
                     character.gameObject.SetActive(false);
                 }
             }
@@ -66,37 +72,38 @@ namespace MAGE.GameModes.Encounter
         {
             Level level = LevelManagementService.Get().GetLoadedLevel();
             EncounterContainer activeEncounter = level.GetActiveEncounter();
-            if (activeEncounter.EncounterScenarioId != EncounterScenarioId.Random)
-            {
-                activeEncounter.StartEncounter();
-                PrepareScenarioEncounter(activeEncounter);
-            }
+            GameModel.Encounter = activeEncounter.EncounterModel;
+            mEncounterModel = activeEncounter.EncounterModel;
 
-            mEncounterModel = new EncounterModel();
-            GameModel.Encounter = mEncounterModel;
-
+            // Win Loss Conditions
             mEncounterModel.mWinConditions = activeEncounter.WinConditions.GetComponents<EncounterCondition>().ToList();
             Debug.Assert(mEncounterModel.mWinConditions.Count > 0);
             mEncounterModel.mLoseConditions = activeEncounter.LoseConditions.GetComponents<EncounterCondition>().ToList();
             Debug.Assert(mEncounterModel.mLoseConditions.Count > 0);
 
-            mEncounterModel.Teams.Add(TeamSide.AllyHuman, activeEncounter.Allys.GetComponentsInChildren<CombatCharacter>().ToList());
-            foreach (CombatCharacter character in mEncounterModel.Teams[TeamSide.AllyHuman])
+           // if (activeEncounter.EncounterScenarioId != EncounterScenarioId.Random)
             {
-                mEncounterModel.Players.Add(character.GetComponent<CharacterPickerControl>().CharacterId, character);
-                character.GetComponent<ActorMotor>().Enable(false);
-                character.GetComponent<CombatEntity>().TeamSide = TeamSide.AllyHuman;
+                activeEncounter.StartEncounter();
+                PrepareScenarioEncounter(activeEncounter);
             }
 
-            mEncounterModel.Teams.Add(TeamSide.EnemyAI, activeEncounter.Enemies.GetComponentsInChildren<CombatCharacter>().ToList());
-            foreach (CombatCharacter character in mEncounterModel.Teams[TeamSide.EnemyAI])
-            {
-                mEncounterModel.Players.Add(character.GetComponent<CharacterPickerControl>().CharacterId, character);
-                character.GetComponent<ActorMotor>().Enable(false);
-                character.GetComponent<CombatEntity>().TeamSide = TeamSide.EnemyAI;
+            //mEncounterModel.Teams.Add(TeamSide.AllyHuman, activeEncounter.Allys.GetComponentsInChildren<ControllableEntity>().ToList());
+            //foreach (ControllableEntity character in mEncounterModel.Teams[TeamSide.AllyHuman])
+            //{
+            //    mEncounterModel.Players.Add(character.Id, character);
+            //    character.GetComponent<ActorMotor>().Enable(false);
+            //    character.TeamSide = TeamSide.AllyHuman;
+            //}
 
-                character.GetComponentInChildren<ActorOutfitter>().SetOutfitColorization(GameSystems.Appearances.OutfitColorization.Enemy);
-            }
+            //mEncounterModel.Teams.Add(TeamSide.EnemyAI, activeEncounter.Enemies.GetComponentsInChildren<ControllableEntity>().ToList());
+            //foreach (ControllableEntity character in mEncounterModel.Teams[TeamSide.EnemyAI])
+            //{
+            //    mEncounterModel.Players.Add(character.Id, character);
+            //    character.GetComponent<ActorMotor>().Enable(false);
+            //    character.TeamSide = TeamSide.EnemyAI;
+
+            //    character.GetComponentInChildren<ActorOutfitter>().SetOutfitColorization(GameSystems.Appearances.OutfitColorization.Enemy);
+            //}
 
             UIManager.Instance.PostContainer(UIContainerId.EncounterStatusView, this);
 
@@ -214,7 +221,13 @@ namespace MAGE.GameModes.Encounter
 
         private void ProgressClock()
         {
-            foreach (CombatCharacter combatCharacter in mEncounterModel.AlivePlayers)
+            List<TemporaryEntity> toUpdate = new List<TemporaryEntity>(mEncounterModel.mTemporaryEntities);
+            foreach (TemporaryEntity temporary in toUpdate)
+            {
+                temporary.OnTurnTick();
+            }
+
+            foreach (ControllableEntity combatCharacter in mEncounterModel.AlivePlayers)
             {
                 combatCharacter.OnTurnTick();
 
@@ -242,11 +255,11 @@ namespace MAGE.GameModes.Encounter
         {
             if (mEncounterModel.CurrentTurn != null)
             {
-                CombatCharacter currentTurn = mEncounterModel.CurrentTurn;
+                CombatEntity currentTurn = mEncounterModel.CurrentTurn;
                 if (!currentTurn.GetComponent<ResourcesControl>().IsAlive() 
                     || mEncounterModel.TurnComplete
-                    || (currentTurn.GetComponent<ResourcesControl>().GetAvailableMovementRange() == 0 
-                        && currentTurn.GetComponent<ResourcesControl>().GetNumAvailableActions() == 0))
+                    || (currentTurn.GetComponent<ActionsControl>().GetAvailableMovementRange() == 0 
+                        && currentTurn.GetComponent<ActionsControl>().GetNumAvailableActions() == 0))
                 {
                     mEncounterModel.TurnComplete = false;
 
@@ -268,8 +281,8 @@ namespace MAGE.GameModes.Encounter
             }
 
             // Clean up action queue
-            List<CombatCharacter> charactersCharing = mEncounterModel.mChargingActions.Keys.ToList();
-            foreach (CombatCharacter character in charactersCharing)
+            List<CombatEntity> charactersCharing = mEncounterModel.mChargingActions.Keys.ToList();
+            foreach (CombatEntity character in charactersCharing)
             {
                 if (!character.GetComponent<ResourcesControl>().IsAlive())
                 {

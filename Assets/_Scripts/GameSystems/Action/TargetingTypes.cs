@@ -34,15 +34,16 @@ namespace MAGE.GameSystems.Actions
             SelectionRange = range;
         }
 
-        public TargetSelection(Target target)
-            : this(target, RangeInfo.Unit)
-        {
-        }
+        //public TargetSelection(Target target)
+        //    : this(target, RangeInfo.Unit)
+        //{
+        //}
     }
 
 
     enum TargetSelectionType
     {
+        Empty,
         Point,
         Focal,
 
@@ -54,6 +55,19 @@ namespace MAGE.GameSystems.Actions
         public Vector3 PointTarget;
         public CombatTarget FocalTarget;
         public TargetSelectionType TargetType;
+
+        public static Target Empty
+        {
+            get
+            {
+                Target target = new Target();
+                target.TargetType = TargetSelectionType.Empty;
+                target.PointTarget = Vector3.zero;
+                target.FocalTarget = null;
+
+                return target;
+            }
+        }
 
         public Target(Vector3 pointTarget)
         {
@@ -81,6 +95,8 @@ namespace MAGE.GameSystems.Actions
                     break;
                 case TargetSelectionType.Focal:
                     point = FocalTarget.transform.position;
+                    break;
+                case TargetSelectionType.Empty:
                     break;
                 default:
                     Debug.Assert(false);

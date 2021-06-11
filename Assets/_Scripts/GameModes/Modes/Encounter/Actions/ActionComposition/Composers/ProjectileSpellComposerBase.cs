@@ -13,16 +13,12 @@ namespace MAGE.GameModes.Encounter
 {
     abstract class ProjectileSpellComposerBase : ActionComposerBase
     {
-        public ConcreteVar<CombatEntity> Caster = new ConcreteVar<CombatEntity>();
-
-        public TargetingSolver TargetingSolver = new TargetingSolver();
-
-        public ConcreteVar<CombatTarget> PreviousTarget = new ConcreteVar<CombatTarget>();
-        public ConcreteVar<CombatTarget> CurrentTarget = new ConcreteVar<CombatTarget>();
+        public ConcreteVar<Target> PreviousTarget = new ConcreteVar<Target>();
+        public ConcreteVar<Target> CurrentTarget = new ConcreteVar<Target>();
 
         protected ProjectileSpellComposerBase(CombatEntity owner) : base(owner)
         {
-            Caster.Set(owner);
+
         }
 
         protected override CompositionNode PopulateComposition()
@@ -30,8 +26,8 @@ namespace MAGE.GameModes.Encounter
             return new AnimationComposer()
             {
                 // AnimationConstructor
-                ToAnimate = new MonoConversion<CombatEntity, ActorAnimator>(Caster),
-                AnimationTarget = TargetingSolver,
+                ToAnimate = new DeferredMonoConversion<CombatEntity, ActorAnimator>(DeferredOwner),
+                AnimationTarget = new DeferredTargetPosition(mTargetingSolver),
                 AnimationInfo = new ConcreteVar<AnimationInfo>(AnimationFactory.CheckoutAnimation(GameSystems.AnimationId.Cast)),
 
                 ChildComposers = new List<CompositionLink<CompositionNode>>()
@@ -39,33 +35,25 @@ namespace MAGE.GameModes.Encounter
                     new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Start,
                         new MultiTargetComposer()
                         {
-                            Targeting = TargetingSolver
-                            , InteractionSolver = mInteractionSolver
+                            Targeting = mTargetingSolver
                             , PreviousTarget = PreviousTarget
                             , CurrentTarget = CurrentTarget
 
                             , ChainedComposition = new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Start,
                                 new ProjectileSpawnComposer()
                                 {
-                                    Caster = new DeferredTransform<CombatTarget>(PreviousTarget),
-                                    Target = new DeferredTransform<CombatTarget>(CurrentTarget),
+                                    CasterPosition = new DeferredTargetPosition(PreviousTarget),
+                                    Target = CurrentTarget,
                                     ProjectileType = ProjectileId.FireBall,
 
                                     ChildComposers = new List<CompositionLink<CompositionNode>>()
                                     {
                                         new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Interaction,
-                                            new AnimationComposer()
+                                            new InteractionTargetComposer()
                                             {
-                                                ToAnimate = new MonoConversion<CombatTarget, ActorAnimator>(TargetingSolver),
-                                                AnimationTarget = new MonoConversion<CombatEntity, CombatTarget>(Caster),
-                                                AnimationInfo = new InteractionResultToAnimation(mInteractionSolver.InteractionResult)
-                                            }
-                                        )
-                                        , new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Interaction,
-                                            new StateChangeComposer()
-                                            {
-                                                Target = TargetingSolver,
-                                                StateChange = mInteractionSolver.InteractionResult
+                                                 Caster = DeferredOwner,
+                                                 Target = CurrentTarget,
+                                                 InteractionSolver = mInteractionSolver
                                             }
                                         )
                                     }
@@ -79,18 +67,15 @@ namespace MAGE.GameModes.Encounter
 
         protected override InteractionSolverBase PopulateInteractionSolver()
         {
-            SpellInteractionSolver interactionSolver = new SpellInteractionSolver();
-
             SpellEffectivenessCalculator damageCalculator = new SpellEffectivenessCalculator();
             damageCalculator.BaseEffectiveness = ActionInfo.Effectiveness;
-            damageCalculator.DeferredCaster = new MonoConversion<CombatEntity, StatsControl>(Caster);
+            damageCalculator.DeferredCaster = new DeferredMonoConversion<CombatEntity, StatsControl>(DeferredOwner);
             damageCalculator.IsBeneficial = false;
 
             DeferredStateChange deferredStateChange = new DeferredStateChange();
             deferredStateChange.HealthChange = damageCalculator;
 
-            interactionSolver.Attacker = Caster;
-            interactionSolver.Target = TargetingSolver;
+            SpellInteractionSolver interactionSolver = new SpellInteractionSolver();
             interactionSolver.StateChange = deferredStateChange;
 
             return interactionSolver;
@@ -98,11 +83,7 @@ namespace MAGE.GameModes.Encounter
 
         public override ActionComposition Compose(Target target)
         {
-            TargetingSolver.Targeting = Caster;
-            TargetingSolver.BeingTargeted = new TargetSelection(target, ActionInfo.EffectRange);
-
-            TargetingSolver.Solve();
-            PreviousTarget.Set(Caster.Get().GetComponent<CombatTarget>());
+            PreviousTarget.Set(new Target(Owner.GetComponent<CombatTarget>()));
 
             return base.Compose(target);
         }

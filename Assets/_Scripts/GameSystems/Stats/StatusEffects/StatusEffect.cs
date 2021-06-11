@@ -226,6 +226,19 @@ namespace MAGE.GameSystems.Stats
         }
     }
 
+    class ScorchedEarth : StatusEffect
+    {
+        public override List<AttributeModifier> GetAttributeModifiers()
+        {
+            return new List<AttributeModifier>();
+        }
+
+        public override StateChange GetTurnStartStateChange()
+        {
+            return new StateChange(StateChangeType.StatusEffect, -10, 0);
+        }
+    }
+
     class PoisonEffect : StatusEffect
     {
         float stackValue = -2;

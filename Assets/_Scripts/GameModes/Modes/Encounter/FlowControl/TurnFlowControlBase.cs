@@ -54,9 +54,9 @@ namespace MAGE.GameModes.Encounter
         protected ActionInfo mActionInfo = null;
         protected ActionInfo mWeaponAttackInfo = null;
         // Private 
-        protected CombatCharacter mCurrentCharacter;
+        protected CombatEntity mCurrentTurn;
         protected List<ActionComposerBase> mAvailableActions;
-        protected CombatCharacter mCurrentTarget;
+        protected CombatTarget mCurrentTarget;
 
         protected LineRenderer mAbilityRangeRenderer = null;
         protected LineRenderer mAbilityEffectRenderer = null;
@@ -100,10 +100,10 @@ namespace MAGE.GameModes.Encounter
             mMovementPathRenderer.gameObject.SetActive(false);
             mMovementPathRenderer.useWorldSpace = true;
 
-            foreach (CombatCharacter combatCharacter in GameModel.Encounter.AlivePlayers)
+            foreach (CombatEntity entity in GameModel.Encounter.AlivePlayers)
             {
                 NavMeshObstacle obstacle = EncounterPrefabLoader.Obstacle;
-                obstacle.transform.SetParent(combatCharacter.transform);
+                obstacle.transform.SetParent(entity.transform);
                 obstacle.transform.localPosition = Vector3.zero;
                 mCharacterEmptyRadius = obstacle.radius * 2;
                 mMovementObstacles.Add(obstacle);
@@ -124,25 +124,30 @@ namespace MAGE.GameModes.Encounter
         }
 
 
-        private void SetCurrentCharacter(CombatCharacter combatCharacter)
+        private void SetCurrentCharacter(CombatEntity combatCharacter)
         {
-            mCurrentCharacter = combatCharacter;
+            mCurrentTurn = combatCharacter;
             mAvailableActions = new List<ActionComposerBase>();
             foreach (ActionId actionId in combatCharacter.GetComponent<ActionsControl>().Actions)
             {
-                mAvailableActions.Add(ActionComposerFactory.CheckoutAction(mCurrentCharacter.GetComponent<CombatEntity>(), actionId));
+                mAvailableActions.Add(ActionComposerFactory.CheckoutAction(mCurrentTurn, actionId));
             }
-            combatCharacter.GetComponentInChildren<NavMeshObstacle>().enabled = false;
+            NavMeshObstacle navMeshObstacle = combatCharacter.GetComponentInChildren<NavMeshObstacle>(true);
+            Debug.Assert(navMeshObstacle);
+            if (navMeshObstacle)
+            {
+                navMeshObstacle.enabled = false;
+            }
 
-            mWeaponAttackInfo = ActionComposerFactory.CheckoutAction(mCurrentCharacter.GetComponent<CombatEntity>(), ActionId.WeaponAttack).ActionInfo;
+            mWeaponAttackInfo = ActionComposerFactory.CheckoutAction(mCurrentTurn, ActionId.WeaponAttack).ActionInfo;
 
-            Camera.main.GetComponent<Cameras.CameraController>().SetTarget(mCurrentCharacter.transform, Cameras.CameraType.TopDown);
+            Camera.main.GetComponent<Cameras.CameraController>().SetTarget(mCurrentTurn.transform, Cameras.CameraType.TopDown);
         }
 
         protected void MoveAttack()
         {
             bool attackQueued = false;
-            if (mCurrentCharacter.GetComponent<ResourcesControl>().GetNumAvailableActions() > 0)
+            if (mCurrentTurn.GetComponent<ActionsControl>().GetNumAvailableActions() > 0)
             {
                 attackQueued = true;
                 QueueAttack();
@@ -153,8 +158,8 @@ namespace MAGE.GameModes.Encounter
                 SetState(State.Moving);
 
                 float pathLength = mHoverInfo.mMoveToPath.Count;
-                mCurrentCharacter.GetComponent<ResourcesControl>().OnMovementPerformed(Mathf.CeilToInt(pathLength));
-                mCurrentCharacter.GetComponent<ActorMotor>().MoveToPoint(mHoverInfo.mMoveToPath[mHoverInfo.mMoveToPath.Count - 1], () =>
+                mCurrentTurn.GetComponent<ActionsControl>().OnMovementPerformed(Mathf.CeilToInt(pathLength));
+                mCurrentTurn.GetComponent<ActorMotor>().MoveToPoint(mHoverInfo.mMoveToPath[mHoverInfo.mMoveToPath.Count - 1], () =>
                 {
                     SendFlowMessage("actionChosen");
                 });
@@ -168,9 +173,9 @@ namespace MAGE.GameModes.Encounter
         protected void QueueAttack()
         {
             ActionProposal proposal = new ActionProposal(
-                mCurrentCharacter.GetComponent<CombatEntity>(),
-                new Target(mCurrentTarget.GetComponent<CombatTarget>()),
-                ActionComposerFactory.CheckoutAction(mCurrentCharacter.GetComponent<CombatEntity>(), ActionId.WeaponAttack));
+                mCurrentTurn.GetComponent<CombatEntity>(),
+                new Target(mCurrentTarget),
+                ActionComposerFactory.CheckoutAction(mCurrentTurn.GetComponent<CombatEntity>(), ActionId.WeaponAttack));
 
             QueueAction(proposal);
         }
@@ -181,7 +186,7 @@ namespace MAGE.GameModes.Encounter
 
             if (state == State.Idle)
             {
-                mMovementPathRenderer.gameObject.SetActive(mCurrentCharacter.GetComponent<ResourcesControl>().GetAvailableMovementRange() > 0);
+                mMovementPathRenderer.gameObject.SetActive(mCurrentTurn.GetComponent<ActionsControl>().GetAvailableMovementRange() > 0);
                 mAbilityRangeRenderer.gameObject.SetActive(false);
                 mAbilityEffectRenderer.gameObject.SetActive(false);
             }
@@ -207,16 +212,16 @@ namespace MAGE.GameModes.Encounter
             }
             else
             {
-                GameModel.Encounter.mChargingActions.Add(mCurrentCharacter, proposal);
+                GameModel.Encounter.mChargingActions.Add(mCurrentTurn, proposal);
             }
-            mCurrentCharacter.GetComponent<ResourcesControl>().ActionChosen();
+            mCurrentTurn.GetComponent<ActionsControl>().ActionChosen();
         }
 
         protected IDataProvider PublishCharacterInfoPanelRight()
         {
             if (mCurrentTarget != null)
             {
-                return PublishCharacterInfoPanel(mCurrentTarget);
+                return mCurrentTarget.GetComponent<CombatDisplayable>().GetDisplayDP();
             }
             else
             {
@@ -227,54 +232,7 @@ namespace MAGE.GameModes.Encounter
 
         protected IDataProvider PublishCharacterInfoPanelLeft()
         {
-            return PublishCharacterInfoPanel(mCurrentCharacter);
-        }
-
-        protected IDataProvider PublishCharacterInfoPanel(CombatCharacter combatCharacter)
-        {
-            CharacterInspector.DataProvider dp = new CharacterInspector.DataProvider();
-            
-            Character toPublish = combatCharacter.Character;
-
-            dp.IsAlly = combatCharacter.GetComponent<CombatEntity>().TeamSide == TeamSide.AllyHuman;
-            dp.PortraitAsset = toPublish.Appearance.PortraitSpriteId.ToString();
-            dp.Name = toPublish.Name;
-            dp.Level = toPublish.Level;
-            dp.Exp = toPublish.Experience;
-            dp.Specialization = toPublish.CurrentSpecializationType.ToString();
-
-            dp.CurrentHP    = combatCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Health].Current;
-            dp.MaxHP        = combatCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Health].Max;
-            dp.CurrentMP    = combatCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Mana].Current;
-            dp.MaxMP        = combatCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Mana].Max;
-            dp.CurrentClock = combatCharacter.GetComponent<ResourcesControl>().Resources[ResourceType.Clock].Current;
-
-            dp.Might        = (int)combatCharacter.GetComponent<StatsControl>().Attributes[PrimaryStat.Might];
-            dp.Finesse      = (int)combatCharacter.GetComponent<StatsControl>().Attributes[PrimaryStat.Finese];
-            dp.Magic        = (int)combatCharacter.GetComponent<StatsControl>().Attributes[PrimaryStat.Magic];
-
-            dp.Fortitude    = (int)combatCharacter.GetComponent<StatsControl>().Attributes[SecondaryStat.Fortitude];
-            dp.Attunement   = (int)combatCharacter.GetComponent<StatsControl>().Attributes[SecondaryStat.Attunement];
-
-            float block, dodge, parry;
-            InteractionUtil.GetAvoidanceAttributesForCharacter(combatCharacter, out dodge, out block, out parry);
-
-            dp.Block        = (int)block;
-            dp.Dodge        = (int)dodge;
-            dp.Parry        = (int)parry;
-
-            List<IDataProvider> statusEffects = new List<IDataProvider>();
-            foreach (StatusEffect effect in combatCharacter.GetComponent<StatusEffectControl>().StatusEffects)
-            {
-                StatusIcon.DataProvider statusDp = new StatusIcon.DataProvider();
-                statusDp.Count = effect.StackCount;
-                statusDp.IsBeneficial = effect.Beneficial;
-                statusDp.AssetName = effect.SpriteId.ToString();
-                statusEffects.Add(statusDp);
-            }
-            dp.StatusEffects = new UIList.DataProvider(statusEffects);
-
-            return dp;
+            return mCurrentTurn.GetComponent<CombatDisplayable>().GetDisplayDP();
         }
 
         protected void DisplayAbilityRange(Vector3 center, RangeInfo rangeInfo)
@@ -399,11 +357,11 @@ namespace MAGE.GameModes.Encounter
             mMovementPathRenderer.gameObject.SetActive(true);
 
             NavMeshPath path = new NavMeshPath();
-            NavMesh.CalculatePath(mCurrentCharacter.transform.position, destination, NavMesh.AllAreas, path);
+            NavMesh.CalculatePath(mCurrentTurn.transform.position, destination, NavMesh.AllAreas, path);
             if (path.corners.Length > 0)
             {  
                 mMovementPathRenderer.positionCount = path.corners.Length + 1;
-                mMovementPathRenderer.SetPosition(0, mCurrentCharacter.transform.position + Vector3.up * .1f);
+                mMovementPathRenderer.SetPosition(0, mCurrentTurn.transform.position + Vector3.up * .1f);
                 for (int i = 0; i < path.corners.Length; i++)
                 {
                     mMovementPathRenderer.SetPosition(i + 1, path.corners[i]);
