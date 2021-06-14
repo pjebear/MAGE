@@ -14,6 +14,8 @@ namespace MAGE.GameModes.SceneElements.Encounters
     {
         private bool mMobsInEncounter = false;
         public float mRespawnDelaySeconds = 15;
+
+        private Coroutine mRespawnCoroutine = null;
         public List<MobControl> Mobs = new List<MobControl>();
         
         public void Awake()
@@ -31,16 +33,6 @@ namespace MAGE.GameModes.SceneElements.Encounters
             MessageRouter.Instance.UnRegisterHandler(this);
         }
 
-        public void NotifyMobTriggered(MobTriggerVolume triggerVolume, ThirdPersonActorController entered)
-        {
-            Vector3 triggerVolumePos = triggerVolume.transform.position;
-            Vector3 mapPos = RaycastUtil.GetRayCastHit(triggerVolumePos + Vector3.up * 100, Vector3.down, 500, new List<RayCastLayer>() { RayCastLayer.Terrain });
-            
-            EnableHeirarchy(false);
-
-            mMobsInEncounter = true;
-        }
-
         public void HandleMessage(MessageInfoBase eventInfoBase)
         {
             switch (eventInfoBase.MessageId)
@@ -53,7 +45,16 @@ namespace MAGE.GameModes.SceneElements.Encounters
                         if (levelMessage.Type == LevelManagement.MessageType.EncounterComplete)
                         {
                             mMobsInEncounter = false;
-                            StartCoroutine(_Respawn(mRespawnDelaySeconds));
+                            mRespawnCoroutine = StartCoroutine(_Respawn(mRespawnDelaySeconds));
+                        }
+                        else if (levelMessage.Type == LevelManagement.MessageType.EncounterAvailable)
+                        {
+                            mMobsInEncounter = true;
+                            if (mRespawnCoroutine != null)
+                            {
+                                StopCoroutine(mRespawnCoroutine);
+                                mRespawnCoroutine = null;
+                            }
                         }
                     }
                 }

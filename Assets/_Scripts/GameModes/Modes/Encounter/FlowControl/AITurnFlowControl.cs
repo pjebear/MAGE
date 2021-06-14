@@ -67,7 +67,7 @@ namespace MAGE.GameModes.Encounter
                 .CompareTo(Vector3.Distance(y.transform.position, mCurrentTurn.transform.position)));
 
             mCurrentTarget = enemies[0].GetComponent<CombatTarget>();
-            mCurrentTarget.GetComponentInChildren<NavMeshObstacle>().gameObject.SetActive(false);
+            mCurrentTarget.GetComponentInChildren<NavMeshObstacle>(true).gameObject.SetActive(false);
 
             mSelectedAction = ActionComposerFactory.CheckoutAction(mCurrentTurn.GetComponent<CombatEntity>(), ActionId.WeaponAttack);
             mActionInfo = mSelectedAction.ActionInfo;

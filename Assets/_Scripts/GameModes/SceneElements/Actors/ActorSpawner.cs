@@ -25,11 +25,12 @@ namespace MAGE.GameModes.SceneElements
 
         public Appearance Appearance;
 
+        private Body rBody;
         private HashSet<IRefreshListener> mRefreshListeners = new HashSet<IRefreshListener>();
 
         private void Awake()
         {
-           
+            rBody = GetComponentInChildren<Body>();
         }
 
         private void OnDestroy()
@@ -79,11 +80,14 @@ namespace MAGE.GameModes.SceneElements
 
             if (Appearance != null)
             {
-                Body currentBody = GetComponentInChildren<Body>();
-                if (currentBody == null || currentBody.BodyType != Appearance.BodyType)
+                if (rBody != null && rBody.BodyType != Appearance.BodyType)
                 {
-                    Destroy(currentBody.gameObject);
+                    Destroy(rBody.gameObject);
+                    rBody = null;
+                }
 
+                if (rBody == null)
+                {
                     string bodyPath = "Props/Bodies/";
                     switch (Appearance.BodyType)
                     {
@@ -96,7 +100,7 @@ namespace MAGE.GameModes.SceneElements
                         }    
                         break;
                     }
-                    Body newBody = Instantiate(Resources.Load<Body>(bodyPath), transform);
+                    rBody = Instantiate(Resources.Load<Body>(bodyPath), transform);
                 }
 
                 // TEMP: only try to outfit humans

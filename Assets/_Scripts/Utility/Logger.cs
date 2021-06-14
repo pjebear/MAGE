@@ -13,6 +13,7 @@ public enum LogTag
     Character,
     DB,
     FlowControl,
+    Combat,
     GameModes,
     GameSystems,
     Input,

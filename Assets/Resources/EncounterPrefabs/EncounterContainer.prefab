@@ -190,6 +190,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4034237835037374257}
   - component: {fileID: 7422207205507131340}
+  - component: {fileID: 895667713756803271}
+  - component: {fileID: 194076546815390657}
   m_Layer: 0
   m_Name: EncounterContainer
   m_TagString: Untagged
@@ -227,7 +229,39 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EncounterScenarioId: -1
+  MobsInEncounter: 
+  ItemRewards: 
+  CoinReward: 0
   Enemies: {fileID: 4309555291472353022}
   Allys: {fileID: 4537335813870713975}
   WinConditions: {fileID: 5990753869454742529}
   LoseConditions: {fileID: 6098166690934322477}
+--- !u!54 &895667713756803271
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8492474324993370911}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!135 &194076546815390657
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8492474324993370911}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 15
+  m_Center: {x: 0, y: 0, z: 0}

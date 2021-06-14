@@ -139,13 +139,16 @@ namespace MAGE.GameModes.LevelManagement.Internal
 
                         case (MessageType.EncounterComplete):
                         {
-                            EncounterScenarioId completedEncounter = levelMessage.Arg<EncounterContainer>().EncounterScenarioId;
+                            EncounterContainer encounterContainer = levelMessage.Arg<EncounterContainer>();
+                            EncounterScenarioId completedEncounter = encounterContainer.EncounterScenarioId;
 
                             DB.DBEncounterInfo info = DBService.Get().LoadEncounterInfo((int)completedEncounter);
                             info.IsActive = false;
                             DBService.Get().WriteEncounterInfo((int)completedEncounter, info);
 
                             StoryService.Get().NotifyStoryEvent(new GameSystems.Story.StoryEventBase(completedEncounter));
+
+                            Destroy(encounterContainer.gameObject);
                         }
                         break;
                     }

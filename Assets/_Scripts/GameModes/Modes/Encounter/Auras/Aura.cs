@@ -27,6 +27,25 @@ namespace MAGE.GameModes.Combat
             UnitRangeAuraScale = Vector3.one;
         }
 
+        private void OnDestroy()
+        {
+            RemoveAllStatusEffects();
+        }
+
+        private void OnDisable()
+        {
+            RemoveAllStatusEffects();
+        }
+
+        private void RemoveAllStatusEffects()
+        {
+            foreach (var entityStatusEffectPair in mInAura)
+            {
+                entityStatusEffectPair.Key.RemoveStatusEffects(new List<StatusEffect>() { entityStatusEffectPair.Value }, false);
+            }
+            mInAura.Clear();
+        }
+
         public void Initialize(AuraInfo info, ControllableEntity owner)
         {
             mAuraInfo = info;

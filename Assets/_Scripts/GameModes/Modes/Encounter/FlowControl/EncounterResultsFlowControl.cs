@@ -38,11 +38,17 @@ namespace MAGE.GameModes.Encounter
             List<int> party = WorldService.Get().GetCharactersInParty();
             EncounterEndParams result = new EncounterEndParams();
             result.EncounterScenarioId = activeEncounter.EncounterScenarioId;
-            result.PlayersInEncounter = GameModel.Encounter.Teams[TeamSide.AllyHuman]
+
+            Debug.Assert(GameModel.Encounter.Teams.ContainsKey(TeamSide.AllyHuman));
+            if (GameModel.Encounter.Teams.ContainsKey(TeamSide.AllyHuman))
+            {
+                result.PlayersInEncounter = GameModel.Encounter.Teams[TeamSide.AllyHuman]
                 .Where(x => x.GetComponent<ControllableEntity>() != null)
                 .Select(x => x.GetComponent<ControllableEntity>().Character.Id)
-                .Where(x=> party.Contains(x))
+                .Where(x => party.Contains(x))
                 .ToList();
+            }
+            
 
             result.DidUserWin = !GameModel.Encounter.IsEncounterLost();
             result.LootParams.LevelId = level.LevelId;

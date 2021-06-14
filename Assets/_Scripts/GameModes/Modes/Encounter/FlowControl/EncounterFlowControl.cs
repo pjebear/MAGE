@@ -34,76 +34,7 @@ namespace MAGE.GameModes.Encounter
 
         protected override void Setup()
         {
-            
-        }
-
-        private void PrepareScenarioEncounter(EncounterContainer activeContainer)
-        {
-            Level level = LevelManagementService.Get().GetLoadedLevel();
-
-            {
-                List<CharacterPickerControl> allies = activeContainer.Allys.GetComponentsInChildren<CharacterPickerControl>(true).ToList();
-                foreach (CharacterPickerControl character in allies)
-                {
-                    ControllableEntity combatCharacter = level.CreateCombatCharacter(character.transform.position, character.transform.rotation, activeContainer.Allys);
-
-                    // Triggers the addition to EncounterModel
-                    combatCharacter.GetComponent<CharacterPickerControl>().CharacterId = character.CharacterId;
-
-                    character.gameObject.SetActive(false);
-                }
-            }
-
-            {
-                List<CharacterPickerControl> enemies = activeContainer.Enemies.GetComponentsInChildren<CharacterPickerControl>(true).ToList();
-                foreach (CharacterPickerControl character in enemies)
-                {
-                    ControllableEntity combatCharacter = level.CreateCombatCharacter(character.transform.position, character.transform.rotation, activeContainer.Enemies);
-
-                    // Triggers the addition to EncounterModel
-                    combatCharacter.GetComponent<CharacterPickerControl>().CharacterId = character.CharacterId;
-
-                    character.gameObject.SetActive(false);
-                }
-            }
-        }
-
-        private void PrepareEncounter()
-        {
-            Level level = LevelManagementService.Get().GetLoadedLevel();
-            EncounterContainer activeEncounter = level.GetActiveEncounter();
-            GameModel.Encounter = activeEncounter.EncounterModel;
-            mEncounterModel = activeEncounter.EncounterModel;
-
-            // Win Loss Conditions
-            mEncounterModel.mWinConditions = activeEncounter.WinConditions.GetComponents<EncounterCondition>().ToList();
-            Debug.Assert(mEncounterModel.mWinConditions.Count > 0);
-            mEncounterModel.mLoseConditions = activeEncounter.LoseConditions.GetComponents<EncounterCondition>().ToList();
-            Debug.Assert(mEncounterModel.mLoseConditions.Count > 0);
-
-           // if (activeEncounter.EncounterScenarioId != EncounterScenarioId.Random)
-            {
-                activeEncounter.StartEncounter();
-                PrepareScenarioEncounter(activeEncounter);
-            }
-
-            //mEncounterModel.Teams.Add(TeamSide.AllyHuman, activeEncounter.Allys.GetComponentsInChildren<ControllableEntity>().ToList());
-            //foreach (ControllableEntity character in mEncounterModel.Teams[TeamSide.AllyHuman])
-            //{
-            //    mEncounterModel.Players.Add(character.Id, character);
-            //    character.GetComponent<ActorMotor>().Enable(false);
-            //    character.TeamSide = TeamSide.AllyHuman;
-            //}
-
-            //mEncounterModel.Teams.Add(TeamSide.EnemyAI, activeEncounter.Enemies.GetComponentsInChildren<ControllableEntity>().ToList());
-            //foreach (ControllableEntity character in mEncounterModel.Teams[TeamSide.EnemyAI])
-            //{
-            //    mEncounterModel.Players.Add(character.Id, character);
-            //    character.GetComponent<ActorMotor>().Enable(false);
-            //    character.TeamSide = TeamSide.EnemyAI;
-
-            //    character.GetComponentInChildren<ActorOutfitter>().SetOutfitColorization(GameSystems.Appearances.OutfitColorization.Enemy);
-            //}
+            mEncounterModel = LevelManagementService.Get().GetLoadedLevel().GetActiveEncounter().EncounterModel;
 
             UIManager.Instance.PostContainer(UIContainerId.EncounterStatusView, this);
 
@@ -118,7 +49,8 @@ namespace MAGE.GameModes.Encounter
 
             Level level = LevelManagementService.Get().GetLoadedLevel();
             EncounterContainer activeEncounter = level.GetActiveEncounter();
-            Destroy(activeEncounter.gameObject);
+
+            Messaging.MessageRouter.Instance.NotifyMessage(new LevelManagement.LevelMessage(LevelManagement.MessageType.EncounterComplete, activeEncounter));
         }
 
         public override bool Notify(string notifyEvent)
@@ -127,10 +59,16 @@ namespace MAGE.GameModes.Encounter
 
             switch (notifyEvent)
             {
-                case "prepareEncounter":
+                case "encounterStarted":
                 {
-                    PrepareEncounter();
-                    SendFlowMessage("encounterPrepared");
+                    mEncounterModel.IsEncounterActive = true;
+                    handled = true;
+                }
+                break;
+
+                case "encounterComplete":
+                {
+                    mEncounterModel.IsEncounterActive = false;
                     handled = true;
                 }
                 break;
@@ -317,20 +255,6 @@ namespace MAGE.GameModes.Encounter
         public string Name()
         {
             return "EncounterFlowControl";
-        }
-
-        void PopulateTurnQueue()
-        {
-            Debug.Assert(!mEncounterModel.IsEncounterOver());
-            if (!mEncounterModel.IsEncounterOver())
-            {
-                while (mEncounterModel.TurnQueue.Count == 0)
-                {
-                    
-
-
-                }
-            }
         }
     }
 }

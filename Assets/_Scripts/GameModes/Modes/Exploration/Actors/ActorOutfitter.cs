@@ -56,6 +56,7 @@ namespace MAGE.GameModes.SceneElements
                 Destroy(mOutfit.gameObject);
                 mOutfit = null;
             }
+
             if (mOutfit == null)
             {
                 if (appearance.OutfitType != ApparelAssetId.NONE)

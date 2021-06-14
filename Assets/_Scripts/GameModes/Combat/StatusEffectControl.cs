@@ -55,7 +55,7 @@ namespace MAGE.GameModes.Combat
             }
 
             GetComponent<StatsControl>().RemoveAttributeModifiers(removedModifiers);
-        }
+        } 
 
         public List<StatusEffect> GetSingleTurnStatusEffects()
         {

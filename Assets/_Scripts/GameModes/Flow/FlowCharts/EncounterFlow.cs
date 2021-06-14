@@ -29,14 +29,21 @@ namespace MAGE.GameModes.FlowControl
 
             States = new List<FlowNode>()
             {
-                new WaitState("PrepareEncounter", "prepareEncounter", "encounterPrepared")
+                new FlowNode("LoadFlow")
                 {
-                    ExternalTransitions = new Dictionary<string, string>()
+                    OnEnterActions = new List<FlowActionBase>()
                     {
-                        { OutAdvance, "FadeIn" }
+                        new LoadFlowControl(FlowControlId.EncounterLoadFlowControl)
+                    }
+                    ,OnExitActions = new List<FlowActionBase>()
+                    {
+                        new UnLoadFlowControl(FlowControlId.EncounterLoadFlowControl)
+                    }
+                    , Transitions = new Dictionary<string, string>()
+                    {
+                        { "encounterLoaded", "FadeIn" }
                     }
                 }
-
                 ,new WaitState("FadeIn", "fadeIn", "fadeComplete")
                 {
                     ExternalTransitions = new Dictionary<string, string>()
@@ -64,6 +71,7 @@ namespace MAGE.GameModes.FlowControl
                     OnEnterActions = new List<FlowActionBase>()
                     {
                         new LoadFlowControl(FlowControlId.EncounterActionDirector)
+                        , new Notify("encounterStarted")
                     }
                     , OnExitActions = new List<FlowActionBase>()
                     {
@@ -160,6 +168,7 @@ namespace MAGE.GameModes.FlowControl
                     OnEnterActions = new List<FlowActionBase>()
                     {
                         new LoadFlowControl(FlowControlId.EncounterResultsFlowControl)
+                        , new Notify("encounterComplete")
                     }
                     , OnExitActions = new List<FlowActionBase>()
                     {

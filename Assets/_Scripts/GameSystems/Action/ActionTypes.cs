@@ -33,13 +33,13 @@ namespace MAGE.GameSystems.Actions
     struct RangeInfo
     {
         public static RangeInfo Unit { get { return new RangeInfo(0, 0, 0, AreaType.Circle, TargetingType.Any); } }
-        public int MinRange;
-        public int MaxRange;
-        public int MaxElevationChange;
+        public float MinRange;
+        public float MaxRange;
+        public float MaxElevationChange;
         public AreaType AreaType;
         public TargetingType TargetingType;
 
-        public RangeInfo(int minRange, int maxRange, int maxElevationChange, AreaType areaType, TargetingType targetingType)
+        public RangeInfo(float minRange, float maxRange, float maxElevationChange, AreaType areaType, TargetingType targetingType)
         {
             MinRange = minRange;
             MaxRange = maxRange;

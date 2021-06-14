@@ -1,5 +1,6 @@
 ﻿using MAGE.GameModes.Combat;
 using MAGE.GameModes.Encounter;
+using MAGE.GameModes.SceneElements.Encounters;
 using MAGE.GameSystems;
 using MAGE.GameSystems.Mobs;
 using MAGE.Messaging;
@@ -28,7 +29,7 @@ namespace MAGE.GameModes.SceneElements
         public Transform Allys;
         public Transform WinConditions;
         public Transform LoseConditions;
-        
+
         private bool mIsEncounterPending = false;
         private bool mIsEncounterVisible = true;
 
@@ -67,6 +68,8 @@ namespace MAGE.GameModes.SceneElements
         public void StartEncounter()
         {
             mIsEncounterPending = false;
+            EncounterModel.IsEncounterActive = true;
+
             EnableHeirarchy(true);
         }
 
@@ -113,6 +116,33 @@ namespace MAGE.GameModes.SceneElements
         void Update()
         {
             
+        }
+
+        void OnTriggerEnter(Collider collider)
+        {
+            MobControl entered = collider.gameObject.GetComponent<MobControl>();
+            if (entered == null)
+            {
+                entered = collider.gameObject.GetComponentInParent<MobControl>();
+            }
+
+            if (entered != null)
+            {
+                Logger.Log(LogTag.GameModes, "EncounterContainer", "MobControlEntered");
+
+                if (mIsEncounterPending || EncounterModel.IsEncounterActive)
+                {
+                    MobsInEncounter.Add(entered.GetComponent<MobCharacterControl>().MobId);
+
+                    Level level = LevelManagementService.Get().GetLoadedLevel();
+                    ControllableEntity combatCharacter = level.CreateCombatCharacter(entered.transform.position, entered.transform.rotation, Enemies);
+                    
+                    // Triggers the addition to EncounterModel
+                    combatCharacter.GetComponent<CharacterPickerControl>().CharacterId = entered.GetComponent<CharacterPickerControl>().CharacterId;
+
+                    entered.gameObject.SetActive(false);
+                }
+            }
         }
     }
 }

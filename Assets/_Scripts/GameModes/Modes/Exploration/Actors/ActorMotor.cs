@@ -17,7 +17,6 @@ namespace MAGE.GameModes.SceneElements.Navigation
         private NavMeshAgent rNavMeshAgent { get { return GetComponent<NavMeshAgent>(); } }
         private bool mIsMoving = false;
         private UnityAction mOnMoveComplete = null;
-        private Vector3 mMoveToPoint;
 
         private void Awake()
         {
@@ -27,10 +26,8 @@ namespace MAGE.GameModes.SceneElements.Navigation
         public void MoveToPoint(Vector3 point, UnityAction moveCompleteCB = null)
         {
             mOnMoveComplete = moveCompleteCB;
-            mIsMoving = true;
             rNavMeshAgent.enabled = true;
             rNavMeshAgent.SetDestination(point);
-            mMoveToPoint = point;
         }
 
         public void Stop()
@@ -59,7 +56,7 @@ namespace MAGE.GameModes.SceneElements.Navigation
             // TEMP
             GetComponent<ActorAnimator>().SetCurrentSpeed(GetCurrentSpeed());
 
-            if (mIsMoving && !rNavMeshAgent.pathPending && !rNavMeshAgent.hasPath)
+            if (rNavMeshAgent.enabled && !rNavMeshAgent.pathPending && rNavMeshAgent.remainingDistance < .1f)
             {
                 Stop();
             }
@@ -80,14 +77,17 @@ namespace MAGE.GameModes.SceneElements.Navigation
             }
         }
 
+        public bool IsMoving()
+        {
+            return rNavMeshAgent.enabled && rNavMeshAgent.remainingDistance > .1f;
+        }
+
         private void OnMoveComplete()
         {
-            mIsMoving = false;
-
             if (mOnMoveComplete != null)
             {
                 rNavMeshAgent.enabled = false;
-                transform.position = mMoveToPoint;
+
                 UnityAction onMoveComplete = mOnMoveComplete;
                 mOnMoveComplete = null;
                 onMoveComplete();   

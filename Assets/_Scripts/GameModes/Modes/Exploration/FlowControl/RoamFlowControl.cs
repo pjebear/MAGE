@@ -214,7 +214,6 @@ namespace MAGE.GameModes.Exploration
             mPlayer.GetComponent<ThirdPersonActorController>().enabled = false;
 
             PrepareEncounter(enemy);
-            SendFlowMessage("encounter");
         }
 
         private void PrepareEncounter(GameObject enemy)
@@ -226,28 +225,47 @@ namespace MAGE.GameModes.Exploration
             Level level = LevelManagementService.Get().GetLoadedLevel();
             EncounterContainer randomEncounter = level.CreateEncounter();
             randomEncounter.EncounterScenarioId = EncounterScenarioId.Random;
+            randomEncounter.transform.position = enemy.transform.position;
+            //Collider[] overlapped = Physics.OverlapSphere(enemy.transform.position, 15f);
+            //List<MobControl> mobsInRange = overlapped.Select(x => x.GetComponent<MobControl>()).Where(x => x != null && x.gameObject.activeSelf).ToList();
 
-            Collider[] overlapped = Physics.OverlapSphere(enemy.transform.position, 15f);
-            List<MobControl> mobsInRange = overlapped.Select(x => x.GetComponent<MobControl>()).Where(x => x != null && x.gameObject.activeSelf).ToList();
-
-            foreach (MobControl mob in mobsInRange)
-            {
-                mob.gameObject.SetActive(false);
-                randomEncounter.MobsInEncounter.Add(mob.GetComponent<MobCharacterControl>().MobId);
-                mob.transform.SetParent(randomEncounter.Enemies);
-            }
+            //foreach (MobControl mob in mobsInRange)
+            //{
+            //    mob.gameObject.SetActive(false);
+            //    randomEncounter.MobsInEncounter.Add(mob.GetComponent<MobCharacterControl>().MobId);
+            //    mob.transform.SetParent(randomEncounter.Enemies);
+            //}
 
             Vector3 partyToEnemy = enemy.transform.position - mPlayer.transform.position;
             partyToEnemy.y = 0;
+            partyToEnemy.Normalize();
             Vector3 right = Vector3.Cross(partyToEnemy, Vector3.up);
 
-            int characterCount = 0;
-            foreach (int partyCharacterId in WorldService.Get().GetCharactersInParty())
-            //int partyCharacterId = WorldService.Get().GetPartyAvatarId();
+            int avatarId = WorldService.Get().GetPartyAvatarId();
             {
-                ControllableEntity player = level.CreateCombatCharacter(mPlayer.transform.position + characterCount++ * right, mPlayer.transform.rotation, randomEncounter.Allys);
-                player.GetComponent<CharacterPickerControl>().CharacterId = partyCharacterId;
+                ControllableEntity player = level.CreateCombatCharacter(mPlayer.transform.position, Quaternion.LookRotation(partyToEnemy, Vector3.up), randomEncounter.Allys);
+                player.GetComponent<CharacterPickerControl>().CharacterId = avatarId;
             }
+
+            List<int> partyIds = WorldService.Get().GetCharactersInParty();
+            partyIds.Remove(avatarId);
+
+            int characterCount = 1;
+            foreach (int partyCharacterId in partyIds)
+            {
+                ++characterCount;
+
+                Vector3 basePos = mPlayer.transform.position;
+                Vector3 lateralOffset = (characterCount / 2) * right * 1.5f;
+                if (characterCount % 2 == 0) lateralOffset *= -1;
+                Vector3 vertOffset = -partyToEnemy * .5f * (characterCount / 2);
+                Vector3 formationPos = basePos + lateralOffset + vertOffset;
+
+                ControllableEntity player = level.CreateCombatCharacter(formationPos, Quaternion.LookRotation(partyToEnemy, Vector3.up), randomEncounter.Allys);
+                player.GetComponent<CharacterPickerControl>().CharacterId = partyCharacterId;   
+            }
+
+            randomEncounter.EncounterTriggered();
         }
     }
 }

@@ -41,7 +41,7 @@ namespace MAGE.GameSystems.Characters.Internal
                     break;
 
                 case (TalentId.SpeedIncrease):
-                    talent = new AttributeModifierTalentBase(talentId, new AttributeModifier(TertiaryStat.Speed, ModifierType.Increment, 2), 3);
+                    talent = new AttributeModifierTalentBase(talentId, new AttributeModifier(TertiaryStat.Speed, ModifierType.Multiply, .1f), 3);
                     break;
 
                 case (TalentId.HealOnHurt):

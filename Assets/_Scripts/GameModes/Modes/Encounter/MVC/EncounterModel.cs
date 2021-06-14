@@ -15,7 +15,9 @@ using UnityEngine;
 namespace MAGE.GameModes.Encounter
 {
     class EncounterModel
-    {
+    { 
+        public bool IsEncounterActive = false;
+
         public List<EncounterCondition> mWinConditions = new List<EncounterCondition>();
         public List<EncounterCondition> mLoseConditions = new List<EncounterCondition>();
 
@@ -66,14 +68,19 @@ namespace MAGE.GameModes.Encounter
 
         public void AddPlayer(ControllableEntity player)
         {
-            Players.Add(player.Id, player);
+            Logger.Log(LogTag.Combat, "EncounterModel", string.Format("Add Player [{0}] Exists in Lineup [{1}]", player.Id, Players.ContainsKey(player.Id) ? "TRUE" : "FALSE"));
 
-            if (!Teams.ContainsKey(player.TeamSide)) Teams.Add(player.TeamSide, new List<ControllableEntity>());
-            Teams[player.TeamSide].Add(player);
-
-            if (player.TeamSide == TeamSide.EnemyAI)
+            if (!Players.ContainsKey(player.Id))
             {
-                player.GetComponentInChildren<ActorOutfitter>()?.SetOutfitColorization(GameSystems.Appearances.OutfitColorization.Enemy);
+                Players.Add(player.Id, player);
+
+                if (!Teams.ContainsKey(player.TeamSide)) Teams.Add(player.TeamSide, new List<ControllableEntity>());
+                Teams[player.TeamSide].Add(player);
+
+                if (player.TeamSide == TeamSide.EnemyAI)
+                {
+                    player.GetComponentInChildren<ActorOutfitter>()?.SetOutfitColorization(GameSystems.Appearances.OutfitColorization.Enemy);
+                }
             }
         }
 

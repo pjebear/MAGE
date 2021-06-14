@@ -320,7 +320,7 @@ namespace MAGE.GameModes.Encounter
 
                     if (mHoverInfo.mHoveredEntity != mCurrentTurn)
                     {
-                        mHoverInfo.mHoveredObstacle = mHoverInfo.mHoveredEntity.GetComponentInChildren<NavMeshObstacle>();
+                        mHoverInfo.mHoveredObstacle = mHoverInfo.mHoveredEntity.GetComponentInChildren<NavMeshObstacle>(true);
                         mHoverInfo.mHoveredObstacle.enabled = false;
                     }
                 }

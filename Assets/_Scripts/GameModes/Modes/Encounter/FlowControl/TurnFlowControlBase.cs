@@ -65,7 +65,7 @@ namespace MAGE.GameModes.Encounter
         protected LineRenderer mTargetBoundaryRenderer = null;
 
         protected int mCircleSegments = 32;
-        protected float mCharacterEmptyRadius = 1f;
+        protected float mCharacterEmptyRadius = 1.5f;
 
         protected HashSet<NavMeshObstacle> mMovementObstacles = new HashSet<NavMeshObstacle>();
 
@@ -100,14 +100,14 @@ namespace MAGE.GameModes.Encounter
             mMovementPathRenderer.gameObject.SetActive(false);
             mMovementPathRenderer.useWorldSpace = true;
 
-            foreach (CombatEntity entity in GameModel.Encounter.AlivePlayers)
-            {
-                NavMeshObstacle obstacle = EncounterPrefabLoader.Obstacle;
-                obstacle.transform.SetParent(entity.transform);
-                obstacle.transform.localPosition = Vector3.zero;
-                mCharacterEmptyRadius = obstacle.radius * 2;
-                mMovementObstacles.Add(obstacle);
-            }
+            //foreach (CombatEntity entity in GameModel.Encounter.AlivePlayers)
+            //{
+            //    NavMeshObstacle obstacle = EncounterPrefabLoader.Obstacle;
+            //    obstacle.transform.SetParent(entity.transform);
+            //    obstacle.transform.localPosition = Vector3.zero;
+            //    mCharacterEmptyRadius = obstacle.radius * 2;
+            //    mMovementObstacles.Add(obstacle);
+            //}
 
             SetCurrentCharacter(GameModel.Encounter.CurrentTurn);
 
@@ -147,7 +147,8 @@ namespace MAGE.GameModes.Encounter
         protected void MoveAttack()
         {
             bool attackQueued = false;
-            if (mCurrentTurn.GetComponent<ActionsControl>().GetNumAvailableActions() > 0)
+            if (mCurrentTurn.GetComponent<ActionsControl>().GetNumAvailableActions() > 0
+                && mHoverInfo.mIsMoveToInRange)
             {
                 attackQueued = true;
                 QueueAttack();
@@ -157,7 +158,7 @@ namespace MAGE.GameModes.Encounter
             {
                 SetState(State.Moving);
 
-                float pathLength = mHoverInfo.mMoveToPath.Count;
+                float pathLength = GetPathLength(mHoverInfo.mMoveToPath);
                 mCurrentTurn.GetComponent<ActionsControl>().OnMovementPerformed(Mathf.CeilToInt(pathLength));
                 mCurrentTurn.GetComponent<ActorMotor>().MoveToPoint(mHoverInfo.mMoveToPath[mHoverInfo.mMoveToPath.Count - 1], () =>
                 {

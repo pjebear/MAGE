@@ -16,16 +16,20 @@ namespace MAGE.GameModes.SceneElements.Encounters
         public enum State
         {
             Idle,
+            Wander,
             Chase,
+            ReturningFromChase,
             Interacting,
 
             Num
         }
-        private State mState = State.Chase;
+
+        private State mState = State.Idle;
         private Transform rPlayer;
-        private NavigationCoordinatorBase rIdleCoordinator;
+        private NavigationCoordinatorBase rWanderCoordinator;
         private float mCurrentWanderDelaySec = 0;
         private float mCurrentWanderDurationSec = 0;
+        private Vector3 mChaseStartingPoint = Vector3.zero;
 
         public int MobChaseRange = 10;
         public int MobInteractRange = 3;
@@ -41,7 +45,18 @@ namespace MAGE.GameModes.SceneElements.Encounters
             //go.transform.localScale = Vector3.one * MobTriggerRange * 2;
 
             rPlayer = GameObject.FindGameObjectWithTag("Player").transform;
-            rIdleCoordinator = GetComponentInParent<NavigationCoordinatorBase>();
+            rWanderCoordinator = GetComponentInParent<NavigationCoordinatorBase>();
+            if (rWanderCoordinator == null)
+            {
+                rWanderCoordinator = GetComponent<NavigationCoordinatorBase>();
+            }
+
+            Debug.Assert(rWanderCoordinator);
+        }
+
+        private void OnDisable()
+        {
+            mState = State.Wander;
         }
 
         private void OnDrawGizmos()
@@ -55,52 +70,47 @@ namespace MAGE.GameModes.SceneElements.Encounters
 
         private void Update()
         {
-            State updatedState = GetUpdatedState(mState);
+            State previousState = mState;
+            mState = GetUpdatedState(mState);
 
-            if (mState != updatedState)
+            if (mState == State.Interacting && previousState != mState)
             {
-                mState = updatedState;
-
-                if (mState == State.Interacting)
-                {
-                    MessageRouter.Instance.NotifyMessage(new Exploration.ExplorationMessage(Exploration.ExplorationMessage.EventType.EncounterTriggered, gameObject));
-                }
-                else if (mState == State.Idle)
-                {
-                    GetComponent<ActorMotor>().Stop();
-                }
-
-                GetComponent<Actor>().SetInCombat(mState != State.Idle);
+                MessageRouter.Instance.NotifyMessage(new Exploration.ExplorationMessage(Exploration.ExplorationMessage.EventType.EncounterTriggered, gameObject));
+                GetComponent<ActorMotor>().Stop();
+                GetComponent<Actor>().SetInCombat(mState != State.Wander);
             }
-
-            if (mState == State.Chase)
+            else if (mState == State.Chase)
             {
+                if (mState != previousState)
+                {
+                    mChaseStartingPoint = transform.position;
+                }
                 GetComponent<ActorMotor>().MoveToPoint(rPlayer.transform.position);
+            }
+            else if (previousState != mState && mState == State.ReturningFromChase)
+            {
+                GetComponent<ActorMotor>().MoveToPoint(mChaseStartingPoint);
+            }
+            else if (mState == State.Wander)
+            {
+                if (rWanderCoordinator != null)
+                {
+                   if (previousState != mState)
+                    {    
+                        GetComponent<ActorMotor>().MoveToPoint(rWanderCoordinator.GetNextNavigationPoint(transform.position));   
+                    }
+                }
             }
             else if (mState == State.Idle)
             {
-                if (rIdleCoordinator != null)
+                if (mState != previousState)
                 {
-                    NavMeshAgent navMeshAgent = GetComponent<NavMeshAgent>();
-                    if (!navMeshAgent.hasPath)
-                    {
-                        mCurrentWanderDelaySec += Time.deltaTime;
-                        if (mCurrentWanderDelaySec > NavigationDelayRangeSec)
-                        {
-                            GetComponent<ActorMotor>().MoveToPoint(rIdleCoordinator.GetNextNavigationPoint(transform.position));
-
-                            mCurrentWanderDelaySec = 0;
-                        }
-                    }
-                    else 
-                    {
-                        mCurrentWanderDurationSec += Time.deltaTime;
-                        if (mCurrentWanderDurationSec > 10f)
-                        {
-                            GetComponent<ActorMotor>().Stop();
-                            mCurrentWanderDurationSec = 0f;
-                        }
-                    }
+                    GetComponent<ActorMotor>().Stop();
+                    mCurrentWanderDelaySec = 0;
+                }
+                else
+                {
+                    mCurrentWanderDelaySec += Time.deltaTime;
                 }
             }
         }
@@ -109,24 +119,43 @@ namespace MAGE.GameModes.SceneElements.Encounters
         {
             State updatedState = currentState;
 
-            // Update state
-            float distanceToPlayer = Vector3.Distance(transform.position, rPlayer.position);
-            if (currentState == State.Chase)
+            // Stuck in interacting until otherwise specified
+            if (currentState != State.Interacting)
             {
-                if (distanceToPlayer < MobInteractRange)
+                if (currentState != State.ReturningFromChase)
                 {
-                    updatedState = State.Interacting;
+                    // Update state
+                    float distanceToPlayer = Vector3.Distance(transform.position, rPlayer.position);
+                    if (distanceToPlayer < MobInteractRange)
+                    {
+                        updatedState = State.Interacting;
+                    }
+                    else if (distanceToPlayer < MobChaseRange)
+                    {
+                        updatedState = State.Chase;
+                    }
+                    else if (currentState == State.Chase)
+                    {
+                        updatedState = State.ReturningFromChase;
+                    }
                 }
-                else if (distanceToPlayer > MobChaseRange)
+               
+                if (currentState == updatedState)
                 {
-                    updatedState = State.Idle;
-                }
-            }
-            else if (currentState == State.Idle)
-            {
-                if (distanceToPlayer < MobChaseRange)
-                {
-                    updatedState = State.Chase;
+                    if (currentState == State.Wander || currentState == State.ReturningFromChase)
+                    {
+                        if (!GetComponent<ActorMotor>().IsMoving())
+                        {
+                            updatedState = State.Idle;
+                        }
+                    }
+                    else if (currentState == State.Idle)
+                    {
+                        if (mCurrentWanderDelaySec > NavigationDelayRangeSec)
+                        {
+                            updatedState = State.Wander;
+                        }
+                    }
                 }
             }
 

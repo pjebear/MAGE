@@ -11,9 +11,9 @@ namespace MAGE.DB
     [System.Serializable]
     class DBRangeInfo : Internal.DBEntryBase
     {
-        public int Min;
-        public int Max;
-        public int Elevation;
+        public float Min;
+        public float Max;
+        public float Elevation;
         public int AreaType;
         public int TargetingType;
 

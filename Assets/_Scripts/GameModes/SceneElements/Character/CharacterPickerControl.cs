@@ -13,6 +13,8 @@ namespace MAGE.GameModes.SceneElements
 {
     class CharacterPickerControl : MonoBehaviour
     {
+        private bool mIsLoaded = false;
+
         private int mCharacterId = -1;
         public int CharacterId
         {
@@ -23,9 +25,22 @@ namespace MAGE.GameModes.SceneElements
             set
             {
                 mCharacterId = value;
+                if (mIsLoaded)
+                {
+                    BroadcastMessage("OnCharacterChanged", null, SendMessageOptions.DontRequireReceiver);
+                }
+            }
+        }
+
+        private void Start()
+        {
+            mIsLoaded = true;
+            if (mCharacterId != -1)
+            {
                 BroadcastMessage("OnCharacterChanged", null, SendMessageOptions.DontRequireReceiver);
             }
         }
+
         public Appearance Appearance
         {
             get
