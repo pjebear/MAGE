@@ -17,49 +17,49 @@ namespace MAGE.DB.Internal
         public static void LoadDB()
         {
             // Test Story Arc
-            {
-                StoryArcId storyArcId = StoryArcId.Test;
+            //{
+            //    StoryArcId storyArcId = StoryArcId.Test;
 
-                DBStoryArcInfo storyArcInfo = new DBStoryArcInfo();
-                storyArcInfo.Id = (int)storyArcId;
-                storyArcInfo.Name = storyArcId.ToString();
+            //    DBStoryArcInfo storyArcInfo = new DBStoryArcInfo();
+            //    storyArcInfo.Id = (int)storyArcId;
+            //    storyArcInfo.Name = storyArcId.ToString();
 
-                // Activate Condition
-                {
-                    DBStoryObjective activateCondition = new DBStoryObjective();
-                    activateCondition.EventType = (int)StoryEventType.NewGame;
-                    storyArcInfo.ActivationCondition = activateCondition;
-                }
+            //    // Activate Condition
+            //    {
+            //        DBStoryObjective activateCondition = new DBStoryObjective();
+            //        activateCondition.EventType = (int)StoryEventType.NewGame;
+            //        storyArcInfo.ActivationCondition = activateCondition;
+            //    }
 
-                // Nodes
-                {
-                    { // Conversation with field vendor
-                        storyArcInfo.StoryArc.Add(StoryDBUtil.CreateConversationStoryNode(
-                            "Quieter than usual..."
-                            , "Talk with the locals to figure out what's going on."
-                            , (int)ConversationId.BanditsInTheHills
-                            , (int)NPCPropId.FieldVendor));
-                    }
+            //    // Nodes
+            //    {
+            //        { // Conversation with field vendor
+            //            storyArcInfo.StoryArc.Add(StoryDBUtil.CreateConversationStoryNode(
+            //                "Quieter than usual..."
+            //                , "Talk with the locals to figure out what's going on."
+            //                , (int)ConversationId.BanditsInTheHills
+            //                , (int)NPCPropId.FieldVendor));
+            //        }
 
-                    { // Get the Key
-                        storyArcInfo.StoryArc.Add(StoryDBUtil.CreateItemRetrievalStoryNode(
-                            "Where the blazes is that key..."
-                            , "Find the key to the gate."
-                            , (int)StoryItemId.GateKey
-                            , (int)ContainerPropId.FieldVendorContainer));
-                    }
+            //        { // Get the Key
+            //            storyArcInfo.StoryArc.Add(StoryDBUtil.CreateItemRetrievalStoryNode(
+            //                "Where the blazes is that key..."
+            //                , "Find the key to the gate."
+            //                , (int)StoryItemId.GateKey
+            //                , (int)ContainerPropId.FieldVendorContainer));
+            //        }
 
-                    { // Conversation with field vendor
-                        storyArcInfo.StoryArc.Add(StoryDBUtil.CreateConversationStoryNode(
-                            "Definitely Wasn't where he said it was..."
-                            , "Return to the captain to unlock the gate."
-                            , (int)ConversationId.UnlockTheGate
-                            , (int)NPCPropId.FieldVendor));
-                    }
-                }
+            //        { // Conversation with field vendor
+            //            storyArcInfo.StoryArc.Add(StoryDBUtil.CreateConversationStoryNode(
+            //                "Definitely Wasn't where he said it was..."
+            //                , "Return to the captain to unlock the gate."
+            //                , (int)ConversationId.UnlockTheGate
+            //                , (int)NPCPropId.FieldVendor));
+            //        }
+            //    }
 
-                DBService.Get().WriteStoryArcInfo(storyArcInfo.Id, storyArcInfo);
-            }
+            //    DBService.Get().WriteStoryArcInfo(storyArcInfo.Id, storyArcInfo);
+            //}
 
             // Debug Level Gather Bear Pelts
             {
@@ -203,8 +203,8 @@ namespace MAGE.DB.Internal
 
                     { // Talk to Lothar
                         DBStoryNodeInfo storyNode = StoryDBUtil.CreateViewCinematicStoryNode(
-                            ""
-                            , ""
+                            "Convoy under attack!"
+                            , "Travel to the Forest and save convoy from bandits"
                             , (int)CinematicId.LotharUnderAttack);
 
                         storyArcInfo.StoryArc.Add(storyNode);

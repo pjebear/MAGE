@@ -20,6 +20,7 @@ namespace MAGE.UI.Views
         public class DataProvider : IDataProvider
         {
             public Optional<string> IconAssetName;
+            public Optional<bool> DisplayIcon;
             public Optional<string> Text;
         }
 
@@ -31,6 +32,7 @@ namespace MAGE.UI.Views
             DataProvider dp = (DataProvider)dataProvider;
 
             if (dp.IconAssetName.HasValue) IconImg.Publish(dp.IconAssetName.Value);
+            if (dp.DisplayIcon.HasValue) IconImg.gameObject.SetActive(dp.DisplayIcon.Value);
             if (dp.Text.HasValue) Text.Publish(dp.Text.Value.ToString());
         }
 

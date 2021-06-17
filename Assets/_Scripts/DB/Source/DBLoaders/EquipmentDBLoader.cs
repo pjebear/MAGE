@@ -152,8 +152,8 @@ namespace MAGE.DB.Internal
 
                 entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
             {
-                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Scalar = .75f}
-                , new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Finese, Scalar = .25f}
+                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Scalar = .35f}
+                , new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Finese, Scalar = .15f}
             };
                 entry.EquipBonuses = new List<DB.DBAttributeModifier>()
                 {
@@ -180,7 +180,7 @@ namespace MAGE.DB.Internal
 
                 entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
             {
-                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Scalar = 1}
+                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Scalar = .5f}
             };
                 entry.EquipBonuses = new List<DB.DBAttributeModifier>()
                 {
@@ -207,8 +207,8 @@ namespace MAGE.DB.Internal
 
                 entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
             {
-                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Scalar = .5f}
-                , new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Finese, Scalar = .5f}
+                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Scalar = .25f}
+                , new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Finese, Scalar = .25f}
             };
                 entry.EquipBonuses = new List<DB.DBAttributeModifier>()
                 {
@@ -266,7 +266,7 @@ namespace MAGE.DB.Internal
 
                 entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
             {
-                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Scalar = .5f}
+                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Scalar = .25f}
             };
 
                 entry.EquipBonuses = new List<DB.DBAttributeModifier>()

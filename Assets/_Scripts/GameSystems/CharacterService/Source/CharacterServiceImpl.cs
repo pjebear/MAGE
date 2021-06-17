@@ -46,6 +46,20 @@ namespace MAGE.GameSystems.Characters.Internal
                 characterInfo.Experience -= CharacterConstants.LEVEL_UP_THRESHOLD;
                 characterInfo.Level++;
 
+                // Health Increase
+                {
+                    AttributeModifier healthIncrease = new AttributeModifier(ResourceType.Health, ModifierType.Increment, 5);
+                    characterGrowthInfo.AttributeModifiers.Add(healthIncrease);
+                    characterInfo.Attributes.Modify(healthIncrease);
+                }
+
+                // Mana Increase
+                {
+                    AttributeModifier manaIncrease = new AttributeModifier(ResourceType.Mana, ModifierType.Increment, 2);
+                    characterGrowthInfo.AttributeModifiers.Add(manaIncrease);
+                    characterInfo.Attributes.Modify(manaIncrease);
+                }
+
                 Specialization specialization = SpecializationFactory.CheckoutSpecialization(characterInfo.CurrentSpecializationType, characterInfo.CurrentSpecializationProgress);
                 foreach (AttributeModifier modifier in specialization.LevelUpModifiers)
                 {
@@ -55,7 +69,7 @@ namespace MAGE.GameSystems.Characters.Internal
                     characterGrowthInfo.AttributeModifiers.Add(modifier);
                     characterInfo.Attributes.Modify(modifier);
                 }
-            }
+            } 
             characterGrowthInfo.CharacterLevel = characterInfo.Level;
 
             // Specialization experience

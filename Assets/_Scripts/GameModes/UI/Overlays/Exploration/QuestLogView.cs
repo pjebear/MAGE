@@ -29,7 +29,6 @@ namespace MAGE.UI.Views
 
         public UIButton ExitBtn;
         public Transform QuestInfoContainer; 
-        public UIText QuestInfoNameTxt;
         public UIText QuestInfoObjectiveTxt;
         public UIText QuestInfoDescriptionTxt;
         public UIList QuestList;
@@ -40,9 +39,11 @@ namespace MAGE.UI.Views
 
             // QuestList
             UIList.DataProvider questListDP = new UIList.DataProvider();
+            int i = 0;
             foreach (string questName in dp.QuestNames)
             {
-                questListDP.Elements.Add(new IconTextBase.DataProvider() { Text = questName });
+                questListDP.Elements.Add(new IconTextBase.DataProvider() { Text = questName, DisplayIcon = dp.IsQuestUpdated[i]});
+                ++i;
             }
             QuestList.Publish(questListDP);
 
@@ -51,7 +52,7 @@ namespace MAGE.UI.Views
             if (dp.SelectedQuest.HasValue)
             {
                 int questIdx = dp.SelectedQuest.Value;
-                QuestInfoNameTxt.Publish(dp.QuestNames[questIdx]);
+
                 QuestInfoObjectiveTxt.Publish(dp.QuestObjectives[questIdx]);
                 QuestInfoDescriptionTxt.Publish(dp.QuestDescriptions[questIdx]);
             }

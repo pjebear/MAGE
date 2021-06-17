@@ -65,12 +65,24 @@ namespace MAGE.GameSystems.Story.Internal
         {
             StoryArcInfo storyArcInfo = new StoryArcInfo();
 
+            storyArcInfo.StoryArcId = mId;
+            storyArcInfo.Stage = mCurrentNodeIdx;
+
             storyArcInfo.StoryArcName = mId.ToString();
 
             if (IsArcActive())
-            {    
-                storyArcInfo.CurrentObjective = mStoryArc[mCurrentNodeIdx].Description;
-                storyArcInfo.CurrentDescription = mStoryArc[mCurrentNodeIdx].Name;
+            {
+                storyArcInfo.Status = StoryArcStatus.Active;
+                storyArcInfo.CurrentObjective = mStoryArc[mCurrentNodeIdx].Name;
+                storyArcInfo.CurrentDescription = mStoryArc[mCurrentNodeIdx].Description;
+            }
+            else if (IsArcComplete())
+            {
+                storyArcInfo.Status = StoryArcStatus.Complete;
+            }
+            else
+            {
+                storyArcInfo.Status = StoryArcStatus.Inactive;
             }
 
             return storyArcInfo;

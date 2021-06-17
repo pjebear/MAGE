@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace MAGE.GameSystems.Story.Internal
 {
@@ -24,6 +25,32 @@ namespace MAGE.GameSystems.Story.Internal
         public void Takedown()
         {
            
+        }
+
+        public StoryProgress GetStoryProgress()
+        {
+            StoryProgress storyProgress = new StoryProgress();
+
+            foreach (var storyArcPair in mStoryArcs)
+            {
+                StoryArcInfo info = storyArcPair.Value.GetArcInfo();
+
+                storyProgress.StoryArcs.Add(info.StoryArcId, info);
+
+                switch (info.Status)
+                {
+                    default:
+                    {
+                        Debug.Assert(false);
+                    }
+                    break;
+                    case StoryArcStatus.Inactive: storyProgress.NotStarted.Add(info.StoryArcId); break;
+                    case StoryArcStatus.Active: storyProgress.InProgress.Add(info.StoryArcId); break;
+                    case StoryArcStatus.Complete: storyProgress.Completed.Add(info.StoryArcId); break;
+                }
+            }
+
+            return storyProgress;
         }
 
         public List<StoryArcInfo> GetActiveStoryArcs()
@@ -48,7 +75,7 @@ namespace MAGE.GameSystems.Story.Internal
                 StoryArcUpdateType updateType = storyArcPair.Value.NotifyEvent(storyEvent);
                 if (updateType != StoryArcUpdateType.None)
                 {
-                    Messaging.MessageRouter.Instance.NotifyMessage(new StoryMessage(MessageType.StoryArcUpdated, storyArcPair.Key));
+                    Messaging.MessageRouter.Instance.NotifyMessage(new StoryMessage(MessageType.StoryArcUpdated, storyArcPair.Value));
                 }
             }
         }

@@ -22,10 +22,7 @@ namespace MAGE.UI.Views
         , IPointerExitHandler
     {
         public bool IsClickable = false;
-        public SFXId ClickSFX = SFXId.INVALID;
-
         public bool IsHoverable = false;
-        public SFXId HoverSFX = SFXId.INVALID;
 
         public static int INVALID_ID = -1;
         public int mId = INVALID_ID;
@@ -45,10 +42,7 @@ namespace MAGE.UI.Views
         // ----------------------------------------------------------------------------------------------- 
         protected virtual void HandlePointerClick()
         {
-            if (ClickSFX != SFXId.INVALID)
-            {
-                UIManager.Instance.PlaySFX(ClickSFX);
-            }
+            UIManager.Instance.PlaySFX(SFXId.Confirm);   
 
             NotifyInteraction(mId, UIInteractionType.Click);
         }
@@ -65,10 +59,8 @@ namespace MAGE.UI.Views
         // ----------------------------------------------------------------------------------------------- 
         protected virtual void HandlePointerEnter()
         {
-            if (HoverSFX != SFXId.INVALID)
-            {
-                UIManager.Instance.PlaySFX(HoverSFX);
-            }
+            UIManager.Instance.PlaySFX(SFXId.MenuHover);
+
             NotifyInteraction(mId, UIInteractionType.MouseOver);
         }
 

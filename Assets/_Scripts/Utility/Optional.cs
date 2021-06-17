@@ -54,6 +54,13 @@ struct Optional<T>
         else
             return false;
     }
+
+    public void Reset()
+    {
+        HasValue = false;
+        value = default;
+    }
+
     public bool Equals(Optional<T> other)
     {
         if (HasValue && other.HasValue)

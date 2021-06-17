@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace MAGE.UI.Views
 {
@@ -25,6 +26,7 @@ namespace MAGE.UI.Views
         public string Text;
         public int FontSize;
         public Color FontColor;
+        public Image RayCastLayer; 
 
         public TextMeshProUGUI TMPro;
 
@@ -45,7 +47,7 @@ namespace MAGE.UI.Views
         // Start is called before the first frame update
         void Start()
         {
-
+            RayCastLayer.raycastTarget = IsClickable || IsHoverable;
         }
 
         // Update is called once per frame

@@ -96,12 +96,11 @@ namespace MAGE.GameModes.Combat
 
         public override void OnTurnTick()
         {
-            float maxMana = GetComponent<ResourcesControl>().Resources[ResourceType.Mana].Max;
-            float attunementModifier = GetComponent<StatsControl>().Attributes[SecondaryStat.Attunement] / 100f;
+            float attunementModifier = GetComponent<StatsControl>().Attributes[SecondaryStat.Attunement] / 400f;
             float resourceRecoverModifier = Mathf.Max(GetComponent<StatsControl>().Attributes[TertiaryStat.ResourceRecovery], 0);
-            float tuningModifer = .04f;
+            
             GetComponent<ResourcesControl>().Resources[ResourceType.Mana]
-                .Modify(maxMana * attunementModifier * resourceRecoverModifier * tuningModifer);
+                .Modify(attunementModifier * resourceRecoverModifier);
 
             GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Clock].Modify(
                 GetComponent<StatsControl>().Attributes[GameSystems.Stats.TertiaryStat.Speed]);

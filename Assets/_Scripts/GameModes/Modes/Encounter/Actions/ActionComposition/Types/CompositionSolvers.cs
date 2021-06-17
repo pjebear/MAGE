@@ -154,8 +154,8 @@ namespace MAGE.GameModes.Encounter
             if (DeferredCaster.Get() != null)
             {
                 Attributes attributes = DeferredCaster.Get().Attributes;
-                effectiveness += attributes[PrimaryStat.Magic] / 8;
-                effectiveness *= 1 + (attributes[SecondaryStat.Attunement] / 100);
+                effectiveness *= attributes[PrimaryStat.Magic] / 6;
+                effectiveness *= (attributes[SecondaryStat.Attunement] / 200);
             }
             if (!IsBeneficial)
             {

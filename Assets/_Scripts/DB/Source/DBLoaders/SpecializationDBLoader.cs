@@ -37,7 +37,7 @@ namespace MAGE.DB.Internal
                 new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Finese, Value = 1},
                 new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Magic, Value = 5},
                 new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.SecondaryStat, AttributeId = (int)SecondaryStat.Fortitude, Value = 1},
-                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.SecondaryStat, AttributeId = (int)SecondaryStat.Attunement, Value = 5}
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.SecondaryStat, AttributeId = (int)SecondaryStat.Attunement, Value = 3}
             };
 
                 // talents
@@ -79,8 +79,8 @@ namespace MAGE.DB.Internal
                 // Level up modifiers
                 dbSpecialization.LevelUpModifiers = new List<DB.DBAttribute>()
             {
-                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Value = 5},
-                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Finese, Value = 2},
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Value = 2},
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Finese, Value = 4},
                 new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Magic, Value = 1},
                 new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.SecondaryStat, AttributeId = (int)SecondaryStat.Fortitude, Value = 5},
                 new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.SecondaryStat, AttributeId = (int)SecondaryStat.Attunement, Value = 1}
@@ -174,7 +174,7 @@ namespace MAGE.DB.Internal
                 new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Value = 4},
                 new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Finese, Value = 3},
                 new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Magic, Value = 2},
-                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.SecondaryStat, AttributeId = (int)SecondaryStat.Fortitude, Value = 5},
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.SecondaryStat, AttributeId = (int)SecondaryStat.Fortitude, Value = 3},
                 new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.SecondaryStat, AttributeId = (int)SecondaryStat.Attunement, Value = 1}
             };
 
@@ -227,7 +227,7 @@ namespace MAGE.DB.Internal
                 new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Finese, Value = 1},
                 new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Magic, Value = 4},
                 new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.SecondaryStat, AttributeId = (int)SecondaryStat.Fortitude, Value = 1},
-                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.SecondaryStat, AttributeId = (int)SecondaryStat.Attunement, Value = 5}
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.SecondaryStat, AttributeId = (int)SecondaryStat.Attunement, Value = 3}
             };
 
                 // talents
@@ -273,8 +273,8 @@ namespace MAGE.DB.Internal
                 new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Value = 5},
                 new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Finese, Value = 3},
                 new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Magic, Value = 4},
-                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.SecondaryStat, AttributeId = (int)SecondaryStat.Fortitude, Value = 4},
-                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.SecondaryStat, AttributeId = (int)SecondaryStat.Attunement, Value = 4}
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.SecondaryStat, AttributeId = (int)SecondaryStat.Fortitude, Value = 2},
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.SecondaryStat, AttributeId = (int)SecondaryStat.Attunement, Value = 2}
             };
 
                 // talents
