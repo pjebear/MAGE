@@ -36,6 +36,7 @@ namespace MAGE.GameSystems
         void AssignTalentPoint(int characterId, Characters.TalentId talentId);
         void ChangeSpecialization(int characterId, Characters.SpecializationType specializationType);
         void EquipCharacter(int characterId, EquippableId equippableId, Items.Equipment.Slot inSlot);
+        int GetAverageLevelOfParty(); 
         List<int> GetCharactersInParty(); 
         int GetCurrency(); 
         Inventory GetInventory();

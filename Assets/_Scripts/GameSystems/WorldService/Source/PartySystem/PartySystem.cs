@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace MAGE.GameSystems.World.Internal
 {
@@ -46,6 +47,25 @@ namespace MAGE.GameSystems.World.Internal
         public void AddCurrency(int amount)
         {
             mPartyInfo.Currency += amount;
+        }
+
+        public int GetAverageLevelOfParty()
+        {
+            int averageLevel = 1;
+
+            Debug.Assert(mPartyInfo.CharacterIds.Count > 0);
+            if (mPartyInfo.CharacterIds.Count > 0)
+            {
+                float levelSum = 0;
+                foreach (int characterId in mPartyInfo.CharacterIds)
+                {
+                    levelSum += CharacterService.Get().GetCharacter(characterId).Level;
+                }
+
+                averageLevel = (int)(levelSum / (float)mPartyInfo.CharacterIds.Count);
+            }
+
+            return averageLevel;
         }
 
         public int GetCurrency()

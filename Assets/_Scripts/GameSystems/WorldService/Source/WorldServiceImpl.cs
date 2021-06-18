@@ -124,6 +124,11 @@ namespace MAGE.GameSystems.World.Internal
             mPartySystem.EquipCharacter(characterId, equippableId, inSlot);
         }
 
+        public int GetAverageLevelOfParty()
+        {
+            return mPartySystem.GetAverageLevelOfParty();
+        }
+        
         public List<int> GetCharactersInParty()
         {
             return mPartySystem.GetCharactersInParty();

@@ -15,6 +15,7 @@ namespace MAGE.GameSystems.Characters.Internal
             CharacterCreateParams createParams = new CharacterCreateParams();
             createParams.characterType = CharacterType.Temporary;
             createParams.characterClass = CharacterClass.MonoSpecialization;
+            createParams.level = level;
 
             switch (mobId)
             {

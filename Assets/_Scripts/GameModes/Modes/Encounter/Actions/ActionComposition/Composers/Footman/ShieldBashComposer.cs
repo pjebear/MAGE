@@ -23,7 +23,7 @@ namespace MAGE.GameModes.Encounter
         {
             ActionInfo actionInfo = new ActionInfo();
 
-            actionInfo.Effectiveness = 5;
+            actionInfo.Effectiveness = 10;
             actionInfo.ActionId = ActionId.ShieldBash;
             actionInfo.AnimationInfo.AnimationId = AnimationId.Block;
             actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -4);
@@ -48,7 +48,7 @@ namespace MAGE.GameModes.Encounter
 
         protected override IDeferredVar<StateChange> GetStateChange()
         {
-            float damage = ActionInfo.Effectiveness;
+            float damage = ActionInfo.Effectiveness + Owner.GetComponent<StatsControl>().Attributes[PrimaryStat.Might] / 2f;
 
             EquipmentControl equipmentControl = Owner.GetComponent<EquipmentControl>();
             if (equipmentControl != null)
@@ -56,7 +56,7 @@ namespace MAGE.GameModes.Encounter
                 HeldEquippable heldEquippable = equipmentControl.Equipment[GameSystems.Items.Equipment.Slot.LeftHand] as HeldEquippable;
                 if (heldEquippable != null)
                 {
-                    damage *= 1 + heldEquippable.BlockChance;
+                    damage *=  1 + (heldEquippable.BlockChance / 100f);
                 }
             }
 

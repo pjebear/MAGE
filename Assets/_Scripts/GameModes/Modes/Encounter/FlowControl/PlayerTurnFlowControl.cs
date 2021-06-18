@@ -60,15 +60,18 @@ namespace MAGE.GameModes.Encounter
             Input.MouseInfo mouseInfo = input.GetMouseInfo();
             if (!mouseInfo.IsOverWindow) return;
 
-            UpdateHoverInfo(mouseInfo);
+            if (!EventSystem.current.IsPointerOverGameObject())
+            {
+                UpdateHoverInfo(mouseInfo);
 
-            if (mState == State.Idle)
-            {
-                UpdateIdleState();
-            }
-            else if (mState == State.TargetSelect)
-            {
-                UpdateTargetState();
+                if (mState == State.Idle)
+                {
+                    UpdateIdleState();
+                }
+                else if (mState == State.TargetSelect)
+                {
+                    UpdateTargetState();
+                }
             }
 
             UpdateCursor();
@@ -133,13 +136,20 @@ namespace MAGE.GameModes.Encounter
 
             if (mHoverInfo.mHoveredEntity != null && mHoverInfo.mHoveredEntity.GetComponent<CombatTarget>() != null)
             {
-                if ((mSelectedAction.ActionInfo.EffectRange.TargetingType == TargetingType.Any
-                        || mSelectedAction.ActionInfo.CanGroundTarget
-                        || (mSelectedAction.ActionInfo.EffectRange.TargetingType == TargetingType.Allies && mHoverInfo.mHoveredEntity.TeamSide == TeamSide.AllyHuman)
-                        || (mSelectedAction.ActionInfo.EffectRange.TargetingType == TargetingType.Enemies && mHoverInfo.mHoveredEntity.TeamSide == TeamSide.EnemyAI))
-                        && (mHoverInfo.mHoveredEntity == mCurrentTurn ^ mSelectedAction.ActionInfo.ActionRange == ActionRange.Projectile))
+                if (mSelectedAction.ActionInfo.ActionRange == ActionRange.AOE || mHoverInfo.mHoveredEntity != mCurrentTurn)
                 {
-                    target = new Target(mHoverInfo.mHoveredEntity.GetComponent<CombatTarget>());
+                    bool canTargetAny = mSelectedAction.ActionInfo.EffectRange.TargetingType == TargetingType.Any;
+                    bool canTargetGround = mSelectedAction.ActionInfo.CanGroundTarget;
+                    bool canAndIsTargetingAlly = mSelectedAction.ActionInfo.EffectRange.TargetingType == TargetingType.Allies && mHoverInfo.mHoveredEntity.TeamSide == TeamSide.AllyHuman;
+                    bool canAndIsTargetingEnemy = mSelectedAction.ActionInfo.EffectRange.TargetingType == TargetingType.Enemies && mHoverInfo.mHoveredEntity.TeamSide == TeamSide.EnemyAI;
+
+                    if (canTargetAny 
+                        || canTargetGround
+                        || canAndIsTargetingAlly 
+                        || canAndIsTargetingEnemy)
+                    {
+                        target = new Target(mHoverInfo.mHoveredEntity.GetComponent<CombatTarget>());
+                    }
                 }
             }
             else if (mHoverInfo.mHoveredTerrainPos != Vector3.zero)
@@ -175,6 +185,11 @@ namespace MAGE.GameModes.Encounter
 
         public override void OnMouseHoverChange(GameObject gameObject)
         {
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+
             CombatTarget previousTarget = mCurrentTarget;
 
             CombatTarget updatedTarget = null;

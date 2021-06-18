@@ -13,6 +13,8 @@ namespace MAGE.GameModes.SceneElements.Encounters
     class MobCharacterControl : CreateCharacterControlBase
     {
         public MobId MobId = MobId.INVALID;
+        public int OverrideLevel = -1;
+        public int LevelDifficultyModifier = 0;
 
         private int mCreateCharacterId = -1;
 
@@ -30,7 +32,19 @@ namespace MAGE.GameModes.SceneElements.Encounters
                 Debug.Assert(MobId != MobId.INVALID);
                 if (MobId == MobId.INVALID) MobId = MobId.DEMO_Bandit;
 
-                mCreateCharacterId = characterService.CreateMob(MobId, 1);
+                int levelId = 1;
+                if (OverrideLevel != -1)
+                {
+                    levelId = OverrideLevel;
+                }
+                else
+                {
+                    levelId = WorldService.Get().GetAverageLevelOfParty();
+                }
+
+                levelId += LevelDifficultyModifier;
+
+                mCreateCharacterId = characterService.CreateMob(MobId, levelId);
             }
         }
 
