@@ -70,7 +70,6 @@ namespace MAGE.GameModes.Encounter
             mCurrentTarget.GetComponentInChildren<NavMeshObstacle>(true).gameObject.SetActive(false);
 
             mSelectedAction = ActionComposerFactory.CheckoutAction(mCurrentTurn.GetComponent<CombatEntity>(), ActionId.WeaponAttack);
-            mActionInfo = mSelectedAction.ActionInfo;
 
             Invoke("FinalizeTarget", .5f);
         }
@@ -81,7 +80,7 @@ namespace MAGE.GameModes.Encounter
                 && mCurrentTarget != mCurrentTurn
                 && mSelectedAction.AreActionRequirementsMet())
             {
-                float weaponRange = mWeaponAttackInfo.CastRange.MaxRange;
+                float weaponRange = mWeaponAttack.ActionInfo.CastRange.MaxRange;
                 if (weaponRange < mCharacterEmptyRadius)
                 {
                     weaponRange = mCharacterEmptyRadius;

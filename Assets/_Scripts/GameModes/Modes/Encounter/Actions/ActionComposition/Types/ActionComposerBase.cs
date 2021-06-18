@@ -30,6 +30,11 @@ namespace MAGE.GameModes.Combat
             mRootComposition = PopulateComposition();
         }
 
+        public bool CanPerformAction()
+        {
+            return AreActionRequirementsMet() && AreActionRequirementsMet();
+        }
+
         public bool AreResourceRequirementsMet()
         {
             return Owner.GetComponent<ActionsControl>().HasResourcesForAction(ActionInfo.ActionCost);

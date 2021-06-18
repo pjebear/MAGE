@@ -50,9 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsClickable: 1
-  ClickSFX: -1
   IsHoverable: 1
-  HoverSFX: -1
   mId: -1
   Image: {fileID: 2614058622481614750}
 --- !u!1 &1130220499517342277
@@ -224,13 +222,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsClickable: 0
-  ClickSFX: -1
   IsHoverable: 0
-  HoverSFX: -1
   mId: -1
   Text: 
   FontSize: 0
   FontColor: {r: 0, g: 0, b: 0, a: 0}
+  RayCastLayer: {fileID: 0}
   TMPro: {fileID: 4039781288295846598}
 --- !u!1 &1812868757255163794
 GameObject:
@@ -282,9 +279,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsClickable: 1
-  ClickSFX: -1
   IsHoverable: 1
-  HoverSFX: -1
   mId: -1
   Image: {fileID: 1832118097949132505}
 --- !u!1 &2344945007966443479
@@ -337,9 +332,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsClickable: 1
-  ClickSFX: -1
   IsHoverable: 1
-  HoverSFX: -1
   mId: -1
   Image: {fileID: 3631712814904769310}
 --- !u!1 &2672061539304905269
@@ -541,7 +534,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6821703325500576079
 RectTransform:
   m_ObjectHideFlags: 0
@@ -732,13 +725,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsClickable: 0
-  ClickSFX: -1
   IsHoverable: 0
-  HoverSFX: -1
   mId: -1
   Text: 
   FontSize: 0
   FontColor: {r: 0, g: 0, b: 0, a: 0}
+  RayCastLayer: {fileID: 0}
   TMPro: {fileID: 1682381375550332303}
 --- !u!1 &6023760656910414978
 GameObject:
@@ -790,9 +782,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsClickable: 1
-  ClickSFX: -1
   IsHoverable: 1
-  HoverSFX: -1
   mId: -1
   Image: {fileID: 2645324240418079212}
 --- !u!1 &7400504116171140083
@@ -964,13 +954,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsClickable: 0
-  ClickSFX: -1
   IsHoverable: 0
-  HoverSFX: -1
   mId: -1
   Text: 
   FontSize: 0
   FontColor: {r: 0, g: 0, b: 0, a: 0}
+  RayCastLayer: {fileID: 0}
   TMPro: {fileID: 4535399673218998786}
 --- !u!1 &7721890246844492188
 GameObject:
@@ -1214,13 +1203,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsClickable: 0
-  ClickSFX: -1
   IsHoverable: 0
-  HoverSFX: -1
   mId: -1
   Text: 
   FontSize: 0
   FontColor: {r: 0, g: 0, b: 0, a: 0}
+  RayCastLayer: {fileID: 0}
   TMPro: {fileID: 1063862685717614406}
 --- !u!1 &8050010533923094099
 GameObject:
@@ -1310,7 +1298,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3905905773421888153
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1387,9 +1375,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsClickable: 0
-  ClickSFX: -1
   IsHoverable: 0
-  HoverSFX: -1
   mId: -1
   EncounterStatusText: {fileID: 9189360682641283869}
   ActorStatusText: {fileID: 5206953269132169306}
@@ -1417,7 +1403,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8243493318296218258
 RectTransform:
   m_ObjectHideFlags: 0

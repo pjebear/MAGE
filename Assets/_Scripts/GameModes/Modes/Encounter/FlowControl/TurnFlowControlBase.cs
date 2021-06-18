@@ -51,8 +51,9 @@ namespace MAGE.GameModes.Encounter
         }
         protected State mState = State.Idle;
         protected ActionComposerBase mSelectedAction = null;
-        protected ActionInfo mActionInfo = null;
-        protected ActionInfo mWeaponAttackInfo = null;
+        protected Target mSelectedActionTarget = new Target();
+
+        protected ActionComposerBase mWeaponAttack = null;
         // Private 
         protected CombatEntity mCurrentTurn;
         protected List<ActionComposerBase> mAvailableActions;
@@ -139,7 +140,7 @@ namespace MAGE.GameModes.Encounter
                 navMeshObstacle.enabled = false;
             }
 
-            mWeaponAttackInfo = ActionComposerFactory.CheckoutAction(mCurrentTurn, ActionId.WeaponAttack).ActionInfo;
+            mWeaponAttack = ActionComposerFactory.CheckoutAction(mCurrentTurn, ActionId.WeaponAttack);
 
             Camera.main.GetComponent<Cameras.CameraController>().SetTarget(mCurrentTurn.transform, Cameras.CameraType.TopDown);
         }
@@ -207,7 +208,7 @@ namespace MAGE.GameModes.Encounter
 
         protected void QueueAction(ActionProposal proposal)
         {
-            if (proposal.Action.AreActionRequirementsMet())
+            if (proposal.Action.AreResourceRequirementsMet())
             {
                 GameModel.Encounter.mActionQueue.Enqueue(proposal);
             }
@@ -293,11 +294,13 @@ namespace MAGE.GameModes.Encounter
 
         protected void HideEffectRange()
         {
-            mAbilityRangeRenderer.gameObject.SetActive(false);
+            mAbilityEffectRenderer.gameObject.SetActive(false);
         }
 
         protected void DisplayConeRange(LineRenderer rangeRender, Vector3 center, Vector3 castPoint, float radius)
         {
+            castPoint.y += 0.05f;
+
             int numCurvaturePoints = 5;
             int numPoints =
                 2 // 2 points for center point
@@ -327,6 +330,8 @@ namespace MAGE.GameModes.Encounter
 
         protected void DisplayCircleRange(LineRenderer rangeRender, Vector3 center, float radius)
         {
+            center.y += 0.05f;
+
             rangeRender.positionCount = mCircleSegments + 1;
             Vector3[] points = new Vector3[mCircleSegments + 1];
             float currentAngle = 0f;
@@ -367,6 +372,16 @@ namespace MAGE.GameModes.Encounter
                 {
                     mMovementPathRenderer.SetPosition(i + 1, path.corners[i]);
                 }
+            }
+        }
+
+        protected void DisplayMovementPath(List<Vector3> path)
+        {
+            mMovementPathRenderer.positionCount = path.Count + 1;
+            mMovementPathRenderer.SetPosition(0, mCurrentTurn.transform.position + Vector3.up * .1f);
+            for (int i = 0; i < path.Count; i++)
+            {
+                mMovementPathRenderer.SetPosition(i + 1, path[i]);
             }
         }
 

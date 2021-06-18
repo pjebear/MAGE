@@ -19,6 +19,9 @@ namespace MAGE.UI.Views
             Interact_Near,
             Interact_Far,
 
+            Move_Near,
+            Move_Far,
+
             NUM
         }
 
