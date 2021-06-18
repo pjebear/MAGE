@@ -130,31 +130,6 @@ namespace MAGE.GameSystems.Characters
             OnCharacterStateChanged();
         }
 
-        public void ApplyStateChange(StateChange stateChange)
-        {
-            // status effects first 
-            if (stateChange.statusEffects.Count > 0)
-            {
-                foreach (StatusEffect effect in stateChange.statusEffects)
-                {
-                    if (stateChange.Type == StateChangeType.ActionCost)
-                    {
-                        RemoveStatusEffect(effect);
-                    }
-                    else
-                    {
-                        ApplyStatusEffect(effect);
-                    }
-                }
-
-                OnCharacterStateChanged();
-            }
-
-            mCurrentResources[ResourceType.Health].Modify(stateChange.healthChange);
-            mCurrentResources[ResourceType.Mana].Modify(stateChange.resourceChange);
-            mCurrentResources[ResourceType.Endurance].Modify(stateChange.resourceChange);
-        }
-
         //  ------------------------------------------------------------------------------
         public AuraInfo GetAuraInfo(AuraType auraType)
         {

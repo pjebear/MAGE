@@ -142,7 +142,7 @@ namespace MAGE.GameModes.Encounter
                     animationComposition = new EmptyElement();
                 }
 
-                CompositionElement stateChangeComposition = new StateChangeElement(Target.Get().FocalTarget, interactionResult.StateChange);
+                CompositionElement stateChangeComposition = new InteractionResultElement(Target.Get().FocalTarget, interactionResult);
 
                 animationComposition.AddLink(stateChangeComposition, AllignmentPosition.Interaction, AllignmentPosition.Interaction);
             }

@@ -127,6 +127,24 @@ namespace MAGE.GameModes.Encounter
         }
     }
 
+    class InteractionResultElement : CompositionElement
+    {
+        public CombatTarget Target;
+        public InteractionResult Result;
+
+        public InteractionResultElement(CombatTarget target, InteractionResult result)
+            : base(0, 0)
+        {
+            Target = target;
+            Result = result;
+        }
+
+        public override void Trigger()
+        {
+            Target.ApplyInteractionResult(Result);
+        }
+    }
+
     class StateChangeElement : CompositionElement
     {
         public CombatTarget HavingStateChanged;

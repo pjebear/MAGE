@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 namespace MAGE.GameModes.Encounter
 {
@@ -43,6 +44,8 @@ namespace MAGE.GameModes.Encounter
         protected override void Cleanup()
         {
             base.Cleanup();
+
+            UIManager.Instance.SetCursor(CursorControl.CursorType.Default);
 
             UIManager.Instance.RemoveOverlay(UIContainerId.EncounterCharacterInfoRightView);
             UIManager.Instance.RemoveOverlay(UIContainerId.EncounterCharacterInfoLeftView);
@@ -534,58 +537,62 @@ namespace MAGE.GameModes.Encounter
         void UpdateCursor()
         {
             CursorControl.CursorType updatedCursorType = CursorControl.CursorType.Default;
-            // Update Cursor
-            if (mState == State.Idle)
+
+            if (!EventSystem.current.IsPointerOverGameObject())
             {
-                if (mCurrentTarget != null)
+                // Update Cursor
+                if (mState == State.Idle)
                 {
-                    // If hovering an ally
-                    if (mCurrentTarget.GetComponent<CombatEntity>().TeamSide == mCurrentTurn.TeamSide
-                        || !CanAttackHoveredTarget())
+                    if (mCurrentTarget != null)
                     {
-                        if (mHoverInfo.mIsMoveToInRange)
+                        // If hovering an ally
+                        if (mCurrentTarget.GetComponent<CombatEntity>().TeamSide == mCurrentTurn.TeamSide
+                            || !CanAttackHoveredTarget())
                         {
-                            updatedCursorType = CursorControl.CursorType.Move_Near;
+                            if (mHoverInfo.mIsMoveToInRange)
+                            {
+                                updatedCursorType = CursorControl.CursorType.Move_Near;
+                            }
+                            else
+                            {
+                                updatedCursorType = CursorControl.CursorType.Move_Far;
+                            }
                         }
                         else
                         {
-                            updatedCursorType = CursorControl.CursorType.Move_Far;
+                            if (mHoverInfo.mIsMoveToInRange)
+                            {
+                                updatedCursorType = CursorControl.CursorType.Combat_Near;
+                            }
+                            else
+                            {
+                                updatedCursorType = CursorControl.CursorType.Combat_Far;
+                            }
                         }
+                    }
+                    else if (mHoverInfo.mIsMoveToInRange)
+                    {
+                        updatedCursorType = CursorControl.CursorType.Move_Near;
+                    }
+                    else if (mCurrentTurn.GetComponent<ActionsControl>().GetAvailableMovementRange() > 1)
+                    {
+                        updatedCursorType = CursorControl.CursorType.Move_Far;
                     }
                     else
                     {
-                        if (mHoverInfo.mIsMoveToInRange)
-                        {
-                            updatedCursorType = CursorControl.CursorType.Combat_Near;
-                        }
-                        else 
-                        {
-                            updatedCursorType = CursorControl.CursorType.Combat_Far;
-                        }
+                        updatedCursorType = CursorControl.CursorType.Default;
                     }
                 }
-                else if (mHoverInfo.mIsMoveToInRange)
+                else if (mState == State.TargetSelect)
                 {
-                    updatedCursorType = CursorControl.CursorType.Move_Near;
-                }
-                else if (mCurrentTurn.GetComponent<ActionsControl>().GetAvailableMovementRange() > 1)
-                {
-                    updatedCursorType = CursorControl.CursorType.Move_Far;
-                }
-                else
-                {
-                    updatedCursorType = CursorControl.CursorType.Default;
-                }
-            }
-            else if (mState == State.TargetSelect)
-            {
-                if (mSelectedActionTarget.TargetType != TargetSelectionType.Empty)
-                {
-                    updatedCursorType = CursorControl.CursorType.Combat_Near;
-                }
-                else
-                {
-                    updatedCursorType = CursorControl.CursorType.Combat_Far;
+                    if (mSelectedActionTarget.TargetType != TargetSelectionType.Empty)
+                    {
+                        updatedCursorType = CursorControl.CursorType.Combat_Near;
+                    }
+                    else
+                    {
+                        updatedCursorType = CursorControl.CursorType.Combat_Far;
+                    }
                 }
             }
 
