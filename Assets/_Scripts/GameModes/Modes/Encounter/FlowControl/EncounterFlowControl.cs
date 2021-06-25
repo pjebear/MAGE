@@ -72,6 +72,20 @@ namespace MAGE.GameModes.Encounter
                     handled = true;
                 }
                 break;
+
+                case "displayHoverInspectors":
+                {
+                    UIManager.Instance.PostContainer(UIContainerId.EncounterCharacterHoverView, this);
+                    handled = true;
+                }
+                break;
+
+                case "hideHoverInspectors":
+                {
+                    UIManager.Instance.RemoveOverlay(UIContainerId.EncounterCharacterHoverView);
+                    handled = true;
+                }
+                break;
             }
 
             return handled;
@@ -231,9 +245,48 @@ namespace MAGE.GameModes.Encounter
 
         public IDataProvider Publish(int containerId)
         {
-            EncounterStatus.DataProvider dataProvider = new EncounterStatus.DataProvider();
+            IDataProvider dp = null;
+            switch (containerId)
+            {
+                case (int)UIContainerId.EncounterCharacterHoverView:
+                {
+                    dp = PublishCharacterHoverView();
+                }
+                break;
+                case (int)UIContainerId.EncounterStatusView:
+                {
+                    dp = new EncounterStatus.DataProvider();
+                }
+                break;
+                default:
+                {
+                    Debug.Assert(false);
+                }
+                break;
+            }
 
-            return dataProvider;
+            return dp;
+        }
+
+        IDataProvider PublishCharacterHoverView()
+        {
+            EncounterCharacterHoverView.DataProvider dp = new EncounterCharacterHoverView.DataProvider();
+
+            foreach (ControllableEntity controllableEntity in mEncounterModel.AlivePlayers)
+            {
+                CharacterHoverInspector.DataProvider inspectorDp = new CharacterHoverInspector.DataProvider();
+                inspectorDp.PortraitAsset = controllableEntity.Character.Appearance.PortraitSpriteId.ToString();
+                inspectorDp.Specialization = controllableEntity.Character.CurrentSpecializationType.ToString();
+                inspectorDp.Name = controllableEntity.Character.Name.ToString();
+                inspectorDp.Level = controllableEntity.Character.Level;
+                inspectorDp.IsAlly = controllableEntity.TeamSide == TeamSide.AllyHuman;
+                inspectorDp.CurrentHP = (int)controllableEntity.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Health].mCurrent;
+                inspectorDp.MaxHP = (int)controllableEntity.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Health].mMax;
+
+                dp.CharacterDPs.Add(controllableEntity.transform, inspectorDp);
+            }
+
+            return dp;
         }
 
         public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)

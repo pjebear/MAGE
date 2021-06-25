@@ -18,7 +18,11 @@ namespace MAGE.GameSystems.Story.Internal
         {
             for (int i = 0; i < (int)StoryArcId.NUM; ++i)
             {
-                mStoryArcs.Add((StoryArcId)i, StoryDBUtil.FromDB(DBService.Get().LoadStoryArcInfo(i)));
+                DB.DBStoryArcInfo dbStoryArc = DBService.Get().LoadStoryArcInfo(i);
+                if (dbStoryArc.Id != -1)
+                {
+                    mStoryArcs.Add((StoryArcId)i, StoryDBUtil.FromDB(dbStoryArc));
+                }
             }
         }
 

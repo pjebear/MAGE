@@ -24,7 +24,6 @@ namespace MAGE.GameModes.Encounter
     class PlayerTurnFlowControl 
         : TurnFlowControlBase
         , UIContainerControl
-
     {
        
 

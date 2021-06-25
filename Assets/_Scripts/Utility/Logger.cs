@@ -62,7 +62,7 @@ static class Logger
             return;
         }
 
-        if (LogFilters[(int)tag])
+        if (LogFilters[(int)tag] && logLevel == LogLevel.Notify)
         {
             return;
         }

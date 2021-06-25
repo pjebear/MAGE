@@ -70,10 +70,10 @@ namespace MAGE.GameModes.Encounter
         {
             bool handled = false;
 
-            switch (notifyEvent)
-            {
+            //switch (notifyEvent)
+            //{
 
-            }
+            //}
 
             return handled;
         }
@@ -82,10 +82,10 @@ namespace MAGE.GameModes.Encounter
         {
             string result = "";
 
-            switch (queryParam)
-            {
+            //switch (queryParam)
+            //{
 
-            }
+            //}
 
             return result;
         }
@@ -94,10 +94,10 @@ namespace MAGE.GameModes.Encounter
         {
             string result = FlowConstants.CONDITION_EMPTY;
 
-            switch (condition)
-            {
+            //switch (condition)
+            //{
 
-            }
+            //}
 
             return result;
         }

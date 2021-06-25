@@ -14,6 +14,11 @@ namespace MAGE.UI.Views
             Image.sprite = UIManager.Instance.LoadSprite(assetName);
         }
 
+        public void Publish(string assetPath, string assetName)
+        {
+            Image.sprite = Instantiate(Resources.Load<Sprite>("UI/Sprites/" + assetPath + "/" + assetName));
+        }
+
         public override void Publish(IDataProvider dataProvider)
         {
             // TODO:

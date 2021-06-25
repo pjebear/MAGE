@@ -107,7 +107,15 @@ namespace MAGE.GameModes.FlowControl
                         }
                         , new FlowNode("TurnFlow")
                         {
-                            Transitions = new Dictionary<string, string>()
+                            OnEnterActions = new List<FlowActionBase>()
+                            {
+                                new Notify("displayHoverInspectors")
+                            }
+                            ,OnExitActions = new List<FlowActionBase>()
+                            {
+                                new Notify("hideHoverInspectors")
+                            }
+                            ,Transitions = new Dictionary<string, string>()
                             {
                                 { "actionChosen", "QueryFlowState" }
                             }

@@ -16,6 +16,7 @@ namespace MAGE.UI
         ActorActionsView,
         ConversationView,
         ContainerInspectView,
+        EncounterCharacterHoverView,
         EncounterCharacterInfoLeftView,
         EncounterCharacterInfoRightView,
         EncounterIntroView,
@@ -147,6 +148,7 @@ namespace MAGE.UI
                 UIContainer overlay = mContainerControlPairs[containerId].Key;
                 mContainerControlPairs.Remove(containerId);
 
+                mContainersToPublish.Remove(containerId);
                 //Logger.Log(LogTag.UI, TAG, string.Format("Removing Container {0}", overlay.Name()));
 
                 overlay.gameObject.SetActive(false);
