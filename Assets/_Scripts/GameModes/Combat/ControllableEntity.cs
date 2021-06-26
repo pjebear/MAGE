@@ -75,6 +75,12 @@ namespace MAGE.GameModes.Combat
             }
         }
 
+        public void OnTurnAvailable()
+        {
+            GetComponent<ResourcesControl>().Resources[ResourceType.Actions].SetCurrentToMax();
+            GetComponent<ResourcesControl>().Resources[ResourceType.MovementRange].SetCurrentToMax();
+        }
+
         public void OnTurnStart()
         {
             StatusEffectControl statusEffectControl = GetComponent<StatusEffectControl>();
@@ -88,10 +94,6 @@ namespace MAGE.GameModes.Combat
                     GetComponent<CombatTarget>().ApplyStateChange(stateChange);
                 }
             }
-            
-            GetComponent<ResourcesControl>().Resources[ResourceType.Actions].SetCurrentToMax();
-            GetComponent<ResourcesControl>().Resources[ResourceType.MovementRange].SetCurrentToMax();
-            
         }
 
         public override void OnTurnTick()

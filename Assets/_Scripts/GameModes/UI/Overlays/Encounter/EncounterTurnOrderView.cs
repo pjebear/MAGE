@@ -10,12 +10,11 @@ namespace MAGE.UI.Views
 {
     class EncounterTurnOrderView : UIContainer
     {
-        private List<TurnOrderCharacterPanel> mTurnOrderPanels = new List<TurnOrderCharacterPanel>();
         public UIGrid UIGrid;
 
         public enum ComponentId
         {
-            
+            OrderList
         }
 
         public class DataProvider : IDataProvider
@@ -28,41 +27,24 @@ namespace MAGE.UI.Views
             base.Init(id, container);
 
             UIGrid = GetComponentInChildren<UIGrid>();
-
-            TurnOrderCharacterPanel turnOrderPanel = Resources.Load<TurnOrderCharacterPanel>("UI/Components/CustomComponents/TurnOrderCharacterPanel");
-            for (int i = 0; i < 10; ++i)
-            {
-                TurnOrderCharacterPanel instantiated = Instantiate(turnOrderPanel, UIGrid.Grid.transform);
-                instantiated.gameObject.SetActive(false);
-                mTurnOrderPanels.Add(instantiated);
-            }
         }
 
         public override void Publish(IDataProvider dataProvider)
         {
             DataProvider dp = (DataProvider)dataProvider;
 
-            for (int i = 0; i < dp.TurnOrder.Count; ++i)
+            UIGrid.DataProvider gridDP = new UIGrid.DataProvider();
+            for (int i =0; i < dp.TurnOrder.Count; ++i)
             {
-                if (i >= mTurnOrderPanels.Count)
-                {
-                    mTurnOrderPanels.Add(Instantiate(Resources.Load<TurnOrderCharacterPanel>("UI/Components/CustomComponents/TurnOrderCharacterPanel"), UIGrid.transform));
-                }
-
-                mTurnOrderPanels[i].gameObject.SetActive(true);
-                mTurnOrderPanels[i].Publish(dp.TurnOrder[i]);
+                gridDP.Elements.Add(dp.TurnOrder[i]);
             }
 
-            for (int i = dp.TurnOrder.Count; i < mTurnOrderPanels.Count; ++i)
-            {
-                mTurnOrderPanels[i].gameObject.SetActive(false);
-            }
-
+            UIGrid.Publish(gridDP);
         }
 
         protected override void InitChildren()
         {
-            
+            UIGrid.Init((int)ComponentId.OrderList, this);
         }
     }
 }

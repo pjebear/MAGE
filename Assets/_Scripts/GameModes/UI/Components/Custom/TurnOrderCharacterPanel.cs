@@ -28,6 +28,7 @@ namespace MAGE.UI.Views
 
         public Image BackingImg;
         public Image IsCurrentTurnImg;
+        public UIImage RayCastTarget;
         public UIImage HeadImg;
         public UIBar HPBar;
 
@@ -50,7 +51,7 @@ namespace MAGE.UI.Views
 
         protected override void InitChildren()
         {
-            // empty
+            RayCastTarget.Init(mId, this);
         }
     }
 }

@@ -118,6 +118,7 @@ namespace MAGE.GameModes.FlowControl
                             ,Transitions = new Dictionary<string, string>()
                             {
                                 { "actionChosen", "QueryFlowState" }
+                                , {"focusedCharacterChanged", "BranchOnControlledBy"}
                             }
                             , States = new List<FlowNode>()
                             {
@@ -138,10 +139,12 @@ namespace MAGE.GameModes.FlowControl
                                     OnEnterActions = new List<FlowActionBase>()
                                     {
                                         new LoadFlowControl(FlowControlId.EncounterPlayerTurnFlowControl)
+                                        , new Notify("enableTurnSwap")
                                     }
                                     , OnExitActions = new List<FlowActionBase>()
                                     {
                                         new UnLoadFlowControl(FlowControlId.EncounterPlayerTurnFlowControl)
+                                        , new Notify("disableTurnSwap")
                                     }
                                 }
                                 , new FlowNode("AITurnFlow")

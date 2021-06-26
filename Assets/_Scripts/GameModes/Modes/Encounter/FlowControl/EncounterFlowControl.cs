@@ -33,6 +33,9 @@ namespace MAGE.GameModes.Encounter
             return FlowControlId.Encounter;
         }
 
+        private bool mIsTurnSwapEnabled = false;
+        private List<ControllableEntity> mTurnOptions = new List<ControllableEntity>();
+
         protected override void Setup()
         {
             mEncounterModel = LevelManagementService.Get().GetLoadedLevel().GetActiveEncounter().EncounterModel;
@@ -65,6 +68,20 @@ namespace MAGE.GameModes.Encounter
                 case "encounterStarted":
                 {
                     mEncounterModel.IsEncounterActive = true;
+                    handled = true;
+                }
+                break;
+
+                case "enableTurnSwap":
+                {
+                    mIsTurnSwapEnabled = true;
+                    handled = true;
+                }
+                break;
+
+                case "disableTurnSwap":
+                {
+                    mIsTurnSwapEnabled = false;
                     handled = true;
                 }
                 break;
@@ -206,6 +223,10 @@ namespace MAGE.GameModes.Encounter
             
             mEncounterModel.TurnQueue = mEncounterModel.AlivePlayers.Where(x =>
                 x.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Clock].Ratio == 1).ToList();
+            foreach (ControllableEntity controllableEntity in mEncounterModel.TurnQueue)
+            {
+                controllableEntity.OnTurnAvailable();
+            }
         }
 
         private void ProgressTurnFlow()
@@ -310,6 +331,8 @@ namespace MAGE.GameModes.Encounter
 
         IDataProvider PublishTurnOrderView()
         {
+            mTurnOptions.Clear();
+
             EncounterTurnOrderView.DataProvider dp = new EncounterTurnOrderView.DataProvider();
 
             List<ControllableEntity> entitiesToPutInTurnQueue = new List<ControllableEntity>(mEncounterModel.AlivePlayers);
@@ -339,6 +362,11 @@ namespace MAGE.GameModes.Encounter
                 turnOrderDP.IsCurrentTurn = 
                     dp.TurnOrder.Count == 0 
                     || (!enemyFoundInTurnOrder && controllableEntity.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Clock].Ratio == 1);
+
+                if (!enemyFoundInTurnOrder)
+                {
+                    mTurnOptions.Add(controllableEntity);
+                }
 
                 entitiesToPutInTurnQueue.Remove(controllableEntity);
 
@@ -372,6 +400,30 @@ namespace MAGE.GameModes.Encounter
                 else if (interactionInfo.ComponentId == (int)EncounterStatus.ComponentId.LoseBtn)
                 {
                     SendFlowMessage("forceLoss");
+                }
+            }
+            else if (containerId == (int)UIContainerId.EncounterTurnOrderView 
+                && interactionInfo.InteractionType == UIInteractionType.Click
+                && mIsTurnSwapEnabled)
+            {
+                ListInteractionInfo listInfo = interactionInfo as ListInteractionInfo;
+
+                if (listInfo.ListIdx > 0 && listInfo.ListIdx < mTurnOptions.Count)
+                {
+                    ControllableEntity currentTurn = mEncounterModel.CurrentTurn;
+                    ControllableEntity selectedUnit = mTurnOptions[listInfo.ListIdx];
+
+                    int indexInTurnQueueOfSelected = mEncounterModel.TurnQueue.IndexOf(selectedUnit);
+                    Debug.Assert(indexInTurnQueueOfSelected != -1);
+                    if (indexInTurnQueueOfSelected != -1)
+                    {
+                        mEncounterModel.CurrentTurn = selectedUnit;
+                        mEncounterModel.TurnQueue.Insert(indexInTurnQueueOfSelected, currentTurn);
+                        mEncounterModel.TurnQueue.Remove(selectedUnit);
+
+                        UIManager.Instance.Publish(UIContainerId.EncounterTurnOrderView);
+                        SendFlowMessage("focusedCharacterChanged");
+                    }
                 }
             }
         }
