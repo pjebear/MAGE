@@ -7,6 +7,7 @@ using MAGE.GameSystems;
 using MAGE.GameSystems.Actions;
 using MAGE.GameSystems.Characters;
 using MAGE.GameSystems.Loot;
+using MAGE.GameSystems.Stats;
 using MAGE.GameSystems.World;
 using MAGE.UI;
 using MAGE.UI.Views;
@@ -37,6 +38,7 @@ namespace MAGE.GameModes.Encounter
             mEncounterModel = LevelManagementService.Get().GetLoadedLevel().GetActiveEncounter().EncounterModel;
 
             UIManager.Instance.PostContainer(UIContainerId.EncounterStatusView, this);
+            UIManager.Instance.PostContainer(UIContainerId.EncounterTurnOrderView, this);
 
             AudioManager.Instance.PlayTrack(TrackId.Encounter);
         }
@@ -44,6 +46,7 @@ namespace MAGE.GameModes.Encounter
         protected override void Cleanup()
         {
             UIManager.Instance.RemoveOverlay(UIContainerId.EncounterStatusView);
+            UIManager.Instance.RemoveOverlay(UIContainerId.EncounterTurnOrderView);
 
             AudioManager.Instance.StopTrack(TrackId.Encounter);
 
@@ -133,6 +136,8 @@ namespace MAGE.GameModes.Encounter
                             }
                         }
                         Debug.Assert(safetyCatch > 0);
+
+                        UIManager.Instance.Publish(UIContainerId.EncounterTurnOrderView);
                     }
                 }
                 break;
@@ -253,6 +258,11 @@ namespace MAGE.GameModes.Encounter
                     dp = PublishCharacterHoverView();
                 }
                 break;
+                case (int)UIContainerId.EncounterTurnOrderView:
+                {
+                    dp = PublishTurnOrderView();
+                }
+                break;
                 case (int)UIContainerId.EncounterStatusView:
                 {
                     dp = new EncounterStatus.DataProvider();
@@ -283,10 +293,71 @@ namespace MAGE.GameModes.Encounter
                 inspectorDp.CurrentHP = (int)controllableEntity.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Health].mCurrent;
                 inspectorDp.MaxHP = (int)controllableEntity.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Health].mMax;
 
+                foreach (StatusEffect statusEffect in controllableEntity.GetComponent<StatusEffectControl>().StatusEffects)
+                {
+                    StatusIcon.DataProvider statusDp = new StatusIcon.DataProvider();
+                    statusDp.Count = statusEffect.StackCount;
+                    statusDp.IsBeneficial = statusEffect.Beneficial;
+                    statusDp.AssetName = statusEffect.SpriteId.ToString();
+                    inspectorDp.StatusEffects.Add(statusDp);
+                }
+
                 dp.CharacterDPs.Add(controllableEntity.transform, inspectorDp);
             }
 
             return dp;
+        }
+
+        IDataProvider PublishTurnOrderView()
+        {
+            EncounterTurnOrderView.DataProvider dp = new EncounterTurnOrderView.DataProvider();
+
+            List<ControllableEntity> entitiesToPutInTurnQueue = new List<ControllableEntity>(mEncounterModel.AlivePlayers);
+
+            List<ControllableEntity> toPublish = new List<ControllableEntity>();
+            if (mEncounterModel.CurrentTurn != null)
+            {
+                toPublish.Add(mEncounterModel.CurrentTurn);
+                entitiesToPutInTurnQueue.Remove(mEncounterModel.CurrentTurn);
+            }
+
+            foreach (ControllableEntity controllableEntity in mEncounterModel.TurnQueue)
+            {
+                toPublish.Add(controllableEntity);
+                entitiesToPutInTurnQueue.Remove(controllableEntity);
+            }
+
+            entitiesToPutInTurnQueue.Sort((x, y) => y.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Clock].mCurrent.CompareTo(x.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Clock].mCurrent));
+            toPublish.AddRange(entitiesToPutInTurnQueue);
+
+            bool enemyFoundInTurnOrder = false;
+            foreach (ControllableEntity controllableEntity in toPublish)
+            {
+                TurnOrderCharacterPanel.DataProvider turnOrderDP = GetTurnFlowDPForControllable(controllableEntity);
+
+                enemyFoundInTurnOrder |= controllableEntity.TeamSide != TeamSide.AllyHuman;
+                turnOrderDP.IsCurrentTurn = 
+                    dp.TurnOrder.Count == 0 
+                    || (!enemyFoundInTurnOrder && controllableEntity.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Clock].Ratio == 1);
+
+                entitiesToPutInTurnQueue.Remove(controllableEntity);
+
+                dp.TurnOrder.Add(turnOrderDP);
+            }
+
+            return dp;
+        }
+
+        private TurnOrderCharacterPanel.DataProvider GetTurnFlowDPForControllable(ControllableEntity controllableEntity)
+        {
+            TurnOrderCharacterPanel.DataProvider turnOrderDP = new TurnOrderCharacterPanel.DataProvider();
+
+            turnOrderDP.PortraitAsset = controllableEntity.Character.Appearance.PortraitSpriteId.ToString();
+            turnOrderDP.IsAlly = controllableEntity.TeamSide == TeamSide.AllyHuman;
+            turnOrderDP.CurrentHP = (int)controllableEntity.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Health].mCurrent;
+            turnOrderDP.MaxHP = (int)controllableEntity.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Health].mMax;
+
+            return turnOrderDP;
         }
 
         public void HandleComponentInteraction(int containerId, UIInteractionInfo interactionInfo)

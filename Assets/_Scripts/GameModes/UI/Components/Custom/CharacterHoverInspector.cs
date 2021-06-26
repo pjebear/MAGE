@@ -26,6 +26,7 @@ namespace MAGE.UI.Views
             public Optional<int> Level;
             public Optional<int> CurrentHP;
             public Optional<int> MaxHP;
+            public List<StatusIcon.DataProvider> StatusEffects = new List<StatusIcon.DataProvider>();
         }
 
         public Image NameBacking;
@@ -34,6 +35,7 @@ namespace MAGE.UI.Views
         public UIText LevelTxt;
         public UIImage SpecializationImg;
         public UIBar HPBar;
+        public UIGrid StatusEffects;
 
         public override void Publish(IDataProvider dataProvider)
         {
@@ -56,6 +58,14 @@ namespace MAGE.UI.Views
 
             // HP
             if (dp.CurrentHP.HasValue && dp.MaxHP.HasValue) HPBar.Publish("HP", dp.CurrentHP.Value, dp.MaxHP.Value);
+
+            // StatusEffects
+            UIGrid.DataProvider statusEffectsDp = new UIGrid.DataProvider();
+            foreach (StatusIcon.DataProvider statusEffectDp in dp.StatusEffects)
+            {
+                statusEffectsDp.Elements.Add(statusEffectDp);
+            }
+            StatusEffects.Publish(statusEffectsDp);
         }
 
         protected override void InitChildren()

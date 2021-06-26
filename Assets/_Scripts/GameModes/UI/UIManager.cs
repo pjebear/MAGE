@@ -21,6 +21,7 @@ namespace MAGE.UI
         EncounterCharacterInfoRightView,
         EncounterIntroView,
         EncounterResultsView,
+        EncounterTurnOrderView,
         EncounterUnitPlacementView,
         EncounterStatusView,
         EquipmentOutfiterView,
