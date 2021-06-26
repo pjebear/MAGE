@@ -188,7 +188,7 @@ namespace MAGE.DB.Internal
                 // Listeners
                 dbSpecialization.ResponseListenerIds = new List<int>()
             {
-                (int)ActionResponseId.BloodScent
+                //(int)ActionResponseId.BloodScent
             };
 
                 // Actions

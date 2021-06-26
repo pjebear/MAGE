@@ -17,7 +17,7 @@ namespace MAGE.GameSystems.Actions
 
         public void Modify(ActionInfo info)
         {
-            info.Effectiveness += .5f;
+            info.Effectiveness *= .5f;
         }
     }
 
@@ -33,7 +33,7 @@ namespace MAGE.GameSystems.Actions
 
         public void Modify(ActionInfo info)
         {
-            info.Effectiveness += HealAmp;
+            info.Effectiveness *= HealAmp;
         }
     }
 

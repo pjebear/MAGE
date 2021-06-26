@@ -314,7 +314,7 @@ namespace MAGE.GameModes.Encounter
                 inspectorDp.CurrentHP = (int)controllableEntity.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Health].mCurrent;
                 inspectorDp.MaxHP = (int)controllableEntity.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Health].mMax;
 
-                foreach (StatusEffect statusEffect in controllableEntity.GetComponent<StatusEffectControl>().StatusEffects)
+                foreach (StatusEffect statusEffect in controllableEntity.GetComponent<StatusEffectControl>().mStatusEffectLookup.Values)
                 {
                     StatusIcon.DataProvider statusDp = new StatusIcon.DataProvider();
                     statusDp.Count = statusEffect.StackCount;

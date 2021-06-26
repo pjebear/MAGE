@@ -10,27 +10,25 @@ namespace MAGE.GameModes.Combat
 {
     class StatsControl : MonoBehaviour
     {
+        private Attributes BaseAttributes = new Attributes(GameSystems.Stats.Attributes.Empty);
         public Attributes Attributes = new Attributes(GameSystems.Stats.Attributes.Empty);
 
         public void SetAttributes(Attributes attributes)
         {
-            Attributes = attributes;
+            BaseAttributes = new Attributes(attributes);
+            Attributes = new Attributes(attributes);
         }
 
-        public void ApplyAttributeModifiers(List<AttributeModifier> modifiers)
+        public void OnStatusEffectsChanged()
         {
-            foreach (AttributeModifier modifier in modifiers)
-            {
-                Attributes.Modify(modifier);
-            }
+            Attributes = new Attributes(BaseAttributes);
 
-            NotifyAttributesUpdated();
-        }
-        public void RemoveAttributeModifiers(List<AttributeModifier> modifiers)
-        {
-            foreach (AttributeModifier modifier in modifiers)
+            foreach (StatusEffect statusEffect in GetComponent<StatusEffectControl>().mStatusEffectLookup.Values)
             {
-                Attributes.Revert(modifier);
+                foreach (AttributeModifier attributeModifier in statusEffect.GetAttributeModifiers())
+                {
+                    Attributes.Modify(attributeModifier);
+                }
             }
 
             NotifyAttributesUpdated();

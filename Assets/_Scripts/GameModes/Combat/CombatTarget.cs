@@ -18,7 +18,14 @@ namespace MAGE.GameModes.Combat
             // StatusEffects first
             if (GetComponent<StatusEffectControl>() != null)
             {
-                GetComponent<StatusEffectControl>().ApplyStatusEffects(stateChange.statusEffects);
+                if (stateChange.Type == StateChangeType.ActionCost)
+                {
+                    GetComponent<StatusEffectControl>().RemoveStatusEffects(stateChange.statusEffects);
+                }
+                else
+                {
+                    GetComponent<StatusEffectControl>().ApplyStatusEffects(stateChange.statusEffects);
+                }
             }
 
             GetComponent<ResourcesControl>().ApplyStateChange(stateChange);

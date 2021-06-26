@@ -50,7 +50,7 @@ namespace MAGE.GameModes.Combat
                 dp.Parry = (int)parry;
 
                 List<IDataProvider> statusEffects = new List<IDataProvider>();
-                foreach (StatusEffect effect in combatCharacter.GetComponent<StatusEffectControl>().StatusEffects)
+                foreach (StatusEffect effect in combatCharacter.GetComponent<StatusEffectControl>().mStatusEffectLookup.Values)
                 {
                     StatusIcon.DataProvider statusDp = new StatusIcon.DataProvider();
                     statusDp.Count = effect.StackCount;
@@ -95,7 +95,7 @@ namespace MAGE.GameModes.Combat
                 if (GetComponent<StatusEffectControl>())
                 {
                     List<IDataProvider> statusEffects = new List<IDataProvider>();
-                    foreach (StatusEffect effect in GetComponent<StatusEffectControl>().StatusEffects)
+                    foreach (StatusEffect effect in GetComponent<StatusEffectControl>().mStatusEffectLookup.Values)
                     {
                         StatusIcon.DataProvider statusDp = new StatusIcon.DataProvider();
                         statusDp.Count = effect.StackCount;

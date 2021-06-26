@@ -1,4 +1,6 @@
-﻿using MAGE.GameSystems;
+﻿using MAGE.GameModes.Encounter;
+using MAGE.GameSystems;
+using MAGE.GameSystems.Actions;
 using MAGE.GameSystems.Characters;
 using System;
 using System.Collections.Generic;
@@ -7,42 +9,46 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace MAGE.GameSystems.Actions
+namespace MAGE.GameModes.Combat
 {
-    //class HealOnHurtResponder : ActionResponderBase
-    //{
-    //    public HealOnHurtResponder()
-    //        : base(ActionResponseId.HealOnHurtListener)
-    //    {
+    class HealOnHurtResponder : ActionResponderBase
+    {
+        public HealOnHurtResponder(CombatEntity responder) : base(responder)
+        {
+            PercentChance = 25;
+        }
 
-    //    }
+        protected override List<ActionResponseBase> GetResponsesToResult(ActionResult actionResult)
+        {
+            List<ActionResponseBase> responses = new List<ActionResponseBase>();
 
-    //    protected override List<ActionResponseBase> GetResponsesToResult(Character responder, ActionResponseInfo responseInfo, ActionResult actionResult, Map map)
-    //    {
-    //        List<ActionResponseBase> responses = new List<ActionResponseBase>();
+            foreach (var targetResultPair in actionResult.TargetResults)
+            {
+                CombatTarget target = targetResultPair.Key;
+                CombatEntity targetEntity = target.GetComponent<CombatEntity>();
+                InteractionResult result = targetResultPair.Value;
+                if (!IsResponder(targetEntity) // responder wasn't the one who got hurt
+                    && IsAlly(targetEntity) // don't heal enemies
+                    && WasHurt(result)
+                    && IsAlive(targetEntity)
+                    && InRange(target.transform, Range))
+                {
+                    ActionComposerBase actionComposerBase = ActionComposerFactory.CheckoutAction(mResponder, ActionId.SpotHeal);
+                    actionComposerBase.ActionInfo.EffectRange.AreaType = AreaType.Point;
+                    actionComposerBase.ActionInfo.Effectiveness *= .5f;
 
-    //        // Don't be healing people that we just hurt!
-    //        if (!IsResponder(responder, actionResult.Initiator))
-    //        {
-    //            foreach (var targetResultPair in actionResult.TargetResults)
-    //            {
-    //                Character target = targetResultPair.Key;
-    //                InteractionResult result = targetResultPair.Value;
-    //                if (!IsResponder(responder, target) // responder wasn't the one who got hurt
-    //                    && IsAlly(responder, target) // don't heal enemies
-    //                    && WasHurt(result)
-    //                    && IsAlive(target)
-    //                    && InRange(responder, target, responseInfo.Range, map))
-    //                {
-    //                    TargetSelection selection = new TargetSelection(new Target(target));
-    //                    responses.Add(new ActionProposalResponse_Deprecated(new ActionProposal_Deprecated(responder, ActionId.Heal, selection)));
-    //                }
-    //            }
-    //        }
+                    ActionProposal healProposal = new ActionProposal(
+                        mResponder
+                        , new Target(target)
+                        , actionComposerBase);
 
-    //        return responses;
-    //    }
-    //}
+                    responses.Add(new ActionProposalResponse(healProposal));
+                }
+            }
+            
+            return responses;
+        }
+    }
 }
 
 

@@ -12,11 +12,13 @@ namespace MAGE.UI.Views
         public void Publish(string assetName)
         {
             Image.sprite = UIManager.Instance.LoadSprite(assetName);
+            Image.raycastTarget = IsClickable || IsHoverable;
         }
 
         public void Publish(string assetPath, string assetName)
         {
             Image.sprite = Instantiate(Resources.Load<Sprite>("UI/Sprites/" + assetPath + "/" + assetName));
+            Image.raycastTarget = IsClickable || IsHoverable;
         }
 
         public override void Publish(IDataProvider dataProvider)

@@ -65,7 +65,12 @@ namespace MAGE.GameModes.Encounter
             };
         }
 
-        protected override InteractionSolverBase PopulateInteractionSolver()
+        protected override InteractionSolverBase CreateInteractionSolver()
+        {
+            return new SpellInteractionSolver();
+        }
+
+        protected override void InitInteractionSolver(InteractionSolverBase interactionSolverBase)
         {
             SpellEffectivenessCalculator damageCalculator = new SpellEffectivenessCalculator();
             damageCalculator.BaseEffectiveness = ActionInfo.Effectiveness;
@@ -75,10 +80,7 @@ namespace MAGE.GameModes.Encounter
             DeferredStateChange deferredStateChange = new DeferredStateChange();
             deferredStateChange.HealthChange = damageCalculator;
 
-            SpellInteractionSolver interactionSolver = new SpellInteractionSolver();
-            interactionSolver.StateChange = deferredStateChange;
-
-            return interactionSolver;
+            interactionSolverBase.StateChange = deferredStateChange;
         }
 
         public override ActionComposition Compose(Target target)

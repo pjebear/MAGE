@@ -126,7 +126,7 @@ namespace MAGE.GameSystems.Characters.Internal
 
                 if (PointsAssigned > 0)
                 {
-                    modifiers.Add(new HealModifier(HealIncreasePerPoint * PointsAssigned));
+                    modifiers.Add(new HealModifier(1 + HealIncreasePerPoint * PointsAssigned));
                 }
 
                 return modifiers;

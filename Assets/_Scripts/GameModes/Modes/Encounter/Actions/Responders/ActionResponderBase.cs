@@ -64,9 +64,18 @@ namespace MAGE.GameModes.Combat
             return result.TargetResults.Keys.Contains(mResponder.GetComponent<CombatTarget>());
         }
 
-        protected bool IsAlive(Character character)
+        protected bool IsAlive(CombatEntity entity)
         {
-            return character.IsAlive;
+            bool isAlive = false;
+
+            ResourcesControl resourcesControl = entity.GetComponent<ResourcesControl>();
+            Debug.Assert(resourcesControl);
+            if (resourcesControl != null)
+            {
+                isAlive = resourcesControl.IsAlive();
+            }
+
+            return isAlive;
         }
 
         public List<ActionResponseBase> RespondToActionResult(ActionResult result)

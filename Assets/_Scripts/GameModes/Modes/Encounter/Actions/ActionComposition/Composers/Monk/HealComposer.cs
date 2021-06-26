@@ -22,9 +22,10 @@ namespace MAGE.GameModes.Encounter
         {
             ActionInfo actionInfo = new ActionInfo();
 
+            actionInfo.Effectiveness = 4;
             actionInfo.ActionId = ActionId.Heal;
             actionInfo.AnimationInfo.AnimationId = GameSystems.AnimationId.Cast;
-            actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -10);
+            actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -4);
             actionInfo.ActionRange = ActionRange.Projectile;
             actionInfo.ActionSource = ActionSource.Cast;
             actionInfo.EffectInfo.EffectId = EffectType.AOE_Heal;

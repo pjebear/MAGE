@@ -63,7 +63,8 @@ namespace MAGE.DB.Internal
                     SkinToneType = SkinToneType.Pale,
                 };
 
-                characterService.CreateCharacter(createParams);
+                int characterId = characterService.CreateCharacter(createParams);
+                characterService.Debug_MaxOutTalents(characterId);
             }
 
             { // Lothar

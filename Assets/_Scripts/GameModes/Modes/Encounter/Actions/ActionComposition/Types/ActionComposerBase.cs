@@ -25,8 +25,13 @@ namespace MAGE.GameModes.Combat
             Owner = owner;
             DeferredOwner = new ConcreteVar<CombatEntity>(owner);
             ActionInfo = PopulateActionInfo();
+        }
+
+        public void Init()
+        {
             mTargetingSolver = PopulateTargetingSolver();
-            mInteractionSolver = PopulateInteractionSolver();
+            mInteractionSolver = CreateInteractionSolver();
+            InitInteractionSolver(mInteractionSolver);
             mRootComposition = PopulateComposition();
         }
 
@@ -60,7 +65,8 @@ namespace MAGE.GameModes.Combat
         protected abstract ActionInfo PopulateActionInfo();
         protected abstract CompositionNode PopulateComposition();
         protected virtual TargetingSolverBase PopulateTargetingSolver() { return new TargetingSolver(); }
-        protected abstract InteractionSolverBase PopulateInteractionSolver();
+        protected abstract InteractionSolverBase CreateInteractionSolver();
+        protected abstract void InitInteractionSolver(InteractionSolverBase interactionSolverBase);
         public virtual ActionComposition Compose(Target target)
         {
             Target.Set(target);

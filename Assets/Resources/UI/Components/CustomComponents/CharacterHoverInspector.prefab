@@ -61,7 +61,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 0, b: 0, a: 0.4392157}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -148,6 +148,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.x
       value: -0.0025024414
+      objectReference: {fileID: 0}
+    - target: {fileID: 4814016757070551549, guid: 821b6b01a0b6d404e8421f19c0928d73,
+        type: 3}
+      propertyPath: IsClickable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4814016757070551549, guid: 821b6b01a0b6d404e8421f19c0928d73,
+        type: 3}
+      propertyPath: IsHoverable
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5474720301834447151, guid: 821b6b01a0b6d404e8421f19c0928d73,
         type: 3}
@@ -498,6 +508,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7064566082000302481}
     m_Modifications:
+    - target: {fileID: 130860384432881975, guid: f6d36ccf54ce6dd4db0cbb84a122b0c2,
+        type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 130860385891147898, guid: f6d36ccf54ce6dd4db0cbb84a122b0c2,
+        type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1084286478261439154, guid: f6d36ccf54ce6dd4db0cbb84a122b0c2,
         type: 3}
       propertyPath: m_IsActive
@@ -517,6 +537,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.x
       value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4984549391694564201, guid: f6d36ccf54ce6dd4db0cbb84a122b0c2,
+        type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4984549392247399567, guid: f6d36ccf54ce6dd4db0cbb84a122b0c2,
+        type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4984549392597999098, guid: f6d36ccf54ce6dd4db0cbb84a122b0c2,
+        type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6450375319388154569, guid: f6d36ccf54ce6dd4db0cbb84a122b0c2,
         type: 3}

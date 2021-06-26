@@ -61,15 +61,18 @@ namespace MAGE.GameModes.Encounter
 
             if (!EventSystem.current.IsPointerOverGameObject())
             {
-                UpdateHoverInfo(mouseInfo);
+                if (mState != State.Moving)
+                {
+                    UpdateHoverInfo(mouseInfo);
 
-                if (mState == State.Idle)
-                {
-                    UpdateIdleState();
-                }
-                else if (mState == State.TargetSelect)
-                {
-                    UpdateTargetState();
+                    if (mState == State.Idle)
+                    {
+                        UpdateIdleState();
+                    }
+                    else if (mState == State.TargetSelect)
+                    {
+                        UpdateTargetState();
+                    }
                 }
             }
 
@@ -574,7 +577,10 @@ namespace MAGE.GameModes.Encounter
                         }
                         else
                         {
-                            if (mHoverInfo.mIsMoveToInRange)
+                            float distanceToTarget = Vector3.Distance(mCurrentTurn.transform.position, mCurrentTarget.transform.position);
+
+                            if (distanceToTarget <= mWeaponAttack.ActionInfo.CastRange.MaxRange
+                                || mHoverInfo.mIsMoveToInRange)
                             {
                                 updatedCursorType = CursorControl.CursorType.Combat_Near;
                             }
@@ -607,6 +613,10 @@ namespace MAGE.GameModes.Encounter
                     {
                         updatedCursorType = CursorControl.CursorType.Combat_Far;
                     }
+                }
+                else if (mState == State.Moving)
+                {
+                    updatedCursorType = CursorControl.CursorType.Default;
                 }
             }
 

@@ -117,6 +117,7 @@ namespace MAGE.GameSystems.Actions
         INVALID = -1,
 
         Heal,
+        SpotHeal,
         Protection,
         MightyBlow,
 

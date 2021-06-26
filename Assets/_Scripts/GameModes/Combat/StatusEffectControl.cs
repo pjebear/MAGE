@@ -11,17 +11,25 @@ namespace MAGE.GameModes.Combat
     class StatusEffectControl : MonoBehaviour
     {
         public Dictionary<StatusEffectId, StatusEffect> mStatusEffectLookup = new Dictionary<StatusEffectId, StatusEffect>();
-        public List<StatusEffect> StatusEffects = new List<StatusEffect>();
 
         public void ApplyStatusEffects(List<StatusEffect> statusEffects, bool display = true)
         {
-            StatusEffects.AddRange(statusEffects);
-            List<AttributeModifier> attributeModifiers = new List<AttributeModifier>();
+            if (statusEffects.Count == 0) return;
+            
             foreach (StatusEffect effect in statusEffects)
             {
-                attributeModifiers.AddRange(effect.GetAttributeModifiers());
+                if (!mStatusEffectLookup.ContainsKey(effect.EffectType))
+                {
+                    mStatusEffectLookup.Add(effect.EffectType, effect);
+                }
+                else
+                {
+                    mStatusEffectLookup[effect.EffectType].StackEffect(effect.StackCount);
+                    mStatusEffectLookup[effect.EffectType].ResetDuration();
+                }
             }
-            GetComponent<StatsControl>().ApplyAttributeModifiers(attributeModifiers);
+
+            BroadcastMessage("OnStatusEffectsChanged", SendMessageOptions.DontRequireReceiver);
 
             if (display)
             {
@@ -38,12 +46,24 @@ namespace MAGE.GameModes.Combat
 
         public void RemoveStatusEffects(List<StatusEffect> statusEffects, bool display = true)
         {
-            List<AttributeModifier> removedModifiers = new List<AttributeModifier>();
+            if (statusEffects.Count == 0) return;
 
             foreach (StatusEffect effect in statusEffects)
             {
-                removedModifiers.AddRange(effect.GetAttributeModifiers());
-                StatusEffects.Remove(effect);
+                if (mStatusEffectLookup.ContainsKey(effect.EffectType))
+                {
+                    StatusEffect appliedEffect = mStatusEffectLookup[effect.EffectType];
+                    if (appliedEffect.UnStackEffect(effect.StackCount))
+                    {
+                        mStatusEffectLookup.Remove(effect.EffectType);
+                    }
+                }
+            }
+
+            BroadcastMessage("OnStatusEffectsChanged", SendMessageOptions.DontRequireReceiver);
+
+            foreach (StatusEffect effect in statusEffects)
+            {
                 if (display)
                 {
                     Billboard.Params param = new Billboard.Params();
@@ -53,14 +73,12 @@ namespace MAGE.GameModes.Combat
                     GetComponent<BillboardEmitter>().Emitt(param, 2f);
                 }
             }
-
-            GetComponent<StatsControl>().RemoveAttributeModifiers(removedModifiers);
         } 
 
         public List<StatusEffect> GetSingleTurnStatusEffects()
         {
             List<StatusEffect> statusEffects = new List<StatusEffect>();
-            foreach (StatusEffect effect in StatusEffects)
+            foreach (StatusEffect effect in mStatusEffectLookup.Values)
             {
                 if (effect.MaxDuration == StatusEffectConstants.UNTIL_NEXT_TURN)
                 {
@@ -73,7 +91,7 @@ namespace MAGE.GameModes.Combat
         public List<StateChange> GetTurnStartStateChanges()
         {
             List<StateChange> stateChanges = new List<StateChange>();
-            foreach (StatusEffect effect in StatusEffects)
+            foreach (StatusEffect effect in mStatusEffectLookup.Values)
             {
                 stateChanges.Add(effect.GetTurnStartStateChange());
             }
@@ -99,14 +117,10 @@ namespace MAGE.GameModes.Combat
         {
             Optional<StatusEffect> optEffect = new Optional<StatusEffect>();
 
-            StatusEffect statusEffect = StatusEffects.Find(
-                x =>
-                x.EffectType == statusEffectId
-                /*&& ownedBy == x.CreatedBy.Id*/);
-
-            if (statusEffect != null)
+            if (mStatusEffectLookup.ContainsKey(statusEffectId))
             {
-                optEffect = statusEffect;
+                optEffect = mStatusEffectLookup[statusEffectId];
+
             }
 
             return optEffect;
@@ -115,7 +129,7 @@ namespace MAGE.GameModes.Combat
         public void TickStatusEffects()
         {
             List<StatusEffect> expiredEffects = new List<StatusEffect>();
-            foreach (StatusEffect effect in StatusEffects)
+            foreach (StatusEffect effect in mStatusEffectLookup.Values)
             {
                 effect.ProgressDuration();
                 if (effect.HasExpired())
@@ -129,7 +143,7 @@ namespace MAGE.GameModes.Combat
 
         public void OnDeath()
         {
-            RemoveStatusEffects(new List<StatusEffect>(StatusEffects));
+            RemoveStatusEffects(new List<StatusEffect>(mStatusEffectLookup.Values));
         }
     }
 }

@@ -101,14 +101,15 @@ namespace MAGE.GameModes.Encounter
             mMovementPathRenderer.gameObject.SetActive(false);
             mMovementPathRenderer.useWorldSpace = true;
 
-            //foreach (CombatEntity entity in GameModel.Encounter.AlivePlayers)
-            //{
-            //    NavMeshObstacle obstacle = EncounterPrefabLoader.Obstacle;
-            //    obstacle.transform.SetParent(entity.transform);
-            //    obstacle.transform.localPosition = Vector3.zero;
-            //    mCharacterEmptyRadius = obstacle.radius * 2;
-            //    mMovementObstacles.Add(obstacle);
-            //}
+            foreach (CombatEntity entity in GameModel.Encounter.AlivePlayers)
+            {
+                NavMeshObstacle navMeshObstacle = entity.GetComponentInChildren<NavMeshObstacle>(true);
+                Debug.Assert(navMeshObstacle);
+                if (navMeshObstacle)
+                {
+                    navMeshObstacle.enabled = true;
+                }
+            }
 
             SetCurrentCharacter(GameModel.Encounter.CurrentTurn);
 

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace MAGE.GameModes.Combat
 {
@@ -45,11 +46,7 @@ namespace MAGE.GameModes.Combat
                     GetComponent<EquipmentControl>().SetEquipment(Character.Equipment);
 
                     // Responders
-                    List<ActionResponseId> responseIds = new List<ActionResponseId>()
-                {
-                    ActionResponseId.Riptose
-                };
-                    foreach (ActionResponseId actionResponseId in responseIds)
+                    foreach (ActionResponseId actionResponseId in Character.ActionResponders)
                     {
                         GetComponent<Combat.ActionsControl>().ActionResponders.Add(
                             ActionResponderFactory.CheckoutResponder(GetComponent<CombatEntity>(), actionResponseId));
@@ -120,6 +117,8 @@ namespace MAGE.GameModes.Combat
                 GetComponent<AudioSource>().PlayOneShot(AudioManager.Instance.GetSFXClip(SFXId.MaleDeath));
                 GetComponent<ActorAnimator>()?.Trigger("die");
                 GetComponent<CapsuleCollider>().enabled = false;
+
+                GetComponentInChildren<NavMeshObstacle>(true).gameObject.SetActive(false);
             }
         }
     }

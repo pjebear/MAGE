@@ -65,6 +65,8 @@ namespace MAGE.UI.Views
             newElement.SetActive(true);
 
             UIComponentBase component = newElement.GetComponent<UIComponentBase>();
+            component.IsClickable = IsClickable;
+            component.IsHoverable = IsHoverable;
             component.Init(Elements.Count, this);
             Elements.Add(component);
 

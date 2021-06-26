@@ -39,13 +39,14 @@ namespace MAGE.GameModes.Encounter
             return actionInfo;
         }
 
-        protected override InteractionSolverBase PopulateInteractionSolver()
+        protected override InteractionSolverBase CreateInteractionSolver()
         {
-            SpellInteractionSolver interactionSolver = new SpellInteractionSolver();
+            return new SpellInteractionSolver();
+        }
 
-            interactionSolver.StateChange = new ConcreteVar<StateChange>(new StateChange(StateChangeType.ActionTarget, StatusEffectFactory.CheckoutStatusEffect(StatusEffectId.DoubleTime)));
-
-            return interactionSolver;
+        protected override void InitInteractionSolver(InteractionSolverBase interactionSolverBase)
+        {
+            interactionSolverBase.StateChange = new ConcreteVar<StateChange>(new StateChange(StateChangeType.ActionTarget, StatusEffectFactory.CheckoutStatusEffect(StatusEffectId.DoubleTime)));
         }
 
         protected override CompositionNode PopulateComposition()

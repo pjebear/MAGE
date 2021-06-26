@@ -36,15 +36,16 @@ namespace MAGE.GameModes.Encounter
             return actionInfo;
         }
 
-        protected override InteractionSolverBase PopulateInteractionSolver()
+        protected override InteractionSolverBase CreateInteractionSolver()
         {
-            WeaponInteractionSolver interactionSolver = new WeaponInteractionSolver();
+            return new WeaponInteractionSolver();
+        }
 
+        protected override void InitInteractionSolver(InteractionSolverBase interactionSolverBase)
+        {
             DeferredStateChange deferredStateChange = new DeferredStateChange();
             deferredStateChange.HealthChange = new WeaponEffectivenessCalculator(Equipment.Slot.RightHand) { DeferredCombatEntity = DeferredOwner };
-            interactionSolver.StateChange = deferredStateChange;
-
-            return interactionSolver;
+            interactionSolverBase.StateChange = deferredStateChange;
         }
 
         protected override CompositionNode PopulateComposition()

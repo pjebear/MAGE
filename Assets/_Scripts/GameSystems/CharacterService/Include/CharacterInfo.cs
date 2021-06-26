@@ -44,7 +44,7 @@ namespace MAGE.GameSystems.Characters
         public SpecializationType CurrentSpecializationType;
         public Specialization CurrentSpecialization { get { return Specializations[CurrentSpecializationType]; } }
 
-        protected List<ActionResponseId> ActionResponders = new List<ActionResponseId>();
+        public List<ActionResponseId> ActionResponders = new List<ActionResponseId>();
         public Equipment Equipment = new Equipment();
         public List<StatusEffect> StatusEffects = new List<StatusEffect>();
 
@@ -158,6 +158,14 @@ namespace MAGE.GameSystems.Characters
             actions.AddRange(CurrentSpecialization.GetActions());
 
             return actions;
+        }
+
+        public void ModifyAction(ActionInfo actionInfo)
+        {
+            foreach (IActionModifier modifier in GetActionModifiers().Where(x=> x.ActionId == actionInfo.ActionId))
+            {
+                modifier.Modify(actionInfo);
+            }
         }
 
         //  ------------------------------------------------------------------------------

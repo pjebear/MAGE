@@ -17,6 +17,12 @@ namespace MAGE.GameModes.Combat
 
             switch (type)
             {
+                case (ActionResponseId.Avenger):
+                    actionResponder = new AvengerResponder(owner);
+                    break;
+                case (ActionResponseId.HealOnHurtListener):
+                    actionResponder = new HealOnHurtResponder(owner);
+                    break;
                 case (ActionResponseId.Riptose):
                     actionResponder = new RiptoseResponder(owner);
                     break;

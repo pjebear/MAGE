@@ -22,12 +22,14 @@ namespace MAGE.GameModes.Encounter
 
         protected abstract IDeferredVar<StateChange> GetStateChange();
 
-        protected override InteractionSolverBase PopulateInteractionSolver()
+        protected override InteractionSolverBase CreateInteractionSolver()
         {
-            SpellInteractionSolver spellInteractionSolver = new SpellInteractionSolver();
-            spellInteractionSolver.StateChange = GetStateChange();
+            return new SpellInteractionSolver();
+        }
 
-            return spellInteractionSolver;
+        protected override void InitInteractionSolver(InteractionSolverBase interactionSolverBase)
+        {
+            interactionSolverBase.StateChange = GetStateChange();
         }
 
         public override ActionComposition Compose(Target target)

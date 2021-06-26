@@ -73,6 +73,11 @@ namespace MAGE.GameSystems.Stats
             }
         }
 
+        public void ResetDuration()
+        {
+            mCurrentDuration = Math.Min(mCurrentDuration, 0);
+        }
+
         public abstract List<AttributeModifier> GetAttributeModifiers();
         public abstract StateChange GetTurnStartStateChange();
 
