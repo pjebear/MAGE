@@ -15,10 +15,10 @@ namespace MAGE.UI.Views
 
         public class DataProvider : IDataProvider
         {
-            public UIList.DataProvider ButtonListDP;
+            public UIGrid.DataProvider ButtonListDP;
         }
 
-        public UIList ActionList;
+        public UIGrid ActionList;
 
         public override void Publish(IDataProvider dataProvider)
         {

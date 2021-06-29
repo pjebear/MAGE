@@ -17,7 +17,12 @@ namespace MAGE.UI.Views
 
         public void Publish(string assetPath, string assetName)
         {
-            Image.sprite = Instantiate(Resources.Load<Sprite>("UI/Sprites/" + assetPath + "/" + assetName));
+            Sprite sprite = Resources.Load<Sprite>("UI/Sprites/" + assetPath + "/" + assetName);
+            if (sprite == null)
+            {
+                sprite = Resources.Load<Sprite>("UI/Sprites/INVALID");
+            }
+            Image.sprite = Instantiate(sprite);
             Image.raycastTarget = IsClickable || IsHoverable;
         }
 

@@ -430,28 +430,34 @@ namespace MAGE.GameModes.Encounter
                         {
                             if (GameModel.Encounter.mChargingActions.ContainsKey(mCurrentTurn))
                             {
-                                actionList.Add(new UIButton.DataProvider("Cancel Charging Action", true));
+                                actionList.Add(new ActionSelector.DataProvider() { AssetName = "Cancel", Name = "Stop Casting", HasResources = true });
                             }
                             else
                             {
                                 foreach (ActionComposerBase action in mAvailableActions)
                                 {
-                                    string actionName = action.ActionInfo.ActionId.ToString();
-                                    actionList.Add(new UIButton.DataProvider(actionName 
-                                        + (action.AreResourceRequirementsMet() ? "" : "[Charge]"),
-                                        action.AreActionRequirementsMet()));
+                                    actionList.Add(new ActionSelector.DataProvider()
+                                    {
+                                        AssetName = action.ActionInfo.ActionId.ToString(),
+                                        Name = action.ActionInfo.ActionId.ToString(),
+                                        CastType = action.ActionInfo.CastSpeed.ToString(),
+                                        Cost = action.ActionInfo.ActionCost.resourceChange != 0 ? Math.Abs(action.ActionInfo.ActionCost.resourceChange).ToString() + " MP" : "",
+                                        HasResources = action.CanPerformAction()
+                                    });
                                 }
                             }
                         }
 
-                        actionList.Add(new UIButton.DataProvider("Wait", true));
+                        actionList.Add(new ActionSelector.DataProvider() { AssetName = "Wait", Name = "End Turn", HasResources = true });
+
                     }
                     else if (mState == State.TargetSelect)
                     {
-                        actionList.Add(new UIButton.DataProvider("Cancel", true));
+                        actionList.Add(new ActionSelector.DataProvider() { AssetName = "Cancel", Name = "Cancel", HasResources = true });
+
                     }
-                    
-                    dataProvider.ButtonListDP = new UIList.DataProvider(actionList);
+
+                    dataProvider.ButtonListDP = new UIGrid.DataProvider(actionList);
 
                     return dataProvider;
                 }

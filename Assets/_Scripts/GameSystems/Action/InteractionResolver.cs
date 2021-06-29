@@ -28,15 +28,16 @@ namespace MAGE.GameSystems.Actions
 
             InteractionUtil.GetAvoidanceAttributesForEntity(target.GetComponent<CombatEntity>(), out dodgeChance, out blockChance, out parryChance, relativeOrientation);
 
-            if (UnityEngine.Random.Range(0, 100) < parryChance)
+            int diceRoll = UnityEngine.Random.Range(0, 100);
+            if (diceRoll < parryChance)
             {
                 interactionResultType = InteractionResultType.Parry;
             }
-            else if (UnityEngine.Random.Range(0, 100) < blockChance)
+            else if (diceRoll < parryChance + blockChance)
             {
                 interactionResultType = InteractionResultType.Block;
             }
-            else if (UnityEngine.Random.Range(0, 100) < dodgeChance)
+            else if (diceRoll < parryChance + blockChance + dodgeChance)
             {
                 interactionResultType = InteractionResultType.Dodge;
             }
