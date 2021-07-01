@@ -106,9 +106,57 @@ namespace MAGE.GameModes.Encounter
                     handled = true;
                 }
                 break;
+
+                case "resolveStatusEffect":
+                {
+                    Debug.Assert(ArStatusEffectsPending());
+
+                    EncounterModel.StatusEffectInfo toDisplay = null;
+                    if (ArStatusEffectsPending())
+                    {
+                        while (ArStatusEffectsPending())
+                        {
+                            EncounterModel.StatusEffectInfo nextEffectInfo = mEncounterModel.mStatusEffectQueue.Peek();
+                            mEncounterModel.mStatusEffectQueue.Dequeue();
+
+                            if (nextEffectInfo.ControllableEntity.GetComponent<ResourcesControl>().IsAlive())
+                            {
+                                toDisplay = nextEffectInfo;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (toDisplay != null)
+                    {
+                        if (toDisplay.Expired)
+                        {
+                            toDisplay.ControllableEntity.GetComponent<StatusEffectControl>().RemoveStatusEffects(new List<StatusEffect>() { toDisplay.StatusEffect });
+                        }
+                        else
+                        {
+                            toDisplay.ControllableEntity.GetComponent<CombatTarget>().ApplyStateChange(toDisplay.StatusEffect.GetTurnEndStateChange());
+                        }
+
+                        Camera.main.GetComponent<Cameras.CameraController>().SetTarget(toDisplay.ControllableEntity.transform, Cameras.CameraType.TopDown);
+
+                        Invoke("NotifyStatusEffectResolved", 2);
+                    }
+                    else
+                    {
+                        NotifyStatusEffectResolved();
+                    }
+                    handled = true;
+                }
+                break;
             }
 
             return handled;
+        }
+
+        void NotifyStatusEffectResolved()
+        {
+            SendFlowMessage("statusEffectResolved");
         }
 
         public override string Query(string queryParam)
@@ -130,7 +178,12 @@ namespace MAGE.GameModes.Encounter
                         int safetyCatch = 100;
                         while(result == "" && (--safetyCatch > 0))
                         {
-                            if (AreActionsPending())
+
+                            if (ArStatusEffectsPending())
+                            {
+                                result = "statusEffectResolution";
+                            }
+                            else if (AreActionsPending())
                             {
                                 result = "actionResolution";
                             }
@@ -193,6 +246,11 @@ namespace MAGE.GameModes.Encounter
             return mEncounterModel.mActionQueue.Count > 0;
         }
 
+        private bool ArStatusEffectsPending()
+        {
+            return mEncounterModel.mStatusEffectQueue.Count > 0;
+        }
+
         private void ProgressClock()
         {
             List<TemporaryEntity> toUpdate = new List<TemporaryEntity>(mEncounterModel.mTemporaryEntities);
@@ -203,7 +261,24 @@ namespace MAGE.GameModes.Encounter
 
             // Status Effects
             {
-                // TODO
+                foreach (ControllableEntity controllableEntity in mEncounterModel.AlivePlayers)
+                {
+                    StatusEffectControl statusEffectControl = controllableEntity.GetComponent<StatusEffectControl>();
+                    foreach (StatusEffect statusEffect in statusEffectControl.mStatusEffectLookup.Values)
+                    {
+                        statusEffect.ProgressDuration();
+
+                        if (statusEffect.HasExpired())
+                        {
+                            EncounterModel.StatusEffectInfo statusEffectInfo = new EncounterModel.StatusEffectInfo();
+                            statusEffectInfo.ControllableEntity = controllableEntity;
+                            statusEffectInfo.StatusEffect = statusEffect;
+                            statusEffectInfo.Expired = true;
+
+                            mEncounterModel.mStatusEffectQueue.Enqueue(statusEffectInfo);
+                        }
+                    }
+                }
             }
 
             // Charging Actions
@@ -248,6 +323,20 @@ namespace MAGE.GameModes.Encounter
                 if (!currentTurn.GetComponent<ResourcesControl>().IsAlive() 
                     || mEncounterModel.TurnComplete)
                 {
+
+                    foreach (StatusEffect statusEffect in currentTurn.GetComponent<StatusEffectControl>().mStatusEffectLookup.Values)
+                    {
+                        if (statusEffect.GetTurnEndStateChange() != null)
+                        {
+                            EncounterModel.StatusEffectInfo statusEffectInfo = new EncounterModel.StatusEffectInfo();
+                            statusEffectInfo.ControllableEntity = (ControllableEntity)currentTurn;
+                            statusEffectInfo.StatusEffect = statusEffect;
+                            statusEffectInfo.Expired = false;
+
+                            mEncounterModel.mStatusEffectQueue.Enqueue(statusEffectInfo);
+                        }
+                    }
+
                     mEncounterModel.TurnComplete = false;
 
                     mEncounterModel.CurrentTurn.GetComponent<ActorMotor>().Enable(false);

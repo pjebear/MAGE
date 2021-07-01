@@ -90,6 +90,7 @@ namespace MAGE.GameModes.FlowControl
                                 { "playerTurnFlow", "TurnFlow" }
                                 ,{ "progressClock", "ProgressClock" }
                                 ,{ "actionResolution", "ActionResolution" }
+                                ,{ "statusEffectResolution", "StatusEffectResolution" }
                                 ,{ "encounterComplete", "ResultsFlow" }
                             }
                         }
@@ -170,6 +171,17 @@ namespace MAGE.GameModes.FlowControl
                             ,Transitions = new Dictionary<string, string>()
                             {
                                 { "actionResolved", "QueryFlowState" }
+                            }
+                        }
+                         , new FlowNode("StatusEffectResolution")
+                        {
+                            OnEnterActions = new List<FlowActionBase>()
+                            {
+                                new Notify("resolveStatusEffect")
+                            }
+                            ,Transitions = new Dictionary<string, string>()
+                            {
+                                { "statusEffectResolved", "QueryFlowState" }
                             }
                         }
                     }

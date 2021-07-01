@@ -44,8 +44,7 @@ namespace MAGE.GameModes.Encounter
         {
             nextAction.Proposer.GetComponent<ActionsControl>().OnActionPerformed(nextAction.Action.ActionInfo.ActionCost);
             mComposition = nextAction.Action.Compose(nextAction.Target);
-
-
+            
             mActionTimeline = new Timeline<TimelineElement>(mComposition.ActionTimeline);
 
             ProgressTimeline(0);

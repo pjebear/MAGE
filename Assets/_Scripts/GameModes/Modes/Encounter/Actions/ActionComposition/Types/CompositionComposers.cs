@@ -134,7 +134,6 @@ namespace MAGE.GameModes.Encounter
 
                 if (toAnimate != null)
                 {
-
                     Vector3 lookAtPosition = Vector3.zero;
                     if (interactionResult.InteractionResultType == InteractionResultType.Block
                         || interactionResult.InteractionResultType == InteractionResultType.Dodge

@@ -23,6 +23,13 @@ namespace MAGE.GameModes.Encounter
             public int TicksRemaining;
         }
 
+        public class StatusEffectInfo
+        {
+            public ControllableEntity ControllableEntity;
+            public StatusEffect StatusEffect;
+            public bool Expired = false;
+        }
+
         public bool IsEncounterActive = false;
 
         public List<EncounterCondition> mWinConditions = new List<EncounterCondition>();
@@ -30,6 +37,8 @@ namespace MAGE.GameModes.Encounter
 
         public Dictionary<CombatEntity, ChargingActionInfo> mChargingActions = new Dictionary<CombatEntity, ChargingActionInfo>();
         public Queue<ActionProposal> mActionQueue = new Queue<ActionProposal>();
+
+        public Queue<StatusEffectInfo> mStatusEffectQueue = new Queue<StatusEffectInfo>();
 
         public HashSet<TemporaryEntity> mTemporaryEntities = new HashSet<TemporaryEntity>();
 

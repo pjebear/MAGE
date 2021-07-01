@@ -73,8 +73,9 @@ namespace MAGE.GameModes.Combat
                     GetComponent<BillboardEmitter>().Emitt(param, 2f);
                 }
             }
-        } 
+        }
 
+        //  ------------------------------------------------------------------------------
         public List<StatusEffect> GetSingleTurnStatusEffects()
         {
             List<StatusEffect> statusEffects = new List<StatusEffect>();
@@ -86,16 +87,6 @@ namespace MAGE.GameModes.Combat
                 }
             }
             return statusEffects;
-        }
-
-        public List<StateChange> GetTurnStartStateChanges()
-        {
-            List<StateChange> stateChanges = new List<StateChange>();
-            foreach (StatusEffect effect in mStatusEffectLookup.Values)
-            {
-                stateChanges.Add(effect.GetTurnStartStateChange());
-            }
-            return stateChanges;
         }
 
         //  ------------------------------------------------------------------------------

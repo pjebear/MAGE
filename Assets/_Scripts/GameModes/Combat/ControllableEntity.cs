@@ -81,16 +81,7 @@ namespace MAGE.GameModes.Combat
         public void OnTurnStart()
         {
             StatusEffectControl statusEffectControl = GetComponent<StatusEffectControl>();
-            statusEffectControl.RemoveStatusEffects(statusEffectControl.GetSingleTurnStatusEffects());
-
-            if (GetComponent<CombatTarget>() != null)
-            {
-                List<StateChange> turnStateStateChanges = statusEffectControl.GetTurnStartStateChanges();
-                foreach (StateChange stateChange in turnStateStateChanges)
-                {
-                    GetComponent<CombatTarget>().ApplyStateChange(stateChange);
-                }
-            }
+            statusEffectControl.RemoveStatusEffects(statusEffectControl.GetSingleTurnStatusEffects(), false);
         }
 
         public override void OnTurnTick()

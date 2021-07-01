@@ -10,9 +10,9 @@ namespace MAGE.GameSystems.Stats
     {
         public const int UNTIL_NEXT_TURN = -2;
         public const int PERMANENT_DURATION = -1;
-        public const int SHORT_DURATION = 8;
-        public const int MEDIUM_DURATION = 16;
-        public const int LONG_DURATION = 24;
+        public const int SHORT_DURATION = 16;
+        public const int MEDIUM_DURATION = 32;
+        public const int LONG_DURATION = 64;
     }
 
     enum StatusEffectId

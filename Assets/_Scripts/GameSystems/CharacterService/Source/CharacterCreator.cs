@@ -104,7 +104,7 @@ namespace MAGE.GameSystems.Characters.Internal
 
             // Attributes
             PrimaryStat primaryStat = PrimaryStat.Might;
-            int speed = 5;
+            int speed = 6;
             int fortitude = 50;
             int attunement = 50;
             float baseArmor = 0;
@@ -117,7 +117,7 @@ namespace MAGE.GameSystems.Characters.Internal
                     primaryStat = PrimaryStat.Finese;
                     fortitude = 45;
                     attunement = 35;
-                    speed = 5;
+                    speed = 8;
                 }
                 break;
                 case SpecializationType.Bear:
@@ -125,7 +125,7 @@ namespace MAGE.GameSystems.Characters.Internal
                     primaryStat = PrimaryStat.Might;
                     fortitude = 75;
                     attunement = 10;
-                    speed = 5;
+                    speed = 7;
                     baseHealth = 25;
                     baseArmor = .3f;
                 }
@@ -135,7 +135,7 @@ namespace MAGE.GameSystems.Characters.Internal
                     primaryStat = PrimaryStat.Might;
                     fortitude = 60;
                     attunement = 35;
-                    speed = 5;
+                    speed = 6;
                 }
                 break;
                 case SpecializationType.Paladin:
@@ -143,13 +143,13 @@ namespace MAGE.GameSystems.Characters.Internal
                     primaryStat = PrimaryStat.Might;
                     fortitude = 60;
                     attunement = 50;
-                    speed = 5;
+                    speed = 7;
                 }
                 break;
                 case SpecializationType.Monk:
                 {
                     primaryStat = PrimaryStat.Magic;
-                    speed = 4;
+                    speed = 6;
                     fortitude = 40;
                     attunement = 60;
                 }
@@ -157,7 +157,7 @@ namespace MAGE.GameSystems.Characters.Internal
                 case SpecializationType.Adept:
                 {
                     primaryStat = PrimaryStat.Magic;
-                    speed = 4;
+                    speed = 6;
                     fortitude = 35;
                     attunement = 65;
                 }

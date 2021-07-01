@@ -79,7 +79,7 @@ namespace MAGE.GameSystems.Stats
         }
 
         public abstract List<AttributeModifier> GetAttributeModifiers();
-        public abstract StateChange GetTurnStartStateChange();
+        public virtual StateChange GetTurnEndStateChange() { return null; }
 
     }
 
@@ -96,11 +96,6 @@ namespace MAGE.GameSystems.Stats
 
             return modifiers;
         }
-
-        public override StateChange GetTurnStartStateChange()
-        {
-            return StateChange.Empty;
-        }
     }
 
     class AvengerEffect : StatusEffect
@@ -116,11 +111,6 @@ namespace MAGE.GameSystems.Stats
 
             return modifiers;
         }
-
-        public override StateChange GetTurnStartStateChange()
-        {
-            return StateChange.Empty;
-        }
     }
 
     class DefendEffect : StatusEffect
@@ -135,11 +125,6 @@ namespace MAGE.GameSystems.Stats
 
             return modifiers;
         }
-
-        public override StateChange GetTurnStartStateChange()
-        {
-            return StateChange.Empty;
-        }
     }
 
     class DazeEffect : StatusEffect
@@ -151,11 +136,6 @@ namespace MAGE.GameSystems.Stats
             modifiers.Add(new AttributeModifier(TertiaryStat.ResourceRecovery, ModifierType.Increment, -.5f));
 
             return modifiers;
-        }
-
-        public override StateChange GetTurnStartStateChange()
-        {
-            return StateChange.Empty;
         }
     }
 
@@ -169,11 +149,6 @@ namespace MAGE.GameSystems.Stats
 
             return modifiers;
         }
-
-        public override StateChange GetTurnStartStateChange()
-        {
-            return StateChange.Empty;
-        }
     }
 
     class DoubleTimeEffect : StatusEffect
@@ -186,11 +161,6 @@ namespace MAGE.GameSystems.Stats
 
             return modifiers;
         }
-
-        public override StateChange GetTurnStartStateChange()
-        {
-            return StateChange.Empty;
-        }
     }
 
     class HamstringEffect : StatusEffect
@@ -202,11 +172,6 @@ namespace MAGE.GameSystems.Stats
             modifiers.Add(new AttributeModifier(TertiaryStat.Movement, ModifierType.Multiply, -.5f));
 
             return modifiers;
-        }
-
-        public override StateChange GetTurnStartStateChange()
-        {
-            return StateChange.Empty;
         }
     }
 
@@ -224,11 +189,6 @@ namespace MAGE.GameSystems.Stats
 
             return modifiers;
         }
-
-        public override StateChange GetTurnStartStateChange()
-        {
-            return StateChange.Empty;
-        }
     }
 
     class ScorchedEarth : StatusEffect
@@ -238,7 +198,7 @@ namespace MAGE.GameSystems.Stats
             return new List<AttributeModifier>();
         }
 
-        public override StateChange GetTurnStartStateChange()
+        public override StateChange GetTurnEndStateChange()
         {
             return new StateChange(StateChangeType.StatusEffect, -10, 0);
         }
@@ -253,7 +213,7 @@ namespace MAGE.GameSystems.Stats
             return new List<AttributeModifier>();
         }
 
-        public override StateChange GetTurnStartStateChange()
+        public override StateChange GetTurnEndStateChange()
         {
             int damage = (int)(stackValue * (StackCount));
 
@@ -270,7 +230,7 @@ namespace MAGE.GameSystems.Stats
             return new List<AttributeModifier>();
         }
 
-        public override StateChange GetTurnStartStateChange()
+        public override StateChange GetTurnEndStateChange()
         {
             int healthChange = (int)(stackValue * (StackCount));
 
@@ -288,11 +248,6 @@ namespace MAGE.GameSystems.Stats
 
             return modifiers;
         }
-
-        public override StateChange GetTurnStartStateChange()
-        {
-            return StateChange.Empty;
-        }
     }
 
     class BloodScentEffect : StatusEffect
@@ -300,11 +255,6 @@ namespace MAGE.GameSystems.Stats
         public override List<AttributeModifier> GetAttributeModifiers()
         {
             return new List<AttributeModifier>();
-        }
-
-        public override StateChange GetTurnStartStateChange()
-        {
-            return StateChange.Empty;
         }
     }
 }

@@ -68,6 +68,7 @@ namespace MAGE.GameModes.Encounter
                 BeingAnimated.GetComponent<AudioSource>().PlayOneShot(AudioManager.Instance.GetSFXClip(Animation.SFXId));
             }
 
+            Camera.main.GetComponent<Cameras.CameraController>().SetTarget(BeingAnimated.transform, Cameras.CameraType.TopDown);
             BeingAnimated.Trigger(Animation.TriggerName);
             if (FocusTarget != Vector3.zero)
             {
@@ -115,8 +116,9 @@ namespace MAGE.GameModes.Encounter
                 }
                 break;
             }
-             
+
             summon.transform.position = SpawnPoint;
+            //Camera.main.GetComponent<Cameras.CameraController>().SetTarget(summon.transform, Cameras.CameraType.TopDown);
 
             SummonHeirarchy summonsControl = summon.GetComponent<SummonHeirarchy>();
             if (summonsControl != null)
@@ -180,6 +182,8 @@ namespace MAGE.GameModes.Encounter
 
             projectile.Init(SpawnParams.InitialForward, SpawnParams.InitialVelocity, SpawnParams.PathType == ProjectilePathType.Arc, SpawnParams.FlightDuration);
 
+            //Camera.main.GetComponent<Cameras.CameraController>().SetTarget(projectile.transform, Cameras.CameraType.TopDown);
+
             if (SpawnParams.ProjectileId == ProjectileId.Arrow)
             {
                 AudioClip clip = AudioManager.Instance.GetSFXClip(SFXId.ArrowRelease);
@@ -220,6 +224,8 @@ namespace MAGE.GameModes.Encounter
             {
                 GameObject effect = GameObject.Instantiate(UnityEngine.Resources.Load<GameObject>("VFX/" + EffectType.ToString()));
                 effect.transform.position = AtPosition;
+
+                //Camera.main.GetComponent<Cameras.CameraController>().SetTarget(effect.transform, Cameras.CameraType.TopDown);
 
                 if (Parent != null)
                 {
