@@ -121,6 +121,8 @@ namespace MAGE.GameModes.SceneElements
                 foreach (SkinnedMeshRenderer toColor in mOutfit.ColorableMeshes)
                 {
                     toColor.materials[0].color = GetColorFromColorization(mOutfitColorization);
+                    toColor.materials[0].SetColor("_EMISSION", GetColorFromColorization(mOutfitColorization));
+                    toColor.materials[0].EnableKeyword("_EMISSION");
                 }
             }
         }

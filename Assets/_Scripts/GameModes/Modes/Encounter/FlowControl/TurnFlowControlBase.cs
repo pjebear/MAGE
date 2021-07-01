@@ -209,14 +209,8 @@ namespace MAGE.GameModes.Encounter
 
         protected void QueueAction(ActionProposal proposal)
         {
-            if (proposal.Action.AreResourceRequirementsMet())
-            {
-                GameModel.Encounter.mActionQueue.Enqueue(proposal);
-            }
-            else
-            {
-                GameModel.Encounter.mChargingActions.Add(mCurrentTurn, proposal);
-            }
+            GameModel.Encounter.EnqueueAction(proposal);
+
             mCurrentTurn.GetComponent<ActionsControl>().ActionChosen();
         }
 

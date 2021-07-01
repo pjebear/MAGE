@@ -28,6 +28,7 @@ namespace MAGE.GameModes.Encounter
             actionInfo.ActionRange = ActionRange.Projectile;
             actionInfo.ActionSource = ActionSource.Cast;
             actionInfo.CanGroundTarget = true;
+            actionInfo.CastSpeed = CastSpeed.Normal;
 
             actionInfo.EffectInfo.EffectId = EffectType.Protect;
 

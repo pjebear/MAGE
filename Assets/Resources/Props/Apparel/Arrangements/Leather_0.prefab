@@ -77,6 +77,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Armor4_Padding_Upper
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 3ac6b773015f24a4eb00da79ab8798d0, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 3ac6b773015f24a4eb00da79ab8798d0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

@@ -201,24 +201,35 @@ namespace MAGE.GameModes.Encounter
                 temporary.OnTurnTick();
             }
 
+            // Status Effects
+            {
+                // TODO
+            }
+
+            // Charging Actions
+            {
+                List<CombatEntity> chargedActions = new List<CombatEntity>();
+                foreach (var chargingActionPair in mEncounterModel.mChargingActions)
+                {
+                    EncounterModel.ChargingActionInfo chargingActionInfo = chargingActionPair.Value;
+
+                    --chargingActionInfo.TicksRemaining;
+                    if (chargingActionInfo.TicksRemaining <= 0)
+                    {
+                        mEncounterModel.mActionQueue.Enqueue(chargingActionInfo.Action);
+                        chargedActions.Add(chargingActionPair.Key);
+                    }
+                }
+
+                foreach (CombatEntity combatEntity in chargedActions)
+                {
+                    mEncounterModel.mChargingActions.Remove(combatEntity);
+                }
+            }
+
             foreach (ControllableEntity combatCharacter in mEncounterModel.AlivePlayers)
             {
                 combatCharacter.OnTurnTick();
-
-                if (mEncounterModel.mChargingActions.ContainsKey(combatCharacter))
-                {
-                    ActionProposal actionProposal = mEncounterModel.mChargingActions[combatCharacter];
-
-                    if (!actionProposal.Action.AreActionRequirementsMet())
-                    {
-                        mEncounterModel.mChargingActions.Remove(combatCharacter);
-                    }
-                    else if (actionProposal.Action.AreResourceRequirementsMet())
-                    {
-                        mEncounterModel.mActionQueue.Enqueue(actionProposal);
-                        mEncounterModel.mChargingActions.Remove(combatCharacter);
-                    }
-                }
             }
             
             mEncounterModel.TurnQueue = mEncounterModel.AlivePlayers.Where(x =>
@@ -329,48 +340,73 @@ namespace MAGE.GameModes.Encounter
             return dp;
         }
 
+        class TurnOrderEntry
+        {
+            public TurnOrderCharacterPanel.DataProvider Entry;
+            public int TicksTilTurn = 0;
+        }
+
         IDataProvider PublishTurnOrderView()
         {
             mTurnOptions.Clear();
 
             EncounterTurnOrderView.DataProvider dp = new EncounterTurnOrderView.DataProvider();
 
+            List<TurnOrderEntry> entriesToPutInQueue = new List<TurnOrderEntry>();
+
             List<ControllableEntity> entitiesToPutInTurnQueue = new List<ControllableEntity>(mEncounterModel.AlivePlayers);
 
-            List<ControllableEntity> toPublish = new List<ControllableEntity>();
+            bool enemyFoundInTurnOrder = false;
             if (mEncounterModel.CurrentTurn != null)
             {
-                toPublish.Add(mEncounterModel.CurrentTurn);
+                TurnOrderCharacterPanel.DataProvider turnOrderDP = GetTurnFlowDPForControllable(mEncounterModel.CurrentTurn);
+                turnOrderDP.IsCurrentTurn = true;
+                enemyFoundInTurnOrder = mEncounterModel.CurrentTurn.TeamSide == TeamSide.EnemyAI;
+                entriesToPutInQueue.Add(new TurnOrderEntry() { Entry = turnOrderDP, TicksTilTurn = -20 });
                 entitiesToPutInTurnQueue.Remove(mEncounterModel.CurrentTurn);
+                mTurnOptions.Add(mEncounterModel.CurrentTurn);
             }
 
             foreach (ControllableEntity controllableEntity in mEncounterModel.TurnQueue)
             {
-                toPublish.Add(controllableEntity);
-                entitiesToPutInTurnQueue.Remove(controllableEntity);
-            }
-
-            entitiesToPutInTurnQueue.Sort((x, y) => y.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Clock].mCurrent.CompareTo(x.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Clock].mCurrent));
-            toPublish.AddRange(entitiesToPutInTurnQueue);
-
-            bool enemyFoundInTurnOrder = false;
-            foreach (ControllableEntity controllableEntity in toPublish)
-            {
                 TurnOrderCharacterPanel.DataProvider turnOrderDP = GetTurnFlowDPForControllable(controllableEntity);
-
-                enemyFoundInTurnOrder |= controllableEntity.TeamSide != TeamSide.AllyHuman;
-                turnOrderDP.IsCurrentTurn = 
-                    dp.TurnOrder.Count == 0 
-                    || (!enemyFoundInTurnOrder && controllableEntity.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Clock].Ratio == 1);
+                enemyFoundInTurnOrder |= controllableEntity.TeamSide == TeamSide.EnemyAI;
+                turnOrderDP.IsCurrentTurn = (!enemyFoundInTurnOrder && controllableEntity.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Clock].Ratio == 1);
 
                 if (!enemyFoundInTurnOrder)
                 {
                     mTurnOptions.Add(controllableEntity);
                 }
 
+                entriesToPutInQueue.Add(new TurnOrderEntry() { Entry = turnOrderDP, TicksTilTurn = 0 });
                 entitiesToPutInTurnQueue.Remove(controllableEntity);
+            }
 
-                dp.TurnOrder.Add(turnOrderDP);
+            foreach (ActionProposal action in mEncounterModel.mActionQueue)
+            {
+                entriesToPutInQueue.Add(new TurnOrderEntry() { Entry = GetTurnFlowDPForAction(action), TicksTilTurn = -10 });
+            }
+
+            foreach (ControllableEntity controllableEntity in entitiesToPutInTurnQueue)
+            {
+                float currentClock = controllableEntity.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Clock].mCurrent;
+                float speed = controllableEntity.GetComponent<StatsControl>().Attributes[TertiaryStat.Speed];
+
+                int ticksTilTurn = (int)((100 - currentClock) / speed);
+                entriesToPutInQueue.Add(new TurnOrderEntry() { Entry = GetTurnFlowDPForControllable(controllableEntity), TicksTilTurn = ticksTilTurn * 10 });
+            }
+
+            foreach (EncounterModel.ChargingActionInfo chargingAction in mEncounterModel.mChargingActions.Values)
+            {
+                entriesToPutInQueue.Add(new TurnOrderEntry() { Entry = GetTurnFlowDPForAction(chargingAction.Action), TicksTilTurn = chargingAction.TicksRemaining * 10 - 5 });
+            }
+
+            entriesToPutInQueue.Sort((x, y) => x.TicksTilTurn.CompareTo(y.TicksTilTurn));
+
+            
+            foreach (TurnOrderEntry turn in entriesToPutInQueue)
+            {
+                dp.TurnOrder.Add(turn.Entry);
             }
 
             return dp;
@@ -384,6 +420,16 @@ namespace MAGE.GameModes.Encounter
             turnOrderDP.IsAlly = controllableEntity.TeamSide == TeamSide.AllyHuman;
             turnOrderDP.CurrentHP = (int)controllableEntity.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Health].mCurrent;
             turnOrderDP.MaxHP = (int)controllableEntity.GetComponent<ResourcesControl>().Resources[GameSystems.Stats.ResourceType.Health].mMax;
+
+            return turnOrderDP;
+        }
+
+        private TurnOrderCharacterPanel.DataProvider GetTurnFlowDPForAction(ActionProposal chargingAction)
+        {
+            TurnOrderCharacterPanel.DataProvider turnOrderDP = new TurnOrderCharacterPanel.DataProvider();
+
+            turnOrderDP.PortraitAsset = chargingAction.Action.ActionInfo.ActionId.ToString();
+            turnOrderDP.IsAlly = chargingAction.Proposer.TeamSide == TeamSide.AllyHuman;
 
             return turnOrderDP;
         }

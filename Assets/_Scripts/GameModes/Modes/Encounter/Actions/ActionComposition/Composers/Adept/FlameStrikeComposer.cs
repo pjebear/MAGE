@@ -33,6 +33,7 @@ namespace MAGE.GameModes.Encounter
             actionInfo.EffectInfo.EffectId = EffectType.FlameStrike;
             actionInfo.SummonInfo.SummonType = SummonType.ScorchedEarth;
             actionInfo.CanGroundTarget = true;
+            actionInfo.CastSpeed = CastSpeed.Slow;
 
             actionInfo.CastRange = new RangeInfo()
             {

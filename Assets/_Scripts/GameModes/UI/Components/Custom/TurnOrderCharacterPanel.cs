@@ -43,7 +43,14 @@ namespace MAGE.UI.Views
             IsCurrentTurnImg.gameObject.SetActive(dp.IsCurrentTurn.ValueOr(false));
 
             // Portrait
-            if (dp.PortraitAsset.HasValue) HeadImg.Publish(dp.PortraitAsset.Value);
+            if (dp.CurrentHP.HasValue)
+            {
+                if (dp.PortraitAsset.HasValue) HeadImg.Publish(dp.PortraitAsset.Value);
+            }
+            else
+            {
+                if (dp.PortraitAsset.HasValue) HeadImg.Publish("Actions", dp.PortraitAsset.Value);
+            }
 
             // HP
             if (dp.CurrentHP.HasValue && dp.MaxHP.HasValue) HPBar.Publish("HP", dp.CurrentHP.Value, dp.MaxHP.Value);

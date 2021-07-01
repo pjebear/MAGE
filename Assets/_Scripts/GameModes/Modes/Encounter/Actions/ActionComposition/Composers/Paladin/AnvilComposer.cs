@@ -29,6 +29,7 @@ namespace MAGE.GameModes.Encounter
             actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -5);
             actionInfo.ActionRange = ActionRange.Projectile;
             actionInfo.ActionSource = ActionSource.Cast;
+            actionInfo.CastSpeed = CastSpeed.Fast;
             actionInfo.EffectInfo.EffectId = EffectType.Anvil;
             actionInfo.CanGroundTarget = true;
 

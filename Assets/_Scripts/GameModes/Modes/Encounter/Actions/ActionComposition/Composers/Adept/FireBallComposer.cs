@@ -31,6 +31,7 @@ namespace MAGE.GameModes.Encounter
             actionInfo.ActionSource = ActionSource.Cast;
             actionInfo.AnimationInfo.AnimationId = AnimationId.Cast;
             actionInfo.ProjectileInfo.ProjectileId = ProjectileId.FireBall;
+            actionInfo.CastSpeed = CastSpeed.Fast;
 
             actionInfo.CastRange = new RangeInfo()
             {

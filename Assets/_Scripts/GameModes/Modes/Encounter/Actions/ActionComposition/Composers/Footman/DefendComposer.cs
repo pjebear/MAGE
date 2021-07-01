@@ -27,6 +27,7 @@ namespace MAGE.GameModes.Encounter
             actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, 0);
             actionInfo.ActionRange = ActionRange.Meele;
             actionInfo.ActionSource = ActionSource.Cast;
+            actionInfo.CastSpeed = CastSpeed.Instant;
 
             actionInfo.IsSelfCast = true;
 

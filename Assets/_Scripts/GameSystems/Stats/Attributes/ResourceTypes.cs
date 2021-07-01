@@ -107,7 +107,7 @@ namespace MAGE.GameSystems.Stats
             : this()
         {
             mResources[(int)ResourceType.Health].Set(health, health);
-            mResources[(int)ResourceType.Mana].Set(0, mana);
+            mResources[(int)ResourceType.Mana].Set(mana, mana);
             mResources[(int)ResourceType.Endurance].Set(0, endurance);
             mResources[(int)ResourceType.Clock].Set(0, clock); 
             mResources[(int)ResourceType.Actions].Set(0, actions); 

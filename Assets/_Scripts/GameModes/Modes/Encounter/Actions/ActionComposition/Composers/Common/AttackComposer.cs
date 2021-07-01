@@ -32,6 +32,7 @@ namespace MAGE.GameModes.Encounter
             actionInfo.AnimationInfo = weapon.AnimationInfo;
             actionInfo.ProjectileInfo = weapon.ProjectileInfo;
             actionInfo.CastRange = weapon.Range;
+            actionInfo.CastSpeed = CastSpeed.Instant;
 
             return actionInfo;
         }

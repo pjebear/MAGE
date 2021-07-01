@@ -4,6 +4,7 @@ using MAGE.GameModes.SceneElements.Encounters;
 using MAGE.GameSystems;
 using MAGE.GameSystems.Actions;
 using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.Stats;
 using MAGE.GameSystems.World;
 using System;
 using System.Collections.Generic;
@@ -16,12 +17,18 @@ namespace MAGE.GameModes.Encounter
 {
     class EncounterModel
     { 
+        public class ChargingActionInfo
+        {
+            public ActionProposal Action;
+            public int TicksRemaining;
+        }
+
         public bool IsEncounterActive = false;
 
         public List<EncounterCondition> mWinConditions = new List<EncounterCondition>();
         public List<EncounterCondition> mLoseConditions = new List<EncounterCondition>();
 
-        public Dictionary<CombatEntity, ActionProposal> mChargingActions = new Dictionary<CombatEntity, ActionProposal>();
+        public Dictionary<CombatEntity, ChargingActionInfo> mChargingActions = new Dictionary<CombatEntity, ChargingActionInfo>();
         public Queue<ActionProposal> mActionQueue = new Queue<ActionProposal>();
 
         public HashSet<TemporaryEntity> mTemporaryEntities = new HashSet<TemporaryEntity>();
@@ -104,6 +111,23 @@ namespace MAGE.GameModes.Encounter
                 }
 
                 GameObject.Destroy(entity.gameObject);
+            }
+        }
+
+        public void EnqueueAction(ActionProposal actionProposal)
+        {
+            if (actionProposal.Action.ActionInfo.CastSpeed == CastSpeed.Instant)
+            {
+                mActionQueue.Enqueue(actionProposal);
+            }
+            else
+            {
+                Debug.Assert(!mChargingActions.ContainsKey(actionProposal.Proposer));
+                if (!mChargingActions.ContainsKey(actionProposal.Proposer))
+                {
+                    int ticksRequired = ActionUtil.GetTurnCountForCastSpeed(actionProposal.Action.ActionInfo.CastSpeed);
+                    mChargingActions.Add(actionProposal.Proposer, new ChargingActionInfo() { Action = actionProposal, TicksRemaining = ticksRequired });
+                }
             }
         }
     }

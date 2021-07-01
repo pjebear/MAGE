@@ -31,6 +31,7 @@ namespace MAGE.GameModes.Encounter
             actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -3);
             actionInfo.ActionRange = ActionRange.Meele;
             actionInfo.ActionSource = ActionSource.Weapon;
+            actionInfo.CastSpeed = CastSpeed.Instant;
             actionInfo.EffectInfo.EffectId = EffectType.INVALID;
             actionInfo.Effectiveness = 5;
             actionInfo.CanGroundTarget = true;
