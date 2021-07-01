@@ -53,6 +53,7 @@ namespace MAGE.GameModes.Encounter
 
             if (mCurrentTurn.GetComponent<ActionsControl>().GetNumAvailableActions() == 0)
             {
+                Debug.Assert(false);
                 GameModel.Encounter.TurnComplete = true;
                 SendFlowMessage("actionChosen");
                 return;
@@ -180,10 +181,8 @@ namespace MAGE.GameModes.Encounter
                     {
                         QueueAttack();
                     }
-                    else 
-                    {
-                        GameModel.Encounter.TurnComplete = true;
-                    }
+
+                    GameModel.Encounter.TurnComplete = true;
 
                     SendFlowMessage("actionChosen");
                 }

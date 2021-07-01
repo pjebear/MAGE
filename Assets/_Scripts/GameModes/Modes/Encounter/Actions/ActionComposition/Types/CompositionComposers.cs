@@ -128,14 +128,22 @@ namespace MAGE.GameModes.Encounter
 
                 InteractionSolver.Solve(Caster.Get(), Target.Get());
                 InteractionResult interactionResult = InteractionSolver.InteractionResult.Get();
-                Transform target = Caster?.Get()?.transform;
 
                 AnimationId animationId = AnimationUtil.InteractionResultTypeToAnimationId(interactionResult);
                 AnimationInfo animationInfo = AnimationFactory.CheckoutAnimation(animationId);
 
                 if (toAnimate != null)
                 {
-                    animationComposition = new AnimationElement(toAnimate, animationInfo, target.position);
+
+                    Vector3 lookAtPosition = Vector3.zero;
+                    if (interactionResult.InteractionResultType == InteractionResultType.Block
+                        || interactionResult.InteractionResultType == InteractionResultType.Dodge
+                        || interactionResult.InteractionResultType == InteractionResultType.Parry)
+                    {
+                        lookAtPosition = Caster.Get().transform.position;
+                    }
+
+                    animationComposition = new AnimationElement(toAnimate, animationInfo, lookAtPosition);
                 }
                 else
                 {

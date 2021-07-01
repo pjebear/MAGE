@@ -25,7 +25,7 @@ namespace MAGE.GameModes.Encounter
         : TurnFlowControlBase
         , UIContainerControl
     {
-       
+        private Quaternion mPreFinalizeOrientation;
 
         public override FlowControlId GetFlowControlId()
         {
@@ -72,6 +72,10 @@ namespace MAGE.GameModes.Encounter
                     else if (mState == State.TargetSelect)
                     {
                         UpdateTargetState();
+                    }
+                    else if (mState == State.FinalizePosition)
+                    {
+                        UpdateFinalizingState();
                     }
                 }
             }
@@ -185,6 +189,14 @@ namespace MAGE.GameModes.Encounter
             }
         }
 
+        protected void UpdateFinalizingState()
+        {
+            if (mHoverInfo.mHoveredTerrainPos != Vector3.zero)
+            {
+                mCurrentTurn.transform.LookAt(mHoverInfo.mHoveredTerrainPos, Vector3.up);
+            }
+        }
+
         public override void OnMouseHoverChange(GameObject gameObject)
         {
             if (EventSystem.current.IsPointerOverGameObject())
@@ -232,7 +244,20 @@ namespace MAGE.GameModes.Encounter
 
         void OnLeftClick(Vector2 screenPos)
         {
-            // empty
+            if (!EventSystem.current.IsPointerOverGameObject())
+            {
+                if (mState == State.TargetSelect && mSelectedActionTarget.TargetType != TargetSelectionType.Empty)
+                {
+                    ActionProposal proposal = new ActionProposal(mCurrentTurn, mSelectedActionTarget, mSelectedAction);
+                    QueueAction(proposal);
+                    SendFlowMessage("actionChosen");
+                }
+                else if (mState == State.FinalizePosition && mHoverInfo.mHoveredTerrainPos != Vector3.zero)
+                {
+                    GameModel.Encounter.TurnComplete = true;
+                    SendFlowMessage("actionChosen");
+                }
+            }
         }
 
         void OnLeftClickDrag(Vector2 direction)
@@ -242,13 +267,7 @@ namespace MAGE.GameModes.Encounter
 
         void OnRightClick(Vector2 screenPos)
         {
-            if (mState == State.TargetSelect && mSelectedActionTarget.TargetType != TargetSelectionType.Empty)
-            {
-                ActionProposal proposal = new ActionProposal(mCurrentTurn, mSelectedActionTarget, mSelectedAction);
-                QueueAction(proposal);
-                SendFlowMessage("actionChosen");
-            }
-            else if (mState == State.Idle)
+            if (mState == State.Idle)
             {
                 // Move to character
                 if (mCurrentTarget != null)
@@ -454,7 +473,10 @@ namespace MAGE.GameModes.Encounter
                     else if (mState == State.TargetSelect)
                     {
                         actionList.Add(new ActionSelector.DataProvider() { AssetName = "Cancel", Name = "Cancel", HasResources = true });
-
+                    }
+                    else if (mState == State.FinalizePosition)
+                    {
+                        actionList.Add(new ActionSelector.DataProvider() { AssetName = "Cancel", Name = "Cancel", HasResources = true });
                     }
 
                     dataProvider.ButtonListDP = new UIGrid.DataProvider(actionList);
@@ -506,8 +528,8 @@ namespace MAGE.GameModes.Encounter
                                 || listInteractionInfo.ListIdx >= mAvailableActions.Count)
                             {
                                 // Wait selected
-                                GameModel.Encounter.TurnComplete = true;
-                                SendFlowMessage("actionChosen");
+                                SetState(State.FinalizePosition);
+                                mPreFinalizeOrientation = mCurrentTurn.transform.rotation;
                             }
                             else 
                             {
@@ -534,6 +556,11 @@ namespace MAGE.GameModes.Encounter
                         else if (mState == State.TargetSelect)
                         {
                             // Back
+                            SetState(State.Idle);
+                        }
+                        else if (mState == State.FinalizePosition)
+                        {
+                            mCurrentTurn.transform.rotation = mPreFinalizeOrientation;
                             SetState(State.Idle);
                         }
                     }
@@ -623,6 +650,10 @@ namespace MAGE.GameModes.Encounter
                 else if (mState == State.Moving)
                 {
                     updatedCursorType = CursorControl.CursorType.Default;
+                }
+                else
+                {
+                    // default
                 }
             }
 

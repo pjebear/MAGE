@@ -47,7 +47,8 @@ namespace MAGE.GameModes.Encounter
         {
             Idle,
             Moving,
-            TargetSelect
+            TargetSelect,
+            FinalizePosition
         }
         protected State mState = State.Idle;
         protected ActionComposerBase mSelectedAction = null;
@@ -200,6 +201,12 @@ namespace MAGE.GameModes.Encounter
                 mAbilityEffectRenderer.gameObject.SetActive(true);
             }
             else if (state == State.Moving)
+            {
+                mMovementPathRenderer.gameObject.SetActive(false);
+                mAbilityRangeRenderer.gameObject.SetActive(false);
+                mAbilityEffectRenderer.gameObject.SetActive(false);
+            }
+            else if (state == State.FinalizePosition)
             {
                 mMovementPathRenderer.gameObject.SetActive(false);
                 mAbilityRangeRenderer.gameObject.SetActive(false);

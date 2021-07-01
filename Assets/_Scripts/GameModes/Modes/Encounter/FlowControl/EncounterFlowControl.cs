@@ -246,9 +246,7 @@ namespace MAGE.GameModes.Encounter
             {
                 CombatEntity currentTurn = mEncounterModel.CurrentTurn;
                 if (!currentTurn.GetComponent<ResourcesControl>().IsAlive() 
-                    || mEncounterModel.TurnComplete
-                    || (currentTurn.GetComponent<ActionsControl>().GetAvailableMovementRange() == 0 
-                        && currentTurn.GetComponent<ActionsControl>().GetNumAvailableActions() == 0))
+                    || mEncounterModel.TurnComplete)
                 {
                     mEncounterModel.TurnComplete = false;
 
