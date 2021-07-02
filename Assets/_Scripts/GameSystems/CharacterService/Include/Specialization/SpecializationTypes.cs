@@ -14,6 +14,7 @@ namespace MAGE.GameSystems.Characters
         {
             SpecializationType.Adept
             ,SpecializationType.Archer
+            ,SpecializationType.Assassin
             ,SpecializationType.Footman
             ,SpecializationType.Monk
         };
@@ -43,7 +44,7 @@ namespace MAGE.GameSystems.Characters
         //Berserker,
         //// Archer Tree
         //LongBowman,
-        //Assassin,
+        Assassin,
         //Ranger,
         //// Monk Tree
         //Priest,

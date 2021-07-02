@@ -168,6 +168,34 @@ namespace MAGE.DB.Internal
             }
 
             // ---------------------------------------------------------------------------------------------------------------------------------------
+            { // Dagger
+                DB.DBEquipment entry = new DB.DBEquipment();
+                entry.Id = (int)EquippableId.Dagger_0;
+                entry.Category = (int)EquippableCategory.OneHandWeapon;
+                entry.Type = (int)OneHandWeaponType.Dagger;
+                entry.BlockChance = 0;
+                entry.ParryChance = 10;
+                entry.AnimationId = (int)AnimationId.DaggerStrike;
+                entry.Range = MELEE_RANGE;
+
+                entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
+                {
+                    new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Scalar = .2f}
+                    , new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Finese, Scalar = .6f}
+                };
+                entry.EquipBonuses = new List<DB.DBAttributeModifier>()
+                {
+                    // empty
+                };
+
+                entry.SpriteId = (int)UI.ItemIconSpriteId.Dagger;
+                entry.PrefabId = (int)ApparelAssetId.Dagger_0;
+                entry.Value = ONE_HAND_WEAPON_COST;
+
+                DBService.Get().WriteEquipment(entry.Id, entry);
+            }
+
+            // ---------------------------------------------------------------------------------------------------------------------------------------
             { // Mace
                 DB.DBEquipment entry = new DB.DBEquipment();
                 entry.Id = (int)EquippableId.Mace_0;

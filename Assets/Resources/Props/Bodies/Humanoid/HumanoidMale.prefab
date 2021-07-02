@@ -3191,11 +3191,12 @@ Animator:
   m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
     are already bound by a Humanoid avatar. These transforms can only be changed
     by Humanoid clips.\n\tTransform 'EyeR'\n\tTransform 'EyeL'\n\tTransform 'EyeR'\n\tTransform
-    'EyeL'\n\tTransform 'EyeR'\n\tTransform 'EyeL'\n\tFrom animation clip 'WalkBack'\n\tFrom
-    animation clip 'Idle'\n\tFrom animation clip 'Walk'\n\tFrom animation clip 'Run'\n\tFrom
-    animation clip 'BowShoot_R_01_Aim'\n\tFrom animation clip 'BowShoot_R_01_Setup'\n\tFrom
-    animation clip 'Attack01a'\n\tFrom animation clip 'Attack01b'\n\tFrom animation
-    clip 'Attack02a'\n\tFrom animation clip 'Attack02b'\n\tand more ..."
+    'EyeL'\n\tTransform 'EyeR'\n\tTransform 'EyeL'\n\tFrom animation clip 'BowShoot_R_01_Aim'\n\tFrom
+    animation clip 'BowShoot_R_01_Setup'\n\tFrom animation clip 'Attack01a'\n\tFrom
+    animation clip 'Attack01b'\n\tFrom animation clip 'Attack02a'\n\tFrom animation
+    clip 'Attack02b'\n\tFrom animation clip 'Attack03a'\n\tFrom animation clip 'Attack03b'\n\tFrom
+    animation clip 'CastSpell01'\n\tFrom animation clip 'CastSpell02'\n\tand more
+    ..."
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0

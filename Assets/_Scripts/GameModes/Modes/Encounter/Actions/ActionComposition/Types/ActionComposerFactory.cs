@@ -28,12 +28,13 @@ namespace MAGE.GameModes.Encounter
                 case (ActionId.FireBall): { action = new FireBallComposer(owner); } break;
                 case (ActionId.FlameStrike): { action = new FlameStrikeComposer(owner); } break;
                 case (ActionId.Heal): { action = new HealComposer(owner); } break;
-                case (ActionId.SpotHeal): { action = new SpotHealComposer(owner); } break;
+                case (ActionId.PoisonStrike): { action = new PoisonStrikeComposer(owner); } break;
                 case (ActionId.Protection): { action = new ProtectComposer(owner); } break;
                 case (ActionId.Regen): { action = new RegenComposer(owner); } break;
                 case (ActionId.Shackle): { action = new ShackleComposer(owner); } break;
                 case (ActionId.ShieldBash): { action = new ShieldBashComposer(owner); } break;
                 case (ActionId.Smite): { action = new SmiteComposer(owner); } break;
+                case (ActionId.SpotHeal): { action = new SpotHealComposer(owner); } break;
                 case (ActionId.Sprout): { action = new SproutComposer(owner); } break;
                 case (ActionId.SummonBear): { action = new SummonCompanionComposer(owner); } break;
                 case (ActionId.Swipe): { action = new SwipeComposer(owner); } break;

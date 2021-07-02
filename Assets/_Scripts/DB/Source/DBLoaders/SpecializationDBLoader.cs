@@ -80,7 +80,7 @@ namespace MAGE.DB.Internal
                 dbSpecialization.LevelUpModifiers = new List<DB.DBAttribute>()
             {
                 new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Value = 2},
-                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Finese, Value = 4},
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Finese, Value = 3},
                 new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Magic, Value = 1},
                 new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.SecondaryStat, AttributeId = (int)SecondaryStat.Fortitude, Value = 5},
                 new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.SecondaryStat, AttributeId = (int)SecondaryStat.Attunement, Value = 1}
@@ -105,6 +105,55 @@ namespace MAGE.DB.Internal
 
                 DBService.Get().WriteSpecialization(dbSpecialization);
             }
+
+            // Assasin
+            {
+                DB.DBSpecialization dbSpecialization = new DB.DBSpecialization();
+
+                // Type
+                dbSpecialization.SpecializationType = (int)SpecializationType.Assassin;
+
+                // Proficiencies
+                dbSpecialization.Proficiencies = new List<int>()
+            {
+                (int)ProficiencyType.Fists,
+                (int)ProficiencyType.Dagger,
+                (int)ProficiencyType.Bow,
+                (int)ProficiencyType.Accessorys,
+                (int)ProficiencyType.Cloth,
+                (int)ProficiencyType.Leather
+            };
+
+                // Level up modifiers
+                dbSpecialization.LevelUpModifiers = new List<DB.DBAttribute>()
+            {
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Value = 1},
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Finese, Value = 4},
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Magic, Value = 2},
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.SecondaryStat, AttributeId = (int)SecondaryStat.Fortitude, Value = 5},
+                new DB.DBAttribute() { AttributeCategory = (int)AttributeCategory.SecondaryStat, AttributeId = (int)SecondaryStat.Attunement, Value = 1}
+            };
+
+                // talents
+                dbSpecialization.TalentIds = new List<int>()
+                {
+                };
+
+                // Listeners
+                dbSpecialization.ResponseListenerIds = new List<int>()
+                {
+                };
+
+                // Actions
+                dbSpecialization.ActionIds = new List<int>()
+                {
+                    (int)ActionId.PoisonStrike
+                };
+                // none
+
+                DBService.Get().WriteSpecialization(dbSpecialization);
+            }
+
 
             // Bear
             {

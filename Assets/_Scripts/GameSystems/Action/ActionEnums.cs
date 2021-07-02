@@ -116,10 +116,12 @@ namespace MAGE.GameSystems.Actions
     {
         INVALID = -1,
 
-        Heal,
-        SpotHeal,
-        Protection,
         MightyBlow,
+
+        // Assasin
+        PoisonStrike,
+        //Garrote,
+        //Eviscerate,
 
         // Footman
         Defend,
@@ -144,6 +146,9 @@ namespace MAGE.GameSystems.Actions
         ChainLightning,
         Regen,
         Sprout,
+        Heal,
+        SpotHeal,
+        Protection,
 
         WeaponAttack,
 

@@ -12,9 +12,9 @@ using UnityEngine;
 
 namespace MAGE.GameModes.Encounter
 {
-    class ShieldBashComposer : AOESpellComposerBase
+    class PoisonStrikeComposer : AOESpellComposerBase
     {
-        public ShieldBashComposer(CombatEntity owner) : base (owner)
+        public PoisonStrikeComposer(CombatEntity owner) : base (owner)
         {
             
         }
@@ -24,9 +24,9 @@ namespace MAGE.GameModes.Encounter
             ActionInfo actionInfo = new ActionInfo();
 
             actionInfo.Effectiveness = 0;
-            actionInfo.ActionId = ActionId.ShieldBash;
-            actionInfo.AnimationInfo.AnimationId = AnimationId.Block;
-            actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -4);
+            actionInfo.ActionId = ActionId.PoisonStrike;
+            actionInfo.AnimationInfo.AnimationId = AnimationId.DaggerStrike;
+            actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -5);
             actionInfo.ActionRange = ActionRange.Meele;
             actionInfo.ActionSource = ActionSource.Weapon;
             actionInfo.CastSpeed = CastSpeed.Instant;
@@ -35,7 +35,7 @@ namespace MAGE.GameModes.Encounter
             actionInfo.CastRange = new RangeInfo()
             {
                 AreaType = AreaType.Circle,
-                MaxRange = 2,
+                MaxRange = 3,
             };
 
             actionInfo.EffectRange = new RangeInfo()
@@ -49,21 +49,11 @@ namespace MAGE.GameModes.Encounter
 
         protected override IDeferredVar<StateChange> GetStateChange()
         {
-            float damage = ActionInfo.Effectiveness + Owner.GetComponent<StatsControl>().Attributes[PrimaryStat.Might] / 2f;
-
-            EquipmentControl equipmentControl = Owner.GetComponent<EquipmentControl>();
-            if (equipmentControl != null)
-            {
-                HeldEquippable heldEquippable = equipmentControl.Equipment[GameSystems.Items.Equipment.Slot.LeftHand] as HeldEquippable;
-                if (heldEquippable != null)
-                {
-                    damage *=  1 + (heldEquippable.BlockChance / 100f);
-                }
-            }
+            float damage = ActionInfo.Effectiveness + Owner.GetComponent<StatsControl>().Attributes[PrimaryStat.Finese] / 2f;
 
             List<StatusEffect> statusEffects = new List<StatusEffect>()
             {
-                StatusEffectFactory.CheckoutStatusEffect(StatusEffectId.Daze)
+                StatusEffectFactory.CheckoutStatusEffect(StatusEffectId.Poison)
             };
 
             return new ConcreteVar<StateChange>( new StateChange(StateChangeType.ActionTarget, -(int)damage, 0, statusEffects));

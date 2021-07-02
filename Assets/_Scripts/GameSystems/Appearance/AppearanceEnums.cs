@@ -30,6 +30,7 @@ namespace MAGE.GameSystems.Appearances
         // Professions
         Adept,
         Archer,
+        Assassin,
         Bear,
         Footman,
         Monk,

@@ -21,6 +21,7 @@ namespace MAGE.GameSystems
         ChargeUp,
         Faint,
         Revive,
+        DaggerStrike,
 
         NUM
     }

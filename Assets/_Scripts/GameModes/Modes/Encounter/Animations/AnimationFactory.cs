@@ -12,6 +12,7 @@ namespace MAGE.GameModes
             string animationName = "";
             switch (id)
             {
+                case AnimationId.DaggerStrike:
                 case AnimationId.SwordSwing:
                 {
                     numFrames = 55;
@@ -51,6 +52,9 @@ namespace MAGE.GameModes
 
             switch (id)
             {
+                case AnimationId.DaggerStrike:
+                    animationName = "attack3Right";
+                    break;
                 case AnimationId.SwordSwing:
                     animationName = "attack1Right";
                     break;

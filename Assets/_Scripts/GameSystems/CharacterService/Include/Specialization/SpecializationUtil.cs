@@ -40,6 +40,7 @@ namespace MAGE.GameSystems.Characters
             {
                 case SpecializationType.Adept:      portraitSpriteId = PortraitSpriteId.Adept; break;
                 case SpecializationType.Archer:     portraitSpriteId = PortraitSpriteId.Archer; break;
+                case SpecializationType.Assassin:   portraitSpriteId = PortraitSpriteId.Assassin; break;
                 case SpecializationType.Bear:       portraitSpriteId = PortraitSpriteId.Bear; break;
                 case SpecializationType.Footman:    portraitSpriteId = PortraitSpriteId.Footman; break;
                 case SpecializationType.Monk:       portraitSpriteId = PortraitSpriteId.Monk; break;

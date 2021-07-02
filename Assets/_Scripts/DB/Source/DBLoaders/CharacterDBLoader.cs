@@ -196,6 +196,25 @@ namespace MAGE.DB.Internal
                 characterService.CreateCharacter(createParams);
             }
 
+            { // Astrid
+                CharacterCreateParams createParams = new CharacterCreateParams();
+
+                createParams.characterType = CharacterType.Create;
+                createParams.characterClass = CharacterClass.MultiSpecialization;
+                createParams.name = "Astrid";
+                createParams.currentSpecialization = SpecializationType.Assassin;
+                createParams.level = 3;
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.INVALID, EquippableId.Dagger_0, EquippableId.INVALID };
+                createParams.appearanceOverrides = new Appearance()
+                {
+                    HairColor = HairColor.Dark,
+                    HairType = HairType.MaleLong,
+                    SkinToneType = SkinToneType.Pale,
+                };
+
+                characterService.CreateCharacter(createParams);
+            }
+
             //// Scenario Characters
             //int scenarioCharacterId = 0;
             //{ // Bandit Leader
