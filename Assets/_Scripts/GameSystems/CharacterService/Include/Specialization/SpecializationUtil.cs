@@ -32,6 +32,29 @@ namespace MAGE.GameSystems.Characters
             return specializationTypes;
         }
 
+        public static ApparelAssetId GetEquipmentApparelAssetIdForSpecialization(Equippable equippable, SpecializationType specializationType)
+        {
+            ApparelAssetId apparelAssetId = equippable.PrefabId;
+
+            switch (specializationType)
+            {
+                case SpecializationType.Assassin:
+                {
+                    switch (equippable.EquipmentId)
+                    {
+                        case EquippableId.LeatherArmor_0:
+                        {
+                            apparelAssetId = ApparelAssetId.Leather_1;
+                        }
+                        break;
+                    }
+                }
+                break;
+            }
+
+            return apparelAssetId;
+        }
+
         public static PortraitSpriteId GetPortraitSpriteIdForSpecialization(SpecializationType specializationType)
         {
             PortraitSpriteId portraitSpriteId = PortraitSpriteId.INVALID;

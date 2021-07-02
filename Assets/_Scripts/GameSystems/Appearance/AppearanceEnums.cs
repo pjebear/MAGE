@@ -76,6 +76,7 @@ namespace MAGE.GameSystems.Appearances
         Default,
         Cloth_0,
         Leather_0,
+        Leather_1, // assassin
         Mail_0,
         Plate_0,
 

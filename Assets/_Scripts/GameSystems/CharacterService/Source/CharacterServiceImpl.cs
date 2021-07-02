@@ -258,7 +258,12 @@ namespace MAGE.GameSystems.Characters.Internal
             for (int equipmentSlotIdx = 0; equipmentSlotIdx < (int)Equipment.Slot.NUM; ++equipmentSlotIdx)
             {
                 EquippableId equipmentId = character.EquippedItems[equipmentSlotIdx];
-                ApparelAssetId prefabId = equipmentId == EquippableId.INVALID ? ApparelAssetId.NONE : ItemFactory.LoadEquipable(equipmentId).PrefabId;
+                ApparelAssetId prefabId = ApparelAssetId.NONE;
+                if (equipmentId != EquippableId.INVALID)
+                {
+                    Equippable equippable = ItemFactory.LoadEquipable(equipmentId);
+                    prefabId = SpecializationUtil.GetEquipmentApparelAssetIdForSpecialization(equippable, character.CurrentSpecializationType);
+                }
 
                 switch ((Equipment.Slot)equipmentSlotIdx)
                 {

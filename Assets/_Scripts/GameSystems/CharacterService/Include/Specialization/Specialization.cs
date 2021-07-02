@@ -21,9 +21,6 @@ namespace MAGE.GameSystems.Characters
         public List<AttributeModifier> LevelUpModifiers = new List<AttributeModifier>();
         public Dictionary<TalentId, Talent> Talents = new Dictionary<TalentId, Talent>();
 
-
-        
-
         public int NumUnassignedTalentPoints()
         {
             return Level - NumTalentPointsAssigned();
