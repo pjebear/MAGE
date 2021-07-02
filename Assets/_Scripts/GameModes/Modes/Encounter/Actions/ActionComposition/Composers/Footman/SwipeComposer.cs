@@ -28,6 +28,7 @@ namespace MAGE.GameModes.Encounter
 
             actionInfo.ActionId = ActionId.Swipe;
             actionInfo.AnimationInfo.AnimationId = AnimationId.Cleave;
+            actionInfo.AnimationInfo.AnimationSide = AnimationSide.Right;
             actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -3);
             actionInfo.ActionRange = ActionRange.Meele;
             actionInfo.ActionSource = ActionSource.Weapon;

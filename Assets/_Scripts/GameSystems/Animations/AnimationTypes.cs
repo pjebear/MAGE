@@ -6,6 +6,15 @@ using System.Threading.Tasks;
 
 namespace MAGE.GameSystems
 {
+    enum AnimationSide
+    {
+        None,
+        Left,
+        Right,
+
+        NUM
+    }
+
     public enum AnimationId
     {
         INVALID = -1,

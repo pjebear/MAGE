@@ -52,12 +52,14 @@ namespace MAGE.GameModes.Combat
                     if (!IsResponder(targetEntity)
                         && InRange(target.transform, Range))
                     {
-                        InteractionResult result = targetResultPair.Value;
-                        if (result.StateChange.healthChange < 0 // character was hurt
-                            && IsAlly(targetEntity)) // character is teammate
+                        foreach (InteractionResult result in targetResultPair.Value)
                         {
-                            float percentLoss = Mathf.Abs((result.StateChange.healthChange / (float)target.GetComponent<ResourcesControl>().Resources[ResourceType.Health].Max) * 100);
-                            stackCount += (int)(percentLoss * percentLossToStackCount);
+                            if (result.StateChange.healthChange < 0 // character was hurt
+                                && IsAlly(targetEntity)) // character is teammate
+                            {
+                                float percentLoss = Mathf.Abs((result.StateChange.healthChange / (float)target.GetComponent<ResourcesControl>().Resources[ResourceType.Health].Max) * 100);
+                                stackCount += (int)(percentLoss * percentLossToStackCount);
+                            }
                         }
                     }
                 }

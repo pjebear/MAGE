@@ -206,7 +206,7 @@ namespace MAGE.GameSystems.Stats
 
     class PoisonEffect : StatusEffect
     {
-        float stackValue = -2;
+        float stackValue = -4;
 
         public override List<AttributeModifier> GetAttributeModifiers()
         {

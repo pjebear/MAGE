@@ -98,9 +98,19 @@ namespace MAGE.GameModes.Encounter
         public IDeferredVar<StateChange> StateChange;
         public DeferredInteractionResult InteractionResult = new DeferredInteractionResult();
 
-        public Dictionary<CombatTarget, InteractionResult> Results = new Dictionary<CombatTarget, InteractionResult>();
+        public Dictionary<CombatTarget, List<InteractionResult>> Results = new Dictionary<CombatTarget, List<InteractionResult>>();
 
         public abstract void Solve(CombatEntity interacting, Target target);
+
+        protected void AddResult(CombatTarget target, InteractionResult result)
+        {
+            if (!Results.ContainsKey(target))
+            {
+                Results.Add(target, new List<InteractionResult>());
+            }
+
+            Results[target].Add(result);
+        }
     }
 
     class WeaponInteractionSolver : InteractionSolverBase
@@ -112,8 +122,12 @@ namespace MAGE.GameModes.Encounter
                 CombatTarget combatTarget = target.FocalTarget;
 
                 InteractionResult result = InteractionResolver.GetWeaponInteractionResult(interacting, combatTarget, StateChange.Get());
-                InteractionUtil.GetOwnerResultTypeFromResults(new List<InteractionResult>() { result });
-                Results.Add(combatTarget, result);
+                Dictionary<CombatTarget, List<InteractionResult>> results = new Dictionary<CombatTarget, List<InteractionResult>>()
+                {
+                    { combatTarget, new List<InteractionResult>(){ result} }
+                };
+                InteractionUtil.GetOwnerResultTypeFromResults(results);
+                AddResult(combatTarget, result);
                 InteractionResult.Set(result);
             }
         }
@@ -128,7 +142,7 @@ namespace MAGE.GameModes.Encounter
                 CombatTarget combatTarget = target.FocalTarget;
 
                 InteractionResult result = new InteractionResult(InteractionResultType.Hit, StateChange.Get());
-                Results.Add(combatTarget, result);
+                AddResult(combatTarget, result);
                 InteractionResult.Set(result);
             }
         }

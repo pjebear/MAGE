@@ -73,7 +73,7 @@ namespace MAGE.DB.Internal
                 (int)ProficiencyType.Dagger,
                 (int)ProficiencyType.Bow,
                 (int)ProficiencyType.Accessorys,
-                (int)ProficiencyType.Leather
+                (int)ProficiencyType.Leather,
             };
 
                 // Level up modifiers
@@ -121,7 +121,8 @@ namespace MAGE.DB.Internal
                 (int)ProficiencyType.Bow,
                 (int)ProficiencyType.Accessorys,
                 (int)ProficiencyType.Cloth,
-                (int)ProficiencyType.Leather
+                (int)ProficiencyType.Leather,
+                (int)ProficiencyType.DualWeild
             };
 
                 // Level up modifiers

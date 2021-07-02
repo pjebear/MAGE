@@ -160,7 +160,9 @@ namespace MAGE.GameModes.FlowControl
                         .Where(x => ItemUtil.TypeFromId(x.Key) == ItemType.Equippable))
                     {
                         Equippable equippable = ItemFactory.LoadEquipable((EquippableId)keyValuePair.Key);
-                        if (EquipmentUtil.FitsInSlot(equippable.EquipmentTag.Category, mSelectedSlot))
+
+                        bool canDualWeild = EquipmentUtil.HasProficiency(outfitingCharacter.GetProficiencies(), GameSystems.Stats.ProficiencyType.DualWeild);
+                        if (EquipmentUtil.FitsInSlot(equippable, mSelectedSlot, canDualWeild))
                         {
                             EquipmentOutfiterView.EquipableDP equipableDP = new EquipmentOutfiterView.EquipableDP() { Name = equippable.EquipmentId.ToString(), Count = keyValuePair.Value };
                             if (EquipmentUtil.HasProficiencyFor(outfitingCharacter.GetProficiencies(), equippable))

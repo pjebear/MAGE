@@ -5,7 +5,7 @@ namespace MAGE.GameModes
 {
     static class AnimationFactory
     {
-        public static AnimationInfo CheckoutAnimation(AnimationId id)
+        public static AnimationInfo CheckoutAnimation(AnimationId id, AnimationSide animationSide = AnimationSide.None)
         {
             int numFrames = 60;
             int syncFrame = 30;
@@ -53,22 +53,22 @@ namespace MAGE.GameModes
             switch (id)
             {
                 case AnimationId.DaggerStrike:
-                    animationName = "attack3Right";
+                    animationName =  "attack3";
                     break;
                 case AnimationId.SwordSwing:
-                    animationName = "attack1Right";
+                    animationName = "attack1";
                     break;
                 case AnimationId.Cleave:
-                    animationName = "parryRight";
+                    animationName = "parry";
                     break;
                 case AnimationId.BowDraw:
-                    animationName = "bowShoot1Left";
+                    animationName = "bowShoot1";
                     break;
                 case AnimationId.Block:
-                    animationName = "blockLeft";
+                    animationName = "block";
                     break;
                 case AnimationId.Parry:
-                    animationName = "parryRight";
+                    animationName = "parry";
                     break;
                 case AnimationId.Dodge:
                     animationName = "dodge";
@@ -80,6 +80,18 @@ namespace MAGE.GameModes
                     animationName = "cast3";
                     break;
             }
+
+            string animationPostFix = "";
+            if (animationSide == AnimationSide.Right)
+            {
+                animationPostFix = "Right";
+            }
+            else if (animationSide == AnimationSide.Left)
+            {
+                animationPostFix = "Left";
+            }
+
+            animationName += animationPostFix;
 
             SFXId sFXId = SFXId.INVALID;
             switch (id)

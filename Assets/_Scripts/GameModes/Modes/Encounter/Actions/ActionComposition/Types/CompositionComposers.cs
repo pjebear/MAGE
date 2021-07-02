@@ -130,7 +130,18 @@ namespace MAGE.GameModes.Encounter
                 InteractionResult interactionResult = InteractionSolver.InteractionResult.Get();
 
                 AnimationId animationId = AnimationUtil.InteractionResultTypeToAnimationId(interactionResult);
-                AnimationInfo animationInfo = AnimationFactory.CheckoutAnimation(animationId);
+
+                AnimationSide side = AnimationSide.None;
+                if (interactionResult.InteractionResultType == InteractionResultType.Block)
+                {
+                    side = AnimationSide.Left;
+                }
+                else if (interactionResult.InteractionResultType == InteractionResultType.Parry)
+                {
+                    side = AnimationSide.Right;
+                }
+
+                AnimationInfo animationInfo = AnimationFactory.CheckoutAnimation(animationId, side);
 
                 if (toAnimate != null)
                 {

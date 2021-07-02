@@ -128,6 +128,9 @@ namespace MAGE.GameSystems.Stats
         Sheilds,
         Accessorys,
 
+        // Extras
+        DualWeild,
+
         NUM
     }
 

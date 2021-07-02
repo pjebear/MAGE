@@ -194,17 +194,9 @@ namespace MAGE.GameSystems.Characters
         {
             List<int> unequippedItems = new List<int>();
 
-            bool fitsInSlot = false;
-            if (equippable.EquipmentId == EquippableId.Fists_0 
-                && (inSlot == Equipment.Slot.LeftHand || inSlot == Equipment.Slot.RightHand))
-            {
-                fitsInSlot = true;
-            }
-            else
-            {
-                fitsInSlot = EquipmentUtil.FitsInSlot(equippable.EquipmentTag.Category, inSlot); 
-            }
-
+            bool canDualWield = EquipmentUtil.HasProficiency(GetProficiencies(), ProficiencyType.DualWeild);
+            bool fitsInSlot = EquipmentUtil.FitsInSlot(equippable, inSlot, canDualWield); 
+            
             bool hasProficiency = false;
             if (equippable.EquipmentId == EquippableId.Fists_0)
             {

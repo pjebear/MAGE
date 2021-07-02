@@ -26,6 +26,7 @@ namespace MAGE.GameModes.Encounter
             actionInfo.Effectiveness = 10;
             actionInfo.ActionId = ActionId.Anvil;
             actionInfo.AnimationInfo.AnimationId = AnimationId.SwordSwing;
+            actionInfo.AnimationInfo.AnimationSide = AnimationSide.Right;
             actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -5);
             actionInfo.ActionRange = ActionRange.Projectile;
             actionInfo.ActionSource = ActionSource.Cast;

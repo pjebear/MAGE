@@ -80,7 +80,7 @@ namespace MAGE.GameModes.Combat
             actionComposition.ActionResults = new GameModes.Combat.ActionResult(
                 Owner,
                 ActionInfo,
-                new InteractionResult(InteractionUtil.GetOwnerResultTypeFromResults(mInteractionSolver.Results.Values.ToList()), ActionInfo.ActionCost),
+                new InteractionResult(InteractionUtil.GetOwnerResultTypeFromResults(mInteractionSolver.Results), ActionInfo.ActionCost),
                 mInteractionSolver.Results);
 
             return actionComposition;

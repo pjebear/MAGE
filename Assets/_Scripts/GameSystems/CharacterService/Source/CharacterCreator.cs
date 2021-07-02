@@ -120,6 +120,14 @@ namespace MAGE.GameSystems.Characters.Internal
                     speed = 8;
                 }
                 break;
+                case SpecializationType.Assassin:
+                {
+                    primaryStat = PrimaryStat.Finese;
+                    fortitude = 45;
+                    attunement = 65;
+                    speed = 10;
+                }
+                break;
                 case SpecializationType.Bear:
                 {
                     primaryStat = PrimaryStat.Might;

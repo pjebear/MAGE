@@ -204,7 +204,7 @@ namespace MAGE.DB.Internal
                 createParams.name = "Astrid";
                 createParams.currentSpecialization = SpecializationType.Assassin;
                 createParams.level = 3;
-                createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.INVALID, EquippableId.Dagger_0, EquippableId.INVALID };
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.Dagger_0, EquippableId.Dagger_0, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {
                     HairColor = HairColor.Dark,

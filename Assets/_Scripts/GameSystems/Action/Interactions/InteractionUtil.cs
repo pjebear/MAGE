@@ -100,21 +100,24 @@ namespace MAGE.GameSystems.Actions
             }
         }
 
-        public static InteractionResultType GetOwnerResultTypeFromResults(List<InteractionResult> results)
+        public static InteractionResultType GetOwnerResultTypeFromResults(Dictionary<CombatTarget, List<InteractionResult>> results)
         {
             InteractionResultType interactionResultType = InteractionResultType.Miss;
 
-            foreach (InteractionResult interactionResult in results)
+            foreach (List<InteractionResult> targetResults in results.Values)
             {
-                if (interactionResult.InteractionResultType == InteractionResultType.Hit)
+                foreach (InteractionResult interactionResult in targetResults)
                 {
-                    interactionResultType = InteractionResultType.Hit;
-                    break;
-                }
-                else
-                {
-                    // don't break. Keep trying to find a hit
-                    interactionResultType = InteractionResultType.Partial;
+                    if (interactionResult.InteractionResultType == InteractionResultType.Hit)
+                    {
+                        interactionResultType = InteractionResultType.Hit;
+                        break;
+                    }
+                    else
+                    {
+                        // don't break. Keep trying to find a hit
+                        interactionResultType = InteractionResultType.Partial;
+                    }
                 }
             }
 

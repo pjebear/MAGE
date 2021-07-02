@@ -11,6 +11,11 @@ namespace MAGE.GameSystems
 {
     static class EquipmentUtil
     {
+        public static bool HasProficiency(List<ProficiencyType> proficiencies, ProficiencyType proficiency)
+        {
+            return proficiencies.Contains(proficiency);
+        }
+
         public static bool HasProficiencyFor(List<ProficiencyType> proficiencies, Equippable equippable)
         {
             bool hasProficiency
@@ -44,11 +49,11 @@ namespace MAGE.GameSystems
             return (slot == Equipment.Slot.LeftHand || slot == Equipment.Slot.RightHand);
         }
 
-        public static bool FitsInSlot(EquippableCategory category, Equipment.Slot slot)
+        public static bool FitsInSlot(Equippable equippable, Equipment.Slot slot, bool canDualWeild)
         {
             bool fits = false;
 
-            switch (category)
+            switch (equippable.EquipmentTag.Category)
             {
                 case EquippableCategory.Accessory:
                     fits = slot == Equipment.Slot.Accessory;
@@ -62,9 +67,22 @@ namespace MAGE.GameSystems
                     fits = slot == Equipment.Slot.LeftHand;
                     break;
                 case EquippableCategory.TwoHandWeapon:
-                case EquippableCategory.OneHandWeapon:
+                {
                     fits = slot == Equipment.Slot.RightHand;
-                    break;
+                }
+                break;
+                case EquippableCategory.OneHandWeapon:
+                {
+                    if (canDualWeild || equippable.EquipmentId == EquippableId.Fists_0)
+                    {
+                        fits = slot == Equipment.Slot.LeftHand || slot == Equipment.Slot.RightHand;
+                    }
+                    else
+                    {
+                        fits = slot == Equipment.Slot.RightHand;
+                    }
+                }    
+                break;
             }
 
             return fits;

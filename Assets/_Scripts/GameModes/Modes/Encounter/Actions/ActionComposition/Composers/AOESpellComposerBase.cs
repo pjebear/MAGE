@@ -73,7 +73,7 @@ namespace MAGE.GameModes.Encounter
                 // AnimationConstructor
                 ToAnimate = new DeferredMonoConversion<CombatEntity, ActorAnimator>(DeferredOwner),
                 AnimationTarget = new DeferredTargetPosition(mTargetingSolver),
-                AnimationInfo = new ConcreteVar<AnimationInfo>(AnimationFactory.CheckoutAnimation(ActionInfo.AnimationInfo.AnimationId))
+                AnimationInfo = new ConcreteVar<AnimationInfo>(AnimationFactory.CheckoutAnimation(ActionInfo.AnimationInfo.AnimationId, ActionInfo.AnimationInfo.AnimationSide))
             };
 
             CompositionNode focalComposition = GetFocalPointComposition();

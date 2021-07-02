@@ -24,18 +24,21 @@ namespace MAGE.GameModes.Combat
             if (!IsResponder(actionResult.Initiator)
                 && WasResponderTargeted(actionResult))
             {
-                InteractionResult result = actionResult.TargetResults[mResponder.GetComponent<CombatTarget>()];
-                ActionInfo info = actionResult.ActionInfo;
-                if (info.ActionRange == ActionRange.Meele
-                    && info.ActionSource == ActionSource.Weapon
-                    && result.InteractionResultType == InteractionResultType.Parry)
+                foreach (InteractionResult result in actionResult.TargetResults[mResponder.GetComponent<CombatTarget>()])
                 {
-                    ActionProposal proposal = new ActionProposal(
-                        mResponder,
-                        new Target(actionResult.Initiator.GetComponent<CombatTarget>()), 
-                        ActionComposerFactory.CheckoutAction(mResponder, ActionId.WeaponAttack));
+                    ActionInfo info = actionResult.ActionInfo;
+                    if (info.ActionRange == ActionRange.Meele
+                        && info.ActionSource == ActionSource.Weapon
+                        && result.InteractionResultType == InteractionResultType.Parry)
+                    {
+                        ActionProposal proposal = new ActionProposal(
+                            mResponder,
+                            new Target(actionResult.Initiator.GetComponent<CombatTarget>()),
+                            ActionComposerFactory.CheckoutAction(mResponder, ActionId.WeaponAttack));
 
-                    responses.Add(new ActionProposalResponse(proposal));
+                        responses.Add(new ActionProposalResponse(proposal));
+                        break;
+                    }
                 }
             }
 

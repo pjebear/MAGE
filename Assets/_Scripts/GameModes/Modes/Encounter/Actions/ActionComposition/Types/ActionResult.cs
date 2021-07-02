@@ -14,10 +14,10 @@ namespace MAGE.GameModes.Combat
         public ActionId ActionId;
         public ActionInfo ActionInfo;
         public InteractionResult InitiatorResult;
-        public Dictionary<CombatTarget, InteractionResult> TargetResults;
+        public Dictionary<CombatTarget, List<InteractionResult>> TargetResults;
 
-        public ActionResult(CombatEntity initiator, ActionInfo actionInfo, InteractionResult initiatorResult, 
-            Dictionary<CombatTarget, InteractionResult> targetResults)
+        public ActionResult(CombatEntity initiator, ActionInfo actionInfo, InteractionResult initiatorResult,
+            Dictionary<CombatTarget, List<InteractionResult>> targetResults)
         {
             Initiator = initiator;
             ActionId = actionInfo.ActionId;

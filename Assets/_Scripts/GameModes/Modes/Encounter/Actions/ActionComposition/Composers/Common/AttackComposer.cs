@@ -51,6 +51,22 @@ namespace MAGE.GameModes.Encounter
 
         protected override CompositionNode PopulateComposition()
         {
+            CompositionNode composition = null;
+
+            if (ActionInfo.ActionRange == ActionRange.Projectile)
+            {
+                composition = PopulateRangedComposition();
+            }
+            else
+            {
+                composition = PopulateDualStrikeComposition();
+            }
+
+            return composition;
+        }
+
+        protected CompositionNode PopulateRangedComposition()
+        {
             CompositionNode composition = new AnimationComposer()
             {
                 // AnimationConstructor
@@ -58,45 +74,85 @@ namespace MAGE.GameModes.Encounter
                 ,
                 AnimationTarget = new DeferredTargetPosition(Target)
                 ,
-                AnimationInfo = new ConcreteVar<AnimationInfo>(AnimationFactory.CheckoutAnimation(ActionInfo.AnimationInfo.AnimationId))
+                AnimationInfo = new ConcreteVar<AnimationInfo>(AnimationFactory.CheckoutAnimation(ActionInfo.AnimationInfo.AnimationId, AnimationSide.Right))
             };
 
-            if (ActionInfo.ActionRange == ActionRange.Projectile)
-            {
-                composition.ChildComposers.Add(new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Start,
-                    new ProjectileSpawnComposer()
-                    {
-                        CasterPosition = new PositionConversion<CombatEntity>(Owner),
-                        Target = Target,
-                        ProjectileType = ActionInfo.ProjectileInfo.ProjectileId,
-
-                        ChildComposers = new List<CompositionLink<CompositionNode>>()
-                        {
-                            new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Interaction,
-                                new InteractionTargetComposer()
-                                {
-                                    Target = Target,
-                                    Caster = DeferredOwner,
-                                    InteractionSolver = mInteractionSolver
-                                }
-                            )
-                        }
-                    }));
-            }
-            else
-            {
-                composition.ChildComposers = new List<CompositionLink<CompositionNode>>()
+            composition.ChildComposers.Add(new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Start,
+                new ProjectileSpawnComposer()
                 {
-                    new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Interaction,
+                    CasterPosition = new PositionConversion<CombatEntity>(Owner),
+                    Target = Target,
+                    ProjectileType = ActionInfo.ProjectileInfo.ProjectileId,
+
+                    ChildComposers = new List<CompositionLink<CompositionNode>>()
+                    {
+                        new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Interaction,
+                            new InteractionTargetComposer()
+                            {
+                                Target = Target,
+                                Caster = DeferredOwner,
+                                InteractionSolver = mInteractionSolver
+                            }
+                        )
+                    }
+                }));
+
+            return composition;
+        }
+
+        protected CompositionNode PopulateDualStrikeComposition()
+        {
+
+            CompositionNode composition = new AnimationComposer()
+            {
+                // AnimationConstructor
+                ToAnimate = new MonoConversion<CombatEntity, ActorAnimator>(Owner)
+                ,
+                AnimationTarget = new DeferredTargetPosition(Target)
+                ,
+                AnimationInfo = new ConcreteVar<AnimationInfo>(
+                    AnimationFactory.CheckoutAnimation((Owner.GetComponent<EquipmentControl>().Equipment[Equipment.Slot.RightHand] as WeaponEquippable).AnimationInfo.AnimationId
+                    , AnimationSide.Right))
+            };
+
+            // first attack composition
+            CompositionLink<CompositionNode> firstStrikeComposition = new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Interaction,
+                    new InteractionTargetComposer()
+                    {
+                        Target = Target,
+                        Caster = DeferredOwner,
+                        InteractionSolver = mInteractionSolver
+                    }
+                );
+
+            if (Owner.GetComponent<ControllableEntity>() != null
+                && EquipmentUtil.HasProficiency(Owner.GetComponent<ControllableEntity>().Character.GetProficiencies(), ProficiencyType.DualWeild))
+            {
+                // second attack composition
+                CompositionNode secondStrikeComposition = new AnimationComposer()
+                {
+                    // AnimationConstructor
+                    ToAnimate = new MonoConversion<CombatEntity, ActorAnimator>(Owner),
+                    AnimationTarget = new DeferredTargetPosition(Target),
+                    AnimationInfo = new ConcreteVar<AnimationInfo>(
+                        AnimationFactory.CheckoutAnimation((Owner.GetComponent<EquipmentControl>().Equipment[Equipment.Slot.LeftHand] as WeaponEquippable).AnimationInfo.AnimationId
+                        , AnimationSide.Left)),
+                    ChildComposers = new List<CompositionLink<CompositionNode>>()
+                    {
+                        new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Start,
                         new InteractionTargetComposer()
                         {
                             Target = Target,
                             Caster = DeferredOwner,
                             InteractionSolver = mInteractionSolver
-                        }
-                    )
+                        })
+                    }
                 };
+
+                firstStrikeComposition.Child.ChildComposers.Add(new CompositionLink<CompositionNode>(AllignmentPosition.End, AllignmentPosition.Start, secondStrikeComposition));
             }
+
+            composition.ChildComposers.Add(firstStrikeComposition);
 
             return composition;
         }

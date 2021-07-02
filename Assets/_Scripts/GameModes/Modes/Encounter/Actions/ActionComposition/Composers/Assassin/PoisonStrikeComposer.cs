@@ -26,6 +26,7 @@ namespace MAGE.GameModes.Encounter
             actionInfo.Effectiveness = 0;
             actionInfo.ActionId = ActionId.PoisonStrike;
             actionInfo.AnimationInfo.AnimationId = AnimationId.DaggerStrike;
+            actionInfo.AnimationInfo.AnimationSide = AnimationSide.Right;
             actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -5);
             actionInfo.ActionRange = ActionRange.Meele;
             actionInfo.ActionSource = ActionSource.Weapon;

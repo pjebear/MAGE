@@ -57,6 +57,7 @@ namespace MAGE.GameSystems.Actions
     class ActionAnimationInfo
     {
         public AnimationId AnimationId = AnimationId.INVALID;
+        public AnimationSide AnimationSide = AnimationSide.None;
     }
 
     class ActionEffectInfo

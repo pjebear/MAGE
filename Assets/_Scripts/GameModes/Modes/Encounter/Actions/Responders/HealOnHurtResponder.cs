@@ -26,23 +26,26 @@ namespace MAGE.GameModes.Combat
             {
                 CombatTarget target = targetResultPair.Key;
                 CombatEntity targetEntity = target.GetComponent<CombatEntity>();
-                InteractionResult result = targetResultPair.Value;
-                if (!IsResponder(targetEntity) // responder wasn't the one who got hurt
+                foreach (InteractionResult result in targetResultPair.Value)
+                {
+                    if (!IsResponder(targetEntity) // responder wasn't the one who got hurt
                     && IsAlly(targetEntity) // don't heal enemies
                     && WasHurt(result)
                     && IsAlive(targetEntity)
                     && InRange(target.transform, Range))
-                {
-                    ActionComposerBase actionComposerBase = ActionComposerFactory.CheckoutAction(mResponder, ActionId.SpotHeal);
-                    actionComposerBase.ActionInfo.EffectRange.AreaType = AreaType.Point;
-                    actionComposerBase.ActionInfo.Effectiveness *= .5f;
+                    {
+                        ActionComposerBase actionComposerBase = ActionComposerFactory.CheckoutAction(mResponder, ActionId.SpotHeal);
+                        actionComposerBase.ActionInfo.EffectRange.AreaType = AreaType.Point;
+                        actionComposerBase.ActionInfo.Effectiveness *= .5f;
 
-                    ActionProposal healProposal = new ActionProposal(
-                        mResponder
-                        , new Target(target)
-                        , actionComposerBase);
+                        ActionProposal healProposal = new ActionProposal(
+                            mResponder
+                            , new Target(target)
+                            , actionComposerBase);
 
-                    responses.Add(new ActionProposalResponse(healProposal));
+                        responses.Add(new ActionProposalResponse(healProposal));
+                        break;
+                    }
                 }
             }
             
