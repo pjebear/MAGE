@@ -41,7 +41,7 @@ namespace MAGE.GameModes.FlowControl
         protected override void Setup()
         {
             mSpawner = LevelManagementService.Get().GetLoadedLevel().Player.GetComponentInChildren<ActorSpawner>();
-            mSpawner.GetComponentInChildren<ActorOutfitter>().UpdateHeldApparelState(HumanoidActorConstants.HeldApparelState.Held);
+            mSpawner.GetComponentInChildren<ActorOutfitter>().UpdateHeldApparelState(HumanoidActorConstants.HeldApparelState.MeleeHeld, false);
 
             Camera.main.GetComponent<Cameras.CameraController>().SetTarget(mSpawner.transform, Cameras.CameraType.Outfitter);
 
@@ -65,7 +65,7 @@ namespace MAGE.GameModes.FlowControl
 
             Camera.main.GetComponent<Cameras.CameraController>().SetTarget(mSpawner.transform, Cameras.CameraType.ThirdPerson);
 
-            mSpawner.GetComponentInChildren<ActorOutfitter>().UpdateHeldApparelState(HumanoidActorConstants.HeldApparelState.Holstered);
+            mSpawner.GetComponentInChildren<ActorOutfitter>().UpdateHeldApparelState(HumanoidActorConstants.HeldApparelState.Holstered, false);
             mSpawner.GetComponent<CharacterPickerControl>().CharacterId = WorldService.Get().GetPartyAvatarId();
             mSpawner.Refresh();
 

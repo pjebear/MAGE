@@ -50,9 +50,18 @@ namespace MAGE.GameModes.SceneElements
 
         public enum HeldApparelState
         {
-            Held,
+            MeleeHeld,
+            RangedHeld,
             Holstered,
             Hidden,
+
+            NUM
+        }
+
+        public enum HeldApparelType
+        {
+            Melee,
+            Ranged,
 
             NUM
         }

@@ -127,7 +127,7 @@ namespace MAGE.GameModes.Tests
 
                 for (int i = 0; i < 4; ++i)
                 {
-                    Actors[i].GetComponent<ActorOutfitter>().UpdateHeldApparelState(inCombat ? HumanoidActorConstants.HeldApparelState.Held : HumanoidActorConstants.HeldApparelState.Holstered);
+                   // Actors[i].GetComponent<ActorOutfitter>().UpdateHeldApparelState(inCombat ? HumanoidActorConstants.HeldApparelState.Held : HumanoidActorConstants.HeldApparelState.Holstered);
                     Actors[i].GetComponent<ActorAnimator>().SetInCombat(inCombat);
 
                     //Spawners[i].SetInCombat(inCombat);

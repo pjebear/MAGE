@@ -1,4 +1,5 @@
 ﻿
+using MAGE.GameModes.SceneElements;
 using System;
 using System.Collections.Generic;
 
@@ -86,13 +87,15 @@ class AnimationInfo : ISynchronizable
     public int SyncedFrame { get; private set; }
     public string TriggerName;
     public SFXId SFXId = SFXId.INVALID;
+    public HumanoidActorConstants.HeldApparelState ApparelStateInAnimation = HumanoidActorConstants.HeldApparelState.NUM;
 
-    public AnimationInfo(string triggerName, int numFrames, int syncedFrame, SFXId sFXId)
+    public AnimationInfo(string triggerName, int numFrames, int syncedFrame, SFXId sFXId, HumanoidActorConstants.HeldApparelState apparelStateInAnimation = HumanoidActorConstants.HeldApparelState.NUM)
     {
         NumFrames = numFrames;
         SyncedFrame = syncedFrame;
         TriggerName = triggerName;
         SFXId = sFXId;
+        ApparelStateInAnimation = apparelStateInAnimation;
     }
 }
 

@@ -13,8 +13,8 @@ namespace MAGE.DB.Internal
 {
     class EquipmentDBLoader
     {
-        private static DB.DBRangeInfo MELEE_RANGE = new DB.DBRangeInfo() { Min = 0, Max = 2f, Elevation = 1, AreaType = (int)AreaType.Circle };
-        private static DB.DBRangeInfo BOW_RANGE = new DB.DBRangeInfo() { Min = 4, Max = 18f, Elevation = 7, AreaType = (int)AreaType.Expanding };
+        private static DB.DBRangeInfo MELEE_RANGE = new DB.DBRangeInfo() { Min = 0, Max = 2.5f, Elevation = 1, AreaType = (int)AreaType.Circle };
+        private static DB.DBRangeInfo BOW_RANGE = new DB.DBRangeInfo() { Min = 4, Max = 18f, Elevation = 7, AreaType = (int)AreaType.Circle };
 
         private static int ACCESSORY_COST = 700;
         private static int TWO_HAND_WEAPON_COST = 600;
@@ -114,8 +114,8 @@ namespace MAGE.DB.Internal
             { // Fists
                 DB.DBEquipment entry = new DB.DBEquipment();
                 entry.Id = (int)EquippableId.Fists_0;
-                entry.Category = (int)EquippableCategory.OneHandWeapon;
-                entry.Type = (int)OneHandWeaponType.Fist;
+                entry.Category = (int)EquippableCategory.EmptyHandMelee;
+                entry.Type = (int)EmptyHandMeleeWeaponType.Fist;
                 entry.BlockChance = 0;
                 entry.ParryChance = 0;
                 entry.AnimationId = (int)AnimationId.SwordSwing;
@@ -143,8 +143,8 @@ namespace MAGE.DB.Internal
 
                 entry.Id = (int)EquippableId.Axe_0;
                 entry.Name = EquippableId.Axe_0.ToString();
-                entry.Category = (int)EquippableCategory.OneHandWeapon;
-                entry.Type = (int)OneHandWeaponType.Axe;
+                entry.Category = (int)EquippableCategory.OneHandMelee;
+                entry.Type = (int)OneHandMeleeWeaponType.Axe;
                 entry.BlockChance = 0;
                 entry.ParryChance = 15;
                 entry.AnimationId = (int)AnimationId.SwordSwing;
@@ -171,8 +171,8 @@ namespace MAGE.DB.Internal
             { // Dagger
                 DB.DBEquipment entry = new DB.DBEquipment();
                 entry.Id = (int)EquippableId.Dagger_0;
-                entry.Category = (int)EquippableCategory.OneHandWeapon;
-                entry.Type = (int)OneHandWeaponType.Dagger;
+                entry.Category = (int)EquippableCategory.OneHandMelee;
+                entry.Type = (int)OneHandMeleeWeaponType.Dagger;
                 entry.BlockChance = 0;
                 entry.ParryChance = 10;
                 entry.AnimationId = (int)AnimationId.DaggerStrike;
@@ -199,8 +199,8 @@ namespace MAGE.DB.Internal
             { // Mace
                 DB.DBEquipment entry = new DB.DBEquipment();
                 entry.Id = (int)EquippableId.Mace_0;
-                entry.Category = (int)EquippableCategory.OneHandWeapon;
-                entry.Type = (int)OneHandWeaponType.Mace;
+                entry.Category = (int)EquippableCategory.OneHandMelee;
+                entry.Type = (int)OneHandMeleeWeaponType.Mace;
                 entry.BlockChance = 0;
                 entry.ParryChance = 10;
                 entry.AnimationId = (int)AnimationId.SwordSwing;
@@ -226,8 +226,8 @@ namespace MAGE.DB.Internal
             { // Sword
                 DB.DBEquipment entry = new DB.DBEquipment();
                 entry.Id = (int)EquippableId.Sword_0;
-                entry.Category = (int)EquippableCategory.OneHandWeapon;
-                entry.Type = (int)OneHandWeaponType.Sword;
+                entry.Category = (int)EquippableCategory.OneHandMelee;
+                entry.Type = (int)OneHandMeleeWeaponType.Sword;
                 entry.BlockChance = 0;
                 entry.ParryChance = 20;
                 entry.AnimationId = (int)AnimationId.SwordSwing;
@@ -253,11 +253,41 @@ namespace MAGE.DB.Internal
 
             #region TwoHands
             // ---------------------------------------------------------------------------------------------------------------------------------------
+            { // Staff
+                DB.DBEquipment entry = new DB.DBEquipment();
+                entry.Id = (int)EquippableId.Staff_0;
+                entry.Category = (int)EquippableCategory.TwoHandMelee;
+                entry.Type = (int)TwoHandMeleeWeaponType.Staff;
+                entry.BlockChance = 0;
+                entry.ParryChance = 0;
+                entry.AnimationId = (int)AnimationId.SwordSwing;
+                entry.Range = MELEE_RANGE;
+
+                entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
+            {
+                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Scalar = .25f}
+            };
+
+                entry.EquipBonuses = new List<DB.DBAttributeModifier>()
+            {
+                new DB.DBAttributeModifier(){ AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Magic, ModifierType = (int)ModifierType.Multiply, Modifier = .1f}
+            };
+
+                entry.SpriteId = (int)UI.ItemIconSpriteId.Staff;
+                entry.PrefabId = (int)ApparelAssetId.Staff_0;
+                entry.Value = TWO_HAND_WEAPON_COST;
+
+                DBService.Get().WriteEquipment(entry.Id, entry);
+            }
+            #endregion // TwoHands
+
+            #region Ranged
+            // ---------------------------------------------------------------------------------------------------------------------------------------
             { // Bow
                 DB.DBEquipment entry = new DB.DBEquipment();
                 entry.Id = (int)EquippableId.Bow_0;
-                entry.Category = (int)EquippableCategory.TwoHandWeapon;
-                entry.Type = (int)TwoHandWeaponType.Bow;
+                entry.Category = (int)EquippableCategory.Ranged;
+                entry.Type = (int)RangedWeaponType.Bow;
                 entry.BlockChance = 0;
                 entry.ParryChance = 0;
                 entry.AnimationId = (int)AnimationId.BowDraw;
@@ -281,34 +311,7 @@ namespace MAGE.DB.Internal
 
                 DBService.Get().WriteEquipment(entry.Id, entry);
             }
-            // ---------------------------------------------------------------------------------------------------------------------------------------
-            { // Staff
-                DB.DBEquipment entry = new DB.DBEquipment();
-                entry.Id = (int)EquippableId.Staff_0;
-                entry.Category = (int)EquippableCategory.TwoHandWeapon;
-                entry.Type = (int)TwoHandWeaponType.Staff;
-                entry.BlockChance = 0;
-                entry.ParryChance = 0;
-                entry.AnimationId = (int)AnimationId.SwordSwing;
-                entry.Range = MELEE_RANGE;
-
-                entry.EffectivenessScalars = new List<DB.DBAttributeScalar>()
-            {
-                new DB.DBAttributeScalar() { AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Might, Scalar = .25f}
-            };
-
-                entry.EquipBonuses = new List<DB.DBAttributeModifier>()
-            {
-                new DB.DBAttributeModifier(){ AttributeCategory = (int)AttributeCategory.PrimaryStat, AttributeId = (int)PrimaryStat.Magic, ModifierType = (int)ModifierType.Multiply, Modifier = .1f}
-            };
-
-                entry.SpriteId = (int)UI.ItemIconSpriteId.Staff;
-                entry.PrefabId = (int)ApparelAssetId.Staff_0;
-                entry.Value = TWO_HAND_WEAPON_COST;
-
-                DBService.Get().WriteEquipment(entry.Id, entry);
-            }
-            #endregion // TwoHands
+            #endregion
 
             #region Shields
             // ---------------------------------------------------------------------------------------------------------------------------------------

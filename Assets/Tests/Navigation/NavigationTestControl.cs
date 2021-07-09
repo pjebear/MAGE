@@ -22,39 +22,39 @@ namespace MAGE.GameModes.Tests
         public Button TopDownBtn;
         public Button ReinhardPicker;
         public Button AsmundPicker;
-        public ActorController Rheinhardt;
-        public ActorController Asmund;
+        //public ActorController Rheinhardt;
+        //public ActorController Asmund;
 
-        private ActorController.ControllerState mControllerState;
-        private ActorController mSelectedActor;
+        //private ActorController.ControllerState mControllerState;
+        //private ActorController mSelectedActor;
 
         private void Awake()
         {
             
         }
 
-        private void Start()
-        {
-            mSelectedActor = Rheinhardt;
-            mControllerState = ActorController.ControllerState.TopDown;
+        //private void Start()
+        //{
+        //    //mSelectedActor = Rheinhardt;
+        //    // = ActorController.ControllerState.TopDown;
 
-            ThirdPersonBtn.onClick.AddListener(     ()=> { UpdateSelection(mSelectedActor, ActorController.ControllerState.ThirdPerson); });
-            TopDownBtn.onClick.AddListener(         ()=> { UpdateSelection(mSelectedActor, ActorController.ControllerState.TopDown); });
-            ReinhardPicker.onClick.AddListener(         ()=> { UpdateSelection(Rheinhardt, mControllerState); });
-            AsmundPicker.onClick.AddListener(         ()=> { UpdateSelection(Asmund, mControllerState); });
-        }
+        //    ThirdPersonBtn.onClick.AddListener(     ()=> { UpdateSelection(mSelectedActor, ActorController.ControllerState.ThirdPerson); });
+        //    TopDownBtn.onClick.AddListener(         ()=> { UpdateSelection(mSelectedActor, ActorController.ControllerState.TopDown); });
+        //    ReinhardPicker.onClick.AddListener(         ()=> { UpdateSelection(Rheinhardt, mControllerState); });
+        //    AsmundPicker.onClick.AddListener(         ()=> { UpdateSelection(Asmund, mControllerState); });
+        //}
 
-        private void UpdateSelection(ActorController actorController, ActorController.ControllerState controllerState)
-        {
-            if (mSelectedActor != actorController)
-            {
-                mSelectedActor.SetControllerState(ActorController.ControllerState.None);
-            }
-            mSelectedActor = actorController;
-            mControllerState = controllerState;
+        //private void UpdateSelection(ActorController actorController, ActorController.ControllerState controllerState)
+        //{
+        //    if (mSelectedActor != actorController)
+        //    {
+        //        mSelectedActor.SetControllerState(ActorController.ControllerState.None);
+        //    }
+        //    mSelectedActor = actorController;
+        //    mControllerState = controllerState;
 
-            mSelectedActor.SetControllerState(controllerState);
-        }
+        //    mSelectedActor.SetControllerState(controllerState);
+        //}
     }
 }
 

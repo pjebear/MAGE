@@ -68,6 +68,11 @@ namespace MAGE.GameModes.Encounter
                 BeingAnimated.GetComponent<AudioSource>().PlayOneShot(AudioManager.Instance.GetSFXClip(Animation.SFXId));
             }
 
+            if (Animation.ApparelStateInAnimation != HumanoidActorConstants.HeldApparelState.NUM)
+            {
+                BeingAnimated.GetComponent<Actor>().SetHeldApparelState(Animation.ApparelStateInAnimation);
+            }
+
             Camera.main.GetComponent<Cameras.CameraController>().SetTarget(BeingAnimated.transform, Cameras.CameraType.TopDown);
             BeingAnimated.Trigger(Animation.TriggerName);
             if (FocusTarget != Vector3.zero)

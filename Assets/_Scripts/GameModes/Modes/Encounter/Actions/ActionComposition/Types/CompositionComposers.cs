@@ -2,6 +2,7 @@
 using MAGE.GameModes.SceneElements;
 using MAGE.GameSystems;
 using MAGE.GameSystems.Actions;
+using MAGE.GameSystems.Items;
 using MAGE.GameSystems.Stats;
 using System;
 using System.Collections.Generic;
@@ -132,11 +133,11 @@ namespace MAGE.GameModes.Encounter
                 AnimationId animationId = AnimationUtil.InteractionResultTypeToAnimationId(interactionResult);
 
                 AnimationSide side = AnimationSide.None;
-                if (interactionResult.InteractionResultType == InteractionResultType.Block)
+                if (interactionResult.EquipmentInteractedWith == Equipment.Slot.LeftHand)
                 {
                     side = AnimationSide.Left;
                 }
-                else if (interactionResult.InteractionResultType == InteractionResultType.Parry)
+                else if (interactionResult.EquipmentInteractedWith == Equipment.Slot.RightHand)
                 {
                     side = AnimationSide.Right;
                 }

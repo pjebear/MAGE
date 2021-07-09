@@ -26,7 +26,7 @@ namespace MAGE.GameModes.Encounter
             actionInfo.Effectiveness = 0;
             actionInfo.ActionId = ActionId.ShieldBash;
             actionInfo.AnimationInfo.AnimationId = AnimationId.Block;
-            actionInfo.AnimationInfo.AnimationSide = AnimationSide.Left;
+            actionInfo.EquipmentRequirement.Requirement = ProficiencyType.Sheilds;
             actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -4);
             actionInfo.ActionRange = ActionRange.Meele;
             actionInfo.ActionSource = ActionSource.Weapon;
@@ -36,7 +36,7 @@ namespace MAGE.GameModes.Encounter
             actionInfo.CastRange = new RangeInfo()
             {
                 AreaType = AreaType.Circle,
-                MaxRange = 2,
+                MaxRange = RangeInfo.MELEE_RANGE,
             };
 
             actionInfo.EffectRange = new RangeInfo()

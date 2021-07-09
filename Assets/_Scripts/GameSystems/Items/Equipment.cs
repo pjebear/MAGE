@@ -19,6 +19,7 @@ namespace MAGE.GameSystems.Items
             Armor,
             LeftHand,
             RightHand,
+            RangedWeapon,
             Accessory,
 
             NUM

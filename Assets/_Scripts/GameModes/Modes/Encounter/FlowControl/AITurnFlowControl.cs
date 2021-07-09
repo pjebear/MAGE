@@ -67,11 +67,14 @@ namespace MAGE.GameModes.Encounter
             enemies.Sort((x, y) => Vector3.Distance(x.transform.position, mCurrentTurn.transform.position)
                 .CompareTo(Vector3.Distance(y.transform.position, mCurrentTurn.transform.position)));
 
-            mCurrentTarget = enemies[0].GetComponent<CombatTarget>();
+            mCurrentTarget = enemies[0];
             mCurrentTarget.GetComponentInChildren<NavMeshObstacle>(true).gameObject.SetActive(false);
-
-            mSelectedAction = ActionComposerFactory.CheckoutAction(mCurrentTurn.GetComponent<CombatEntity>(), ActionId.WeaponAttack);
-
+            
+            if (mRangedWeaponAction != null)
+            {
+                mAttackAction = mRangedWeaponAction;
+            }
+            
             Invoke("FinalizeTarget", .5f);
         }
 
@@ -79,9 +82,9 @@ namespace MAGE.GameModes.Encounter
         {
             if (mCurrentTarget != null 
                 && mCurrentTarget != mCurrentTurn
-                && mSelectedAction.AreActionRequirementsMet())
+                && mAttackAction.AreActionPreRequisitesMet())
             {
-                float weaponRange = mWeaponAttack.ActionInfo.CastRange.MaxRange;
+                float weaponRange = mMeleeWeaponAction.ActionInfo.CastRange.MaxRange;
                 if (weaponRange < mCharacterEmptyRadius)
                 {
                     weaponRange = mCharacterEmptyRadius;

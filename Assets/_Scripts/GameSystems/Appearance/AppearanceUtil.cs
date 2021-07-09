@@ -32,6 +32,9 @@ namespace MAGE.GameSystems.Appearances
             fromDB.BaseRightHeldAssetId = (ApparelAssetId)dbAppearance.BaseRightHeldAssetId;
             fromDB.OverrideRightHeldAssetId = (ApparelAssetId)dbAppearance.OverrideRightHeldAssetId;
 
+            fromDB.BaseRangedAssetId = (ApparelAssetId)dbAppearance.BaseRangedAssetId;
+            fromDB.OverrideRangedAssetId = (ApparelAssetId)dbAppearance.OverrideRangedAssetId;
+
             fromDB.BodyType                 = (BodyType)dbAppearance.BodyType;
             fromDB.SkinToneType             = (SkinToneType)dbAppearance.SkinToneType;
             fromDB.HairType                 = (HairType)dbAppearance.HairType;
@@ -58,6 +61,9 @@ namespace MAGE.GameSystems.Appearances
 
             toDB.BaseRightHeldAssetId = (int)appearance.BaseRightHeldAssetId;
             toDB.OverrideRightHeldAssetId = (int)appearance.OverrideRightHeldAssetId;
+
+            toDB.BaseRangedAssetId = (int)appearance.BaseRangedAssetId;
+            toDB.OverrideRangedAssetId = (int)appearance.OverrideRangedAssetId;
 
             toDB.BodyType = (int)appearance.BodyType;
             toDB.SkinToneType = (int)appearance.SkinToneType;

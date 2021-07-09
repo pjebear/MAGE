@@ -1,5 +1,6 @@
 ﻿using MAGE.GameSystems.Actions;
 using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.Items;
 using MAGE.GameSystems.Stats;
 using MAGE.UI.Views;
 using System;
@@ -43,7 +44,8 @@ namespace MAGE.GameModes.Combat
                 dp.Attunement = (int)combatCharacter.GetComponent<StatsControl>().Attributes[SecondaryStat.Attunement];
 
                 float block, dodge, parry;
-                InteractionUtil.GetAvoidanceAttributesForEntity(GetComponent<CombatEntity>(), out dodge, out block, out parry);
+                Equipment.Slot parrySlot, blockSlot;
+                InteractionUtil.GetAvoidanceAttributesForEntity(GetComponent<CombatEntity>(), out dodge, out block,out blockSlot, out parry, out parrySlot);
 
                 dp.Block = (int)block;
                 dp.Dodge = (int)dodge;
@@ -85,7 +87,8 @@ namespace MAGE.GameModes.Combat
                     dp.Attunement = (int)GetComponent<StatsControl>().Attributes[SecondaryStat.Attunement];
 
                     float block, dodge, parry;
-                    InteractionUtil.GetAvoidanceAttributesForEntity(GetComponent<CombatEntity>(), out dodge, out block, out parry);
+                    Equipment.Slot parrySlot, blockSlot;
+                    InteractionUtil.GetAvoidanceAttributesForEntity(GetComponent<CombatEntity>(), out dodge, out block, out blockSlot, out parry, out parrySlot);
 
                     dp.Block = (int)block;
                     dp.Dodge = (int)dodge;

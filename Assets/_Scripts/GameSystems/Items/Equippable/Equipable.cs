@@ -16,8 +16,9 @@ namespace MAGE.GameSystems
         public int Type;
 
         public EquippableTag(ArmorType type) : this(EquippableCategory.Armor, (int)type) { }
-        public EquippableTag(OneHandWeaponType type) : this(EquippableCategory.OneHandWeapon, (int)type) { }
-        public EquippableTag(TwoHandWeaponType type) : this(EquippableCategory.TwoHandWeapon, (int)type) { }
+        public EquippableTag(OneHandMeleeWeaponType type) : this(EquippableCategory.OneHandMelee, (int)type) { }
+        public EquippableTag(TwoHandMeleeWeaponType type) : this(EquippableCategory.TwoHandMelee, (int)type) { }
+        public EquippableTag(RangedWeaponType type) : this(EquippableCategory.Ranged, (int)type) { }
         public EquippableTag(ShieldType type) : this(EquippableCategory.Shield, (int)type) { }
         public EquippableTag(AccessoryType type) : this(EquippableCategory.Accessory, (int)type) { }
         public EquippableTag(EquippableCategory category, int type) { Category = category; Type = type; }

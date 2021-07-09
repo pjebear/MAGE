@@ -200,7 +200,7 @@ namespace MAGE.DB.Internal
             { // Weapon Attack
                 DB.DBAction entry = new DB.DBAction();
 
-                ActionId actionId = ActionId.WeaponAttack;
+                ActionId actionId = ActionId.MeleeAttack;
 
                 entry.Id = (int)actionId;
                 entry.Name = actionId.ToString();

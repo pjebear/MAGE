@@ -32,6 +32,10 @@ namespace MAGE.GameSystems.Appearances
         public ApparelAssetId OverrideRightHeldAssetId = ApparelAssetId.NONE;
         public ApparelAssetId RightHeldAssetId { get { return OverrideRightHeldAssetId != ApparelAssetId.NONE ? OverrideRightHeldAssetId : BaseRightHeldAssetId; } }
 
+        public ApparelAssetId BaseRangedAssetId = ApparelAssetId.NONE;
+        public ApparelAssetId OverrideRangedAssetId = ApparelAssetId.NONE;
+        public ApparelAssetId RangedAssetId { get { return OverrideRangedAssetId != ApparelAssetId.NONE ? OverrideRangedAssetId : BaseRangedAssetId; } }
+
         public BodyType BodyType = BodyType.HumanoidMale;
         public SkinToneType SkinToneType = SkinToneType.Base;
         public HairType HairType = HairType.MaleBuzz;

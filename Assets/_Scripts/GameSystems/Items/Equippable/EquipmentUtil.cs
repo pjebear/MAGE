@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace MAGE.GameSystems
 {
@@ -31,11 +32,13 @@ namespace MAGE.GameSystems
 
             switch (category)
             {
-                case EquippableCategory.Armor: proficiencyType = ProficiencyType.Armors; break;
-                case EquippableCategory.OneHandWeapon: proficiencyType = ProficiencyType.OneHands; break;
-                case EquippableCategory.TwoHandWeapon: proficiencyType = ProficiencyType.TwoHands; break;
-                case EquippableCategory.Shield: proficiencyType = ProficiencyType.Sheilds; break;
-                case EquippableCategory.Accessory: proficiencyType = ProficiencyType.Accessorys; break;
+                case EquippableCategory.Armor:              proficiencyType = ProficiencyType.Armors; break;
+                case EquippableCategory.EmptyHandMelee:     proficiencyType = ProficiencyType.Fists; break;
+                case EquippableCategory.OneHandMelee:       proficiencyType = ProficiencyType.OneHands; break;
+                case EquippableCategory.TwoHandMelee:       proficiencyType = ProficiencyType.TwoHands; break;
+                case EquippableCategory.Ranged:             proficiencyType = ProficiencyType.Ranged; break;
+                case EquippableCategory.Shield:             proficiencyType = ProficiencyType.Sheilds; break;
+                case EquippableCategory.Accessory:          proficiencyType = ProficiencyType.Accessorys; break;
             }
 
             Logger.Assert(proficiencyType != ProficiencyType.INVALID, LogTag.Character, "EquipmentUtil",
@@ -47,6 +50,19 @@ namespace MAGE.GameSystems
         public static bool IsHeld(Equipment.Slot slot)
         {
             return (slot == Equipment.Slot.LeftHand || slot == Equipment.Slot.RightHand);
+        }
+
+        public static bool IsRanged(Equippable equippable)
+        {
+            bool isRanged = false;
+
+            WeaponEquippable weapon = equippable as WeaponEquippable;
+            if (weapon != null)
+            {
+                isRanged = weapon.ProjectileInfo.ProjectileId != ProjectileId.INVALID;
+            }
+
+            return isRanged;
         }
 
         public static bool FitsInSlot(Equippable equippable, Equipment.Slot slot, bool canDualWeild)
@@ -64,24 +80,22 @@ namespace MAGE.GameSystems
                     break;
 
                 case EquippableCategory.Shield:
-                    fits = slot == Equipment.Slot.LeftHand;
-                    break;
-                case EquippableCategory.TwoHandWeapon:
+                case EquippableCategory.TwoHandMelee:
+                case EquippableCategory.OneHandMelee:
+                case EquippableCategory.EmptyHandMelee:
                 {
-                    fits = slot == Equipment.Slot.RightHand;
+                    fits = slot == Equipment.Slot.LeftHand || slot == Equipment.Slot.RightHand;
                 }
                 break;
-                case EquippableCategory.OneHandWeapon:
+                case EquippableCategory.Ranged:
                 {
-                    if (canDualWeild || equippable.EquipmentId == EquippableId.Fists_0)
-                    {
-                        fits = slot == Equipment.Slot.LeftHand || slot == Equipment.Slot.RightHand;
-                    }
-                    else
-                    {
-                        fits = slot == Equipment.Slot.RightHand;
-                    }
-                }    
+                    fits = slot == Equipment.Slot.RangedWeapon;   
+                }
+                break;
+                default:
+                {
+                    Debug.Assert(false);
+                }
                 break;
             }
 
@@ -111,29 +125,45 @@ namespace MAGE.GameSystems
                 }
                 break;
 
-                case EquippableCategory.OneHandWeapon:
+                case EquippableCategory.EmptyHandMelee:
                 {
-                    switch ((OneHandWeaponType)equipableType)
+                    switch ((EmptyHandMeleeWeaponType)equipableType)
                     {
-                        case OneHandWeaponType.Fist: proficiencyType = ProficiencyType.Fists; break;
-                        case OneHandWeaponType.Axe: proficiencyType = ProficiencyType.Axe; break;
-                        case OneHandWeaponType.Sword: proficiencyType = ProficiencyType.Sword; break;
-                        case OneHandWeaponType.Mace: proficiencyType = ProficiencyType.Hammer; break;
-                        case OneHandWeaponType.Dagger: proficiencyType = ProficiencyType.Dagger; break;
-                        case OneHandWeaponType.Crossbow: proficiencyType = ProficiencyType.Crossbow; break;
+                        case EmptyHandMeleeWeaponType.Fist: proficiencyType = ProficiencyType.Fists; break;
                     }
                 }
                 break;
 
-                case EquippableCategory.TwoHandWeapon:
+                case EquippableCategory.OneHandMelee:
                 {
-                    switch ((TwoHandWeaponType)equipableType)
+                    switch ((OneHandMeleeWeaponType)equipableType)
                     {
-                        case TwoHandWeaponType.BattleAxe: proficiencyType = ProficiencyType.BattleAxe; break;
-                        case TwoHandWeaponType.BastardSword: proficiencyType = ProficiencyType.BastardSword; break;
-                        case TwoHandWeaponType.Maul: proficiencyType = ProficiencyType.Maul; break;
-                        case TwoHandWeaponType.Bow: proficiencyType = ProficiencyType.Bow; break;
-                        case TwoHandWeaponType.Staff: proficiencyType = ProficiencyType.Staff; break;
+                        case OneHandMeleeWeaponType.Axe: proficiencyType = ProficiencyType.Axe; break;
+                        case OneHandMeleeWeaponType.Sword: proficiencyType = ProficiencyType.Sword; break;
+                        case OneHandMeleeWeaponType.Mace: proficiencyType = ProficiencyType.Hammer; break;
+                        case OneHandMeleeWeaponType.Dagger: proficiencyType = ProficiencyType.Dagger; break;
+                    }
+                }
+                break;
+
+                case EquippableCategory.TwoHandMelee:
+                {
+                    switch ((TwoHandMeleeWeaponType)equipableType)
+                    {
+                        case TwoHandMeleeWeaponType.BattleAxe: proficiencyType = ProficiencyType.BattleAxe; break;
+                        case TwoHandMeleeWeaponType.BastardSword: proficiencyType = ProficiencyType.BastardSword; break;
+                        case TwoHandMeleeWeaponType.Maul: proficiencyType = ProficiencyType.Maul; break;
+                        case TwoHandMeleeWeaponType.Staff: proficiencyType = ProficiencyType.Staff; break;
+                    }
+                }
+                break;
+
+                 case EquippableCategory.Ranged:
+                {
+                    switch ((RangedWeaponType)equipableType)
+                    {
+                        case RangedWeaponType.Crossbow: proficiencyType = ProficiencyType.Crossbow; break;
+                        case RangedWeaponType.Bow: proficiencyType = ProficiencyType.Bow; break;
                     }
                 }
                 break;

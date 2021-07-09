@@ -13,7 +13,6 @@ namespace MAGE.GameModes
         
         public UIManager UIManager;
 
-        private ActorLoader mActorLoader;
         private AudioManager mAudioManager;
         private FlowControl.FlowManager mFlowManager;
         public GameSystemModule mGameSystemModule;
@@ -38,7 +37,6 @@ namespace MAGE.GameModes
                 GameObject flowControlContainer = new GameObject("FlowControls");
                 flowControlContainer.transform.SetParent(transform);
                 mFlowManager = flowControlContainer.AddComponent<FlowControl.FlowManager>();
-                mActorLoader = gameObject.AddComponent<ActorLoader>();
                 mAudioManager = gameObject.AddComponent<AudioManager>();
                 mGameSystemModule = gameObject.AddComponent<GameSystemModule>();
 

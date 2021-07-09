@@ -23,14 +23,8 @@ namespace MAGE.GameModes.Encounter
 
         protected override CompositionNode PopulateComposition()
         {
-            return new AnimationComposer()
-            {
-                // AnimationConstructor
-                ToAnimate = new DeferredMonoConversion<CombatEntity, ActorAnimator>(DeferredOwner),
-                AnimationTarget = new DeferredTargetPosition(mTargetingSolver),
-                AnimationInfo = new ConcreteVar<AnimationInfo>(AnimationFactory.CheckoutAnimation(GameSystems.AnimationId.Cast)),
-
-                ChildComposers = new List<CompositionLink<CompositionNode>>()
+            CompositionNode rootComposition = ComposeOwnerAnimation();
+            rootComposition.ChildComposers = new List<CompositionLink<CompositionNode>>()
                 {
                     new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Start,
                         new MultiTargetComposer()
@@ -61,8 +55,9 @@ namespace MAGE.GameModes.Encounter
                             )
                         }
                     )
-                }
-            };
+                };
+
+            return rootComposition;
         }
 
         protected override InteractionSolverBase CreateInteractionSolver()

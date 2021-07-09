@@ -47,7 +47,7 @@ namespace MAGE.GameSystems.Characters.Internal
                     else // Archer
                     {
                         createParams.currentSpecialization = SpecializationType.Archer;
-                        createParams.currentEquipment[(int)Equipment.Slot.RightHand] = EquippableId.Bow_0;
+                        createParams.currentEquipment[(int)Equipment.Slot.RangedWeapon] = EquippableId.Bow_0;
                     }
                 }
                 break;

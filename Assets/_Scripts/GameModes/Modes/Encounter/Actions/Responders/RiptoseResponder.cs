@@ -34,7 +34,7 @@ namespace MAGE.GameModes.Combat
                         ActionProposal proposal = new ActionProposal(
                             mResponder,
                             new Target(actionResult.Initiator.GetComponent<CombatTarget>()),
-                            ActionComposerFactory.CheckoutAction(mResponder, ActionId.WeaponAttack));
+                            ActionComposerFactory.CheckoutAction(mResponder, ActionId.MeleeAttack));
 
                         responses.Add(new ActionProposalResponse(proposal));
                         break;

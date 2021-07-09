@@ -1,4 +1,5 @@
-﻿using MAGE.GameSystems;
+﻿using MAGE.GameModes.SceneElements;
+using MAGE.GameSystems;
 using System.Collections.Generic;
 
 namespace MAGE.GameModes
@@ -10,6 +11,7 @@ namespace MAGE.GameModes
             int numFrames = 60;
             int syncFrame = 30;
             string animationName = "";
+            HumanoidActorConstants.HeldApparelState heldApparelState = HumanoidActorConstants.HeldApparelState.NUM;
             switch (id)
             {
                 case AnimationId.DaggerStrike:
@@ -17,12 +19,14 @@ namespace MAGE.GameModes
                 {
                     numFrames = 55;
                     syncFrame = 18;
+                    heldApparelState = HumanoidActorConstants.HeldApparelState.MeleeHeld;
                 }
                 break;
                 case AnimationId.BowDraw:
                 {
                     numFrames = 35;
                     syncFrame = 35;
+                    heldApparelState = HumanoidActorConstants.HeldApparelState.RangedHeld;
                 }
                 break;
                 case AnimationId.Hurt:
@@ -37,6 +41,7 @@ namespace MAGE.GameModes
                 
                     numFrames = 75;
                     syncFrame = 26;
+                    heldApparelState = HumanoidActorConstants.HeldApparelState.MeleeHeld;
                     break;
 
                 case AnimationId.Dodge:
@@ -107,7 +112,7 @@ namespace MAGE.GameModes
                 case AnimationId.Faint: sFXId = SFXId.MaleDeath; break;
             }
 
-            return new AnimationInfo(animationName == "" ? id.ToString() : animationName, numFrames, syncFrame, sFXId);
+            return new AnimationInfo(animationName == "" ? id.ToString() : animationName, numFrames, syncFrame, sFXId, heldApparelState);
         }
     }
 }

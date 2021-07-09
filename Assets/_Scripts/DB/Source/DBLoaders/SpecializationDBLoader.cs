@@ -148,7 +148,8 @@ namespace MAGE.DB.Internal
                 // Actions
                 dbSpecialization.ActionIds = new List<int>()
                 {
-                    (int)ActionId.PoisonStrike
+                    (int)ActionId.Backstab
+                    ,(int)ActionId.PoisonStrike
                 };
                 // none
 
@@ -211,6 +212,7 @@ namespace MAGE.DB.Internal
                 // Proficiencies
                 dbSpecialization.Proficiencies = new List<int>()
             {
+                (int)ProficiencyType.Fists,
                 (int)ProficiencyType.OneHands,
                 (int)ProficiencyType.Accessorys,
                 (int)ProficiencyType.Sheild,
@@ -309,6 +311,7 @@ namespace MAGE.DB.Internal
                 // Proficiencies
                 dbSpecialization.Proficiencies = new List<int>()
             {
+                (int)ProficiencyType.Fists,
                 (int)ProficiencyType.Hammer,
                 (int)ProficiencyType.Sword,
                 (int)ProficiencyType.Accessorys,

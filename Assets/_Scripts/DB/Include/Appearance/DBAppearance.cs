@@ -21,6 +21,8 @@ namespace MAGE.DB
         public int OverrideLeftHeldAssetId = -1;
         public int BaseRightHeldAssetId = -1;
         public int OverrideRightHeldAssetId = -1;
+        public int BaseRangedAssetId = -1;
+        public int OverrideRangedAssetId = -1;
 
         public int BodyType = -1;
         public int SkinToneType = -1;
@@ -46,6 +48,9 @@ namespace MAGE.DB
 
             to.BaseRightHeldAssetId = from.BaseRightHeldAssetId;
             to.OverrideRightHeldAssetId = from.OverrideRightHeldAssetId;
+
+            to.BaseRangedAssetId = from.BaseRangedAssetId;
+            to.OverrideRangedAssetId = from.OverrideRangedAssetId;
 
             to.BodyType = from.BodyType;
             

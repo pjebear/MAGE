@@ -9,8 +9,10 @@ namespace MAGE.GameSystems
     enum EquippableCategory
     {
         Armor,
-        OneHandWeapon,
-        TwoHandWeapon,
+        EmptyHandMelee,
+        OneHandMelee,
+        TwoHandMelee,
+        Ranged,
         Shield,
         Accessory,
 
@@ -26,20 +28,24 @@ namespace MAGE.GameSystems
         All
     }
 
-    enum OneHandWeaponType
+    enum EmptyHandMeleeWeaponType
+    {
+        Fist,
+
+        NUM
+    }
+
+    enum OneHandMeleeWeaponType
     {
         All = -1,
 
-        Fist,
         Dagger,
         Sword,
         Axe,
         Mace,
-        Crossbow,
-
     }
 
-    enum TwoHandWeaponType
+    enum TwoHandMeleeWeaponType
     {
         All = -1,
 
@@ -47,6 +53,13 @@ namespace MAGE.GameSystems
         BattleAxe,
         Maul,
         Staff,
+    }
+
+    enum RangedWeaponType
+    {
+        All = -1,
+
+        Crossbow,
         Bow,
     }
 

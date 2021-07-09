@@ -68,13 +68,7 @@ namespace MAGE.GameModes.Encounter
 
         protected override CompositionNode PopulateComposition()
         {
-            CompositionNode rootComposition = new AnimationComposer()
-            {
-                // AnimationConstructor
-                ToAnimate = new DeferredMonoConversion<CombatEntity, ActorAnimator>(DeferredOwner),
-                AnimationTarget = new DeferredTargetPosition(mTargetingSolver),
-                AnimationInfo = new ConcreteVar<AnimationInfo>(AnimationFactory.CheckoutAnimation(ActionInfo.AnimationInfo.AnimationId, ActionInfo.AnimationInfo.AnimationSide))
-            };
+            CompositionNode rootComposition = ComposeOwnerAnimation();
 
             CompositionNode focalComposition = GetFocalPointComposition();
             rootComposition.ChildComposers.Add(new CompositionLink<CompositionNode>(AllignmentPosition.Interaction, AllignmentPosition.Start, focalComposition));

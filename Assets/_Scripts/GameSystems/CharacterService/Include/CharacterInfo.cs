@@ -224,11 +224,15 @@ namespace MAGE.GameSystems.Characters
 
                 if (inSlot == Equipment.Slot.LeftHand || inSlot == Equipment.Slot.RightHand)
                 {
-                    int numHands = (equippable as HeldEquippable).NumHandsRequired;
-                    if (numHands == 2)
+                    Equipment.Slot otherSlot = inSlot == Equipment.Slot.LeftHand ? Equipment.Slot.RightHand : Equipment.Slot.LeftHand;
+                    if (!EquipmentUtil.IsSlotEmpty(Equipment, otherSlot))
                     {
-                        Equipment.Slot otherSlot = inSlot == Equipment.Slot.LeftHand ? Equipment.Slot.RightHand : Equipment.Slot.LeftHand;
-                        if (!EquipmentUtil.IsSlotEmpty(Equipment, otherSlot))
+                        if ((equippable as HeldEquippable).NumHandsRequired == 2)
+                        {
+                            unequippedItems.Add(UnEquip(otherSlot).Value);
+                        }
+                        else if (Equipment[otherSlot].EquipmentTag.Category == EquippableCategory.Shield
+                            && equippable.EquipmentTag.Category == EquippableCategory.Shield)
                         {
                             unequippedItems.Add(UnEquip(otherSlot).Value);
                         }

@@ -22,11 +22,9 @@ namespace MAGE.GameSystems.Actions
 
             RelativeOrientation relativeOrientation = InteractionUtil.GetRelativeOrientation(attacker.transform, target.transform);
 
-            float blockChance = 0;
-            float dodgeChance = 0;
-            float parryChance = 0;
-
-            InteractionUtil.GetAvoidanceAttributesForEntity(target.GetComponent<CombatEntity>(), out dodgeChance, out blockChance, out parryChance, relativeOrientation);
+            float blockChance, dodgeChance, parryChance;
+            Equipment.Slot parrySlot, blockSlot;
+            InteractionUtil.GetAvoidanceAttributesForEntity(target.GetComponent<CombatEntity>(), out dodgeChance, out blockChance, out blockSlot, out parryChance, out parrySlot);
 
             int diceRoll = UnityEngine.Random.Range(0, 100);
             if (diceRoll < parryChance)
@@ -61,7 +59,17 @@ namespace MAGE.GameSystems.Actions
                 stateChange.healthChange = (int)(stateChange.healthChange * physicalReductionMultiplier);
             }
 
-            return new InteractionResult(interactionResultType, stateChange);
+            Equipment.Slot slotInteractedWith = Equipment.Slot.INVALID;
+            if (interactionResultType == InteractionResultType.Parry)
+            {
+                slotInteractedWith = parrySlot;
+            }
+            else if (interactionResultType == InteractionResultType.Block)
+            {
+                slotInteractedWith = blockSlot;
+            }
+
+            return new InteractionResult(interactionResultType, stateChange, slotInteractedWith);
         }
     }
 

@@ -471,7 +471,7 @@ namespace MAGE.GameModes.Encounter
 
             foreach (ActionProposal action in mEncounterModel.mActionQueue)
             {
-                entriesToPutInQueue.Add(new TurnOrderEntry() { Entry = GetTurnFlowDPForAction(action), TicksTilTurn = -10 });
+                entriesToPutInQueue.Add(new TurnOrderEntry() { Entry = GetTurnFlowDPForAction(action), TicksTilTurn = -30 });
             }
 
             foreach (ControllableEntity controllableEntity in entitiesToPutInTurnQueue)

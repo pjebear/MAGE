@@ -1,38 +1,16 @@
 ﻿using MAGE.GameSystems.Characters;
+using MAGE.GameSystems.Items;
+using MAGE.GameSystems.Stats;
 using System;
 using System.Collections.Generic;
 
 namespace MAGE.GameSystems.Actions
 {
-    enum TargetingType
-    {
-        Any,
-        Allies,
-        Enemies,
-        Empty,
-
-        NUM
-    }
-
-    enum AreaType
-    {
-        Point,
-        Circle,
-        Chain,
-        //Ring,
-        Cone,
-        //Line,
-        Cross,
-        Expanding,
-        MultiLine,
-
-        NUM
-    }
-
     [System.Serializable]
     struct RangeInfo
     {
         public static RangeInfo Unit { get { return new RangeInfo(0, 0, 0, AreaType.Circle, TargetingType.Any); } }
+        public static float MELEE_RANGE = 2.5f;
         public float MinRange;
         public float MaxRange;
         public float MaxElevationChange;
@@ -88,6 +66,17 @@ namespace MAGE.GameSystems.Actions
         public SummonType SummonType;
         public int SummonCount = 1;
         public int MaxSummonCount = -1;
+    }
+
+    class EquipmentRequirement
+    {
+        public ProficiencyType Requirement = ProficiencyType.INVALID;
+        public Equipment.Slot SlotRequirement = Equipment.Slot.INVALID;
+    }
+
+    class PositionalRequirement
+    {
+        public RelativeOrientation Requirement = RelativeOrientation.NUM;
     }
 }
 

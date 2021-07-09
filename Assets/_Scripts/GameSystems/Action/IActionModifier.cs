@@ -13,7 +13,7 @@ namespace MAGE.GameSystems.Actions
 
     class SwordActionModifier : IActionModifier
     {
-        public ActionId ActionId { get { return ActionId.WeaponAttack; } }
+        public ActionId ActionId { get { return ActionId.MeleeAttack; } }
 
         public void Modify(ActionInfo info)
         {

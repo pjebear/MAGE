@@ -96,7 +96,7 @@ namespace MAGE.GameSystems.Stats
     {
         INVALID = -1,
 
-        // One hands
+        // Held
         Fists,
         Sword,
         Axe,
@@ -127,6 +127,7 @@ namespace MAGE.GameSystems.Stats
         Armors,
         Sheilds,
         Accessorys,
+        Ranged,
 
         // Extras
         DualWeild,

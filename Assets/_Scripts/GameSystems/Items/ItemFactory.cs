@@ -96,11 +96,14 @@ namespace MAGE.GameSystems
                     equippable = new Equippable(id, tag, appearancePrefabId, spriteId, equipBonuses, dbEquipment.Value);
                     break;
 
-                case EquippableCategory.OneHandWeapon:
-                case EquippableCategory.TwoHandWeapon:
+                case EquippableCategory.EmptyHandMelee:
+                case EquippableCategory.OneHandMelee:
+                case EquippableCategory.TwoHandMelee:
+                case EquippableCategory.Ranged:
                 case EquippableCategory.Shield:
                 {
-                    int numHandsRequired = category == EquippableCategory.TwoHandWeapon ? 2 : 1;
+
+                    int numHandsRequired = (category == EquippableCategory.OneHandMelee || category == EquippableCategory.EmptyHandMelee || category == EquippableCategory.Shield) ? 1 : 2;
                     AnimationId animationId = (AnimationId)dbEquipment.AnimationId;
                     ProjectileId projectileId = (ProjectileId)dbEquipment.ProjectileId;
 
@@ -123,69 +126,6 @@ namespace MAGE.GameSystems
 
             return equippable;
         }
-
-        //static Equippable CreateEquipable(ItemId itemId)
-        //{
-        //    Appearance appearance = new Appearance();
-
-        //    Debug.Assert(ItemUtil.TypeFromId((int)itemId) == ItemType.Equippable);
-        //    EquippableId equippableId = (EquippableId)itemId;
-        //    EquippableTag tag = null;
-
-        //    switch (equippableId)
-        //    {
-        //        case EquippableId.Sword_0:
-        //            appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Sword_0;
-        //            tag = new EquippableTag(OneHandWeaponType.Sword);
-        //            break;
-
-        //        case EquippableId.Axe_0:
-        //            appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Axe_0;
-        //            tag = new EquippableTag(OneHandWeaponType.Axe);
-        //            break;
-
-        //        case EquippableId.Mace_0:
-        //            appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Mace_0;
-        //            tag = new EquippableTag(OneHandWeaponType.Mace);
-        //            break;
-
-        //        case EquippableId.Shield_0:
-        //            appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Shield_0;
-        //            tag = new EquippableTag(ShieldType.Shield);
-        //            break;
-
-        //        case EquippableId.Staff_0:
-        //            appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Staff_0;
-        //            tag = new EquippableTag(TwoHandWeaponType.Staff);
-        //            break;
-
-        //        case EquippableId.ChainArmor_0:
-        //            appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Chain_0;
-        //            tag = new EquippableTag(ArmorType.Chain);
-        //            break;
-
-        //        case EquippableId.LeatherArmor_0:
-        //            appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Leather_0;
-        //            tag = new EquippableTag(ArmorType.Leather);
-        //            break;
-
-        //        case EquippableId.ClothArmor_0:
-        //            appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Cloth_0;
-        //            tag = new EquippableTag(ArmorType.Cloth);
-        //            break;
-
-        //        case EquippableId.Relic:
-        //            appearance[AppearanceType.Prefab] = (int)AppearancePrefabId.Cloth_0;
-        //            tag = new EquippableTag(ArmorType.Cloth);
-        //            break;
-
-        //        default:
-        //            Debug.Assert(false);
-        //            break;
-        //    }
-
-        //    return new Equippable(equippableId, tag, appearance, new List<AttributeModifier>());
-        //}
     }
 }
 

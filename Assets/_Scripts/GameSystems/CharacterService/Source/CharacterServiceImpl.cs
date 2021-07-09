@@ -271,6 +271,7 @@ namespace MAGE.GameSystems.Characters.Internal
                     case Equipment.Slot.Armor:          appearance.OverrideOutfitType       = prefabId; break;
                     case Equipment.Slot.LeftHand:       appearance.OverrideLeftHeldAssetId  = prefabId; break;
                     case Equipment.Slot.RightHand:      appearance.OverrideRightHeldAssetId = prefabId; break;
+                    case Equipment.Slot.RangedWeapon:   appearance.OverrideRangedAssetId    = prefabId; break;
                 }
             }
         }

@@ -14,17 +14,18 @@ namespace MAGE.GameSystems.Actions
 {
     static class InteractionUtil
     {
-        public static void GetAvoidanceAttributesForEntity(CombatEntity combatEntity, out float dodgeChance, out float blockChance, out float parryChance, RelativeOrientation relativeOrientation = RelativeOrientation.Front)
+        public static void GetAvoidanceAttributesForEntity(CombatEntity combatEntity, out float dodgeChance, out float blockChance, out Equipment.Slot blockEquippableSlot, out float parryChance, out Equipment.Slot parryEquippableSlot, RelativeOrientation relativeOrientation = RelativeOrientation.Front)
         {
             blockChance = 0;
             dodgeChance = 0;
             parryChance = 0;
+            parryEquippableSlot = Equipment.Slot.INVALID;
+            blockEquippableSlot = Equipment.Slot.INVALID;
 
             EquipmentControl equipmentControl = combatEntity.GetComponent<EquipmentControl>();
             if (equipmentControl != null)
             {
-                Equipment.Slot parryEquippableSlot = Equipment.Slot.INVALID;
-                Equipment.Slot blockEquippableSlot = Equipment.Slot.INVALID;
+                
 
                 // Calculate evasion from equipment
                 if (relativeOrientation == RelativeOrientation.Behind) // target can only dodge

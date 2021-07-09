@@ -12,9 +12,9 @@ using UnityEngine;
 
 namespace MAGE.GameModes.Encounter
 {
-    class PoisonStrikeComposer : AOESpellComposerBase
+    class BackstabComposer : AOESpellComposerBase
     {
-        public PoisonStrikeComposer(CombatEntity owner) : base (owner)
+        public BackstabComposer(CombatEntity owner) : base (owner)
         {
             
         }
@@ -24,13 +24,14 @@ namespace MAGE.GameModes.Encounter
             ActionInfo actionInfo = new ActionInfo();
 
             actionInfo.Effectiveness = 0;
-            actionInfo.ActionId = ActionId.PoisonStrike;
-            actionInfo.EquipmentRequirement.Requirement = ProficiencyType.Dagger;
-            actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -5);
+            actionInfo.ActionId = ActionId.Backstab;
+            actionInfo.ActionCost = new StateChange(StateChangeType.ActionCost, 0, -3);
             actionInfo.ActionRange = ActionRange.Meele;
             actionInfo.ActionSource = ActionSource.Weapon;
             actionInfo.CastSpeed = CastSpeed.Instant;
             actionInfo.EffectInfo.EffectId = EffectType.INVALID;
+            actionInfo.EquipmentRequirement.Requirement = ProficiencyType.Dagger;
+            actionInfo.PositionalRequirement.Requirement = RelativeOrientation.Behind;
 
             actionInfo.CastRange = new RangeInfo()
             {
@@ -49,14 +50,9 @@ namespace MAGE.GameModes.Encounter
 
         protected override IDeferredVar<StateChange> GetStateChange()
         {
-            float damage = ActionInfo.Effectiveness + Owner.GetComponent<StatsControl>().Attributes[PrimaryStat.Finese] / 2f;
+            float damage = ActionInfo.Effectiveness + Owner.GetComponent<StatsControl>().Attributes[PrimaryStat.Finese];
 
-            List<StatusEffect> statusEffects = new List<StatusEffect>()
-            {
-                StatusEffectFactory.CheckoutStatusEffect(StatusEffectId.Poison)
-            };
-
-            return new ConcreteVar<StateChange>( new StateChange(StateChangeType.ActionTarget, -(int)damage, 0, statusEffects));
+            return new ConcreteVar<StateChange>( new StateChange(StateChangeType.ActionTarget, -(int)damage, 0));
         }
     }
 }

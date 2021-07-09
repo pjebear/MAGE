@@ -26,7 +26,7 @@ namespace MAGE.DB.Internal
                 createParams.name = StoryCharacterId.Rheinhardt.ToString();
                 createParams.currentSpecialization = SpecializationType.Paladin;
                 createParams.level = 3;
-                createParams.currentEquipment = new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Mace_0, EquippableId.Relic };
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Mace_0, EquippableId.Relic, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {
                     OverridePortraitSpriteId = PortraitSpriteId.Rheinhardt,
@@ -51,7 +51,7 @@ namespace MAGE.DB.Internal
                 createParams.name = StoryCharacterId.Asmund.ToString();
                 createParams.currentSpecialization = SpecializationType.Monk;
                 createParams.level = 2;
-                createParams.currentEquipment = new List<EquippableId>() { EquippableId.ClothArmor_0, EquippableId.INVALID, EquippableId.Staff_0, EquippableId.INVALID };
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.ClothArmor_0, EquippableId.INVALID, EquippableId.Staff_0, EquippableId.INVALID, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {
                     OverridePortraitSpriteId = PortraitSpriteId.Asmund,
@@ -76,7 +76,7 @@ namespace MAGE.DB.Internal
                 createParams.name = StoryCharacterId.Lothar.ToString();
                 createParams.currentSpecialization = SpecializationType.Archer;
                 createParams.level = 2;
-                createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.INVALID, EquippableId.Bow_0, EquippableId.INVALID };
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.INVALID, EquippableId.INVALID, EquippableId.Bow_0, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {
                     OverridePortraitSpriteId = PortraitSpriteId.Lothar,
@@ -100,7 +100,7 @@ namespace MAGE.DB.Internal
                 createParams.name = StoryCharacterId.Balgrid.ToString();
                 createParams.currentSpecialization = SpecializationType.Footman;
                 createParams.level = 2;
-                createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {
                     OverridePortraitSpriteId = PortraitSpriteId.Balgrid,
@@ -124,7 +124,7 @@ namespace MAGE.DB.Internal
                 createParams.name = StoryCharacterId.Maric.ToString();
                 createParams.currentSpecialization = SpecializationType.Footman;
                 createParams.level = 2;
-                createParams.currentEquipment = new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {
                     OverridePortraitSpriteId = PortraitSpriteId.Maric,
@@ -147,7 +147,7 @@ namespace MAGE.DB.Internal
                 createParams.name = "Francious";
                 createParams.currentSpecialization = SpecializationType.Archer;
                 createParams.level = 1;
-                createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.INVALID, EquippableId.Bow_0, EquippableId.INVALID };
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.INVALID, EquippableId.INVALID, EquippableId.Bow_0, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {
                     HairColor = HairColor.Blonde,
@@ -166,7 +166,7 @@ namespace MAGE.DB.Internal
                 createParams.name = "Ingrid";
                 createParams.currentSpecialization = SpecializationType.Adept;
                 createParams.level = 1;
-                createParams.currentEquipment = new List<EquippableId>() { EquippableId.ClothArmor_0, EquippableId.INVALID, EquippableId.Staff_0, EquippableId.INVALID };
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.ClothArmor_0, EquippableId.INVALID, EquippableId.Staff_0, EquippableId.INVALID, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {
                     HairColor = HairColor.Dark,
@@ -185,7 +185,7 @@ namespace MAGE.DB.Internal
                 createParams.name = "Thomas";
                 createParams.currentSpecialization = SpecializationType.Footman;
                 createParams.level = 1;
-                createParams.currentEquipment = new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Shield_0, EquippableId.Sword_0, EquippableId.INVALID };
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.ChainArmor_0, EquippableId.Sword_0, EquippableId.Shield_0, EquippableId.INVALID, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {
                     HairColor = HairColor.Brunette,
@@ -204,7 +204,7 @@ namespace MAGE.DB.Internal
                 createParams.name = "Astrid";
                 createParams.currentSpecialization = SpecializationType.Assassin;
                 createParams.level = 3;
-                createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.Dagger_0, EquippableId.Dagger_0, EquippableId.INVALID };
+                createParams.currentEquipment = new List<EquippableId>() { EquippableId.LeatherArmor_0, EquippableId.Dagger_0, EquippableId.Dagger_0, EquippableId.Bow_0, EquippableId.INVALID };
                 createParams.appearanceOverrides = new Appearance()
                 {
                     HairColor = HairColor.Dark,

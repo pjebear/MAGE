@@ -66,7 +66,7 @@ namespace MAGE.GameSystems.Characters
         {
             get
             {
-                return new List<EquippableId>() { EquippableId.INVALID, EquippableId.INVALID, EquippableId.INVALID, EquippableId.INVALID };
+                return new List<EquippableId>() { EquippableId.INVALID, EquippableId.INVALID, EquippableId.INVALID, EquippableId.INVALID, EquippableId.INVALID };
             }
         }
     

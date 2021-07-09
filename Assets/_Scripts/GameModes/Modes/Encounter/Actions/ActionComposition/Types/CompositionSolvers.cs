@@ -98,7 +98,7 @@ namespace MAGE.GameModes.Encounter
         public IDeferredVar<StateChange> StateChange;
         public DeferredInteractionResult InteractionResult = new DeferredInteractionResult();
 
-        public Dictionary<CombatTarget, List<InteractionResult>> Results = new Dictionary<CombatTarget, List<InteractionResult>>();
+        public Dictionary<CombatTarget, List<InteractionResult>> Results;
 
         public abstract void Solve(CombatEntity interacting, Target target);
 
@@ -141,7 +141,7 @@ namespace MAGE.GameModes.Encounter
             {
                 CombatTarget combatTarget = target.FocalTarget;
 
-                InteractionResult result = new InteractionResult(InteractionResultType.Hit, StateChange.Get());
+                InteractionResult result = new InteractionResult(InteractionResultType.Hit, StateChange.Get(), Equipment.Slot.INVALID);
                 AddResult(combatTarget, result);
                 InteractionResult.Set(result);
             }

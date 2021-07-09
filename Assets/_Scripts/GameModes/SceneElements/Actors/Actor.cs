@@ -11,6 +11,15 @@ namespace MAGE.GameModes.SceneElements
     {
         private bool mInCombat = false;
 
+        public void SetHeldApparelState(HumanoidActorConstants.HeldApparelState heldApparelState)
+        {
+            ActorOutfitter actorOutfitter = GetComponentInChildren<ActorOutfitter>();
+            if (actorOutfitter != null)
+            {
+                actorOutfitter.UpdateHeldApparelState(heldApparelState, true);
+            }
+        }
+
         public void SetInCombat(bool inCombat)
         {
             mInCombat = inCombat;
@@ -18,7 +27,7 @@ namespace MAGE.GameModes.SceneElements
             ActorOutfitter actorOutfitter = GetComponentInChildren<ActorOutfitter>();
             if (actorOutfitter != null)
             {
-                actorOutfitter.UpdateHeldApparelState(mInCombat ? HumanoidActorConstants.HeldApparelState.Held : HumanoidActorConstants.HeldApparelState.Holstered);
+                actorOutfitter.UpdateHeldApparelState(mInCombat ? HumanoidActorConstants.HeldApparelState.MeleeHeld : HumanoidActorConstants.HeldApparelState.Holstered, false);
             }
 
             ActorAnimator actorAnimator = GetComponentInChildren<ActorAnimator>();

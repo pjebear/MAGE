@@ -14,11 +14,33 @@ namespace MAGE.GameModes.SceneElements
 {
     class ActorOutfitter : MonoBehaviour
     {
-        struct HeldApparelSlot
+        class HeldApparelSlot
         {
             public GameObject InstantiatedObj;
             public HeldRegion HeldRegion;
             public HolsterRegion HolsterRegion;
+        }
+
+        class HeldApparelSlots
+        {
+            private HeldApparelSlot[,] mHeldApparel;
+
+            public HeldApparelSlots()
+            {
+                mHeldApparel = new HeldApparelSlot[(int)HumanoidActorConstants.HeldApparelType.NUM, (int)HumanoidActorConstants.Hand.NUM];
+                for (int i = 0; i < (int)HumanoidActorConstants.HeldApparelType.NUM; ++i)
+                {
+                    for (int j = 0; j < (int)HumanoidActorConstants.Hand.NUM; ++j)
+                    {
+                        mHeldApparel[i, j] = new HeldApparelSlot();
+                    }
+                }
+            }
+
+            public HeldApparelSlot ApparelAt(HumanoidActorConstants.HeldApparelType type, HumanoidActorConstants.Hand hand)
+            {
+                return mHeldApparel[(int)type, (int)hand];
+            }
         }
 
         private ActorAnimator rActorAnimator;
@@ -31,7 +53,8 @@ namespace MAGE.GameModes.SceneElements
 
         private OutfitColorization mOutfitColorization = OutfitColorization.Allied;
         private HumanoidActorConstants.HeldApparelState mHeldApparelState = HumanoidActorConstants.HeldApparelState.Holstered;
-        private HeldApparelSlot[] mHeldApparelSlots = new HeldApparelSlot[(int)HumanoidActorConstants.Hand.NUM];
+
+        private HeldApparelSlots mHeldApparel = new HeldApparelSlots();
         private OutfitArrangement mOutfit = null;
         private GameObject mHair = null;
         private GameObject mFacialHair = null;
@@ -109,8 +132,9 @@ namespace MAGE.GameModes.SceneElements
             rBody.BodyMesh.materials[(int)HumanoidActorConstants.BodyMaterialSlot.EyeBrow].color = hairColor;
 
             // Held Items
-            ApplyHeldApparel(appearance.LeftHeldAssetId, HumanoidActorConstants.Hand.Left);
-            ApplyHeldApparel(appearance.RightHeldAssetId, HumanoidActorConstants.Hand.Right);
+            ApplyHeldApparel(appearance.LeftHeldAssetId, HumanoidActorConstants.HeldApparelType.Melee, HumanoidActorConstants.Hand.Left);
+            ApplyHeldApparel(appearance.RightHeldAssetId, HumanoidActorConstants.HeldApparelType.Melee, HumanoidActorConstants.Hand.Right);
+            ApplyHeldApparel(appearance.RangedAssetId, HumanoidActorConstants.HeldApparelType.Ranged, HumanoidActorConstants.Hand.Right);
         }
 
         public void SetOutfitColorization(OutfitColorization outfitColorization)
@@ -152,47 +176,72 @@ namespace MAGE.GameModes.SceneElements
             SetOutfitColorization(mOutfitColorization);
         }
 
-        public void ApplyHeldApparel(ApparelAssetId heldApparel, HumanoidActorConstants.Hand side)
+        public void ApplyHeldApparel(ApparelAssetId heldApparel, HumanoidActorConstants.HeldApparelType type, HumanoidActorConstants.Hand hand)
         {
-            int slotIdx = (int)side;
-            if (mHeldApparelSlots[slotIdx].InstantiatedObj != null 
-                && mHeldApparelSlots[slotIdx].InstantiatedObj.name != heldApparel.ToString())
+            HeldApparelSlot heldApparelSlot = mHeldApparel.ApparelAt(type, hand);
+            if (heldApparelSlot.InstantiatedObj != null 
+                && heldApparelSlot.InstantiatedObj.name != heldApparel.ToString())
             {
-                Destroy(mHeldApparelSlots[slotIdx].InstantiatedObj);
-                mHeldApparelSlots[slotIdx].InstantiatedObj = null;
+                Destroy(heldApparelSlot.InstantiatedObj);
+                heldApparelSlot.InstantiatedObj = null;
             }
 
-            if (mHeldApparelSlots[slotIdx].InstantiatedObj == null
+            if (heldApparelSlot.InstantiatedObj == null
                 && heldApparel != ApparelAssetId.NONE)
             {
                 HeldApparel apparelInfo = ResourceLoader.Load<HeldApparel, ApparelAssetId>(ResourceConstants.HeldApparelPath, heldApparel);
-                mHeldApparelSlots[slotIdx].HeldRegion = apparelInfo.HeldRegion;
-                mHeldApparelSlots[slotIdx].HolsterRegion = apparelInfo.HolsterRegion;
+                heldApparelSlot.HeldRegion = apparelInfo.HeldRegion;
+                heldApparelSlot.HolsterRegion = apparelInfo.HolsterRegion;
 
-                Transform apparelParent = GetTransformForHeldItem(mHeldApparelSlots[slotIdx], side);
+                Transform apparelParent = GetTransformForHeldItem(heldApparelSlot, type, hand);
                 GameObject apparelObj = Instantiate(apparelInfo.ApparelObj, apparelParent, false);
-                mHeldApparelSlots[slotIdx].InstantiatedObj = apparelObj;
+                heldApparelSlot.InstantiatedObj = apparelObj;
 
-                if (mHeldApparelState == HumanoidActorConstants.HeldApparelState.Held
-                    && apparelInfo.HeldRegion == HeldRegion.Hand)
+                bool isHandGrasped = false;
+
+                if (type == HumanoidActorConstants.HeldApparelType.Melee)
                 {
-                    rActorAnimator.SetHandGraspState(side, true);
+                    if (mHeldApparelState == HumanoidActorConstants.HeldApparelState.MeleeHeld
+                        && apparelInfo.HeldRegion == HeldRegion.Hand)
+                    {
+                        isHandGrasped = true;
+                    }
                 }
+                else
+                {
+                    if (mHeldApparelState == HumanoidActorConstants.HeldApparelState.RangedHeld
+                        && apparelInfo.HeldRegion == HeldRegion.Hand)
+                    {
+                        isHandGrasped = true;
+                    }
+                }
+
+                rActorAnimator.SetHandGraspState(hand, isHandGrasped);
             }
         }
 
-        public void UpdateHeldApparelState(HumanoidActorConstants.HeldApparelState state)
+        public void UpdateHeldApparelState(HumanoidActorConstants.HeldApparelState state, bool immediate)
         {
             mHeldApparelState = state;
-            StartCoroutine(_DelayedApparelUpdate());
+
+            if (immediate)
+            {
+                UpdateHeldApparelLocation();
+                rActorAnimator.SetHandGraspState(HumanoidActorConstants.Hand.Left, mHeldApparelState != HumanoidActorConstants.HeldApparelState.Holstered);
+                rActorAnimator.SetHandGraspState(HumanoidActorConstants.Hand.Right, mHeldApparelState != HumanoidActorConstants.HeldApparelState.Holstered);
+            }
+            else
+            {
+                StartCoroutine(_DelayedApparelUpdate());
+            }
         }
 
         private IEnumerator _DelayedApparelUpdate()
         {
             if (rActorAnimator != null)
             {
-                rActorAnimator.AnimateHoldItem(HumanoidActorConstants.Hand.Right, mHeldApparelState == HumanoidActorConstants.HeldApparelState.Held);
-                rActorAnimator.SetHandGraspState(HumanoidActorConstants.Hand.Left, mHeldApparelState == HumanoidActorConstants.HeldApparelState.Held);
+                rActorAnimator.AnimateHoldItem(HumanoidActorConstants.Hand.Right, mHeldApparelState != HumanoidActorConstants.HeldApparelState.Holstered);
+                rActorAnimator.SetHandGraspState(HumanoidActorConstants.Hand.Left, mHeldApparelState != HumanoidActorConstants.HeldApparelState.Holstered);
             }
             
             yield return new WaitForSeconds(1);
@@ -202,39 +251,62 @@ namespace MAGE.GameModes.SceneElements
 
         public void UpdateHeldApparelLocation()
         {
-            for (int i = 0; i < mHeldApparelSlots.Length; ++i)
+            for (int i = 0; i < (int)HumanoidActorConstants.HeldApparelType.NUM; ++i)
             {
-                if (mHeldApparelSlots[i].InstantiatedObj != null)
+                for (int j = 0; j < (int)HumanoidActorConstants.Hand.NUM; ++j)
                 {
-                    Transform updatedTransform = GetTransformForHeldItem(mHeldApparelSlots[i], (HumanoidActorConstants.Hand)i);
-                    mHeldApparelSlots[i].InstantiatedObj.transform.SetParent(updatedTransform, false);
+                    HumanoidActorConstants.HeldApparelType type = (HumanoidActorConstants.HeldApparelType)i;
+                    HumanoidActorConstants.Hand hand = (HumanoidActorConstants.Hand)j;
+                    HeldApparelSlot slot = mHeldApparel.ApparelAt(type, hand);
+                    if (slot.InstantiatedObj != null)
+                    {
+                        Transform updatedTransform = GetTransformForHeldItem(slot, type, hand);
+                        slot.InstantiatedObj.transform.SetParent(updatedTransform, false);
+                    }
                 }
             }
+            
         }
 
-        private Transform GetTransformForHeldItem(HeldApparelSlot apparelSlot, HumanoidActorConstants.Hand side)
+        private Transform GetTransformForHeldItem(HeldApparelSlot apparelSlot, HumanoidActorConstants.HeldApparelType type, HumanoidActorConstants.Hand hand)
         {
             Transform transform = null;
 
-            switch (mHeldApparelState)
+            if ((type == HumanoidActorConstants.HeldApparelType.Melee && mHeldApparelState == HumanoidActorConstants.HeldApparelState.RangedHeld) 
+                || (type == HumanoidActorConstants.HeldApparelType.Ranged && mHeldApparelState == HumanoidActorConstants.HeldApparelState.MeleeHeld)
+                || (mHeldApparelState == HumanoidActorConstants.HeldApparelState.Holstered))
             {
-                case HumanoidActorConstants.HeldApparelState.Held:
+                switch (apparelSlot.HolsterRegion)
                 {
-                    switch (apparelSlot.HeldRegion)
-                    {
-                        case HeldRegion.Hand: transform = side == HumanoidActorConstants.Hand.Left ? rBody.LeftHandTransform : rBody.RightHandTransform; break;
-                        case HeldRegion.Arm: transform = side == HumanoidActorConstants.Hand.Left ? rBody.LeftShieldTransform : rBody.RightSheidlTransform; break;
-                    }
+                    case HolsterRegion.BackSide: transform = hand == HumanoidActorConstants.Hand.Left ? rBody.BackHolsterLTransform : rBody.BackHolsterRTransform; break;
+                    case HolsterRegion.BackCenter: transform = rBody.ShieldHolsterTransform; break;
+                }
+            }
+            else
+            {
+                switch (apparelSlot.HeldRegion)
+                {
+                    case HeldRegion.Hand: transform = hand == HumanoidActorConstants.Hand.Left ? rBody.LeftHandTransform : rBody.RightHandTransform; break;
+                    case HeldRegion.Arm: transform = hand == HumanoidActorConstants.Hand.Left ? rBody.LeftShieldTransform : rBody.RightSheidlTransform; break;
+                }
+            }
+
+                switch (mHeldApparelState)
+            {
+                case HumanoidActorConstants.HeldApparelState.RangedHeld:
+                {
+
+                }
+                break;
+                case HumanoidActorConstants.HeldApparelState.MeleeHeld:
+                {
+                    
                 }
                 break;
 
                 case HumanoidActorConstants.HeldApparelState.Holstered:
                 {
-                    switch (apparelSlot.HolsterRegion)
-                    {
-                        case HolsterRegion.BackSide: transform = side == HumanoidActorConstants.Hand.Left ? rBody.BackHolsterLTransform : rBody.BackHolsterRTransform; break;
-                        case HolsterRegion.BackCenter: transform = rBody.ShieldHolsterTransform; break;
-                    }
+                    
                 }
                 break;
             }

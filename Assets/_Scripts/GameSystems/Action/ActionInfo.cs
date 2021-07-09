@@ -25,6 +25,8 @@ namespace MAGE.GameSystems.Actions
         public ActionEffectInfo EffectInfo = new ActionEffectInfo();
         public ActionChainInfo ChainInfo = new ActionChainInfo();
         public ActionSummonInfo SummonInfo = new ActionSummonInfo();
+        public EquipmentRequirement EquipmentRequirement = new EquipmentRequirement();
+        public PositionalRequirement PositionalRequirement = new PositionalRequirement();
         public bool IsSelfCast = false;
         public bool CanGroundTarget = false;
     }

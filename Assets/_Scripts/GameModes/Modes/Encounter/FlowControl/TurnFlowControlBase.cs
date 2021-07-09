@@ -54,7 +54,10 @@ namespace MAGE.GameModes.Encounter
         protected ActionComposerBase mSelectedAction = null;
         protected Target mSelectedActionTarget = new Target();
 
-        protected ActionComposerBase mWeaponAttack = null;
+        protected ActionComposerBase mMeleeWeaponAction = null;
+        protected ActionComposerBase mRangedWeaponAction = null;
+        protected ActionComposerBase mAttackAction = null;
+
         // Private 
         protected CombatEntity mCurrentTurn;
         protected List<ActionComposerBase> mAvailableActions;
@@ -142,7 +145,14 @@ namespace MAGE.GameModes.Encounter
                 navMeshObstacle.enabled = false;
             }
 
-            mWeaponAttack = ActionComposerFactory.CheckoutAction(mCurrentTurn, ActionId.WeaponAttack);
+            mMeleeWeaponAction = ActionComposerFactory.CheckoutAction(mCurrentTurn, ActionId.MeleeAttack);
+
+            if (mCurrentTurn.GetComponent<EquipmentControl>().IsRangedEquipped())
+            {
+                mRangedWeaponAction = ActionComposerFactory.CheckoutAction(mCurrentTurn, ActionId.RangedAttack);
+            }
+
+            mAttackAction = mMeleeWeaponAction;
 
             Camera.main.GetComponent<Cameras.CameraController>().SetTarget(mCurrentTurn.transform, Cameras.CameraType.TopDown);
         }
@@ -179,7 +189,7 @@ namespace MAGE.GameModes.Encounter
             ActionProposal proposal = new ActionProposal(
                 mCurrentTurn.GetComponent<CombatEntity>(),
                 new Target(mCurrentTarget),
-                ActionComposerFactory.CheckoutAction(mCurrentTurn.GetComponent<CombatEntity>(), ActionId.WeaponAttack));
+                mAttackAction);
 
             QueueAction(proposal);
         }

@@ -14,6 +14,31 @@ namespace MAGE.GameSystems.Actions
         public static readonly int SLOW_CAST_SPEED = 24;
     }
 
+    enum TargetingType
+    {
+        Any,
+        Allies,
+        Enemies,
+        Empty,
+
+        NUM
+    }
+
+    enum AreaType
+    {
+        Point,
+        Circle,
+        Chain,
+        //Ring,
+        Cone,
+        //Line,
+        Cross,
+        Expanding,
+        MultiLine,
+
+        NUM
+    }
+
     enum CastSpeed
     {
         INVALID = -1,
@@ -119,6 +144,7 @@ namespace MAGE.GameSystems.Actions
         MightyBlow,
 
         // Assasin
+        Backstab,
         PoisonStrike,
         //Garrote,
         //Eviscerate,
@@ -150,7 +176,8 @@ namespace MAGE.GameSystems.Actions
         SpotHeal,
         Protection,
 
-        WeaponAttack,
+        MeleeAttack,
+        RangedAttack,
 
         // Followup
         Riptose,
