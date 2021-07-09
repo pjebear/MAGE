@@ -122,6 +122,8 @@ namespace MAGE.GameModes.Encounter
 
         protected void UpdateIdleState()
         {
+            UpdateWeaponForRange();
+
             UpdateMovementPath();
 
             if (mHoverInfo.mMoveToPath.Count > 0)
@@ -154,7 +156,17 @@ namespace MAGE.GameModes.Encounter
                         || canAndIsTargetingAlly 
                         || canAndIsTargetingEnemy)
                     {
-                        target = new Target(mHoverInfo.mHoveredEntity.GetComponent<CombatTarget>());
+                        bool isPositionalRequirementMet = true;
+                        if (mSelectedAction.ActionInfo.PositionalRequirement.Requirement != RelativeOrientation.NUM)
+                        {
+                            RelativeOrientation relativeOrientation = InteractionUtil.GetRelativeOrientation(mCurrentTurn.transform, mHoverInfo.mHoveredEntity.transform);
+                            isPositionalRequirementMet = relativeOrientation == mSelectedAction.ActionInfo.PositionalRequirement.Requirement;
+                        }
+
+                        if (isPositionalRequirementMet)
+                        {
+                            target = new Target(mHoverInfo.mHoveredEntity.GetComponent<CombatTarget>());
+                        }
                     }
                 }
             }
@@ -367,8 +379,47 @@ namespace MAGE.GameModes.Encounter
         {
             return mHoverInfo.mHoveredEntity != null
                 && mHoverInfo.mHoveredEntity.TeamSide != mCurrentTurn.TeamSide
-                && mCurrentTurn.GetComponent<ActionsControl>().GetNumAvailableActions() > 0
-                && mWeaponAttack.CanPerformAction();
+                && mCurrentTurn.GetComponent<ActionsControl>().GetNumAvailableActions() > 0;
+        }
+
+        private void UpdateWeaponForRange()
+        {
+            Vector3 hoveredPosition = Vector3.zero;
+            if (mHoverInfo.mHoveredEntity != null)
+            {
+                hoveredPosition = mHoverInfo.mHoveredEntity.transform.position;
+            }
+            else
+            {
+                hoveredPosition = mHoverInfo.mHoveredTerrainPos;
+            }
+
+            ActionComposerBase updatedWeapon = mMeleeWeaponAction;
+
+            if (hoveredPosition != Vector3.zero)
+            {
+                float distanceToHoverPoint = Vector3.Distance(hoveredPosition, mCurrentTurn.transform.position);
+
+                if (distanceToHoverPoint <= mMeleeWeaponAction.ActionInfo.CastRange.MaxRange)
+                {
+                    updatedWeapon = mMeleeWeaponAction;
+                }
+                else if (mRangedWeaponAction != null && distanceToHoverPoint > mRangedWeaponAction.ActionInfo.CastRange.MinRange)
+                {    
+                    updatedWeapon = mRangedWeaponAction;   
+                }
+            }
+
+            mAttackAction = updatedWeapon;
+
+            if (mAttackAction.ActionInfo.ActionRange == ActionRange.Projectile)
+            {
+                mCurrentTurn.GetComponent<Actor>().SetHeldApparelState(HumanoidActorConstants.HeldApparelState.RangedHeld);
+            }
+            else
+            {
+                mCurrentTurn.GetComponent<Actor>().SetHeldApparelState(HumanoidActorConstants.HeldApparelState.MeleeHeld);
+            }
         }
 
         private void UpdateMovementPath()
@@ -384,7 +435,7 @@ namespace MAGE.GameModes.Encounter
                 {
                     if (CanAttackHoveredTarget())
                     {
-                        float weaponRange = mWeaponAttack.ActionInfo.CastRange.MaxRange;
+                        float weaponRange = mAttackAction.ActionInfo.CastRange.MaxRange;
                         if (weaponRange < mCharacterEmptyRadius)
                         {
                             weaponRange = mCharacterEmptyRadius;
@@ -461,7 +512,7 @@ namespace MAGE.GameModes.Encounter
                                         Name = action.ActionInfo.ActionId.ToString(),
                                         CastType = action.ActionInfo.CastSpeed.ToString(),
                                         Cost = action.ActionInfo.ActionCost.resourceChange != 0 ? Math.Abs(action.ActionInfo.ActionCost.resourceChange).ToString() + " MP" : "",
-                                        HasResources = action.CanPerformAction()
+                                        HasResources = action.AreActionPreRequisitesMet()
                                     });
                                 }
                             }
@@ -612,7 +663,7 @@ namespace MAGE.GameModes.Encounter
                         {
                             float distanceToTarget = Vector3.Distance(mCurrentTurn.transform.position, mCurrentTarget.transform.position);
 
-                            if (distanceToTarget <= mWeaponAttack.ActionInfo.CastRange.MaxRange
+                            if (distanceToTarget <= mMeleeWeaponAction.ActionInfo.CastRange.MaxRange
                                 || mHoverInfo.mIsMoveToInRange)
                             {
                                 updatedCursorType = CursorControl.CursorType.Combat_Near;
